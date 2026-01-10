@@ -21,11 +21,12 @@ app/
   _layout.tsx        # Root layout (PaperProvider)
   (tabs)/
     _layout.tsx      # Tab navigator configuration
-    index.tsx        # Home screen
-    trades.tsx       # Trades list screen
-    add-trade.tsx    # Add trade form screen
-    analytics.tsx    # Analytics screen
+    index.tsx        # Home screen route
+    trades.tsx       # Trades list screen route
+    add-trade.tsx    # Add trade form screen route
+    analytics.tsx    # Analytics screen route
 src/
+  screens/           # Screen components (re-exported by app/ routes)
   store/             # Zustand stores
   types/             # TypeScript interfaces and types
 ```
