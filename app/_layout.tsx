@@ -1,12 +1,11 @@
-import React from 'react';
+import { Slot } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { PaperProvider } from 'react-native-paper';
-import AppNavigator from './src/navigation/AppNavigator';
 
-export default function App() {
+export default function RootLayout() {
   return (
     <PaperProvider>
-      <AppNavigator />
+      <Slot />
       <StatusBar style="auto" />
     </PaperProvider>
   );

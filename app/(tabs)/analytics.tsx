@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Card } from 'react-native-paper';
-import { useTradeStore } from '../store/tradeStore';
+import { useTradeStore } from '../../src/store/trade-store';
 
 export default function AnalyticsScreen() {
   const { trades, loadTrades } = useTradeStore();

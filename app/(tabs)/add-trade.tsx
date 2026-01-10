@@ -7,12 +7,12 @@ import {
   Card,
   Text,
 } from 'react-native-paper';
-import { useTradeStore } from '../store/tradeStore';
-import { TradeFormData } from '../types';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import { useTradeStore } from '../../src/store/trade-store';
+import { TradeFormData } from '../../src/types';
 
 export default function AddTradeScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const { addTrade } = useTradeStore();
   const [formData, setFormData] = useState<TradeFormData>({
     symbol: '',
@@ -77,7 +77,7 @@ export default function AddTradeScreen() {
     };
 
     addTrade(trade);
-    navigation.goBack();
+    router.back();
   };
 
   const pnl = calculatePnl();

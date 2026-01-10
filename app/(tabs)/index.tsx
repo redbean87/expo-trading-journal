@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, Button } from 'react-native-paper';
-import { useTradeStore } from '../store/tradeStore';
+import { Text, Card } from 'react-native-paper';
+import { useTradeStore } from '../../src/store/trade-store';
 
 export default function HomeScreen() {
-  const { trades, loadTrades, isLoading } = useTradeStore();
+  const { trades, loadTrades } = useTradeStore();
 
   useEffect(() => {
     loadTrades();

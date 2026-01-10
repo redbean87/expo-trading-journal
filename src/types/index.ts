@@ -24,10 +24,3 @@ export interface TradeFormData {
   strategy?: string;
   notes?: string;
 }
-
-export type RootTabParamList = {
-  Home: undefined;
-  Trades: undefined;
-  AddTrade: undefined;
-  Analytics: undefined;
-};

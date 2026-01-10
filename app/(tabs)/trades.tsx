@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { Text, Card, FAB, IconButton } from 'react-native-paper';
-import { useTradeStore } from '../store/tradeStore';
-import { Trade } from '../types';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import { useTradeStore } from '../../src/store/trade-store';
+import { Trade } from '../../src/types';
 
 export default function TradesScreen() {
   const { trades, loadTrades, deleteTrade } = useTradeStore();
-  const navigation = useNavigation();
+  const router = useRouter();
 
   useEffect(() => {
     loadTrades();
@@ -90,7 +90,7 @@ export default function TradesScreen() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => navigation.navigate('AddTrade' as never)}
+        onPress={() => router.push('/add-trade')}
       />
     </View>
   );
