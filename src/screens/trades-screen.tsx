@@ -1,13 +1,16 @@
+import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { Text, Card, FAB, IconButton } from 'react-native-paper';
-import { useRouter } from 'expo-router';
+
+import { useAppTheme } from '../hooks/use-app-theme';
 import { useTradeStore } from '../store/trade-store';
 import { Trade } from '../types';
 
 export default function TradesScreen() {
   const { trades, loadTrades, deleteTrade } = useTradeStore();
   const router = useRouter();
+  const theme = useAppTheme();
 
   useEffect(() => {
     loadTrades();
@@ -20,6 +23,8 @@ export default function TradesScreen() {
       year: 'numeric',
     });
   };
+
+  const styles = createStyles(theme);
 
   const renderTrade = ({ item }: { item: Trade }) => (
     <Card style={styles.tradeCard}>
@@ -34,7 +39,13 @@ export default function TradesScreen() {
           <View style={styles.tradeRight}>
             <Text
               variant="titleLarge"
-              style={[styles.pnl, item.pnl >= 0 ? styles.profit : styles.loss]}
+              style={[
+                styles.pnl,
+                {
+                  color:
+                    item.pnl >= 0 ? theme.colors.profit : theme.colors.loss,
+                },
+              ]}
             >
               {item.pnl >= 0 ? '+' : ''}${item.pnl.toFixed(2)}
             </Text>
@@ -46,7 +57,8 @@ export default function TradesScreen() {
         </View>
         <View style={styles.tradeDetails}>
           <Text variant="bodySmall">
-            Entry: ${item.entryPrice.toFixed(2)} • Exit: ${item.exitPrice.toFixed(2)}
+            Entry: ${item.entryPrice.toFixed(2)} • Exit: $
+            {item.exitPrice.toFixed(2)}
           </Text>
           <Text variant="bodySmall" style={styles.date}>
             {formatDate(item.entryTime)} - {formatDate(item.exitTime)}
@@ -61,7 +73,7 @@ export default function TradesScreen() {
       <Card.Actions>
         <IconButton
           icon="delete"
-          iconColor="#f44336"
+          iconColor={theme.colors.loss}
           onPress={() => deleteTrade(item.id)}
         />
       </Card.Actions>
@@ -96,72 +108,66 @@ export default function TradesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  list: {
-    padding: 16,
-  },
-  tradeCard: {
-    marginBottom: 12,
-  },
-  tradeHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  tradeMeta: {
-    color: '#757575',
-    marginTop: 4,
-  },
-  tradeRight: {
-    alignItems: 'flex-end',
-  },
-  pnl: {
-    fontWeight: 'bold',
-  },
-  pnlPercent: {
-    color: '#757575',
-    marginTop: 2,
-  },
-  profit: {
-    color: '#4caf50',
-  },
-  loss: {
-    color: '#f44336',
-  },
-  tradeDetails: {
-    marginTop: 8,
-    color: '#757575',
-  },
-  date: {
-    marginTop: 4,
-  },
-  strategy: {
-    marginTop: 4,
-    fontStyle: 'italic',
-  },
-  fab: {
-    position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#6200ee',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 32,
-  },
-  emptyText: {
-    marginBottom: 8,
-    color: '#757575',
-  },
-  emptySubtext: {
-    color: '#9e9e9e',
-    textAlign: 'center',
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    list: {
+      padding: 16,
+    },
+    tradeCard: {
+      marginBottom: 12,
+    },
+    tradeHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+    },
+    tradeMeta: {
+      color: theme.colors.textSecondary,
+      marginTop: 4,
+    },
+    tradeRight: {
+      alignItems: 'flex-end',
+    },
+    pnl: {
+      fontWeight: 'bold',
+    },
+    pnlPercent: {
+      color: theme.colors.textSecondary,
+      marginTop: 2,
+    },
+    tradeDetails: {
+      marginTop: 8,
+    },
+    date: {
+      marginTop: 4,
+    },
+    strategy: {
+      marginTop: 4,
+      fontStyle: 'italic',
+    },
+    fab: {
+      position: 'absolute',
+      margin: 16,
+      right: 0,
+      bottom: 0,
+      backgroundColor: theme.colors.primary,
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 32,
+    },
+    emptyText: {
+      marginBottom: 8,
+      color: theme.colors.textSecondary,
+    },
+    emptySubtext: {
+      color: theme.colors.textTertiary,
+      textAlign: 'center',
+    },
+  });

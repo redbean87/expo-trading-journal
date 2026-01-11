@@ -1,13 +1,25 @@
-import { Tabs } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
+
+import { useAppTheme } from '../../src/hooks/use-app-theme';
 
 export default function TabLayout() {
+  const theme = useAppTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
-        tabBarActiveTintColor: '#6200ee',
-        tabBarInactiveTintColor: '#757575',
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
+        tabBarStyle: {
+          backgroundColor: theme.colors.surface,
+          borderTopColor: theme.colors.border,
+        },
+        headerStyle: {
+          backgroundColor: theme.colors.surface,
+        },
+        headerTintColor: theme.colors.onSurface,
       }}
     >
       <Tabs.Screen
@@ -24,7 +36,11 @@ export default function TabLayout() {
         options={{
           title: 'Trades',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="format-list-bulleted" size={size} color={color} />
+            <MaterialCommunityIcons
+              name="format-list-bulleted"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -33,7 +49,11 @@ export default function TabLayout() {
         options={{
           title: 'Add Trade',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="plus-circle" size={size} color={color} />
+            <MaterialCommunityIcons
+              name="plus-circle"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -42,7 +62,11 @@ export default function TabLayout() {
         options={{
           title: 'Analytics',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="chart-line" size={size} color={color} />
+            <MaterialCommunityIcons
+              name="chart-line"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />

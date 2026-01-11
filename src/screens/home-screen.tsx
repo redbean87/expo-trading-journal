@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card } from 'react-native-paper';
+import { Text, Card, IconButton } from 'react-native-paper';
+
+import { useAppTheme } from '../hooks/use-app-theme';
+import { useThemeStore } from '../store/theme-store';
 import { useTradeStore } from '../store/trade-store';
 
 export default function HomeScreen() {
   const { trades, loadTrades } = useTradeStore();
+  const { themeMode, toggleTheme } = useThemeStore();
+  const theme = useAppTheme();
 
   useEffect(() => {
     loadTrades();
@@ -18,12 +23,25 @@ export default function HomeScreen() {
 
   const recentTrades = trades.slice(-5).reverse();
 
+  const styles = createStyles(theme);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text variant="headlineMedium" style={styles.title}>
-          Trading Journal
-        </Text>
+        <View style={styles.header}>
+          <Text variant="headlineMedium" style={styles.title}>
+            Trading Journal
+          </Text>
+          <IconButton
+            icon={
+              themeMode === 'dark'
+                ? 'white-balance-sunny'
+                : 'moon-waning-crescent'
+            }
+            onPress={toggleTheme}
+            size={24}
+          />
+        </View>
 
         <View style={styles.statsContainer}>
           <Card style={styles.statCard}>
@@ -40,7 +58,13 @@ export default function HomeScreen() {
               <Text variant="titleLarge">Total P&L</Text>
               <Text
                 variant="headlineMedium"
-                style={[styles.statValue, totalPnl >= 0 ? styles.profit : styles.loss]}
+                style={[
+                  styles.statValue,
+                  {
+                    color:
+                      totalPnl >= 0 ? theme.colors.profit : theme.colors.loss,
+                  },
+                ]}
               >
                 ${totalPnl.toFixed(2)}
               </Text>
@@ -70,7 +94,9 @@ export default function HomeScreen() {
           <Card.Title title="Recent Trades" />
           <Card.Content>
             {recentTrades.length === 0 ? (
-              <Text style={styles.emptyText}>No trades yet. Add your first trade!</Text>
+              <Text style={styles.emptyText}>
+                No trades yet. Add your first trade!
+              </Text>
             ) : (
               recentTrades.map((trade) => (
                 <View key={trade.id} style={styles.tradeItem}>
@@ -79,7 +105,12 @@ export default function HomeScreen() {
                     <Text
                       style={[
                         styles.pnl,
-                        trade.pnl >= 0 ? styles.profit : styles.loss,
+                        {
+                          color:
+                            trade.pnl >= 0
+                              ? theme.colors.profit
+                              : theme.colors.loss,
+                        },
                       ]}
                     >
                       {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
@@ -98,63 +129,63 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  content: {
-    padding: 16,
-  },
-  title: {
-    marginBottom: 24,
-    fontWeight: 'bold',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 24,
-  },
-  statCard: {
-    flex: 1,
-    minWidth: '45%',
-    marginBottom: 12,
-  },
-  statValue: {
-    marginTop: 8,
-    fontWeight: 'bold',
-  },
-  profit: {
-    color: '#4caf50',
-  },
-  loss: {
-    color: '#f44336',
-  },
-  recentCard: {
-    marginBottom: 24,
-  },
-  tradeItem: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  tradeHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  pnl: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  tradeDetails: {
-    color: '#757575',
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: '#757575',
-    paddingVertical: 24,
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    content: {
+      padding: 16,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    title: {
+      fontWeight: 'bold',
+    },
+    statsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+      marginBottom: 24,
+    },
+    statCard: {
+      flex: 1,
+      minWidth: '45%',
+      marginBottom: 12,
+    },
+    statValue: {
+      marginTop: 8,
+      fontWeight: 'bold',
+    },
+    recentCard: {
+      marginBottom: 24,
+    },
+    tradeItem: {
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    tradeHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 4,
+    },
+    pnl: {
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    tradeDetails: {
+      color: theme.colors.textSecondary,
+    },
+    emptyText: {
+      textAlign: 'center',
+      color: theme.colors.textSecondary,
+      paddingVertical: 24,
+    },
+  });

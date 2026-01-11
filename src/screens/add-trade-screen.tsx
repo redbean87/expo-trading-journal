@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import {
@@ -7,13 +8,15 @@ import {
   Card,
   Text,
 } from 'react-native-paper';
-import { useRouter } from 'expo-router';
+
+import { useAppTheme } from '../hooks/use-app-theme';
 import { useTradeStore } from '../store/trade-store';
 import { TradeFormData } from '../types';
 
 export default function AddTradeScreen() {
   const router = useRouter();
   const { addTrade } = useTradeStore();
+  const theme = useAppTheme();
   const [formData, setFormData] = useState<TradeFormData>({
     symbol: '',
     entryPrice: '',
@@ -83,6 +86,8 @@ export default function AddTradeScreen() {
   const pnl = calculatePnl();
   const pnlPercent = calculatePnlPercent();
 
+  const styles = createStyles(theme);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
@@ -91,7 +96,9 @@ export default function AddTradeScreen() {
             <TextInput
               label="Symbol"
               value={formData.symbol}
-              onChangeText={(text) => setFormData({ ...formData, symbol: text })}
+              onChangeText={(text) =>
+                setFormData({ ...formData, symbol: text })
+              }
               mode="outlined"
               style={styles.input}
               autoCapitalize="characters"
@@ -156,28 +163,34 @@ export default function AddTradeScreen() {
             <TextInput
               label="Notes (Optional)"
               value={formData.notes}
-              onChangeText={(text) =>
-                setFormData({ ...formData, notes: text })
-              }
+              onChangeText={(text) => setFormData({ ...formData, notes: text })}
               mode="outlined"
               multiline
               numberOfLines={4}
               style={styles.input}
             />
 
-            {(formData.entryPrice && formData.exitPrice && formData.quantity) && (
+            {formData.entryPrice && formData.exitPrice && formData.quantity && (
               <Card style={styles.pnlCard}>
                 <Card.Content>
                   <Text variant="titleMedium">Projected P&L</Text>
                   <Text
                     variant="headlineMedium"
-                    style={[styles.pnlText, pnl >= 0 ? styles.profit : styles.loss]}
+                    style={[
+                      styles.pnlText,
+                      {
+                        color:
+                          pnl >= 0 ? theme.colors.profit : theme.colors.loss,
+                      },
+                    ]}
                   >
                     {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
                   </Text>
                   <Text
                     variant="bodyMedium"
-                    style={[styles.pnlPercent, pnl >= 0 ? styles.profit : styles.loss]}
+                    style={{
+                      color: pnl >= 0 ? theme.colors.profit : theme.colors.loss,
+                    }}
                   >
                     {pnlPercent >= 0 ? '+' : ''}
                     {pnlPercent.toFixed(2)}%
@@ -190,7 +203,12 @@ export default function AddTradeScreen() {
               mode="contained"
               onPress={handleSubmit}
               style={styles.button}
-              disabled={!formData.symbol || !formData.entryPrice || !formData.exitPrice || !formData.quantity}
+              disabled={
+                !formData.symbol ||
+                !formData.entryPrice ||
+                !formData.exitPrice ||
+                !formData.quantity
+              }
             >
               Add Trade
             </Button>
@@ -201,48 +219,40 @@ export default function AddTradeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  content: {
-    padding: 16,
-  },
-  card: {
-    marginBottom: 16,
-  },
-  input: {
-    marginBottom: 16,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  halfInput: {
-    flex: 1,
-  },
-  segmentedButtons: {
-    marginBottom: 16,
-  },
-  pnlCard: {
-    marginBottom: 16,
-    backgroundColor: '#f5f5f5',
-  },
-  pnlText: {
-    marginTop: 8,
-    fontWeight: 'bold',
-  },
-  pnlPercent: {
-    marginTop: 4,
-  },
-  profit: {
-    color: '#4caf50',
-  },
-  loss: {
-    color: '#f44336',
-  },
-  button: {
-    marginTop: 8,
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    content: {
+      padding: 16,
+    },
+    card: {
+      marginBottom: 16,
+    },
+    input: {
+      marginBottom: 16,
+    },
+    row: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    halfInput: {
+      flex: 1,
+    },
+    segmentedButtons: {
+      marginBottom: 16,
+    },
+    pnlCard: {
+      marginBottom: 16,
+      backgroundColor: theme.colors.surfaceVariant,
+    },
+    pnlText: {
+      marginTop: 8,
+      fontWeight: 'bold',
+    },
+    button: {
+      marginTop: 8,
+    },
+  });

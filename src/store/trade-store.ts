@@ -1,6 +1,7 @@
-import { create } from 'zustand';
-import { Trade } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from 'zustand';
+
+import { Trade } from '../types';
 
 interface TradeStore {
   trades: Trade[];
@@ -23,7 +24,7 @@ export const useTradeStore = create<TradeStore>((set, get) => ({
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const trades = JSON.parse(stored).map((trade: any) => ({
+        const trades = JSON.parse(stored).map((trade: Trade) => ({
           ...trade,
           entryTime: new Date(trade.entryTime),
           exitTime: new Date(trade.exitTime),
