@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { PaperProvider } from 'react-native-paper';
 
+import { ErrorBoundary } from '../src/components/error-boundary';
 import { useThemeStore } from '../src/store/theme-store';
 import {
   lightTheme,
@@ -24,11 +25,13 @@ export default function RootLayout() {
     themeMode === 'dark' ? darkNavigationTheme : lightNavigationTheme;
 
   return (
-    <PaperProvider theme={paperTheme}>
-      <ThemeProvider value={navigationTheme}>
-        <Slot />
-        <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
-      </ThemeProvider>
-    </PaperProvider>
+    <ErrorBoundary>
+      <PaperProvider theme={paperTheme}>
+        <ThemeProvider value={navigationTheme}>
+          <Slot />
+          <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
+        </ThemeProvider>
+      </PaperProvider>
+    </ErrorBoundary>
   );
 }

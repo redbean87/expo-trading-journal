@@ -65,6 +65,7 @@ src/
 - Don't use inline styles unless absolutely necessary - use StyleSheet.create
 - Don't store sensitive data (API keys, credentials) in code
 - Don't use `any` type unless absolutely necessary
+- Don't over-comment code - prefer self-documenting code with clear naming
 
 ## Testing
 
