@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
 import { Trade } from '../types';
+import { generateTradeKey } from '../utils/csv-import';
 
 interface TradeStore {
   trades: Trade[];
@@ -11,6 +12,9 @@ interface TradeStore {
   deleteTrade: (id: string) => Promise<void>;
   loadTrades: () => Promise<void>;
   clearAllTrades: () => Promise<void>;
+  importTrades: (
+    trades: Trade[]
+  ) => Promise<{ imported: number; skipped: number }>;
 }
 
 const STORAGE_KEY = '@trades';
@@ -78,5 +82,53 @@ export const useTradeStore = create<TradeStore>((set, get) => ({
     } catch (error) {
       console.error('Error clearing trades:', error);
     }
+  },
+
+  importTrades: async (trades: Trade[]) => {
+    const existingTrades = get().trades;
+
+    // Create a Set of existing trade keys for duplicate detection
+    const existingKeys = new Set(
+      existingTrades.map((trade) => {
+        const entryTimeStr = trade.entryTime.toISOString();
+        return generateTradeKey({
+          symbol: trade.symbol,
+          entryTime: entryTimeStr,
+          quantity: trade.quantity,
+        });
+      })
+    );
+
+    // Filter out duplicates
+    const newTrades: Trade[] = [];
+    let skipped = 0;
+
+    trades.forEach((trade) => {
+      const entryTimeStr = trade.entryTime.toISOString();
+      const key = generateTradeKey({
+        symbol: trade.symbol,
+        entryTime: entryTimeStr,
+        quantity: trade.quantity,
+      });
+
+      if (!existingKeys.has(key)) {
+        newTrades.push(trade);
+        existingKeys.add(key);
+      } else {
+        skipped++;
+      }
+    });
+
+    // Add new trades to store
+    const updatedTrades = [...existingTrades, ...newTrades];
+    set({ trades: updatedTrades });
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTrades));
+    } catch (error) {
+      console.error('Error saving imported trades:', error);
+    }
+
+    return { imported: newTrades.length, skipped };
   },
 }));
