@@ -1,10 +1,8 @@
 import Decimal from 'decimal.js';
 import { z } from 'zod';
 
-// Base schema for trade side
 export const tradeSideSchema = z.enum(['long', 'short']);
 
-// Schema for a complete trade (stored data)
 export const tradeSchema = z.object({
   id: z.string().uuid(),
   symbol: z
@@ -24,7 +22,6 @@ export const tradeSchema = z.object({
   pnlPercent: z.number(),
 });
 
-// Schema for form input (strings that need parsing)
 export const tradeFormSchema = z
   .object({
     symbol: z
@@ -66,7 +63,6 @@ export const tradeFormSchema = z
     path: ['exitTime'],
   });
 
-// Schema for parsing trades from storage (handles date strings)
 export const storedTradeSchema = tradeSchema.extend({
   entryTime: z.coerce.date(),
   exitTime: z.coerce.date(),
@@ -74,12 +70,10 @@ export const storedTradeSchema = tradeSchema.extend({
 
 export const storedTradesArraySchema = z.array(storedTradeSchema);
 
-// Inferred types from schemas
 export type Trade = z.infer<typeof tradeSchema>;
 export type TradeFormData = z.infer<typeof tradeFormSchema>;
 export type TradeSide = z.infer<typeof tradeSideSchema>;
 
-// Utility function to calculate P&L with decimal precision
 export function calculatePnl(
   entryPrice: number,
   exitPrice: number,
@@ -102,7 +96,6 @@ export function calculatePnl(
   return { pnl, pnlPercent };
 }
 
-// Transform form data to trade
 export function formDataToTrade(formData: TradeFormData, id: string): Trade {
   const entryPrice = parseFloat(formData.entryPrice);
   const exitPrice = parseFloat(formData.exitPrice);

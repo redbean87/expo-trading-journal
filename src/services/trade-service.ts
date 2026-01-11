@@ -5,14 +5,7 @@ import { generateTradeKey } from '../utils/csv-import';
 
 const STORAGE_KEY = '@trades';
 
-/**
- * Service layer for trade persistence
- * This abstraction makes it easy to swap storage backends (e.g., local → cloud API)
- */
 export const tradeService = {
-  /**
-   * Fetch all trades from storage
-   */
   async getTrades(): Promise<Trade[]> {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
@@ -33,9 +26,6 @@ export const tradeService = {
     }
   },
 
-  /**
-   * Add a new trade
-   */
   async addTrade(trade: Trade): Promise<Trade> {
     try {
       const trades = await this.getTrades();
@@ -48,9 +38,6 @@ export const tradeService = {
     }
   },
 
-  /**
-   * Update an existing trade
-   */
   async updateTrade(id: string, updates: Partial<Trade>): Promise<Trade> {
     try {
       const trades = await this.getTrades();
@@ -75,9 +62,6 @@ export const tradeService = {
     }
   },
 
-  /**
-   * Delete a trade by ID
-   */
   async deleteTrade(id: string): Promise<void> {
     try {
       const trades = await this.getTrades();
@@ -89,9 +73,6 @@ export const tradeService = {
     }
   },
 
-  /**
-   * Delete all trades
-   */
   async clearAllTrades(): Promise<void> {
     try {
       await AsyncStorage.removeItem(STORAGE_KEY);
@@ -101,16 +82,12 @@ export const tradeService = {
     }
   },
 
-  /**
-   * Import multiple trades with duplicate detection
-   */
   async importTrades(
     trades: Trade[]
   ): Promise<{ imported: number; skipped: number }> {
     try {
       const existingTrades = await this.getTrades();
 
-      // Create a Set of existing trade keys for duplicate detection
       const existingKeys = new Set(
         existingTrades.map((trade) => {
           const entryTimeStr = trade.entryTime.toISOString();
@@ -122,7 +99,6 @@ export const tradeService = {
         })
       );
 
-      // Filter out duplicates
       const newTrades: Trade[] = [];
       let skipped = 0;
 
@@ -142,7 +118,6 @@ export const tradeService = {
         }
       });
 
-      // Save all trades
       const updatedTrades = [...existingTrades, ...newTrades];
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTrades));
 

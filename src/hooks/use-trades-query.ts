@@ -9,7 +9,6 @@ import {
 import { tradeService } from '../services/trade-service';
 import { Trade } from '../types';
 
-// Query keys for cache management
 export const tradeKeys = {
   all: ['trades'] as const,
   lists: () => [...tradeKeys.all, 'list'] as const,
@@ -18,9 +17,6 @@ export const tradeKeys = {
   detail: (id: string) => [...tradeKeys.details(), id] as const,
 };
 
-/**
- * Hook to fetch all trades
- */
 export function useTradesQuery(): UseQueryResult<Trade[], Error> {
   return useQuery({
     queryKey: tradeKeys.list(),
@@ -28,9 +24,6 @@ export function useTradesQuery(): UseQueryResult<Trade[], Error> {
   });
 }
 
-/**
- * Hook to add a new trade
- */
 export function useAddTradeMutation(): UseMutationResult<
   Trade,
   Error,
@@ -42,15 +35,11 @@ export function useAddTradeMutation(): UseMutationResult<
   return useMutation({
     mutationFn: (trade: Trade) => tradeService.addTrade(trade),
     onSuccess: () => {
-      // Invalidate and refetch trades list
       queryClient.invalidateQueries({ queryKey: tradeKeys.list() });
     },
   });
 }
 
-/**
- * Hook to update an existing trade
- */
 export function useUpdateTradeMutation(): UseMutationResult<
   Trade,
   Error,
@@ -63,15 +52,11 @@ export function useUpdateTradeMutation(): UseMutationResult<
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Trade> }) =>
       tradeService.updateTrade(id, updates),
     onSuccess: () => {
-      // Invalidate and refetch trades list
       queryClient.invalidateQueries({ queryKey: tradeKeys.list() });
     },
   });
 }
 
-/**
- * Hook to delete a trade
- */
 export function useDeleteTradeMutation(): UseMutationResult<
   void,
   Error,
@@ -83,15 +68,11 @@ export function useDeleteTradeMutation(): UseMutationResult<
   return useMutation({
     mutationFn: (id: string) => tradeService.deleteTrade(id),
     onSuccess: () => {
-      // Invalidate and refetch trades list
       queryClient.invalidateQueries({ queryKey: tradeKeys.list() });
     },
   });
 }
 
-/**
- * Hook to clear all trades
- */
 export function useClearTradesMutation(): UseMutationResult<
   void,
   Error,
@@ -103,15 +84,11 @@ export function useClearTradesMutation(): UseMutationResult<
   return useMutation({
     mutationFn: () => tradeService.clearAllTrades(),
     onSuccess: () => {
-      // Invalidate and refetch trades list
       queryClient.invalidateQueries({ queryKey: tradeKeys.list() });
     },
   });
 }
 
-/**
- * Hook to import multiple trades
- */
 export function useImportTradesMutation(): UseMutationResult<
   { imported: number; skipped: number },
   Error,
@@ -123,7 +100,6 @@ export function useImportTradesMutation(): UseMutationResult<
   return useMutation({
     mutationFn: (trades: Trade[]) => tradeService.importTrades(trades),
     onSuccess: () => {
-      // Invalidate and refetch trades list
       queryClient.invalidateQueries({ queryKey: tradeKeys.list() });
     },
   });

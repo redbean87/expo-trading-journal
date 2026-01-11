@@ -1,5 +1,3 @@
-// Custom error classes for the app
-
 export class AppError extends Error {
   constructor(
     message: string,
@@ -31,7 +29,6 @@ export class ValidationError extends AppError {
   }
 }
 
-// Error logging utility
 export function logError(error: unknown, context?: string): void {
   const timestamp = new Date().toISOString();
   const contextStr = context ? ` [${context}]` : '';
@@ -52,7 +49,6 @@ export function logError(error: unknown, context?: string): void {
   }
 }
 
-// Safe async wrapper that catches and logs errors
 export async function safeAsync<T>(
   fn: () => Promise<T>,
   context?: string
@@ -65,7 +61,6 @@ export async function safeAsync<T>(
   }
 }
 
-// Get user-friendly error message
 export function getUserMessage(error: unknown): string {
   if (error instanceof ValidationError) {
     return error.message;

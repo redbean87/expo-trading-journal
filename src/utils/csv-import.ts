@@ -25,7 +25,6 @@ export type ImportResult = {
   errors: string[];
 };
 
-// Generate a unique key for trade deduplication
 export function generateTradeKey(trade: {
   symbol: string;
   entryTime: string;
@@ -34,9 +33,7 @@ export function generateTradeKey(trade: {
   return `${trade.symbol}_${trade.entryTime}_${trade.quantity}`;
 }
 
-// Parse CSV row to Trade object
 function parseCsvRowToTrade(row: CsvRow): Trade | null {
-  // Skip empty rows, summary rows, or rows without required fields
   if (
     !row.symbol ||
     !row.shares ||
@@ -51,27 +48,21 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
   }
 
   try {
-    // Parse numeric values
     const quantity = parseFloat(row.shares);
     const entryPrice = parseFloat(row.entryPrice);
     const exitPrice = parseFloat(row.exitPrice);
 
-    // Validate required numeric fields
     if (isNaN(quantity) || isNaN(entryPrice) || isNaN(exitPrice)) {
       return null;
     }
 
-    // Parse datetime strings directly
-    // Supports formats like: "2026-01-09 8:58:00 AM", "2025-12-31", "2026-01-07 8:48"
     const entryTime = new Date(row.entryTime);
     const exitTime = new Date(row.exitTime);
 
-    // Validate dates
     if (isNaN(entryTime.getTime()) || isNaN(exitTime.getTime())) {
       return null;
     }
 
-    // Calculate P&L (always assume long for imported trades)
     const { pnl, pnlPercent } = calculatePnl(
       entryPrice,
       exitPrice,
@@ -79,7 +70,6 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
       'long'
     );
 
-    // Combine notes from multiple fields
     const notesParts = [];
     if (row.setup) notesParts.push(`Setup: ${row.setup}`);
     if (row.psychology) notesParts.push(`Psychology: ${row.psychology}`);
