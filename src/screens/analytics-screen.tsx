@@ -2,8 +2,11 @@ import React, { useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 
+import { StatRow } from '../components/stat-row';
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useTradeAnalytics } from '../hooks/use-trade-analytics';
 import { useTradeStore } from '../store/trade-store';
+import { TradeHighlightCard } from './analytics/trade-highlight-card';
 
 export default function AnalyticsScreen() {
   const { trades, loadTrades } = useTradeStore();
@@ -13,41 +16,23 @@ export default function AnalyticsScreen() {
     loadTrades();
   }, []);
 
-  const totalTrades = trades.length;
-  const winningTrades = trades.filter((t) => t.pnl > 0);
-  const losingTrades = trades.filter((t) => t.pnl < 0);
-  const breakEvenTrades = trades.filter((t) => t.pnl === 0);
-
-  const totalPnl = trades.reduce((sum, t) => sum + t.pnl, 0);
-  const avgWin =
-    winningTrades.length > 0
-      ? winningTrades.reduce((sum, t) => sum + t.pnl, 0) / winningTrades.length
-      : 0;
-  const avgLoss =
-    losingTrades.length > 0
-      ? Math.abs(
-          losingTrades.reduce((sum, t) => sum + t.pnl, 0) / losingTrades.length
-        )
-      : 0;
-
-  const winRate =
-    totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
-  const profitFactor =
-    avgLoss > 0 ? avgWin / avgLoss : avgWin > 0 ? Infinity : 0;
-
-  const bestTrade =
-    trades.length > 0
-      ? trades.reduce((best, t) => (t.pnl > best.pnl ? t : best), trades[0])
-      : null;
-  const worstTrade =
-    trades.length > 0
-      ? trades.reduce((worst, t) => (t.pnl < worst.pnl ? t : worst), trades[0])
-      : null;
-
-  const longTrades = trades.filter((t) => t.side === 'long');
-  const shortTrades = trades.filter((t) => t.side === 'short');
-  const longPnl = longTrades.reduce((sum, t) => sum + t.pnl, 0);
-  const shortPnl = shortTrades.reduce((sum, t) => sum + t.pnl, 0);
+  const {
+    totalTrades,
+    winningTrades,
+    losingTrades,
+    breakEvenTrades,
+    totalPnl,
+    avgWin,
+    avgLoss,
+    winRate,
+    profitFactor,
+    bestTrade,
+    worstTrade,
+    longTrades,
+    shortTrades,
+    longPnl,
+    shortPnl,
+  } = useTradeAnalytics(trades);
 
   const styles = createStyles(theme);
 
@@ -61,142 +46,77 @@ export default function AnalyticsScreen() {
         <Card style={styles.card}>
           <Card.Title title="Performance Overview" />
           <Card.Content>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Total Trades:</Text>
-              <Text variant="bodyLarge" style={styles.statValue}>
-                {totalTrades}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Win Rate:</Text>
-              <Text variant="bodyLarge" style={styles.statValue}>
-                {winRate.toFixed(1)}%
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Total P&L:</Text>
-              <Text
-                variant="bodyLarge"
-                style={[
-                  styles.statValue,
-                  {
-                    color:
-                      totalPnl >= 0 ? theme.colors.profit : theme.colors.loss,
-                  },
-                ]}
-              >
-                ${totalPnl.toFixed(2)}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Profit Factor:</Text>
-              <Text variant="bodyLarge" style={styles.statValue}>
-                {profitFactor === Infinity ? '∞' : profitFactor.toFixed(2)}
-              </Text>
-            </View>
+            <StatRow label="Total Trades:" value={totalTrades} />
+            <StatRow label="Win Rate:" value={`${winRate.toFixed(1)}%`} />
+            <StatRow
+              label="Total P&L:"
+              value={`$${totalPnl.toFixed(2)}`}
+              valueColor={
+                totalPnl >= 0 ? theme.colors.profit : theme.colors.loss
+              }
+            />
+            <StatRow
+              label="Profit Factor:"
+              value={profitFactor === Infinity ? '∞' : profitFactor.toFixed(2)}
+            />
           </Card.Content>
         </Card>
 
         <Card style={styles.card}>
           <Card.Title title="Trade Statistics" />
           <Card.Content>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Winning Trades:</Text>
-              <Text
-                variant="bodyLarge"
-                style={[styles.statValue, { color: theme.colors.profit }]}
-              >
-                {winningTrades.length}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Losing Trades:</Text>
-              <Text
-                variant="bodyLarge"
-                style={[styles.statValue, { color: theme.colors.loss }]}
-              >
-                {losingTrades.length}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Break Even:</Text>
-              <Text variant="bodyLarge" style={styles.statValue}>
-                {breakEvenTrades.length}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Avg Win:</Text>
-              <Text
-                variant="bodyLarge"
-                style={[styles.statValue, { color: theme.colors.profit }]}
-              >
-                ${avgWin.toFixed(2)}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Avg Loss:</Text>
-              <Text
-                variant="bodyLarge"
-                style={[styles.statValue, { color: theme.colors.loss }]}
-              >
-                ${avgLoss.toFixed(2)}
-              </Text>
-            </View>
+            <StatRow
+              label="Winning Trades:"
+              value={winningTrades.length}
+              valueColor={theme.colors.profit}
+            />
+            <StatRow
+              label="Losing Trades:"
+              value={losingTrades.length}
+              valueColor={theme.colors.loss}
+            />
+            <StatRow label="Break Even:" value={breakEvenTrades.length} />
+            <StatRow
+              label="Avg Win:"
+              value={`$${avgWin.toFixed(2)}`}
+              valueColor={theme.colors.profit}
+            />
+            <StatRow
+              label="Avg Loss:"
+              value={`$${avgLoss.toFixed(2)}`}
+              valueColor={theme.colors.loss}
+            />
           </Card.Content>
         </Card>
 
         <Card style={styles.card}>
           <Card.Title title="Side Analysis" />
           <Card.Content>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Long Trades:</Text>
-              <Text variant="bodyLarge" style={styles.statValue}>
-                {longTrades.length} ({longPnl >= 0 ? '+' : ''}$
-                {longPnl.toFixed(2)})
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text variant="bodyLarge">Short Trades:</Text>
-              <Text variant="bodyLarge" style={styles.statValue}>
-                {shortTrades.length} ({shortPnl >= 0 ? '+' : ''}$
-                {shortPnl.toFixed(2)})
-              </Text>
-            </View>
+            <StatRow
+              label="Long Trades:"
+              value={`${longTrades.length} (${longPnl >= 0 ? '+' : ''}$${longPnl.toFixed(2)})`}
+            />
+            <StatRow
+              label="Short Trades:"
+              value={`${shortTrades.length} (${shortPnl >= 0 ? '+' : ''}$${shortPnl.toFixed(2)})`}
+            />
           </Card.Content>
         </Card>
 
         {bestTrade && (
-          <Card style={styles.card}>
-            <Card.Title title="Best Trade" />
-            <Card.Content>
-              <Text variant="titleMedium">{bestTrade.symbol}</Text>
-              <Text variant="bodyMedium">{bestTrade.side.toUpperCase()}</Text>
-              <Text
-                variant="bodyLarge"
-                style={[{ color: theme.colors.profit }, styles.marginTop]}
-              >
-                +${bestTrade.pnl.toFixed(2)} ({bestTrade.pnlPercent.toFixed(2)}
-                %)
-              </Text>
-            </Card.Content>
-          </Card>
+          <TradeHighlightCard
+            title="Best Trade"
+            trade={bestTrade}
+            valueColor={theme.colors.profit}
+          />
         )}
 
         {worstTrade && (
-          <Card style={styles.card}>
-            <Card.Title title="Worst Trade" />
-            <Card.Content>
-              <Text variant="titleMedium">{worstTrade.symbol}</Text>
-              <Text variant="bodyMedium">{worstTrade.side.toUpperCase()}</Text>
-              <Text
-                variant="bodyLarge"
-                style={[{ color: theme.colors.loss }, styles.marginTop]}
-              >
-                ${worstTrade.pnl.toFixed(2)} ({worstTrade.pnlPercent.toFixed(2)}
-                %)
-              </Text>
-            </Card.Content>
-          </Card>
+          <TradeHighlightCard
+            title="Worst Trade"
+            trade={worstTrade}
+            valueColor={theme.colors.loss}
+          />
         )}
       </View>
     </ScrollView>
@@ -218,16 +138,5 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     card: {
       marginBottom: 16,
-    },
-    statRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 12,
-    },
-    statValue: {
-      fontWeight: 'bold',
-    },
-    marginTop: {
-      marginTop: 8,
     },
   });

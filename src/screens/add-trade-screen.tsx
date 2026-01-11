@@ -1,17 +1,14 @@
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import {
-  TextInput,
-  Button,
-  SegmentedButtons,
-  Card,
-  Text,
-} from 'react-native-paper';
+import { Button, Card } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
+import { calculatePnl } from '../schemas/trade';
 import { useTradeStore } from '../store/trade-store';
 import { TradeFormData } from '../types';
+import { PnlPreviewCard } from './add-trade/pnl-preview-card';
+import { TradeForm } from './add-trade/trade-form';
 
 export default function AddTradeScreen() {
   const router = useRouter();
@@ -29,28 +26,22 @@ export default function AddTradeScreen() {
     notes: '',
   });
 
-  const calculatePnl = () => {
+  const { pnl, pnlPercent } = useMemo(() => {
     const entry = parseFloat(formData.entryPrice) || 0;
     const exit = parseFloat(formData.exitPrice) || 0;
     const qty = parseFloat(formData.quantity) || 0;
 
-    if (formData.side === 'long') {
-      return (exit - entry) * qty;
-    } else {
-      return (entry - exit) * qty;
+    if (entry === 0 || exit === 0 || qty === 0) {
+      return { pnl: 0, pnlPercent: 0 };
     }
-  };
 
-  const calculatePnlPercent = () => {
-    const entry = parseFloat(formData.entryPrice) || 0;
-    if (entry === 0) return 0;
-
-    const pnl = calculatePnl();
-    const qty = parseFloat(formData.quantity) || 0;
-    const totalCost = entry * qty;
-
-    return totalCost > 0 ? (pnl / totalCost) * 100 : 0;
-  };
+    return calculatePnl(entry, exit, qty, formData.side);
+  }, [
+    formData.entryPrice,
+    formData.exitPrice,
+    formData.quantity,
+    formData.side,
+  ]);
 
   const handleSubmit = () => {
     const entryPrice = parseFloat(formData.entryPrice);
@@ -61,8 +52,12 @@ export default function AddTradeScreen() {
       return;
     }
 
-    const pnl = calculatePnl();
-    const pnlPercent = calculatePnlPercent();
+    const { pnl, pnlPercent } = calculatePnl(
+      entryPrice,
+      exitPrice,
+      quantity,
+      formData.side
+    );
 
     const trade = {
       id: Date.now().toString(),
@@ -83,9 +78,6 @@ export default function AddTradeScreen() {
     router.back();
   };
 
-  const pnl = calculatePnl();
-  const pnlPercent = calculatePnlPercent();
-
   const styles = createStyles(theme);
 
   return (
@@ -93,110 +85,13 @@ export default function AddTradeScreen() {
       <View style={styles.content}>
         <Card style={styles.card}>
           <Card.Content>
-            <TextInput
-              label="Symbol"
-              value={formData.symbol}
-              onChangeText={(text) =>
-                setFormData({ ...formData, symbol: text })
-              }
-              mode="outlined"
-              style={styles.input}
-              autoCapitalize="characters"
-            />
-
-            <SegmentedButtons
-              value={formData.side}
-              onValueChange={(value) =>
-                setFormData({ ...formData, side: value as 'long' | 'short' })
-              }
-              buttons={[
-                { value: 'long', label: 'Long' },
-                { value: 'short', label: 'Short' },
-              ]}
-              style={styles.segmentedButtons}
-            />
-
-            <View style={styles.row}>
-              <TextInput
-                label="Entry Price"
-                value={formData.entryPrice}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, entryPrice: text })
-                }
-                mode="outlined"
-                keyboardType="decimal-pad"
-                style={[styles.input, styles.halfInput]}
-              />
-              <TextInput
-                label="Exit Price"
-                value={formData.exitPrice}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, exitPrice: text })
-                }
-                mode="outlined"
-                keyboardType="decimal-pad"
-                style={[styles.input, styles.halfInput]}
-              />
-            </View>
-
-            <TextInput
-              label="Quantity"
-              value={formData.quantity}
-              onChangeText={(text) =>
-                setFormData({ ...formData, quantity: text })
-              }
-              mode="outlined"
-              keyboardType="number-pad"
-              style={styles.input}
-            />
-
-            <TextInput
-              label="Strategy (Optional)"
-              value={formData.strategy}
-              onChangeText={(text) =>
-                setFormData({ ...formData, strategy: text })
-              }
-              mode="outlined"
-              style={styles.input}
-            />
-
-            <TextInput
-              label="Notes (Optional)"
-              value={formData.notes}
-              onChangeText={(text) => setFormData({ ...formData, notes: text })}
-              mode="outlined"
-              multiline
-              numberOfLines={4}
-              style={styles.input}
+            <TradeForm
+              formData={formData}
+              onUpdate={(updates) => setFormData({ ...formData, ...updates })}
             />
 
             {formData.entryPrice && formData.exitPrice && formData.quantity && (
-              <Card style={styles.pnlCard}>
-                <Card.Content>
-                  <Text variant="titleMedium">Projected P&L</Text>
-                  <Text
-                    variant="headlineMedium"
-                    style={[
-                      styles.pnlText,
-                      {
-                        color:
-                          pnl >= 0 ? theme.colors.profit : theme.colors.loss,
-                      },
-                    ]}
-                  >
-                    {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
-                  </Text>
-                  <Text
-                    variant="bodyMedium"
-                    style={{
-                      color: pnl >= 0 ? theme.colors.profit : theme.colors.loss,
-                    }}
-                  >
-                    {pnlPercent >= 0 ? '+' : ''}
-                    {pnlPercent.toFixed(2)}%
-                  </Text>
-                </Card.Content>
-              </Card>
+              <PnlPreviewCard pnl={pnl} pnlPercent={pnlPercent} />
             )}
 
             <Button
@@ -230,27 +125,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     card: {
       marginBottom: 16,
-    },
-    input: {
-      marginBottom: 16,
-    },
-    row: {
-      flexDirection: 'row',
-      gap: 12,
-    },
-    halfInput: {
-      flex: 1,
-    },
-    segmentedButtons: {
-      marginBottom: 16,
-    },
-    pnlCard: {
-      marginBottom: 16,
-      backgroundColor: theme.colors.surfaceVariant,
-    },
-    pnlText: {
-      marginTop: 8,
-      fontWeight: 'bold',
     },
     button: {
       marginTop: 8,

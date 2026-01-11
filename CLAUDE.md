@@ -26,7 +26,9 @@ app/
     add-trade.tsx    # Add trade form screen route
     analytics.tsx    # Analytics screen route
 src/
+  components/        # Reusable components (used across multiple screens)
   screens/           # Screen components (re-exported by app/ routes)
+    <screen-name>/   # Screen-specific components (co-located)
   store/             # Zustand stores
   types/             # TypeScript interfaces and types
 ```
@@ -39,6 +41,50 @@ src/
 - Use default exports for screens
 - Use named exports for reusable components
 - Keep components focused and single-purpose
+- Extract pure functions to utility files (avoid recreating functions on every render)
+
+### Component Organization
+
+**Screen Files**: Keep main screen files clean and focused on orchestration. Screen files should:
+
+- Be under 150 lines when possible
+- Primarily handle data fetching and state management
+- Compose smaller components together
+- Avoid complex JSX structures or inline conditional rendering
+
+**When to Extract Components**:
+
+- Any JSX block over 30 lines should be considered for extraction
+- Repeated UI patterns across screens → extract to `src/components/`
+- Screen-specific UI sections → extract to `src/screens/<screen-name>/`
+- Complex conditional rendering → use the `EmptyState` component pattern
+
+**Component Structure Examples**:
+
+```text
+src/components/
+  stat-card.tsx        # Reusable across home & analytics screens
+  trade-card.tsx       # Reusable across trades & search screens
+  empty-state.tsx      # Reusable wrapper for conditional rendering
+
+src/screens/
+  home-screen.tsx      # Main screen (clean, orchestrates components)
+  home/
+    home-header.tsx    # Screen-specific header
+    recent-trades-card.tsx  # Screen-specific card
+```
+
+**Avoid Ternaries for Conditional Rendering**: Use the `EmptyState` component to handle empty data states:
+
+```tsx
+// ❌ Avoid
+{data.length === 0 ? <EmptyView /> : <ListView data={data} />}
+
+// ✅ Prefer
+<EmptyState data={data} title="No data" subtitle="Add some data">
+  <ListView data={data} />
+</EmptyState>
+```
 
 ### TypeScript
 
