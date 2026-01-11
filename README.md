@@ -1,14 +1,17 @@
 # expo-trading-journal
+
 A mobile day trading journal built with Expo for tracking trades and analyzing performance
 
 ## Getting Started
 
 Install dependencies:
+
 ```bash
 npm install
 ```
 
 Run the app:
+
 ```bash
 npm start
 ```
