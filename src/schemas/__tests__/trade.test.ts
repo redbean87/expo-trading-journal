@@ -182,6 +182,19 @@ describe('calculatePnl', () => {
     expect(pnl).toBe(-100);
     expect(pnlPercent).toBe(-10);
   });
+
+  it('should handle floating-point precision correctly', () => {
+    // This would fail with native JS: 0.1 + 0.2 !== 0.3
+    const { pnl, pnlPercent } = calculatePnl(10.1, 10.3, 100, 'long');
+    expect(pnl).toBe(20); // (10.3 - 10.1) * 100 = 20
+    expect(pnlPercent).toBe(1.98); // ((10.3 - 10.1) / 10.1) * 100
+  });
+
+  it('should handle 3 decimal place prices', () => {
+    const { pnl, pnlPercent } = calculatePnl(1.234, 1.567, 1000, 'long');
+    expect(pnl).toBe(333); // (1.567 - 1.234) * 1000 = 333
+    expect(pnlPercent).toBe(26.985); // ((1.567 - 1.234) / 1.234) * 100
+  });
 });
 
 describe('formDataToTrade', () => {

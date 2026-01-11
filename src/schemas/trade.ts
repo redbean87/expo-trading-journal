@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js';
 import { z } from 'zod';
 
 // Base schema for trade side
@@ -78,17 +79,25 @@ export type Trade = z.infer<typeof tradeSchema>;
 export type TradeFormData = z.infer<typeof tradeFormSchema>;
 export type TradeSide = z.infer<typeof tradeSideSchema>;
 
-// Utility function to calculate P&L
+// Utility function to calculate P&L with decimal precision
 export function calculatePnl(
   entryPrice: number,
   exitPrice: number,
   quantity: number,
   side: TradeSide
 ): { pnl: number; pnlPercent: number } {
-  const priceDiff =
-    side === 'long' ? exitPrice - entryPrice : entryPrice - exitPrice;
-  const pnl = priceDiff * quantity;
-  const pnlPercent = (priceDiff / entryPrice) * 100;
+  const entry = new Decimal(entryPrice);
+  const exit = new Decimal(exitPrice);
+  const qty = new Decimal(quantity);
+
+  const priceDiff = side === 'long' ? exit.minus(entry) : entry.minus(exit);
+
+  const pnl = priceDiff.times(qty).toDecimalPlaces(3).toNumber();
+  const pnlPercent = priceDiff
+    .dividedBy(entry)
+    .times(100)
+    .toDecimalPlaces(3)
+    .toNumber();
 
   return { pnl, pnlPercent };
 }
