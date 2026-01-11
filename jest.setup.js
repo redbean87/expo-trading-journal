@@ -13,3 +13,8 @@ jest.mock('expo-router', () => ({
   useLocalSearchParams: () => ({}),
   Link: 'Link',
 }));
+
+// Mock uuid
+jest.mock('uuid', () => ({
+  v4: () => 'test-uuid-1234',
+}));
