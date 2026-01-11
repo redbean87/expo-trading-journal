@@ -23,3 +23,5 @@ Then press `a` for Android, `i` for iOS, or `w` for web.
 - **Zustand** - State management
 - **AsyncStorage** - Local data persistence
 - **React Native Paper** - UI components
+
+test
