@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { PaperProvider } from 'react-native-paper';
 
 import { ErrorBoundary } from '../src/components/error-boundary';
+import { QueryProvider } from '../src/providers/query-provider';
 import { useThemeStore } from '../src/store/theme-store';
 import {
   lightTheme,
@@ -26,12 +27,14 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <PaperProvider theme={paperTheme}>
-        <ThemeProvider value={navigationTheme}>
-          <Slot />
-          <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
-        </ThemeProvider>
-      </PaperProvider>
+      <QueryProvider>
+        <PaperProvider theme={paperTheme}>
+          <ThemeProvider value={navigationTheme}>
+            <Slot />
+            <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
+          </ThemeProvider>
+        </PaperProvider>
+      </QueryProvider>
     </ErrorBoundary>
   );
 }

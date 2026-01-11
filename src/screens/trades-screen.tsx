@@ -1,28 +1,30 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { FAB, Snackbar, Portal } from 'react-native-paper';
 
 import { EmptyState } from '../components/empty-state';
 import { TradeCard } from '../components/trade-card';
 import { useAppTheme } from '../hooks/use-app-theme';
-import { useTradeStore } from '../store/trade-store';
+import {
+  useTradesQuery,
+  useDeleteTradeMutation,
+  useImportTradesMutation,
+} from '../hooks/use-trades-query';
 import { Trade } from '../types';
 import { parseCsvFile } from '../utils/csv-import';
 
 export default function TradesScreen() {
-  const { trades, loadTrades, deleteTrade, importTrades } = useTradeStore();
+  const { data: trades = [] } = useTradesQuery();
+  const deleteTradeMutation = useDeleteTradeMutation();
+  const importTradesMutation = useImportTradesMutation();
   const router = useRouter();
   const theme = useAppTheme();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
-
-  useEffect(() => {
-    loadTrades();
-  }, []);
 
   const handleImportCsv = async () => {
     try {
@@ -50,7 +52,9 @@ export default function TradesScreen() {
         console.error('CSV Import Errors:', parseResult.errors);
       }
 
-      const { imported, skipped } = await importTrades(parseResult.imported);
+      const { imported, skipped } = await importTradesMutation.mutateAsync(
+        parseResult.imported
+      );
 
       setSnackbarMessage(
         `Imported ${imported} trades. Skipped ${skipped + parseResult.skipped} (duplicates/invalid rows)`
@@ -65,10 +69,14 @@ export default function TradesScreen() {
     }
   };
 
+  const handleDeleteTrade = async (id: string) => {
+    await deleteTradeMutation.mutateAsync(id);
+  };
+
   const styles = createStyles(theme);
 
   const renderTrade = ({ item }: { item: Trade }) => (
-    <TradeCard trade={item} onDelete={deleteTrade} />
+    <TradeCard trade={item} onDelete={handleDeleteTrade} />
   );
 
   return (

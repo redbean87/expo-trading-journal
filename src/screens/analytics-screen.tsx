@@ -1,20 +1,16 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 
 import { StatRow } from '../components/stat-row';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTradeAnalytics } from '../hooks/use-trade-analytics';
-import { useTradeStore } from '../store/trade-store';
+import { useTradesQuery } from '../hooks/use-trades-query';
 import { TradeHighlightCard } from './analytics/trade-highlight-card';
 
 export default function AnalyticsScreen() {
-  const { trades, loadTrades } = useTradeStore();
+  const { data: trades = [] } = useTradesQuery();
   const theme = useAppTheme();
-
-  useEffect(() => {
-    loadTrades();
-  }, []);
 
   const {
     totalTrades,

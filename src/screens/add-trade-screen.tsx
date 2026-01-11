@@ -2,17 +2,18 @@ import { useRouter } from 'expo-router';
 import React, { useState, useMemo } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Button, Card } from 'react-native-paper';
+import { v4 as uuidv4 } from 'uuid';
 
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useAddTradeMutation } from '../hooks/use-trades-query';
 import { calculatePnl } from '../schemas/trade';
-import { useTradeStore } from '../store/trade-store';
 import { TradeFormData } from '../types';
 import { PnlPreviewCard } from './add-trade/pnl-preview-card';
 import { TradeForm } from './add-trade/trade-form';
 
 export default function AddTradeScreen() {
   const router = useRouter();
-  const { addTrade } = useTradeStore();
+  const addTradeMutation = useAddTradeMutation();
   const theme = useAppTheme();
   const [formData, setFormData] = useState<TradeFormData>({
     symbol: '',
@@ -43,7 +44,7 @@ export default function AddTradeScreen() {
     formData.side,
   ]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const entryPrice = parseFloat(formData.entryPrice);
     const exitPrice = parseFloat(formData.exitPrice);
     const quantity = parseFloat(formData.quantity);
@@ -60,7 +61,7 @@ export default function AddTradeScreen() {
     );
 
     const trade = {
-      id: Date.now().toString(),
+      id: uuidv4(),
       symbol: formData.symbol.toUpperCase(),
       entryPrice,
       exitPrice,
@@ -74,7 +75,7 @@ export default function AddTradeScreen() {
       pnlPercent,
     };
 
-    addTrade(trade);
+    await addTradeMutation.mutateAsync(trade);
     router.back();
   };
 
