@@ -13,6 +13,7 @@ The app has been migrated from Zustand store to React Query for data management.
 The service layer abstracts all storage operations. Currently uses AsyncStorage, but the interface makes it easy to swap in a cloud API later.
 
 **Key Functions**:
+
 - `getTrades()` - Fetch all trades
 - `addTrade(trade)` - Add a new trade
 - `updateTrade(id, updates)` - Update an existing trade
@@ -25,6 +26,7 @@ The service layer abstracts all storage operations. Currently uses AsyncStorage,
 **Location**: [src/hooks/use-trades-query.ts](src/hooks/use-trades-query.ts)
 
 Custom hooks that wrap the service layer with React Query functionality:
+
 - `useTradesQuery()` - Fetch and cache all trades
 - `useAddTradeMutation()` - Add a trade with automatic cache invalidation
 - `useUpdateTradeMutation()` - Update a trade with automatic cache invalidation
@@ -37,6 +39,7 @@ Custom hooks that wrap the service layer with React Query functionality:
 **Location**: [src/providers/query-provider.tsx](src/providers/query-provider.tsx)
 
 React Query client configured for mobile:
+
 - **staleTime**: 5 minutes (data stays fresh)
 - **gcTime**: 30 minutes (cache garbage collection)
 - **retry**: 1 attempt on failure
@@ -45,18 +48,23 @@ React Query client configured for mobile:
 ## Benefits of This Architecture
 
 ### 1. Automatic Caching
+
 React Query caches trade data automatically, reducing AsyncStorage reads.
 
 ### 2. Optimistic Updates (Easy to Add)
+
 Can add optimistic UI updates for instant feedback before server confirms.
 
 ### 3. Background Refetching
+
 Automatically refetches stale data when screen comes into focus (when enabled).
 
 ### 4. Deduplication
+
 Multiple components requesting the same data will only trigger one network/storage request.
 
 ### 5. Easy Migration to Cloud
+
 The service layer abstraction means cloud sync requires minimal changes to components.
 
 ## Migration Path to Cloud Sync
@@ -64,6 +72,7 @@ The service layer abstraction means cloud sync requires minimal changes to compo
 ### Phase 1: Add Cloud API (Recommended: Supabase or Firebase)
 
 1. **Create API Service**
+
    ```typescript
    // src/services/api-service.ts
    export const apiService = {
@@ -78,6 +87,7 @@ The service layer abstraction means cloud sync requires minimal changes to compo
    ```
 
 2. **Update Service Layer to Sync**
+
    ```typescript
    // src/services/trade-service.ts
    export const tradeService = {
@@ -133,13 +143,16 @@ useEffect(() => {
 ## Current State Management
 
 ### React Query (Data/Server State)
+
 - Trade data (CRUD operations)
 - Cache management
 - Loading/error states
 - Automatic refetching
 
 ### Zustand (Client/UI State)
+
 **Location**: [src/store/theme-store.ts](src/store/theme-store.ts)
+
 - Theme mode (light/dark)
 - Other UI preferences
 
@@ -148,6 +161,7 @@ useEffect(() => {
 ## Testing
 
 All screens have been migrated:
+
 - [x] Home Screen - Uses `useTradesQuery()`
 - [x] Trades Screen - Uses `useTradesQuery()`, `useDeleteTradeMutation()`, `useImportTradesMutation()`
 - [x] Add Trade Screen - Uses `useAddTradeMutation()`
@@ -167,7 +181,9 @@ Type checking passes: `npm run typecheck` ✓
 ## Cloud Service Recommendations
 
 ### Supabase (Recommended)
+
 **Pros**:
+
 - PostgreSQL (relational, powerful queries)
 - Built-in auth, real-time subscriptions
 - Row-level security
@@ -177,7 +193,9 @@ Type checking passes: `npm run typecheck` ✓
 **Best for**: You want structure, complex analytics, and real-time sync
 
 ### Firebase
+
 **Pros**:
+
 - NoSQL (simple, flexible)
 - Offline persistence built-in
 - Great mobile SDKs
@@ -186,17 +204,21 @@ Type checking passes: `npm run typecheck` ✓
 **Best for**: Rapid prototyping, simple data model
 
 ### Custom API (Node.js/Postgres)
+
 **Pros**:
+
 - Full control
 - Can add advanced features later
 
 **Cons**:
+
 - More setup/maintenance
 - Need to handle auth, hosting, backups
 
 ## Questions?
 
 Reach out if you need help with:
+
 - Choosing a cloud provider
 - Implementing authentication
 - Setting up the sync logic

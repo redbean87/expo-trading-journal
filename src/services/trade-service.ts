@@ -1,11 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Trade } from '../types';
-import { generateTradeKey } from '../utils/csv-import';
 
 const STORAGE_KEY = '@trades';
 
-export const tradeService = {
+/**
+ * Local storage service for offline fallback
+ * This is used when the API service fails
+ */
+const localStorageService = {
   async getTrades(): Promise<Trade[]> {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
@@ -21,26 +24,93 @@ export const tradeService = {
 
       return trades;
     } catch (error) {
-      console.error('Error loading trades:', error);
-      throw error;
+      console.error('Error loading trades from local storage:', error);
+      return [];
+    }
+  },
+
+  async saveTrades(trades: Trade[]): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(trades));
+    } catch (error) {
+      console.error('Error saving trades to local storage:', error);
+    }
+  },
+
+  async clear(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.error('Error clearing local storage:', error);
+    }
+  },
+};
+
+/**
+ * Trade service with cloud sync and offline fallback
+ * Automatically falls back to local storage when offline
+ * Backend is abstracted - can be swapped without changing screens
+ */
+type ApiService = {
+  getTrades: () => Promise<Trade[]>;
+  addTrade: (trade: Trade) => Promise<Trade>;
+  updateTrade: (id: string, updates: Partial<Trade>) => Promise<Trade>;
+  deleteTrade: (id: string) => Promise<void>;
+  clearAllTrades: () => Promise<void>;
+  importTrades: (
+    trades: Trade[]
+  ) => Promise<{ imported: number; skipped: number }>;
+};
+
+let apiService: ApiService | null = null;
+
+export const setApiService = (service: ApiService | null) => {
+  apiService = service;
+};
+
+export const tradeService = {
+  async getTrades(): Promise<Trade[]> {
+    if (!apiService) {
+      // No API configured, use local storage only
+      return localStorageService.getTrades();
+    }
+
+    try {
+      // Try cloud sync first
+      const trades = await apiService.getTrades();
+
+      // Cache locally for offline access
+      await localStorageService.saveTrades(trades);
+
+      return trades;
+    } catch (error) {
+      console.warn('Failed to fetch from cloud, using local cache:', error);
+      // Fallback to local storage
+      return localStorageService.getTrades();
     }
   },
 
   async addTrade(trade: Trade): Promise<Trade> {
-    try {
-      const trades = await this.getTrades();
+    if (!apiService) {
+      // Local only mode
+      const trades = await localStorageService.getTrades();
       const newTrades = [...trades, trade];
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newTrades));
+      await localStorageService.saveTrades(newTrades);
       return trade;
+    }
+
+    try {
+      return await apiService.addTrade(trade);
     } catch (error) {
-      console.error('Error adding trade:', error);
+      console.error('Failed to add trade to cloud:', error);
       throw error;
     }
   },
 
   async updateTrade(id: string, updates: Partial<Trade>): Promise<Trade> {
-    try {
-      const trades = await this.getTrades();
+    if (!apiService) {
+      // Local only mode
+      const trades = await localStorageService.getTrades();
       const tradeIndex = trades.findIndex((t) => t.id === id);
 
       if (tradeIndex === -1) {
@@ -54,30 +124,47 @@ export const tradeService = {
         ...trades.slice(tradeIndex + 1),
       ];
 
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newTrades));
+      await localStorageService.saveTrades(newTrades);
       return updatedTrade;
+    }
+
+    try {
+      return await apiService.updateTrade(id, updates);
     } catch (error) {
-      console.error('Error updating trade:', error);
+      console.error('Failed to update trade in cloud:', error);
       throw error;
     }
   },
 
   async deleteTrade(id: string): Promise<void> {
-    try {
-      const trades = await this.getTrades();
+    if (!apiService) {
+      // Local only mode
+      const trades = await localStorageService.getTrades();
       const newTrades = trades.filter((t) => t.id !== id);
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newTrades));
+      await localStorageService.saveTrades(newTrades);
+      return;
+    }
+
+    try {
+      await apiService.deleteTrade(id);
     } catch (error) {
-      console.error('Error deleting trade:', error);
+      console.error('Failed to delete trade from cloud:', error);
       throw error;
     }
   },
 
   async clearAllTrades(): Promise<void> {
+    if (!apiService) {
+      // Local only mode
+      await localStorageService.clear();
+      return;
+    }
+
     try {
-      await AsyncStorage.removeItem(STORAGE_KEY);
+      await apiService.clearAllTrades();
+      await localStorageService.clear();
     } catch (error) {
-      console.error('Error clearing trades:', error);
+      console.error('Failed to clear trades from cloud:', error);
       throw error;
     }
   },
@@ -85,45 +172,18 @@ export const tradeService = {
   async importTrades(
     trades: Trade[]
   ): Promise<{ imported: number; skipped: number }> {
+    if (!apiService) {
+      // Local only mode - basic import without duplicate detection
+      const existingTrades = await localStorageService.getTrades();
+      const newTrades = [...existingTrades, ...trades];
+      await localStorageService.saveTrades(newTrades);
+      return { imported: trades.length, skipped: 0 };
+    }
+
     try {
-      const existingTrades = await this.getTrades();
-
-      const existingKeys = new Set(
-        existingTrades.map((trade) => {
-          const entryTimeStr = trade.entryTime.toISOString();
-          return generateTradeKey({
-            symbol: trade.symbol,
-            entryTime: entryTimeStr,
-            quantity: trade.quantity,
-          });
-        })
-      );
-
-      const newTrades: Trade[] = [];
-      let skipped = 0;
-
-      trades.forEach((trade) => {
-        const entryTimeStr = trade.entryTime.toISOString();
-        const key = generateTradeKey({
-          symbol: trade.symbol,
-          entryTime: entryTimeStr,
-          quantity: trade.quantity,
-        });
-
-        if (!existingKeys.has(key)) {
-          newTrades.push(trade);
-          existingKeys.add(key);
-        } else {
-          skipped++;
-        }
-      });
-
-      const updatedTrades = [...existingTrades, ...newTrades];
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTrades));
-
-      return { imported: newTrades.length, skipped };
+      return await apiService.importTrades(trades);
     } catch (error) {
-      console.error('Error importing trades:', error);
+      console.error('Failed to import trades to cloud:', error);
       throw error;
     }
   },

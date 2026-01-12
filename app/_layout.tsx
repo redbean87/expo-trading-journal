@@ -4,7 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { PaperProvider } from 'react-native-paper';
 
+import AuthGate from '../src/components/auth-gate';
 import { ErrorBoundary } from '../src/components/error-boundary';
+import { ConvexProvider } from '../src/providers/convex-provider';
 import { QueryProvider } from '../src/providers/query-provider';
 import { useThemeStore } from '../src/store/theme-store';
 import {
@@ -27,14 +29,18 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <QueryProvider>
-        <PaperProvider theme={paperTheme}>
-          <ThemeProvider value={navigationTheme}>
-            <Slot />
-            <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
-          </ThemeProvider>
-        </PaperProvider>
-      </QueryProvider>
+      <ConvexProvider>
+        <QueryProvider>
+          <PaperProvider theme={paperTheme}>
+            <ThemeProvider value={navigationTheme}>
+              <AuthGate>
+                <Slot />
+              </AuthGate>
+              <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
+            </ThemeProvider>
+          </PaperProvider>
+        </QueryProvider>
+      </ConvexProvider>
     </ErrorBoundary>
   );
 }

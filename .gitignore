@@ -43,3 +43,7 @@ coverage/
 # generated native folders
 /ios
 /android
+
+# Convex
+.convex/
+convex/_generated/

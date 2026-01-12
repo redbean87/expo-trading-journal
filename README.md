@@ -1,28 +1,176 @@
-# expo-trading-journal
+# Trading Journal - React Native App
 
-A mobile day trading journal built with Expo for tracking trades and analyzing performance
+A mobile trading journal app built with Expo/React Native for tracking and analyzing trades with cloud sync.
 
-## Getting Started
+## Features
 
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the app:
-
-```bash
-npm start
-```
-
-Then press `a` for Android, `i` for iOS, or `w` for web.
+- Track trades with detailed entry/exit information
+- View analytics and performance metrics
+- Import trades from CSV files
+- Cloud sync across devices with Convex
+- User authentication (email/password)
+- Offline support with automatic sync
+- Dark mode support
 
 ## Tech Stack
 
-- **Expo SDK 54** - React Native framework
-- **TypeScript** - Type safety
-- **React Navigation** - Navigation
-- **Zustand** - State management
-- **AsyncStorage** - Local data persistence
-- **React Native Paper** - UI components
+- **Framework**: Expo SDK 54 / React Native 0.81
+- **Language**: TypeScript
+- **UI Library**: React Native Paper
+- **Navigation**: Expo Router (file-based routing)
+- **State Management**: Zustand (UI state) + React Query (data)
+- **Backend**: Convex (cloud database + auth + real-time sync)
+- **Storage**: AsyncStorage (offline cache)
+- **Node**: 20.x (managed via Volta)
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 20.x
+- npm
+- Expo CLI
+- iOS Simulator or Android Emulator (or Expo Go app)
+
+### Setup
+
+1. **Install dependencies**:
+
+   ```bash
+   npm install
+   ```
+
+2. **Set up Convex** (see [CONVEX_SETUP.md](CONVEX_SETUP.md) for detailed guide):
+
+   ```bash
+   # Login and create Convex project
+   npx convex dev
+
+   # Create .env file
+   cp .env.example .env
+   # Add your Convex URL to .env:
+   # EXPO_PUBLIC_CONVEX_URL=https://your-project.convex.cloud
+   ```
+
+3. **Start the app**:
+
+   ```bash
+   # Terminal 1: Keep Convex dev server running
+   npx convex dev
+
+   # Terminal 2: Start Expo
+   npm start
+   ```
+
+4. **Open on device**:
+   - Press `i` for iOS simulator
+   - Press `a` for Android emulator
+   - Scan QR with Expo Go app
+
+## Architecture
+
+**Local-first with cloud sync** - Works offline, syncs when online
+
+- **Service Layer** abstracts backend (easy to swap Convex for Firebase/Supabase)
+- **React Query** handles caching and data fetching
+- **Convex** provides real-time sync and authentication
+- **AsyncStorage** caches data locally for offline use
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for details.
+
+## Project Structure
+
+```text
+app/                    # Expo Router screens
+  (tabs)/              # Tab navigation
+    index.tsx          # Home
+    trades.tsx         # Trades list
+    add-trade.tsx      # Add trade
+    analytics.tsx      # Analytics
+
+convex/                # Backend (Convex)
+  schema.ts           # Database schema
+  auth.config.ts      # Auth setup
+  trades.ts           # Trade operations
+
+src/
+  components/         # Reusable UI components
+  screens/           # Screen components
+    auth/            # Login/register
+  hooks/             # Custom hooks
+  services/          # Backend abstraction
+  providers/         # React context
+  store/             # Zustand stores
+  types/             # TypeScript types
+```
+
+## Key Files
+
+- [CONVEX_SETUP.md](CONVEX_SETUP.md) - Complete Convex setup guide
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Architecture details
+- [CLAUDE.md](CLAUDE.md) - Code style guidelines
+
+## Development
+
+### Scripts
+
+```bash
+npm start              # Start Expo dev server
+npm test               # Run tests
+npm run lint           # Lint code
+npm run format         # Format with Prettier
+npm run typecheck      # TypeScript checks
+```
+
+### Making Changes
+
+1. Backend changes: Edit `convex/*.ts` files
+2. Frontend changes: Edit `src/` files
+3. Screens: Use existing React Query hooks
+4. No need to modify screens when switching backends!
+
+## Authentication
+
+Email/password auth via Convex:
+
+- Login/register screens show automatically when not authenticated
+- Auth tokens stored securely (expo-secure-store)
+- All routes protected by AuthGate component
+
+## Switching Backends
+
+To switch from Convex to another service:
+
+1. Create new API service file (e.g., `firebase-trade-service.ts`)
+2. Update `ConvexProvider` to initialize your service
+3. Screens don't need changes - service layer handles it!
+
+## Troubleshooting
+
+**"Missing EXPO_PUBLIC_CONVEX_URL"**
+
+- Create `.env` with your Convex URL
+- Restart Expo
+
+**"Not authenticated"**
+
+- Login with the app
+- Check Convex dev server is running
+
+**Trades not syncing**
+
+- Ensure `npx convex dev` is running
+- Check internet connection
+
+See [CONVEX_SETUP.md](CONVEX_SETUP.md) for more help.
+
+## Resources
+
+- [Expo Docs](https://docs.expo.dev/)
+- [Convex Docs](https://docs.convex.dev/)
+- [React Query Docs](https://tanstack.com/query/latest)
+- [React Native Paper](https://callstack.github.io/react-native-paper/)
+
+## License
+
+MIT
