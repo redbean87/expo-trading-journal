@@ -5,11 +5,11 @@ import { Text, Card } from 'react-native-paper';
 import { StatRow } from '../components/stat-row';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTradeAnalytics } from '../hooks/use-trade-analytics';
-import { useTradesQuery } from '../hooks/use-trades-query';
+import { useTrades } from '../hooks/use-trades';
 import { TradeHighlightCard } from './analytics/trade-highlight-card';
 
 export default function AnalyticsScreen() {
-  const { data: trades = [] } = useTradesQuery();
+  const { trades } = useTrades();
   const theme = useAppTheme();
 
   const {

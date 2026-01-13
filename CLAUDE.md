@@ -98,6 +98,12 @@ src/screens/
 - Persist data with AsyncStorage
 - Keep store actions async when dealing with storage
 
+### Abstraction
+
+- Components should not reveal underlying frameworks or libraries
+- Abstract backend services behind generic hooks (e.g., `useTrades` not `useConvexTrades`)
+- Keep implementation details in dedicated files, expose clean interfaces to consumers
+
 ### Naming Conventions
 
 - **Files**: kebab-case (e.g., `home-screen.tsx`, `trade-store.ts`)

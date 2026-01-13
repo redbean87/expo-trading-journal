@@ -3,14 +3,14 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 
 import { StatCard } from '../components/stat-card';
 import { useAppTheme } from '../hooks/use-app-theme';
-import { useTradesQuery } from '../hooks/use-trades-query';
+import { useTrades } from '../hooks/use-trades';
 import { useTradesSummary } from '../hooks/use-trades-summary';
 import { useThemeStore } from '../store/theme-store';
 import { HomeHeader } from './home/home-header';
 import { RecentTradesCard } from './home/recent-trades-card';
 
 export default function HomeScreen() {
-  const { data: trades = [] } = useTradesQuery();
+  const { trades } = useTrades();
   const { themeMode, toggleTheme } = useThemeStore();
   const theme = useAppTheme();
 

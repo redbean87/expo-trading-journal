@@ -8,17 +8,17 @@ import { EmptyState } from '../components/empty-state';
 import { TradeCard } from '../components/trade-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import {
-  useTradesQuery,
-  useDeleteTradeMutation,
-  useImportTradesMutation,
-} from '../hooks/use-trades-query';
+  useTrades,
+  useDeleteTrade,
+  useImportTrades,
+} from '../hooks/use-trades';
 import { Trade } from '../types';
 import { parseCsvFile } from '../utils/csv-import';
 
 export default function TradesScreen() {
-  const { data: trades = [] } = useTradesQuery();
-  const deleteTradeMutation = useDeleteTradeMutation();
-  const importTradesMutation = useImportTradesMutation();
+  const { trades } = useTrades();
+  const deleteTrade = useDeleteTrade();
+  const importTrades = useImportTrades();
   const router = useRouter();
   const theme = useAppTheme();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -52,9 +52,7 @@ export default function TradesScreen() {
         console.error('CSV Import Errors:', parseResult.errors);
       }
 
-      const { imported, skipped } = await importTradesMutation.mutateAsync(
-        parseResult.imported
-      );
+      const { imported, skipped } = await importTrades(parseResult.imported);
 
       setSnackbarMessage(
         `Imported ${imported} trades. Skipped ${skipped + parseResult.skipped} (duplicates/invalid rows)`
@@ -70,7 +68,7 @@ export default function TradesScreen() {
   };
 
   const handleDeleteTrade = async (id: string) => {
-    await deleteTradeMutation.mutateAsync(id);
+    await deleteTrade(id);
   };
 
   const styles = createStyles(theme);

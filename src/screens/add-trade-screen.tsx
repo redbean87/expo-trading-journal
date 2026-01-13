@@ -5,7 +5,7 @@ import { Button, Card } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useAppTheme } from '../hooks/use-app-theme';
-import { useAddTradeMutation } from '../hooks/use-trades-query';
+import { useAddTrade } from '../hooks/use-trades';
 import { calculatePnl } from '../schemas/trade';
 import { TradeFormData } from '../types';
 import { PnlPreviewCard } from './add-trade/pnl-preview-card';
@@ -13,7 +13,7 @@ import { TradeForm } from './add-trade/trade-form';
 
 export default function AddTradeScreen() {
   const router = useRouter();
-  const addTradeMutation = useAddTradeMutation();
+  const addTrade = useAddTrade();
   const theme = useAppTheme();
   const [formData, setFormData] = useState<TradeFormData>({
     symbol: '',
@@ -75,7 +75,7 @@ export default function AddTradeScreen() {
       pnlPercent,
     };
 
-    await addTradeMutation.mutateAsync(trade);
+    await addTrade(trade);
     router.back();
   };
 

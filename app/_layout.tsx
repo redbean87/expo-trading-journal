@@ -10,7 +10,6 @@ import { PaperProvider } from 'react-native-paper';
 import AuthGate from '../src/components/auth-gate';
 import { ErrorBoundary } from '../src/components/error-boundary';
 import { ConvexProvider } from '../src/providers/convex-provider';
-import { QueryProvider } from '../src/providers/query-provider';
 import { useThemeStore } from '../src/store/theme-store';
 import {
   lightTheme,
@@ -33,16 +32,14 @@ export default function RootLayout() {
   return (
     <ErrorBoundary>
       <ConvexProvider>
-        <QueryProvider>
-          <PaperProvider theme={paperTheme}>
-            <ThemeProvider value={navigationTheme}>
-              <AuthGate>
-                <Slot />
-              </AuthGate>
-              <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
-            </ThemeProvider>
-          </PaperProvider>
-        </QueryProvider>
+        <PaperProvider theme={paperTheme}>
+          <ThemeProvider value={navigationTheme}>
+            <AuthGate>
+              <Slot />
+            </AuthGate>
+            <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
+          </ThemeProvider>
+        </PaperProvider>
       </ConvexProvider>
     </ErrorBoundary>
   );
