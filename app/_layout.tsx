@@ -1,3 +1,6 @@
+// Polyfill must be imported first, before any Convex imports
+import '../src/polyfills/window-polyfill';
+
 import { ThemeProvider } from '@react-navigation/native';
 import { Slot } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';

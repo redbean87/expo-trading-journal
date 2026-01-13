@@ -7,64 +7,44 @@ import { Platform } from 'react-native';
 import { createApiTradeService } from '../services/api-trade-service';
 import { setApiService } from '../services/trade-service';
 
-// Storage adapter that works on both native and web
-const createStorage = () => {
-  // Use localStorage on web, SecureStore on native
-  if (Platform.OS === 'web') {
-    return {
-      getItem: async (key: string): Promise<string | null> => {
-        try {
-          return localStorage.getItem(key);
-        } catch (error) {
-          console.error('Error reading from localStorage:', error);
-          return null;
-        }
-      },
-      setItem: async (key: string, value: string): Promise<void> => {
-        try {
-          localStorage.setItem(key, value);
-        } catch (error) {
-          console.error('Error writing to localStorage:', error);
-        }
-      },
-      removeItem: async (key: string): Promise<void> => {
-        try {
-          localStorage.removeItem(key);
-        } catch (error) {
-          console.error('Error removing from localStorage:', error);
-        }
-      },
-    };
-  }
-
-  // Native platforms (iOS/Android)
-  return {
-    getItem: async (key: string): Promise<string | null> => {
-      try {
-        return await SecureStore.getItemAsync(key);
-      } catch (error) {
-        console.error('Error reading from secure storage:', error);
-        return null;
-      }
-    },
-    setItem: async (key: string, value: string): Promise<void> => {
-      try {
-        await SecureStore.setItemAsync(key, value);
-      } catch (error) {
-        console.error('Error writing to secure storage:', error);
-      }
-    },
-    removeItem: async (key: string): Promise<void> => {
-      try {
-        await SecureStore.deleteItemAsync(key);
-      } catch (error) {
-        console.error('Error removing from secure storage:', error);
-      }
-    },
-  };
+// Secure storage adapter for native platforms (iOS/Android)
+const secureStorage = {
+  getItem: async (key: string): Promise<string | null> => {
+    try {
+      return await SecureStore.getItemAsync(key);
+    } catch (error) {
+      console.error('Error reading from secure storage:', error);
+      return null;
+    }
+  },
+  setItem: async (key: string, value: string): Promise<void> => {
+    try {
+      await SecureStore.setItemAsync(key, value);
+    } catch (error) {
+      console.error('Error writing to secure storage:', error);
+    }
+  },
+  removeItem: async (key: string): Promise<void> => {
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch (error) {
+      console.error('Error removing from secure storage:', error);
+    }
+  },
 };
 
-const secureStorage = createStorage();
+// Get the appropriate storage based on platform
+// On web, use localStorage; on native, use SecureStore
+const getStorage = () => {
+  if (
+    Platform.OS === 'web' &&
+    typeof window !== 'undefined' &&
+    window.localStorage
+  ) {
+    return window.localStorage;
+  }
+  return secureStorage;
+};
 
 // Initialize Convex client
 // NOTE: You'll need to set EXPO_PUBLIC_CONVEX_URL in your .env file after running `npx convex dev`
@@ -78,7 +58,10 @@ if (!convexUrl) {
   );
 }
 
-const convex = new ConvexReactClient(convexUrl);
+// Disable unsavedChangesWarning for React Native compatibility
+const convex = new ConvexReactClient(convexUrl, {
+  unsavedChangesWarning: false,
+});
 
 type ConvexProviderProps = {
   children: ReactNode;
@@ -92,7 +75,7 @@ export function ConvexProvider({ children }: ConvexProviderProps) {
   }, []);
 
   return (
-    <ConvexAuthProvider client={convex} storage={secureStorage}>
+    <ConvexAuthProvider client={convex} storage={getStorage()}>
       {children}
     </ConvexAuthProvider>
   );

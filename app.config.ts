@@ -36,5 +36,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     apiUrl: process.env.API_URL,
     enableAnalytics: process.env.ENABLE_ANALYTICS === 'true',
+    eas: {
+      projectId: 'a2951e1c-afb8-4234-94f0-b1230eade206',
+    },
   },
 });
