@@ -34,6 +34,45 @@ export const getTrades = query({
   },
 });
 
+// Query to get a single trade by ID
+export const getTrade = query({
+  args: {
+    id: v.id('trades'),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error('Not authenticated');
+    }
+
+    const trade = await ctx.db.get(args.id);
+
+    if (!trade) {
+      return null;
+    }
+
+    // Verify the trade belongs to the user
+    if (trade.userId !== userId) {
+      throw new Error('Not authorized to access this trade');
+    }
+
+    return {
+      id: trade._id,
+      symbol: trade.symbol,
+      entryPrice: trade.entryPrice,
+      exitPrice: trade.exitPrice,
+      quantity: trade.quantity,
+      entryTime: trade.entryTime,
+      exitTime: trade.exitTime,
+      side: trade.side,
+      pnl: trade.pnl,
+      pnlPercent: trade.pnlPercent,
+      notes: trade.notes,
+      strategy: trade.strategy,
+    };
+  },
+});
+
 // Mutation to add a new trade
 export const addTrade = mutation({
   args: {

@@ -52,10 +52,6 @@ function mapFromTrade(trade: Trade) {
   };
 }
 
-/**
- * Real-time trades subscription.
- * Automatically updates when data changes on the server.
- */
 export function useTrades() {
   const data = useQuery(api.trades.getTrades, {});
 
@@ -65,9 +61,19 @@ export function useTrades() {
   };
 }
 
-/**
- * Returns a function to add a new trade.
- */
+export function useTrade(id: string | null) {
+  const data = useQuery(
+    api.trades.getTrade,
+    id ? { id: id as Id<'trades'> } : 'skip'
+  );
+
+  return {
+    trade: data ? mapToTrade(data) : null,
+    isLoading: data === undefined && id !== null,
+    notFound: data === null && id !== null,
+  };
+}
+
 export function useAddTrade() {
   const mutate = useMutation(api.trades.addTrade);
 
@@ -77,9 +83,6 @@ export function useAddTrade() {
   };
 }
 
-/**
- * Returns a function to update an existing trade.
- */
 export function useUpdateTrade() {
   const mutate = useMutation(api.trades.updateTrade);
 
@@ -103,9 +106,6 @@ export function useUpdateTrade() {
   };
 }
 
-/**
- * Returns a function to delete a trade.
- */
 export function useDeleteTrade() {
   const mutate = useMutation(api.trades.deleteTrade);
 
@@ -114,9 +114,6 @@ export function useDeleteTrade() {
   };
 }
 
-/**
- * Returns a function to clear all trades.
- */
 export function useClearAllTrades() {
   const mutate = useMutation(api.trades.clearAllTrades);
 
@@ -125,9 +122,6 @@ export function useClearAllTrades() {
   };
 }
 
-/**
- * Returns a function to import multiple trades.
- */
 export function useImportTrades() {
   const mutate = useMutation(api.trades.importTrades);
 

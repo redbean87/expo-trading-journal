@@ -1,57 +1,29 @@
-import { useRouter } from 'expo-router';
-import React, { useState, useMemo } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Button, Card } from 'react-native-paper';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React from 'react';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Button, Text } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useAppTheme } from '../hooks/use-app-theme';
-import { useAddTrade } from '../hooks/use-trades';
+import { useAddTrade, useUpdateTrade, useTrade } from '../hooks/use-trades';
 import { calculatePnl } from '../schemas/trade';
 import { TradeFormData } from '../types';
-import { PnlPreviewCard } from './add-trade/pnl-preview-card';
-import { TradeForm } from './add-trade/trade-form';
+import { TradeFormContent } from './add-trade/trade-form-content';
 
 export default function AddTradeScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string }>();
   const addTrade = useAddTrade();
+  const updateTrade = useUpdateTrade();
   const theme = useAppTheme();
-  const [formData, setFormData] = useState<TradeFormData>({
-    symbol: '',
-    entryPrice: '',
-    exitPrice: '',
-    quantity: '',
-    entryTime: new Date(),
-    exitTime: new Date(),
-    side: 'long',
-    strategy: '',
-    notes: '',
-  });
 
-  const { pnl, pnlPercent } = useMemo(() => {
-    const entry = parseFloat(formData.entryPrice) || 0;
-    const exit = parseFloat(formData.exitPrice) || 0;
-    const qty = parseFloat(formData.quantity) || 0;
+  const isEditMode = !!params.id;
+  const { trade, isLoading, notFound } = useTrade(params.id || null);
 
-    if (entry === 0 || exit === 0 || qty === 0) {
-      return { pnl: 0, pnlPercent: 0 };
-    }
-
-    return calculatePnl(entry, exit, qty, formData.side);
-  }, [
-    formData.entryPrice,
-    formData.exitPrice,
-    formData.quantity,
-    formData.side,
-  ]);
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (formData: TradeFormData) => {
     const entryPrice = parseFloat(formData.entryPrice);
     const exitPrice = parseFloat(formData.exitPrice);
     const quantity = parseFloat(formData.quantity);
-
-    if (!formData.symbol || !entryPrice || !exitPrice || !quantity) {
-      return;
-    }
 
     const { pnl, pnlPercent } = calculatePnl(
       entryPrice,
@@ -60,58 +32,105 @@ export default function AddTradeScreen() {
       formData.side
     );
 
-    const trade = {
-      id: uuidv4(),
-      symbol: formData.symbol.toUpperCase(),
-      entryPrice,
-      exitPrice,
-      quantity,
-      entryTime: formData.entryTime,
-      exitTime: formData.exitTime,
-      side: formData.side,
-      strategy: formData.strategy || undefined,
-      notes: formData.notes || undefined,
-      pnl,
-      pnlPercent,
-    };
+    if (isEditMode && params.id) {
+      await updateTrade(params.id, {
+        symbol: formData.symbol.toUpperCase(),
+        entryPrice,
+        exitPrice,
+        quantity,
+        entryTime: formData.entryTime,
+        exitTime: formData.exitTime,
+        side: formData.side,
+        strategy: formData.strategy || undefined,
+        notes: formData.notes || undefined,
+        pnl,
+        pnlPercent,
+      });
+    } else {
+      const newTrade = {
+        id: uuidv4(),
+        symbol: formData.symbol.toUpperCase(),
+        entryPrice,
+        exitPrice,
+        quantity,
+        entryTime: formData.entryTime,
+        exitTime: formData.exitTime,
+        side: formData.side,
+        strategy: formData.strategy || undefined,
+        notes: formData.notes || undefined,
+        pnl,
+        pnlPercent,
+      };
 
-    await addTrade(trade);
+      await addTrade(newTrade);
+    }
+
     router.back();
   };
 
   const styles = createStyles(theme);
 
-  return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        <Card style={styles.card}>
-          <Card.Content>
-            <TradeForm
-              formData={formData}
-              onUpdate={(updates) => setFormData({ ...formData, ...updates })}
-            />
-
-            {formData.entryPrice && formData.exitPrice && formData.quantity && (
-              <PnlPreviewCard pnl={pnl} pnlPercent={pnlPercent} />
-            )}
-
-            <Button
-              mode="contained"
-              onPress={handleSubmit}
-              style={styles.button}
-              disabled={
-                !formData.symbol ||
-                !formData.entryPrice ||
-                !formData.exitPrice ||
-                !formData.quantity
-              }
-            >
-              Add Trade
-            </Button>
-          </Card.Content>
-        </Card>
+  if (isEditMode && isLoading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <Text style={styles.loadingText}>Loading trade...</Text>
       </View>
-    </ScrollView>
+    );
+  }
+
+  if (isEditMode && notFound) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text variant="headlineSmall" style={styles.errorText}>
+          Trade Not Found
+        </Text>
+        <Text variant="bodyMedium" style={styles.errorSubtext}>
+          The trade you&apos;re trying to edit doesn&apos;t exist or has been
+          deleted.
+        </Text>
+        <Button
+          mode="contained"
+          onPress={() => router.back()}
+          style={styles.button}
+        >
+          Go Back
+        </Button>
+      </View>
+    );
+  }
+
+  const initialData: TradeFormData =
+    isEditMode && trade
+      ? {
+          symbol: trade.symbol,
+          entryPrice: trade.entryPrice.toString(),
+          exitPrice: trade.exitPrice.toString(),
+          quantity: trade.quantity.toString(),
+          entryTime: trade.entryTime,
+          exitTime: trade.exitTime,
+          side: trade.side,
+          strategy: trade.strategy || '',
+          notes: trade.notes || '',
+        }
+      : {
+          symbol: '',
+          entryPrice: '',
+          exitPrice: '',
+          quantity: '',
+          entryTime: new Date(),
+          exitTime: new Date(),
+          side: 'long',
+          strategy: '',
+          notes: '',
+        };
+
+  return (
+    <TradeFormContent
+      initialData={initialData}
+      isEditMode={isEditMode}
+      onSubmit={handleSubmit}
+    />
   );
 }
 
@@ -121,13 +140,25 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flex: 1,
       backgroundColor: theme.colors.background,
     },
-    content: {
-      padding: 16,
-    },
-    card: {
-      marginBottom: 16,
-    },
     button: {
       marginTop: 8,
+    },
+    centerContent: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 24,
+    },
+    loadingText: {
+      marginTop: 16,
+      color: theme.colors.textSecondary,
+    },
+    errorText: {
+      color: theme.colors.loss,
+      marginBottom: 8,
+    },
+    errorSubtext: {
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 24,
     },
   });

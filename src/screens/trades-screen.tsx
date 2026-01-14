@@ -71,10 +71,18 @@ export default function TradesScreen() {
     await deleteTrade(id);
   };
 
+  const handleEditTrade = (id: string) => {
+    router.push(`/add-trade?id=${id}`);
+  };
+
   const styles = createStyles(theme);
 
   const renderTrade = ({ item }: { item: Trade }) => (
-    <TradeCard trade={item} onDelete={handleDeleteTrade} />
+    <TradeCard
+      trade={item}
+      onDelete={handleDeleteTrade}
+      onEdit={handleEditTrade}
+    />
   );
 
   return (

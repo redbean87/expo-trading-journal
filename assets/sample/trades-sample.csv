@@ -1,6 +1,8 @@
 symbol,shares,entryPrice,entryTime,exitPrice,exitTime,stopLoss,target,pnl,pnl%,setup,confidence,macd,volVsAvgVolume,ruleViolation,psychology,whatWorked,whatFailed,link
 ,,,,,,,,,,,,,,,,,,
-Week Summary,,,,,,,,192.00,6.56,,,,,,,,,
+Week Summary,,,,,,,,250.88,8.53,,,,,,,,,
+DCOY,2560.00,1.17,2026-01-13 9:06:00 AM,1.19,2026-01-13 9:23:00 AM,1.14,1.29,58.88,1.97,ORB support,3.00,asc,below,n/a,anxious,"5 min candle new high at ORB support
+macd asc",volume decreasing,https://photos.app.goo.gl/mAQQR5B8rvgaH53m6
 EVTV,1920.00,1.52,2026-01-12 9:33:00 AM,1.62,2026-01-12 9:34:00 AM,1.39,1.77,192.00,6.56,first PB after ORB break,4.00,asc,above,n/a,rushed,volume spike through ORB break,had meeting coming up so exited early,https://photos.app.goo.gl/DWVz1RhKrECtkNsG6
 ,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,-52.16,-1.89,,,,,,,,,

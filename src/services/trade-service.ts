@@ -4,10 +4,6 @@ import { Trade } from '../types';
 
 const STORAGE_KEY = '@trades';
 
-/**
- * Local storage service for offline fallback
- * This is used when the API service fails
- */
 const localStorageService = {
   async getTrades(): Promise<Trade[]> {
     try {
@@ -46,11 +42,6 @@ const localStorageService = {
   },
 };
 
-/**
- * Trade service with cloud sync and offline fallback
- * Automatically falls back to local storage when offline
- * Backend is abstracted - can be swapped without changing screens
- */
 type ApiService = {
   getTrades: () => Promise<Trade[]>;
   addTrade: (trade: Trade) => Promise<Trade>;
@@ -71,28 +62,23 @@ export const setApiService = (service: ApiService | null) => {
 export const tradeService = {
   async getTrades(): Promise<Trade[]> {
     if (!apiService) {
-      // No API configured, use local storage only
       return localStorageService.getTrades();
     }
 
     try {
-      // Try cloud sync first
       const trades = await apiService.getTrades();
 
-      // Cache locally for offline access
       await localStorageService.saveTrades(trades);
 
       return trades;
     } catch (error) {
       console.warn('Failed to fetch from cloud, using local cache:', error);
-      // Fallback to local storage
       return localStorageService.getTrades();
     }
   },
 
   async addTrade(trade: Trade): Promise<Trade> {
     if (!apiService) {
-      // Local only mode
       const trades = await localStorageService.getTrades();
       const newTrades = [...trades, trade];
       await localStorageService.saveTrades(newTrades);
@@ -109,7 +95,6 @@ export const tradeService = {
 
   async updateTrade(id: string, updates: Partial<Trade>): Promise<Trade> {
     if (!apiService) {
-      // Local only mode
       const trades = await localStorageService.getTrades();
       const tradeIndex = trades.findIndex((t) => t.id === id);
 
@@ -138,7 +123,6 @@ export const tradeService = {
 
   async deleteTrade(id: string): Promise<void> {
     if (!apiService) {
-      // Local only mode
       const trades = await localStorageService.getTrades();
       const newTrades = trades.filter((t) => t.id !== id);
       await localStorageService.saveTrades(newTrades);
@@ -155,7 +139,6 @@ export const tradeService = {
 
   async clearAllTrades(): Promise<void> {
     if (!apiService) {
-      // Local only mode
       await localStorageService.clear();
       return;
     }
@@ -173,7 +156,6 @@ export const tradeService = {
     trades: Trade[]
   ): Promise<{ imported: number; skipped: number }> {
     if (!apiService) {
-      // Local only mode - basic import without duplicate detection
       const existingTrades = await localStorageService.getTrades();
       const newTrades = [...existingTrades, ...trades];
       await localStorageService.saveTrades(newTrades);

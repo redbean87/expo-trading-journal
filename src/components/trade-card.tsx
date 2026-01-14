@@ -9,9 +9,10 @@ import { formatDate } from '../utils/date-format';
 type TradeCardProps = {
   trade: Trade;
   onDelete?: (id: string) => void;
+  onEdit?: (id: string) => void;
 };
 
-export function TradeCard({ trade, onDelete }: TradeCardProps) {
+export function TradeCard({ trade, onDelete, onEdit }: TradeCardProps) {
   const theme = useAppTheme();
   const styles = createStyles(theme);
 
@@ -59,13 +60,22 @@ export function TradeCard({ trade, onDelete }: TradeCardProps) {
           )}
         </View>
       </Card.Content>
-      {onDelete && (
+      {(onDelete || onEdit) && (
         <Card.Actions>
-          <IconButton
-            icon="delete"
-            iconColor={theme.colors.loss}
-            onPress={() => onDelete(trade.id)}
-          />
+          {onEdit && (
+            <IconButton
+              icon="pencil"
+              iconColor={theme.colors.primary}
+              onPress={() => onEdit(trade.id)}
+            />
+          )}
+          {onDelete && (
+            <IconButton
+              icon="delete"
+              iconColor={theme.colors.loss}
+              onPress={() => onDelete(trade.id)}
+            />
+          )}
         </Card.Actions>
       )}
     </Card>
