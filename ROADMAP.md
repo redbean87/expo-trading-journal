@@ -15,9 +15,9 @@ The app has a solid foundation with:
 
 ### High Priority
 
-- [ ] **Trade Edit** - Modify existing trades (currently only add/delete)
+- [x] **Trade Edit** - Modify existing trades (currently only add/delete)
 - [ ] **Search & Filter** - Filter trades by symbol, side, date range, strategy
-- [ ] **Trade Detail Screen** - Modal/screen to view full trade details
+- [x] **Trade Detail Screen** - Modal/screen to view full trade details
 - [ ] **CSV Export** - Export trades to CSV for backup/analysis
 
 ### Medium Priority

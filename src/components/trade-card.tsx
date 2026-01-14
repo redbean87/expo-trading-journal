@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, Card, IconButton } from 'react-native-paper';
@@ -10,14 +11,27 @@ type TradeCardProps = {
   trade: Trade;
   onDelete?: (id: string) => void;
   onEdit?: (id: string) => void;
+  disableNavigation?: boolean;
 };
 
-export function TradeCard({ trade, onDelete, onEdit }: TradeCardProps) {
+export function TradeCard({
+  trade,
+  onDelete,
+  onEdit,
+  disableNavigation,
+}: TradeCardProps) {
+  const router = useRouter();
   const theme = useAppTheme();
   const styles = createStyles(theme);
 
+  const handlePress = () => {
+    if (!disableNavigation) {
+      router.push(`/trade/${trade.id}`);
+    }
+  };
+
   return (
-    <Card style={styles.card}>
+    <Card style={styles.card} onPress={handlePress}>
       <Card.Content>
         <View style={styles.header}>
           <View>

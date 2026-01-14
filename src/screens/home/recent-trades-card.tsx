@@ -1,5 +1,6 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 
 import { EmptyState } from '../../components/empty-state';
@@ -11,8 +12,13 @@ type RecentTradesCardProps = {
 };
 
 export function RecentTradesCard({ trades }: RecentTradesCardProps) {
+  const router = useRouter();
   const theme = useAppTheme();
   const styles = createStyles(theme);
+
+  const handleTradePress = (id: string) => {
+    router.push(`/trade/${id}`);
+  };
 
   return (
     <Card style={styles.card}>
@@ -28,7 +34,11 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
         >
           <>
             {trades.map((trade) => (
-              <View key={trade.id} style={styles.tradeItem}>
+              <Pressable
+                key={trade.id}
+                style={styles.tradeItem}
+                onPress={() => handleTradePress(trade.id)}
+              >
                 <View style={styles.tradeHeader}>
                   <Text variant="titleMedium">{trade.symbol}</Text>
                   <Text
@@ -48,7 +58,7 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
                 <Text variant="bodySmall" style={styles.tradeDetails}>
                   {trade.side.toUpperCase()} • {trade.quantity} shares
                 </Text>
-              </View>
+              </Pressable>
             ))}
           </>
         </EmptyState>
