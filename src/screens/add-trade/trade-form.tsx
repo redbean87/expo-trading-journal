@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, SegmentedButtons } from 'react-native-paper';
 
+import { DateTimeInput } from '../../components/date-time-input';
 import { TradeFormData } from '../../types';
 
 type TradeFormProps = {
@@ -57,6 +58,18 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         mode="outlined"
         keyboardType="number-pad"
         style={styles.input}
+      />
+
+      <DateTimeInput
+        label="Entry Time"
+        value={formData.entryTime}
+        onChange={(date) => onUpdate({ entryTime: date })}
+      />
+
+      <DateTimeInput
+        label="Exit Time"
+        value={formData.exitTime}
+        onChange={(date) => onUpdate({ exitTime: date })}
       />
 
       <TextInput

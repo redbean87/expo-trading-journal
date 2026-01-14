@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { calculatePnl } from '../schemas/trade';
 
-import type { Trade } from '../types';
+import type { Trade, TradeSide } from '../types';
 
 type CsvRow = {
   symbol?: string;
@@ -17,6 +17,10 @@ type CsvRow = {
   whatWorked?: string;
   whatFailed?: string;
   link?: string;
+  side?: string;
+  direction?: string;
+  type?: string;
+  action?: string;
 };
 
 export type ImportResult = {
@@ -31,6 +35,43 @@ export function generateTradeKey(trade: {
   quantity: number;
 }): string {
   return `${trade.symbol}_${trade.entryTime}_${trade.quantity}`;
+}
+
+function detectTradeSide(row: CsvRow, quantity: number): TradeSide {
+  // Strategy 1: Explicit side column
+  const sideValue = (row.side || row.direction || row.type || row.action || '')
+    .toLowerCase()
+    .trim();
+
+  if (sideValue) {
+    // Check for short indicators
+    if (
+      sideValue === 'short' ||
+      sideValue === 'sell' ||
+      sideValue === 's' ||
+      sideValue === '-1' ||
+      sideValue === 'sell short'
+    ) {
+      return 'short';
+    }
+    // Check for long indicators
+    if (
+      sideValue === 'long' ||
+      sideValue === 'buy' ||
+      sideValue === 'l' ||
+      sideValue === '1'
+    ) {
+      return 'long';
+    }
+  }
+
+  // Strategy 2: Negative quantity indicates short
+  if (quantity < 0) {
+    return 'short';
+  }
+
+  // Default to long if no side detected
+  return 'long';
 }
 
 function parseCsvRowToTrade(row: CsvRow): Trade | null {
@@ -48,13 +89,17 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
   }
 
   try {
-    const quantity = parseFloat(row.shares);
+    const rawQuantity = parseFloat(row.shares);
     const entryPrice = parseFloat(row.entryPrice);
     const exitPrice = parseFloat(row.exitPrice);
 
-    if (isNaN(quantity) || isNaN(entryPrice) || isNaN(exitPrice)) {
+    if (isNaN(rawQuantity) || isNaN(entryPrice) || isNaN(exitPrice)) {
       return null;
     }
+
+    // Detect side and normalize quantity
+    const detectedSide = detectTradeSide(row, rawQuantity);
+    const quantity = Math.abs(rawQuantity);
 
     const entryTime = new Date(row.entryTime);
     const exitTime = new Date(row.exitTime);
@@ -67,7 +112,7 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
       entryPrice,
       exitPrice,
       quantity,
-      'long'
+      detectedSide
     );
 
     const notesParts = [];
@@ -87,7 +132,7 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
       quantity,
       entryTime,
       exitTime,
-      side: 'long',
+      side: detectedSide,
       strategy: row.setup?.substring(0, 50),
       notes: notes || undefined,
       pnl,

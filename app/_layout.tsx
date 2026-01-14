@@ -6,6 +6,7 @@ import { Slot } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { PaperProvider } from 'react-native-paper';
+import { enGB, registerTranslation } from 'react-native-paper-dates';
 
 import AuthGate from '../src/components/auth-gate';
 import { ErrorBoundary } from '../src/components/error-boundary';
@@ -17,6 +18,9 @@ import {
   lightNavigationTheme,
   darkNavigationTheme,
 } from '../src/theme';
+
+// Register locale for date picker
+registerTranslation('en', enGB);
 
 export default function RootLayout() {
   const { themeMode, loadTheme } = useThemeStore();

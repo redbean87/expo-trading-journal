@@ -38,7 +38,6 @@ The app has a solid foundation with:
 
 ### Quick Wins
 
-- [ ] **CSV Side Detection** - Detect 'short' positions from CSV (currently defaults to 'long')
 - [ ] **Pull-to-Refresh** - On trades list
 - [ ] **Loading Skeletons** - During data fetch
 
@@ -77,3 +76,5 @@ The app has a solid foundation with:
 - [x] Email/password authentication
 - [x] Dark/light theme toggle
 - [x] Real-time data sync via Convex
+- [x] Date/time pickers for entry and exit times in Add Trade form
+- [x] CSV side detection (long/short) via column names or negative quantity
