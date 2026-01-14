@@ -14,7 +14,8 @@ export const getTrades = query({
 
     const trades = await ctx.db
       .query('trades')
-      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .withIndex('by_user_and_entry_time', (q) => q.eq('userId', userId))
+      .order('desc')
       .collect();
 
     return trades.map((trade) => ({

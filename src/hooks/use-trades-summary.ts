@@ -21,7 +21,7 @@ export function useTradesSummary(
     const losingTrades = trades.filter((t) => t.pnl < 0).length;
     const totalPnl = trades.reduce((sum, t) => sum + t.pnl, 0);
     const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
-    const recentTrades = trades.slice(-recentCount).reverse();
+    const recentTrades = trades.slice(0, recentCount);
 
     return {
       totalTrades,
