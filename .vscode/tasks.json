@@ -1,0 +1,18 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Lint", "type": "npm", "script": "lint" },
+    { "label": "Lint Fix", "type": "npm", "script": "lint:fix" },
+    { "label": "Format", "type": "npm", "script": "format" },
+    { "label": "Type Check", "type": "npm", "script": "typecheck" },
+    { "label": "Test", "type": "npm", "script": "test" },
+    {
+      "label": "Test Watch",
+      "type": "npm",
+      "script": "test:watch",
+      "isBackground": true
+    },
+    { "label": "Android", "type": "npm", "script": "android" },
+    { "label": "iOS", "type": "npm", "script": "ios" }
+  ]
+}

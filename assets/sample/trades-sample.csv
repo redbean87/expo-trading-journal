@@ -1,13 +1,18 @@
 symbol,shares,entryPrice,entryTime,exitPrice,exitTime,stopLoss,target,pnl,pnl%,setup,confidence,macd,volVsAvgVolume,ruleViolation,psychology,whatWorked,whatFailed,link
 ,,,,,,,,,,,,,,,,,,
-Week Summary,,,,,,,,250.88,8.53,,,,,,,,,
+Week Summary,,,,,,,,255.20,8.67,,,,,,,,,
+AUID,1440.00,2.13,2026-01-14 9:33:00 AM,2.13,2026-01-14 9:34:00 AM,2.09,2.30,2.88,0.09,pull back after high vol green candle,3.00,flat,above,"flat macd
+no support level",rushed,"waited for ORB to form
+exited when macd failed to go positive",failed to break resistance 2 times,https://photos.app.goo.gl/3LpPtv8BcLBmbXc9A
+BEEM,1440.00,2.14,2026-01-14 9:33:00 AM,2.14,2026-01-14 9:34:00 AM,2.09,2.35,1.44,0.05,200 MA support bounce,3.00,desc,same,desc macd,calm,"waited for ORB to form
+exited when macd failed to go positive",failed to break resistance 2 times,https://photos.app.goo.gl/wmvTBu5QNquwhYda9
 DCOY,2560.00,1.17,2026-01-13 9:06:00 AM,1.19,2026-01-13 9:23:00 AM,1.14,1.29,58.88,1.97,ORB support,3.00,asc,below,n/a,anxious,"5 min candle new high at ORB support
 macd asc",volume decreasing,https://photos.app.goo.gl/mAQQR5B8rvgaH53m6
 EVTV,1920.00,1.52,2026-01-12 9:33:00 AM,1.62,2026-01-12 9:34:00 AM,1.39,1.77,192.00,6.56,first PB after ORB break,4.00,asc,above,n/a,rushed,volume spike through ORB break,had meeting coming up so exited early,https://photos.app.goo.gl/DWVz1RhKrECtkNsG6
 ,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,-52.16,-1.89,,,,,,,,,
 OPAD,1120.00,2.37,2026-01-09 8:58:00 AM,2.35,2026-01-09 9:04:00 AM,7.70,8.78,-24.64,-0.93,FVG under PMH,4.00,desc,same,no clear sign to enter,calm,support at FVG,"low volume
-macd desc",
+macd desc",https://photos.app.goo.gl/XsqNz87sYKwVoVDw6
 ACON,320.00,8.05,2026-01-08 8:56:00 AM,8.71,2026-01-08 8:58:00 AM,7.70,8.78,212.48,8.25,ORB support,4.00,asc,"below when I entered
 higher than prev bar",n/a,excited,"support at ORB low
 took profit at ORB high",exited during asc macd,https://photos.app.goo.gl/hhZrjhQ4CpBGKVwc7
