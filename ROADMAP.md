@@ -16,7 +16,7 @@ The app has a solid foundation with:
 ### High Priority
 
 - [x] **Trade Edit** - Modify existing trades (currently only add/delete)
-- [ ] **Search & Filter** - Filter trades by symbol, side, date range, strategy
+- [x] **Search & Filter** - Filter trades by symbol, side, date range, strategy
 - [x] **Trade Detail Screen** - Modal/screen to view full trade details
 - [ ] **CSV Export** - Export trades to CSV for backup/analysis
 
@@ -46,9 +46,50 @@ The app has a solid foundation with:
 ## Auth Enhancements
 
 - [ ] Password reset / forgot password flow
-- [ ] Social auth (Google, Apple)
+- [x] Social auth (Google) - basic implementation with expo-web-browser
+- [ ] **Platform-Specific Google Auth** - see details below
+- [ ] Social auth (Apple)
 - [ ] User profile management
 - [ ] Account deletion
+
+### Platform-Specific Google Authentication (Planned)
+
+Migrate from `expo-web-browser` to platform-optimized libraries for better UX:
+
+**Target Architecture:**
+- **Web**: `@react-oauth/google` (native Google button, popup flow)
+- **Mobile**: `expo-auth-session` (proper native OAuth with PKCE)
+- **Backend**: Custom `ConvexCredentials` provider to verify ID tokens
+
+**Dependencies to Add:**
+```bash
+npx expo install expo-auth-session expo-crypto
+npm install @react-oauth/google google-auth-library
+```
+
+**Files to Modify:**
+- `convex/auth.ts` - Add GoogleIdToken provider using ConvexCredentials
+- `src/hooks/use-auth.ts` - Platform-specific auth logic
+- `src/components/google-sign-in-button.tsx` - Render platform-specific buttons
+- `app/_layout.tsx` - Add GoogleOAuthProvider wrapper for web
+
+**New Files:**
+- `src/auth/google-auth-native.ts` - expo-auth-session configuration
+- `src/auth/google-auth-web.ts` - @react-oauth/google exports
+
+**Google Cloud Console Setup Required:**
+1. Web Client ID (JS origins: localhost:8081, production URL)
+2. iOS Client ID (Bundle ID: com.tradingjournal.app)
+3. Android Client ID (Package name + SHA-1 fingerprint)
+
+**Environment Variables:**
+```
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=<web-client-id>
+EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=<ios-client-id>
+EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
+```
+
+**Note:** expo-auth-session requires custom dev build (no Expo Go support)
 
 ## Convex Backend Enhancements
 

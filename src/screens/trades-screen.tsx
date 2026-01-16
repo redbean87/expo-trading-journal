@@ -2,11 +2,13 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { FAB, Snackbar, Portal } from 'react-native-paper';
+import { FAB, Snackbar, Portal, Text } from 'react-native-paper';
 
 import { EmptyState } from '../components/empty-state';
+import { SearchBar } from '../components/search-bar';
 import { TradeCard } from '../components/trade-card';
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useTradeFilters } from '../hooks/use-trade-filters';
 import {
   useTrades,
   useDeleteTrade,
@@ -14,6 +16,7 @@ import {
 } from '../hooks/use-trades';
 import { Trade } from '../types';
 import { parseCsvFile } from '../utils/csv-import';
+import { TradeFilterModal } from './trades/trade-filter-modal';
 
 export default function TradesScreen() {
   const { trades } = useTrades();
@@ -25,6 +28,16 @@ export default function TradesScreen() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+
+  const {
+    filters,
+    filteredTrades,
+    uniqueStrategies,
+    activeFilterCount,
+    updateFilter,
+    clearFilters,
+  } = useTradeFilters(trades);
 
   const handleImportCsv = async () => {
     try {
@@ -85,6 +98,21 @@ export default function TradesScreen() {
     />
   );
 
+  const noResultsFallback = (
+    <View style={styles.noResults}>
+      <Text variant="bodyLarge" style={styles.noResultsText}>
+        No trades match your filters
+      </Text>
+      <Text
+        variant="bodyMedium"
+        style={styles.clearFiltersLink}
+        onPress={clearFilters}
+      >
+        Clear filters
+      </Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <EmptyState
@@ -92,12 +120,20 @@ export default function TradesScreen() {
         title="No trades yet"
         subtitle="Tap the + button to add your first trade"
       >
-        <FlatList
-          data={trades}
-          renderItem={renderTrade}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
+        <SearchBar
+          value={filters.searchQuery}
+          onChangeText={(text) => updateFilter('searchQuery', text)}
+          onFilterPress={() => setFilterModalVisible(true)}
+          filterCount={activeFilterCount}
         />
+        <EmptyState data={filteredTrades} fallback={noResultsFallback}>
+          <FlatList
+            data={filteredTrades}
+            renderItem={renderTrade}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+          />
+        </EmptyState>
       </EmptyState>
       <FAB.Group
         open={fabOpen}
@@ -131,6 +167,14 @@ export default function TradesScreen() {
           {snackbarMessage}
         </Snackbar>
       </Portal>
+      <TradeFilterModal
+        visible={filterModalVisible}
+        onDismiss={() => setFilterModalVisible(false)}
+        filters={filters}
+        uniqueStrategies={uniqueStrategies}
+        onUpdateFilter={updateFilter}
+        onClearFilters={clearFilters}
+      />
     </View>
   );
 }
@@ -143,6 +187,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     list: {
       padding: 16,
+      paddingTop: 8,
     },
     fab: {
       position: 'absolute',
@@ -150,5 +195,18 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       right: 0,
       bottom: 0,
       backgroundColor: theme.colors.primary,
+    },
+    noResults: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 32,
+    },
+    noResultsText: {
+      color: theme.colors.textSecondary,
+      marginBottom: 8,
+    },
+    clearFiltersLink: {
+      color: theme.colors.primary,
     },
   });
