@@ -32,15 +32,13 @@ const secureStorage = {
   },
 };
 
-const getStorage = () => {
-  if (
-    Platform.OS === 'web' &&
-    typeof window !== 'undefined' &&
-    window.localStorage
-  ) {
+// For web, we must use localStorage directly (not at module load time)
+// to ensure OAuth verifier persistence across redirects
+const getWebStorage = () => {
+  if (typeof window !== 'undefined' && window.localStorage) {
     return window.localStorage;
   }
-  return secureStorage;
+  return undefined;
 };
 
 const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL;
@@ -67,8 +65,13 @@ export function ConvexProvider({ children }: ConvexProviderProps) {
     setApiService(apiService);
   }, []);
 
+  // Determine storage at render time to ensure consistency
+  // On web: use localStorage (required for OAuth verifier persistence)
+  // On native: use SecureStore
+  const storage = Platform.OS === 'web' ? getWebStorage() : secureStorage;
+
   return (
-    <ConvexAuthProvider client={convex} storage={getStorage()}>
+    <ConvexAuthProvider client={convex} storage={storage}>
       {children}
     </ConvexAuthProvider>
   );

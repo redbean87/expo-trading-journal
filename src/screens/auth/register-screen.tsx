@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text, HelperText } from 'react-native-paper';
 
+import { AuthDivider } from '../../components/auth-divider';
+import { GoogleSignInButton } from '../../components/google-sign-in-button';
 import { useAuth } from '../../hooks/use-auth';
 
 type RegisterScreenProps = {
@@ -16,8 +18,9 @@ export default function RegisterScreen({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { register } = useAuth();
+  const { register, signInWithGoogle } = useAuth();
 
   const handleRegister = async () => {
     if (!email || !password || !confirmPassword) {
@@ -47,6 +50,21 @@ export default function RegisterScreen({
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setGoogleLoading(true);
+
+    try {
+      await signInWithGoogle();
+    } catch {
+      setError('Failed to sign up with Google');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const isLoading = loading || googleLoading;
+
   return (
     <View style={styles.container}>
       <Text variant="headlineMedium" style={styles.title}>
@@ -64,7 +82,7 @@ export default function RegisterScreen({
         keyboardType="email-address"
         autoComplete="email"
         style={styles.input}
-        disabled={loading}
+        disabled={isLoading}
       />
 
       <TextInput
@@ -74,7 +92,7 @@ export default function RegisterScreen({
         secureTextEntry
         autoComplete="password-new"
         style={styles.input}
-        disabled={loading}
+        disabled={isLoading}
       />
 
       <TextInput
@@ -84,7 +102,7 @@ export default function RegisterScreen({
         secureTextEntry
         autoComplete="password-new"
         style={styles.input}
-        disabled={loading}
+        disabled={isLoading}
       />
 
       {error ? (
@@ -97,16 +115,25 @@ export default function RegisterScreen({
         mode="contained"
         onPress={handleRegister}
         loading={loading}
-        disabled={loading}
+        disabled={isLoading}
         style={styles.button}
       >
         Sign Up
       </Button>
 
+      <AuthDivider />
+
+      <GoogleSignInButton
+        onPress={handleGoogleSignIn}
+        loading={googleLoading}
+        disabled={isLoading}
+        mode="signUp"
+      />
+
       <Button
         mode="text"
         onPress={onSwitchToLogin}
-        disabled={loading}
+        disabled={isLoading}
         style={styles.switchButton}
       >
         Already have an account? Sign In
