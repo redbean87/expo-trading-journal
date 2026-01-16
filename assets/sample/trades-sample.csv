@@ -1,7 +1,9 @@
 symbol,shares,entryPrice,entryTime,exitPrice,exitTime,stopLoss,target,pnl,pnl%,setup,confidence,macd,volVsAvgVolume,ruleViolation,psychology,whatWorked,whatFailed,link
 ,,,,,,,,,,,,,,,,,,
-Week Summary,,,,,,,,255.20,8.67,,,,,,,,,
-AUID,1440.00,2.13,2026-01-14 9:33:00 AM,2.13,2026-01-14 9:34:00 AM,2.09,2.30,2.88,0.09,pull back after high vol green candle,3.00,flat,above,"flat macd
+Week Summary,,,,,,,,112.29,4.01,,,,,,,,,
+VERO,448.00,6.84,2026-01-16 8:46:00 AM,6.52,2026-01-16 8:54:00 AM,6.65,7.50,-142.91,-4.66,PMH support,4.00,asc,above,exit trade early,impatient,"waited for ORB to form
+decent entry",didn't wait for exit indication,
+AUID,1440.00,2.13,2026-01-15 9:24:00 AM,2.13,2026-01-15 9:30:00 AM,2.09,2.30,2.88,0.09,pull back after high vol green candle,3.00,flat,above,"flat macd
 no support level",rushed,"waited for ORB to form
 exited when macd failed to go positive",failed to break resistance 2 times,https://photos.app.goo.gl/3LpPtv8BcLBmbXc9A
 BEEM,1440.00,2.14,2026-01-14 9:33:00 AM,2.14,2026-01-14 9:34:00 AM,2.09,2.35,1.44,0.05,200 MA support bounce,3.00,desc,same,desc macd,calm,"waited for ORB to form

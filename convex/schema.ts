@@ -7,6 +7,15 @@ const schema = defineSchema({
   // Auth tables (users, sessions, etc.)
   ...authTables,
 
+  // Override users table to add email index for account linking
+  users: defineTable({
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    image: v.optional(v.string()),
+    isAnonymous: v.optional(v.boolean()),
+  }).index('by_email', ['email']),
+
   // Trades table
   trades: defineTable({
     userId: v.string(), // Link to authenticated user
