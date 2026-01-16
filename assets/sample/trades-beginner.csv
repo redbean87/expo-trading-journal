@@ -1,0 +1,36 @@
+symbol,shares,entryPrice,entryTime,exitPrice,exitTime,stopLoss,target,pnl,pnl%,setup,confidence,macd,volVsAvgVolume,ruleViolation,psychology,whatWorked,whatFailed,link
+
+Week Summary,,,,,,,,-324.50,-10.82,,,,,,,,,
+NVDA,50.00,145.20,2026-01-16 10:15:00 AM,141.80,2026-01-16 2:30:00 PM,140.00,155.00,-170.00,-2.34,no clear setup,2.00,desc,below,chased the move,fomo,nothing,entered after big move already happened,
+AAPL,100.00,198.50,2026-01-15 9:35:00 AM,195.20,2026-01-15 11:00:00 AM,195.00,205.00,-330.00,-1.66,breakout,3.00,flat,same,no stop loss plan,anxious,identified resistance level,hit stop loss and panicked out,
+TSLA,20.00,255.00,2026-01-14 3:45:00 PM,263.50,2026-01-14 3:55:00 PM,250.00,270.00,170.00,3.33,gap up momentum,4.00,asc,above,trading last 15 min,excited,caught momentum wave,lucky timing not repeatable,
+AMD,75.00,165.30,2026-01-13 9:32:00 AM,164.10,2026-01-13 9:45:00 AM,163.00,170.00,-90.00,-0.73,ORB break,2.00,desc,below,didn't wait for confirmation,impatient,cut loss quickly,jumped in too early,
+META,30.00,520.00,2026-01-12 10:00:00 AM,515.50,2026-01-12 1:30:00 PM,510.00,540.00,-135.00,-0.87,support bounce,3.00,flat,same,averaged down,hopeful,identified support,added to losing position,
+
+Week Summary,,,,,,,,-445.00,-14.83,,,,,,,,,
+GOOGL,40.00,175.25,2026-01-09 9:40:00 AM,172.00,2026-01-09 10:15:00 AM,170.00,182.00,-130.00,-1.85,gap fill,2.00,desc,below,no catalyst,nervous,small position size,poor timing on entry,
+MSFT,50.00,415.00,2026-01-08 11:00:00 AM,408.50,2026-01-08 3:00:00 PM,405.00,430.00,-325.00,-1.57,moving average bounce,3.00,desc,same,held too long,stubborn,good entry price,ignored exit signals,
+AMZN,25.00,195.80,2026-01-07 9:45:00 AM,198.20,2026-01-07 10:30:00 AM,193.00,202.00,60.00,1.23,pullback entry,3.00,asc,above,n/a,calm,waited for pullback,exited too early,
+SPY,100.00,585.50,2026-01-06 2:00:00 PM,583.00,2026-01-06 3:30:00 PM,582.00,590.00,-250.00,-0.43,afternoon reversal,2.00,flat,below,afternoon trading,bored,recognized pattern,low volume afternoon chop,
+COIN,40.00,265.00,2026-01-05 9:31:00 AM,260.75,2026-01-05 9:40:00 AM,255.00,280.00,-170.00,-1.60,high volume open,3.00,desc,above,first 5 min trade,fomo,quick exit on loss,entered without setup confirmation,
+
+Week Summary,,,,,,,,-180.00,-6.00,,,,,,,,,
+PLTR,200.00,75.50,2026-01-02 10:30:00 AM,76.40,2026-01-02 11:45:00 AM,74.00,79.00,180.00,1.19,consolidation break,4.00,asc,above,n/a,confident,patient entry,took profit too early,
+SOFI,300.00,14.25,2025-12-31 9:45:00 AM,13.65,2025-12-31 11:00:00 AM,13.50,15.50,-180.00,-4.21,support test,2.00,desc,below,weak setup,hopeful,sized appropriately,support didn't hold,
+HOOD,250.00,38.50,2025-12-30 10:00:00 AM,39.50,2025-12-30 12:00:00 PM,37.00,42.00,250.00,2.60,breakout,3.00,asc,same,n/a,calm,followed the plan,could have held longer,
+RIVN,150.00,12.80,2025-12-29 2:30:00 PM,12.20,2025-12-29 3:45:00 PM,11.50,14.00,-90.00,-4.69,afternoon fade,2.00,desc,below,afternoon reversal attempt,impatient,small loss,fighting the trend,
+LCID,400.00,3.25,2025-12-28 9:35:00 AM,3.05,2025-12-28 10:00:00 AM,2.90,3.75,-80.00,-6.15,gap up,2.00,desc,above,chased gap,fomo,sized for risk,entered too late,
+
+Week Summary,,,,,,,,-520.00,-17.33,,,,,,,,,
+NIO,500.00,4.85,2025-12-26 9:40:00 AM,4.55,2025-12-26 10:30:00 AM,4.30,5.50,-150.00,-6.19,gap up play,2.00,desc,above,chased the gap,fomo,nothing,entered at the top,
+MARA,300.00,21.00,2025-12-24 10:00:00 AM,19.50,2025-12-24 2:00:00 PM,19.00,24.00,-450.00,-7.14,breakout,3.00,desc,same,held through breakdown,stubborn,identified level,didn't honor stop loss,
+RIOT,400.00,14.50,2025-12-23 9:45:00 AM,15.00,2025-12-23 10:30:00 AM,13.50,16.50,200.00,3.45,morning momentum,3.00,asc,above,n/a,excited,caught the move,exited too early,
+COIN,35.00,258.00,2025-12-22 11:00:00 AM,254.00,2025-12-22 1:30:00 PM,250.00,275.00,-140.00,-1.55,midday breakout,2.00,flat,below,midday trading,bored,small position,low volume period,
+SQ,60.00,78.50,2025-12-21 9:35:00 AM,79.00,2025-12-21 9:50:00 AM,76.00,84.00,30.00,0.64,ORB break,3.00,asc,same,n/a,calm,quick scalp,left money on table,
+
+Week Summary,,,,,,,,-295.00,-9.83,,,,,,,,,
+SHOP,80.00,108.00,2025-12-19 10:15:00 AM,105.50,2025-12-19 11:30:00 AM,104.00,115.00,-200.00,-2.31,support bounce,2.00,desc,below,weak setup,hopeful,small position,support failed,
+UPST,100.00,68.50,2025-12-18 9:40:00 AM,71.00,2025-12-18 10:45:00 AM,66.00,75.00,250.00,3.65,morning momentum,4.00,asc,above,n/a,confident,good entry,exited at first resistance,
+AFRM,150.00,62.00,2025-12-17 9:35:00 AM,59.50,2025-12-17 10:15:00 AM,58.00,68.00,-375.00,-4.03,gap up,3.00,desc,same,gap faded,anxious,cut loss,entered too early,
+CRWD,15.00,355.00,2025-12-16 10:30:00 AM,350.00,2025-12-16 12:00:00 PM,345.00,375.00,-75.00,-1.41,consolidation break,2.00,flat,below,low volume,calm,small position,no follow through,
+NET,100.00,115.00,2025-12-15 9:45:00 AM,116.05,2025-12-15 10:30:00 AM,112.00,122.00,105.00,0.91,pullback entry,3.00,asc,same,n/a,patient,waited for entry,scaled out too fast,
