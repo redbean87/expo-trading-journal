@@ -1,8 +1,9 @@
+import { useIsFocused } from '@react-navigation/native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
-import { FAB, Snackbar, Portal, Text } from 'react-native-paper';
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { FAB, Snackbar, Portal, Text, IconButton } from 'react-native-paper';
 
 import { EmptyState } from '../components/empty-state';
 import { SearchBar } from '../components/search-bar';
@@ -24,6 +25,7 @@ export default function TradesScreen() {
   const importTrades = useImportTrades();
   const router = useRouter();
   const theme = useAppTheme();
+  const isFocused = useIsFocused();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -85,7 +87,7 @@ export default function TradesScreen() {
   };
 
   const handleEditTrade = (id: string) => {
-    router.push(`/add-trade?id=${id}`);
+    router.push(`/edit-trade/${id}`);
   };
 
   const styles = createStyles(theme);
@@ -135,25 +137,64 @@ export default function TradesScreen() {
           />
         </EmptyState>
       </EmptyState>
-      <FAB.Group
-        open={fabOpen}
-        visible
-        icon="plus"
-        actions={[
-          {
-            icon: 'file-upload',
-            label: 'Import CSV',
-            onPress: isImporting ? () => {} : handleImportCsv,
-          },
-          {
-            icon: 'pencil',
-            label: 'Add Trade',
-            onPress: () => router.push('/add-trade'),
-          },
-        ]}
-        onStateChange={({ open }) => setFabOpen(open)}
-        fabStyle={styles.fab}
-      />
+      {isFocused && (
+        <Portal>
+          <View style={styles.fabContainer}>
+            {fabOpen && (
+              <>
+                <TouchableOpacity
+                  style={styles.pillButton}
+                  onPress={() => {
+                    setFabOpen(false);
+                    router.push('/add-trade');
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.pillContent}>
+                    <IconButton
+                      icon="pencil"
+                      size={20}
+                      iconColor={theme.colors.onSurface}
+                      style={styles.pillIcon}
+                    />
+                    <Text variant="labelLarge" style={styles.pillLabel}>
+                      Add Trade
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.pillButton, styles.pillButtonSecond]}
+                  onPress={() => {
+                    if (!isImporting) {
+                      setFabOpen(false);
+                      handleImportCsv();
+                    }
+                  }}
+                  activeOpacity={0.7}
+                  disabled={isImporting}
+                >
+                  <View style={styles.pillContent}>
+                    <IconButton
+                      icon="file-upload"
+                      size={20}
+                      iconColor={theme.colors.onSurface}
+                      style={styles.pillIcon}
+                    />
+                    <Text variant="labelLarge" style={styles.pillLabel}>
+                      Import CSV
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </>
+            )}
+            <FAB
+              icon="plus"
+              style={styles.fab}
+              onPress={() => setFabOpen(!fabOpen)}
+            />
+          </View>
+        </Portal>
+      )}
       <Portal>
         <Snackbar
           visible={snackbarVisible}
@@ -189,12 +230,41 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       padding: 16,
       paddingTop: 8,
     },
-    fab: {
+    fabContainer: {
       position: 'absolute',
-      margin: 16,
-      right: 0,
-      bottom: 0,
+      right: 16,
+      bottom: 80,
+      alignItems: 'flex-end',
+    },
+    fab: {
       backgroundColor: theme.colors.primary,
+    },
+    pillButton: {
+      marginBottom: 12,
+      backgroundColor: theme.colors.surface,
+      borderRadius: 24,
+      paddingHorizontal: 4,
+      paddingVertical: 4,
+      elevation: 4,
+      shadowColor: theme.colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+    },
+    pillButtonSecond: {
+      marginBottom: 12,
+    },
+    pillContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingRight: 12,
+    },
+    pillIcon: {
+      margin: 0,
+    },
+    pillLabel: {
+      color: theme.colors.onSurface,
+      marginLeft: 4,
     },
     noResults: {
       flex: 1,

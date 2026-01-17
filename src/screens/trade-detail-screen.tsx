@@ -18,7 +18,7 @@ export default function TradeDetailScreen() {
   const styles = createStyles(theme);
 
   const handleEdit = () => {
-    router.push(`/add-trade?id=${params.id}`);
+    router.push(`/edit-trade/${params.id}`);
   };
 
   const handleDelete = async () => {

@@ -76,7 +76,7 @@ export function TradeFilterModal({
         <ScrollView style={styles.scrollView}>
           {/* Side Filter */}
           <View style={styles.section}>
-            <Text variant="labelLarge" style={styles.sectionTitle}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
               Side
             </Text>
             <View style={styles.chipRow}>
@@ -97,7 +97,7 @@ export function TradeFilterModal({
 
           {/* P&L Filter */}
           <View style={styles.section}>
-            <Text variant="labelLarge" style={styles.sectionTitle}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
               Result
             </Text>
             <View style={styles.chipRow}>
@@ -118,7 +118,7 @@ export function TradeFilterModal({
 
           {/* Strategy Filter */}
           <View style={styles.section}>
-            <Text variant="labelLarge" style={styles.sectionTitle}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
               Strategy
             </Text>
             <View style={styles.chipRow}>
@@ -146,7 +146,7 @@ export function TradeFilterModal({
 
           {/* Date Range Filter */}
           <View style={styles.section}>
-            <Text variant="labelLarge" style={styles.sectionTitle}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
               Date Range
             </Text>
             <View style={styles.dateRow}>

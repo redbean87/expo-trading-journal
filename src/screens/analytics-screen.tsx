@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 
 import { StatRow } from '../components/stat-row';
 import { useAppTheme } from '../hooks/use-app-theme';
@@ -35,10 +35,6 @@ export default function AnalyticsScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text variant="headlineMedium" style={styles.title}>
-          Analytics
-        </Text>
-
         <Card style={styles.card}>
           <Card.Title title="Performance Overview" />
           <Card.Content>
@@ -127,10 +123,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     content: {
       padding: 16,
-    },
-    title: {
-      marginBottom: 24,
-      fontWeight: 'bold',
     },
     card: {
       marginBottom: 16,

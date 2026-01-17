@@ -2,7 +2,7 @@
 import '../src/polyfills/window-polyfill';
 
 import { ThemeProvider } from '@react-navigation/native';
-import { Slot } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { PaperProvider } from 'react-native-paper';
@@ -39,7 +39,21 @@ export default function RootLayout() {
         <PaperProvider theme={paperTheme}>
           <ThemeProvider value={navigationTheme}>
             <AuthGate>
-              <Slot />
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="trade/[id]"
+                  options={{ headerShown: true }}
+                />
+                <Stack.Screen
+                  name="edit-trade/[id]"
+                  options={{ headerShown: true, title: 'Edit Trade' }}
+                />
+                <Stack.Screen
+                  name="auth/callback"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
             </AuthGate>
             <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
           </ThemeProvider>
