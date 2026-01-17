@@ -1,7 +1,9 @@
 import { useIsFocused } from '@react-navigation/native';
 import * as DocumentPicker from 'expo-document-picker';
+import { File } from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { Platform } from 'react-native';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { FAB, Snackbar, Portal, Text, IconButton } from 'react-native-paper';
 
@@ -45,7 +47,12 @@ export default function TradesScreen() {
     try {
       setIsImporting(true);
       const result = await DocumentPicker.getDocumentAsync({
-        type: 'text/csv',
+        type: [
+          'text/csv',
+          'text/comma-separated-values',
+          'application/csv',
+          '*/*',
+        ],
         copyToCacheDirectory: true,
       });
 
@@ -55,8 +62,16 @@ export default function TradesScreen() {
       }
 
       const file = result.assets[0];
-      const response = await fetch(file.uri);
-      const csvContent = await response.text();
+
+      // Use FileSystem on native platforms, fetch on web
+      let csvContent: string;
+      if (Platform.OS === 'web') {
+        const response = await fetch(file.uri);
+        csvContent = await response.text();
+      } else {
+        const fsFile = new File(file.uri);
+        csvContent = await fsFile.text();
+      }
 
       const parseResult = await parseCsvFile(csvContent);
 

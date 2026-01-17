@@ -18,3 +18,17 @@ jest.mock('expo-router', () => ({
 jest.mock('uuid', () => ({
   v4: () => 'test-uuid-1234',
 }));
+
+// Mock expo-crypto
+let uuidCounter = 0;
+jest.mock('expo-crypto', () => ({
+  randomUUID: () => `test-uuid-${++uuidCounter}`,
+}));
+
+// Mock expo-file-system
+jest.mock('expo-file-system', () => ({
+  File: jest.fn().mockImplementation((uri) => ({
+    uri,
+    text: jest.fn().mockResolvedValue(''),
+  })),
+}));

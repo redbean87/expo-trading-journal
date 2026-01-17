@@ -1,9 +1,47 @@
+import { randomUUID } from 'expo-crypto';
 import Papa from 'papaparse';
-import { v4 as uuidv4 } from 'uuid';
 
 import { calculatePnl } from '../schemas/trade';
 
 import type { Trade, TradeSide } from '../types';
+
+// Parse date strings like "2026-01-16 9:42:00 AM" that Hermes doesn't handle natively
+function parseDateTime(dateStr: string): Date {
+  // Try native parsing first (works on web/V8)
+  const nativeDate = new Date(dateStr);
+  if (!isNaN(nativeDate.getTime())) {
+    return nativeDate;
+  }
+
+  // Handle "YYYY-MM-DD H:MM:SS AM/PM" format
+  const match = dateStr.match(
+    /^(\d{4}-\d{2}-\d{2})\s+(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)?$/i
+  );
+  if (match) {
+    const [, datePart, hourStr, minutes, seconds, meridiem] = match;
+    let hours = parseInt(hourStr, 10);
+
+    if (meridiem) {
+      const isPM = meridiem.toUpperCase() === 'PM';
+      if (isPM && hours !== 12) {
+        hours += 12;
+      } else if (!isPM && hours === 12) {
+        hours = 0;
+      }
+    }
+
+    // Create ISO format string that Hermes can parse
+    const isoString = `${datePart}T${hours.toString().padStart(2, '0')}:${minutes}:${seconds}`;
+    return new Date(isoString);
+  }
+
+  // Handle date-only format "YYYY-MM-DD"
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return new Date(`${dateStr}T00:00:00`);
+  }
+
+  return new Date(NaN);
+}
 
 type CsvRow = {
   symbol?: string;
@@ -101,8 +139,8 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
     const detectedSide = detectTradeSide(row, rawQuantity);
     const quantity = Math.abs(rawQuantity);
 
-    const entryTime = new Date(row.entryTime);
-    const exitTime = new Date(row.exitTime);
+    const entryTime = parseDateTime(row.entryTime);
+    const exitTime = parseDateTime(row.exitTime);
 
     if (isNaN(entryTime.getTime()) || isNaN(exitTime.getTime())) {
       return null;
@@ -125,7 +163,7 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
     const notes = notesParts.join('\n').substring(0, 500);
 
     return {
-      id: uuidv4(),
+      id: randomUUID(),
       symbol: row.symbol.toUpperCase(),
       entryPrice,
       exitPrice,

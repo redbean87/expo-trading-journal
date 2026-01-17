@@ -1,9 +1,5 @@
-import {
-  render,
-  fireEvent,
-  UNSAFE_getByType,
-} from '@testing-library/react-native';
-import { Card } from 'react-native-paper';
+import { render, fireEvent } from '@testing-library/react-native';
+import React from 'react';
 
 import { Trade } from '../../types';
 import { TradeCard } from '../trade-card';
@@ -51,35 +47,33 @@ describe('TradeCard', () => {
 
   describe('navigation behavior', () => {
     it('should call router.push with trade detail route when pressed', () => {
-      const { UNSAFE_root } = render(
+      const { getByText } = render(
         <TradeCard trade={mockTrade} disableNavigation={false} />
       );
-      const card = UNSAFE_getByType(UNSAFE_root, Card);
-
-      fireEvent.press(card);
+      // Use the symbol text to find and press the card
+      const symbolText = getByText('AAPL');
+      fireEvent.press(symbolText);
 
       expect(mockPush).toHaveBeenCalledWith('/trade/test-trade-123');
     });
 
     it('should not navigate when disableNavigation is true', () => {
-      const { UNSAFE_root } = render(
+      const { getByText } = render(
         <TradeCard trade={mockTrade} disableNavigation={true} />
       );
-      const card = UNSAFE_getByType(UNSAFE_root, Card);
-
-      fireEvent.press(card);
+      const symbolText = getByText('AAPL');
+      fireEvent.press(symbolText);
 
       expect(mockPush).not.toHaveBeenCalled();
     });
 
     it('should navigate with correct trade id', () => {
       const tradeWithDifferentId = { ...mockTrade, id: 'different-id-456' };
-      const { UNSAFE_root } = render(
+      const { getByText } = render(
         <TradeCard trade={tradeWithDifferentId} disableNavigation={false} />
       );
-      const card = UNSAFE_getByType(UNSAFE_root, Card);
-
-      fireEvent.press(card);
+      const symbolText = getByText('AAPL');
+      fireEvent.press(symbolText);
 
       expect(mockPush).toHaveBeenCalledWith('/trade/different-id-456');
     });

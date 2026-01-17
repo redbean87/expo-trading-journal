@@ -157,9 +157,14 @@ export const tradeService = {
   ): Promise<{ imported: number; skipped: number }> {
     if (!apiService) {
       const existingTrades = await localStorageService.getTrades();
-      const newTrades = [...existingTrades, ...trades];
+      const existingIds = new Set(existingTrades.map((t) => t.id));
+
+      const uniqueTrades = trades.filter((t) => !existingIds.has(t.id));
+      const skipped = trades.length - uniqueTrades.length;
+
+      const newTrades = [...existingTrades, ...uniqueTrades];
       await localStorageService.saveTrades(newTrades);
-      return { imported: trades.length, skipped: 0 };
+      return { imported: uniqueTrades.length, skipped };
     }
 
     try {
