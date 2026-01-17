@@ -4,7 +4,13 @@ import { File } from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Platform } from 'react-native';
-import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
 import { FAB, Snackbar, Portal, Text, IconButton } from 'react-native-paper';
 
 import { EmptyState } from '../components/empty-state';
@@ -33,6 +39,7 @@ export default function TradesScreen() {
   const [isImporting, setIsImporting] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const {
     filters,
@@ -105,6 +112,13 @@ export default function TradesScreen() {
     router.push(`/edit-trade/${id}`);
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    // Brief delay for visual feedback (Convex auto-syncs)
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setRefreshing(false);
+  };
+
   const styles = createStyles(theme);
 
   const renderTrade = ({ item }: { item: Trade }) => (
@@ -149,6 +163,9 @@ export default function TradesScreen() {
             renderItem={renderTrade}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.list}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
           />
         </EmptyState>
       </EmptyState>
