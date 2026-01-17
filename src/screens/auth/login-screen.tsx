@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text, HelperText } from 'react-native-paper';
 
-import { AuthDivider } from '../../components/auth-divider';
-import { GoogleSignInButton } from '../../components/google-sign-in-button';
 import { useAuth } from '../../hooks/use-auth';
 
 type LoginScreenProps = {
@@ -15,9 +13,8 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { login, signInWithGoogle } = useAuth();
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -37,21 +34,6 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setError('');
-    setGoogleLoading(true);
-
-    try {
-      await signInWithGoogle();
-    } catch {
-      setError('Failed to sign in with Google');
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
-  const isLoading = loading || googleLoading;
-
   return (
     <View style={styles.container}>
       <Text variant="headlineMedium" style={styles.title}>
@@ -69,7 +51,7 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
         keyboardType="email-address"
         autoComplete="email"
         style={styles.input}
-        disabled={isLoading}
+        disabled={loading}
       />
 
       <TextInput
@@ -79,7 +61,7 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
         secureTextEntry
         autoComplete="password"
         style={styles.input}
-        disabled={isLoading}
+        disabled={loading}
       />
 
       {error ? (
@@ -92,25 +74,16 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
         mode="contained"
         onPress={handleLogin}
         loading={loading}
-        disabled={isLoading}
+        disabled={loading}
         style={styles.button}
       >
         Sign In
       </Button>
 
-      <AuthDivider />
-
-      <GoogleSignInButton
-        onPress={handleGoogleSignIn}
-        loading={googleLoading}
-        disabled={isLoading}
-        mode="signIn"
-      />
-
       <Button
         mode="text"
         onPress={onSwitchToRegister}
-        disabled={isLoading}
+        disabled={loading}
         style={styles.switchButton}
       >
         Don&apos;t have an account? Sign Up
