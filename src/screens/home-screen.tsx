@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
+import { LoadingState } from '../components/loading-state';
 import { StatCard } from '../components/stat-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTrades } from '../hooks/use-trades';
@@ -10,7 +11,7 @@ import { HomeHeader } from './home/home-header';
 import { RecentTradesCard } from './home/recent-trades-card';
 
 export default function HomeScreen() {
-  const { trades } = useTrades();
+  const { trades, isLoading } = useTrades();
   const { themeMode, toggleTheme } = useThemeStore();
   const theme = useAppTheme();
 
@@ -26,27 +27,31 @@ export default function HomeScreen() {
   const styles = createStyles(theme);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        <HomeHeader themeMode={themeMode} onToggleTheme={toggleTheme} />
+    <LoadingState isLoading={isLoading}>
+      <ScrollView style={styles.container}>
+        <View style={styles.content}>
+          <HomeHeader themeMode={themeMode} onToggleTheme={toggleTheme} />
 
-        <View style={styles.statsContainer}>
-          <StatCard title="Total Trades" value={totalTrades} />
-          <StatCard
-            title="Total P&L"
-            value={`$${totalPnl.toFixed(2)}`}
-            valueColor={totalPnl >= 0 ? theme.colors.profit : theme.colors.loss}
-          />
-          <StatCard title="Win Rate" value={`${winRate.toFixed(1)}%`} />
-          <StatCard
-            title="W/L Ratio"
-            value={`${winningTrades}/${losingTrades}`}
-          />
+          <View style={styles.statsContainer}>
+            <StatCard title="Total Trades" value={totalTrades} />
+            <StatCard
+              title="Total P&L"
+              value={`$${totalPnl.toFixed(2)}`}
+              valueColor={
+                totalPnl >= 0 ? theme.colors.profit : theme.colors.loss
+              }
+            />
+            <StatCard title="Win Rate" value={`${winRate.toFixed(1)}%`} />
+            <StatCard
+              title="W/L Ratio"
+              value={`${winningTrades}/${losingTrades}`}
+            />
+          </View>
+
+          <RecentTradesCard trades={recentTrades} />
         </View>
-
-        <RecentTradesCard trades={recentTrades} />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </LoadingState>
   );
 }
 

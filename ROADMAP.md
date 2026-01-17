@@ -38,8 +38,8 @@ The app has a solid foundation with:
 
 ### Quick Wins
 
-- [ ] **Pull-to-Refresh** - On trades list
-- [ ] **Loading Skeletons** - During data fetch
+- [x] **Pull-to-Refresh** - On trades list
+- [x] **Loading Indicator** - Simple spinner during initial data fetch
 
 ---
 

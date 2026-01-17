@@ -14,6 +14,7 @@ import {
 import { FAB, Snackbar, Portal, Text, IconButton } from 'react-native-paper';
 
 import { EmptyState } from '../components/empty-state';
+import { LoadingState } from '../components/loading-state';
 import { SearchBar } from '../components/search-bar';
 import { TradeCard } from '../components/trade-card';
 import { useAppTheme } from '../hooks/use-app-theme';
@@ -28,7 +29,7 @@ import { parseCsvFile } from '../utils/csv-import';
 import { TradeFilterModal } from './trades/trade-filter-modal';
 
 export default function TradesScreen() {
-  const { trades } = useTrades();
+  const { trades, isLoading } = useTrades();
   const deleteTrade = useDeleteTrade();
   const importTrades = useImportTrades();
   const router = useRouter();
@@ -145,110 +146,112 @@ export default function TradesScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <EmptyState
-        data={trades}
-        title="No trades yet"
-        subtitle="Tap the + button to add your first trade"
-      >
-        <SearchBar
-          value={filters.searchQuery}
-          onChangeText={(text) => updateFilter('searchQuery', text)}
-          onFilterPress={() => setFilterModalVisible(true)}
-          filterCount={activeFilterCount}
-        />
-        <EmptyState data={filteredTrades} fallback={noResultsFallback}>
-          <FlatList
-            data={filteredTrades}
-            renderItem={renderTrade}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.list}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-        </EmptyState>
-      </EmptyState>
-      {isFocused && (
-        <Portal>
-          <View style={styles.fabContainer}>
-            {fabOpen && (
-              <>
-                <TouchableOpacity
-                  style={styles.pillButton}
-                  onPress={() => {
-                    setFabOpen(false);
-                    router.push('/add-trade');
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.pillContent}>
-                    <IconButton
-                      icon="pencil"
-                      size={20}
-                      iconColor={theme.colors.onSurface}
-                      style={styles.pillIcon}
-                    />
-                    <Text variant="labelLarge" style={styles.pillLabel}>
-                      Add Trade
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.pillButton, styles.pillButtonSecond]}
-                  onPress={() => {
-                    if (!isImporting) {
-                      setFabOpen(false);
-                      handleImportCsv();
-                    }
-                  }}
-                  activeOpacity={0.7}
-                  disabled={isImporting}
-                >
-                  <View style={styles.pillContent}>
-                    <IconButton
-                      icon="file-upload"
-                      size={20}
-                      iconColor={theme.colors.onSurface}
-                      style={styles.pillIcon}
-                    />
-                    <Text variant="labelLarge" style={styles.pillLabel}>
-                      Import CSV
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </>
-            )}
-            <FAB
-              icon="plus"
-              style={styles.fab}
-              onPress={() => setFabOpen(!fabOpen)}
-            />
-          </View>
-        </Portal>
-      )}
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={() => setSnackbarVisible(false)}
-          duration={4000}
-          action={{
-            label: 'OK',
-            onPress: () => setSnackbarVisible(false),
-          }}
+    <LoadingState isLoading={isLoading}>
+      <View style={styles.container}>
+        <EmptyState
+          data={trades}
+          title="No trades yet"
+          subtitle="Tap the + button to add your first trade"
         >
-          {snackbarMessage}
-        </Snackbar>
-      </Portal>
-      <TradeFilterModal
-        visible={filterModalVisible}
-        onDismiss={() => setFilterModalVisible(false)}
-        filters={filters}
-        uniqueStrategies={uniqueStrategies}
-        onUpdateFilter={updateFilter}
-        onClearFilters={clearFilters}
-      />
-    </View>
+          <SearchBar
+            value={filters.searchQuery}
+            onChangeText={(text) => updateFilter('searchQuery', text)}
+            onFilterPress={() => setFilterModalVisible(true)}
+            filterCount={activeFilterCount}
+          />
+          <EmptyState data={filteredTrades} fallback={noResultsFallback}>
+            <FlatList
+              data={filteredTrades}
+              renderItem={renderTrade}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.list}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+            />
+          </EmptyState>
+        </EmptyState>
+        {isFocused && (
+          <Portal>
+            <View style={styles.fabContainer}>
+              {fabOpen && (
+                <>
+                  <TouchableOpacity
+                    style={styles.pillButton}
+                    onPress={() => {
+                      setFabOpen(false);
+                      router.push('/add-trade');
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.pillContent}>
+                      <IconButton
+                        icon="pencil"
+                        size={20}
+                        iconColor={theme.colors.onSurface}
+                        style={styles.pillIcon}
+                      />
+                      <Text variant="labelLarge" style={styles.pillLabel}>
+                        Add Trade
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.pillButton, styles.pillButtonSecond]}
+                    onPress={() => {
+                      if (!isImporting) {
+                        setFabOpen(false);
+                        handleImportCsv();
+                      }
+                    }}
+                    activeOpacity={0.7}
+                    disabled={isImporting}
+                  >
+                    <View style={styles.pillContent}>
+                      <IconButton
+                        icon="file-upload"
+                        size={20}
+                        iconColor={theme.colors.onSurface}
+                        style={styles.pillIcon}
+                      />
+                      <Text variant="labelLarge" style={styles.pillLabel}>
+                        Import CSV
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </>
+              )}
+              <FAB
+                icon="plus"
+                style={styles.fab}
+                onPress={() => setFabOpen(!fabOpen)}
+              />
+            </View>
+          </Portal>
+        )}
+        <Portal>
+          <Snackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            duration={4000}
+            action={{
+              label: 'OK',
+              onPress: () => setSnackbarVisible(false),
+            }}
+          >
+            {snackbarMessage}
+          </Snackbar>
+        </Portal>
+        <TradeFilterModal
+          visible={filterModalVisible}
+          onDismiss={() => setFilterModalVisible(false)}
+          filters={filters}
+          uniqueStrategies={uniqueStrategies}
+          onUpdateFilter={updateFilter}
+          onClearFilters={clearFilters}
+        />
+      </View>
+    </LoadingState>
   );
 }
 
