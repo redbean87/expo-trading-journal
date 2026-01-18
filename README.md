@@ -6,7 +6,8 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
 
 - Track trades with detailed entry/exit information
 - View analytics and performance metrics
-- Import trades from CSV files
+- **Equity curve chart** with max drawdown tracking
+- Import/export trades via CSV
 - Cloud sync across devices with Convex
 - User authentication (email/password)
 - Offline support with automatic sync

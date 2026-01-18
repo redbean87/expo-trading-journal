@@ -5,8 +5,10 @@ import { Card } from 'react-native-paper';
 import { LoadingState } from '../components/loading-state';
 import { StatRow } from '../components/stat-row';
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useEquityCurve } from '../hooks/use-equity-curve';
 import { useTradeAnalytics } from '../hooks/use-trade-analytics';
 import { useTrades } from '../hooks/use-trades';
+import { EquityCurveCard } from './analytics/equity-curve-card';
 import { TradeHighlightCard } from './analytics/trade-highlight-card';
 
 export default function AnalyticsScreen() {
@@ -30,6 +32,7 @@ export default function AnalyticsScreen() {
     longPnl,
     shortPnl,
   } = useTradeAnalytics(trades);
+  const equityCurveData = useEquityCurve(trades);
 
   const styles = createStyles(theme);
 
@@ -57,6 +60,10 @@ export default function AnalyticsScreen() {
               />
             </Card.Content>
           </Card>
+
+          {equityCurveData.dataPoints.length > 0 && (
+            <EquityCurveCard data={equityCurveData} />
+          )}
 
           <Card style={styles.card}>
             <Card.Title title="Trade Statistics" />

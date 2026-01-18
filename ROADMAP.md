@@ -6,23 +6,18 @@ The app has a solid foundation with:
 - **4 main screens**: Home (dashboard), Trades (list), Add Trade (form), Analytics
 - **Authentication**: Email/password via Convex Auth
 - **Real-time sync**: Convex backend with live data updates
-- **CSV import**: With duplicate detection
+- **CSV import/export**: With duplicate detection
+- **Equity curve chart**: Visual P&L progression with max drawdown tracking
 - **Dark/light theme**: Persisted with Zustand
 
 ---
 
 ## Planned Features
 
-### High Priority
-
-- [ ] **CSV Export** - Export trades to CSV for backup/analysis
-
 ### Medium Priority
 
 - [ ] **Desktop Layout** - Responsive layout optimized for larger screens (web/tablet)
-- [ ] **Equity Curve Chart** - Visual chart showing P&L over time
 - [ ] **Monthly/Weekly Breakdown** - Performance grouped by time period
-- [ ] **Drawdown Analysis** - Max consecutive losses, percentage drawdown
 - [ ] **Trade Duration Analysis** - Average time in trades
 - [ ] **Risk/Reward Ratio** - Per-trade and aggregate analysis
 
@@ -117,3 +112,5 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Pull-to-Refresh - On trades list
 - [x] Loading Indicator - Simple spinner during initial data fetch
 - [x] Social auth (Google) - basic implementation with expo-web-browser
+- [x] CSV Export - Export trades to CSV for backup/analysis
+- [x] Equity Curve Chart - Visual chart showing cumulative P&L over time with max drawdown
