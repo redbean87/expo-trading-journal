@@ -6,6 +6,12 @@ import { Card, Text } from 'react-native-paper';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { EquityCurveData } from '../../hooks/use-equity-curve';
 
+type ChartDataItem = {
+  value: number;
+  label: string;
+  date: Date;
+};
+
 type EquityCurveCardProps = {
   data: EquityCurveData;
 };
@@ -15,10 +21,23 @@ function formatDate(date: Date): string {
 }
 
 function calculateLabelInterval(dataLength: number): number {
-  if (dataLength <= 5) return 1;
-  if (dataLength <= 10) return 2;
-  if (dataLength <= 20) return 4;
-  return Math.ceil(dataLength / 5);
+  if (dataLength <= 7) return 1;
+  if (dataLength <= 14) return 2;
+  if (dataLength <= 28) return 4;
+  return Math.ceil(dataLength / 7);
+}
+
+function formatFullDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+function formatCurrency(value: number): string {
+  const prefix = value >= 0 ? '' : '-';
+  return `${prefix}$${Math.abs(value).toFixed(2)}`;
 }
 
 export function EquityCurveCard({ data }: EquityCurveCardProps) {
@@ -44,6 +63,23 @@ export function EquityCurveCard({ data }: EquityCurveCardProps) {
 
   const spacing =
     chartData.length > 1 ? chartAreaWidth / (chartData.length - 1) : 0;
+
+  const renderPointerLabel = (items: ChartDataItem[]) => {
+    const item = items[0];
+    if (!item) return null;
+
+    const isPositive = item.value >= 0;
+    const valueColor = isPositive ? theme.colors.profit : theme.colors.loss;
+
+    return (
+      <View style={styles.tooltipContainer}>
+        <Text style={styles.tooltipDate}>{formatFullDate(item.date)}</Text>
+        <Text style={[styles.tooltipValue, { color: valueColor }]}>
+          {formatCurrency(item.value)}
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <Card style={styles.card}>
@@ -74,6 +110,18 @@ export function EquityCurveCard({ data }: EquityCurveCardProps) {
             initialSpacing={0}
             endSpacing={0}
             disableScroll
+            pointerConfig={{
+              pointerStripHeight: 180,
+              pointerStripColor: 'transparent',
+              pointerStripWidth: 1,
+              pointerColor: lineColor,
+              radius: 6,
+              pointerLabelWidth: 120,
+              pointerLabelHeight: 50,
+              activatePointersOnLongPress: false,
+              autoAdjustPointerLabelPosition: true,
+              pointerLabelComponent: renderPointerLabel,
+            }}
           />
         </View>
         {data.maxDrawdown > 0 && (
@@ -115,5 +163,26 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     drawdownValue: {
       color: theme.colors.loss,
+    },
+    tooltipContainer: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: 8,
+      padding: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    tooltipDate: {
+      fontSize: 11,
+      color: theme.colors.textSecondary,
+      marginBottom: 2,
+    },
+    tooltipValue: {
+      fontSize: 14,
+      fontWeight: '600',
     },
   });
