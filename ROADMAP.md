@@ -15,13 +15,11 @@ The app has a solid foundation with:
 
 ### High Priority
 
-- [x] **Trade Edit** - Modify existing trades (currently only add/delete)
-- [x] **Search & Filter** - Filter trades by symbol, side, date range, strategy
-- [x] **Trade Detail Screen** - Modal/screen to view full trade details
 - [ ] **CSV Export** - Export trades to CSV for backup/analysis
 
 ### Medium Priority
 
+- [ ] **Desktop Layout** - Responsive layout optimized for larger screens (web/tablet)
 - [ ] **Equity Curve Chart** - Visual chart showing P&L over time
 - [ ] **Monthly/Weekly Breakdown** - Performance grouped by time period
 - [ ] **Drawdown Analysis** - Max consecutive losses, percentage drawdown
@@ -36,17 +34,11 @@ The app has a solid foundation with:
 - [ ] **Notifications** - Milestone alerts (reached $X profit, etc.)
 - [ ] **Onboarding Tutorial** - First-time user walkthrough
 
-### Quick Wins
-
-- [x] **Pull-to-Refresh** - On trades list
-- [x] **Loading Indicator** - Simple spinner during initial data fetch
-
 ---
 
 ## Auth Enhancements
 
 - [ ] Password reset / forgot password flow
-- [x] Social auth (Google) - basic implementation with expo-web-browser
 - [ ] **Platform-Specific Google Auth** - see details below
 - [ ] Social auth (Apple)
 - [ ] User profile management
@@ -119,3 +111,9 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Real-time data sync via Convex
 - [x] Date/time pickers for entry and exit times in Add Trade form
 - [x] CSV side detection (long/short) via column names or negative quantity
+- [x] Trade Edit - Modify existing trades
+- [x] Search & Filter - Filter trades by symbol, side, date range, strategy
+- [x] Trade Detail Screen - Modal/screen to view full trade details
+- [x] Pull-to-Refresh - On trades list
+- [x] Loading Indicator - Simple spinner during initial data fetch
+- [x] Social auth (Google) - basic implementation with expo-web-browser

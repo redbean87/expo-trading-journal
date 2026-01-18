@@ -25,7 +25,9 @@ import {
   useImportTrades,
 } from '../hooks/use-trades';
 import { Trade } from '../types';
+import { tradesToCsv, generateExportFilename } from '../utils/csv-export';
 import { parseCsvFile } from '../utils/csv-import';
+import { downloadFile } from '../utils/file-download';
 import { TradeFilterModal } from './trades/trade-filter-modal';
 
 export default function TradesScreen() {
@@ -38,6 +40,7 @@ export default function TradesScreen() {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -50,6 +53,34 @@ export default function TradesScreen() {
     updateFilter,
     clearFilters,
   } = useTradeFilters(trades);
+
+  const handleExportCsv = async () => {
+    if (filteredTrades.length === 0) {
+      setSnackbarMessage('No trades to export');
+      setSnackbarVisible(true);
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+      const csvContent = tradesToCsv(filteredTrades);
+      const filename = generateExportFilename();
+      const result = await downloadFile(csvContent, filename);
+
+      if (result.success) {
+        setSnackbarMessage(`Exported ${filteredTrades.length} trades`);
+      } else {
+        setSnackbarMessage(result.error ?? 'Export failed');
+      }
+      setSnackbarVisible(true);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      setSnackbarMessage('Failed to export CSV');
+      setSnackbarVisible(true);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleImportCsv = async () => {
     try {
@@ -216,6 +247,29 @@ export default function TradesScreen() {
                       />
                       <Text variant="labelLarge" style={styles.pillLabel}>
                         Import CSV
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.pillButton, styles.pillButtonSecond]}
+                    onPress={() => {
+                      if (!isExporting) {
+                        setFabOpen(false);
+                        handleExportCsv();
+                      }
+                    }}
+                    activeOpacity={0.7}
+                    disabled={isExporting || filteredTrades.length === 0}
+                  >
+                    <View style={styles.pillContent}>
+                      <IconButton
+                        icon="file-download"
+                        size={20}
+                        iconColor={theme.colors.onSurface}
+                        style={styles.pillIcon}
+                      />
+                      <Text variant="labelLarge" style={styles.pillLabel}>
+                        Export CSV
                       </Text>
                     </View>
                   </TouchableOpacity>
