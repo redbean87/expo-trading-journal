@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Card } from 'react-native-paper';
 
@@ -14,6 +14,7 @@ import { TradeHighlightCard } from './analytics/trade-highlight-card';
 export default function AnalyticsScreen() {
   const { trades, isLoading } = useTrades();
   const theme = useAppTheme();
+  const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const {
     totalTrades,
@@ -38,7 +39,7 @@ export default function AnalyticsScreen() {
 
   return (
     <LoadingState isLoading={isLoading}>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} scrollEnabled={scrollEnabled}>
         <View style={styles.content}>
           <Card style={styles.card}>
             <Card.Title title="Performance Overview" />
@@ -62,7 +63,11 @@ export default function AnalyticsScreen() {
           </Card>
 
           {equityCurveData.dataPoints.length > 0 && (
-            <EquityCurveCard data={equityCurveData} />
+            <EquityCurveCard
+              data={equityCurveData}
+              onInteractionStart={() => setScrollEnabled(false)}
+              onInteractionEnd={() => setScrollEnabled(true)}
+            />
           )}
 
           <Card style={styles.card}>

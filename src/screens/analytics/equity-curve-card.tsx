@@ -14,6 +14,8 @@ type ChartDataItem = {
 
 type EquityCurveCardProps = {
   data: EquityCurveData;
+  onInteractionStart?: () => void;
+  onInteractionEnd?: () => void;
 };
 
 function formatDate(date: Date): string {
@@ -40,7 +42,11 @@ function formatCurrency(value: number): string {
   return `${prefix}$${Math.abs(value).toFixed(2)}`;
 }
 
-export function EquityCurveCard({ data }: EquityCurveCardProps) {
+export function EquityCurveCard({
+  data,
+  onInteractionStart,
+  onInteractionEnd,
+}: EquityCurveCardProps) {
   const theme = useAppTheme();
   const { width } = useWindowDimensions();
   const styles = createStyles(theme);
@@ -85,7 +91,12 @@ export function EquityCurveCard({ data }: EquityCurveCardProps) {
     <Card style={styles.card}>
       <Card.Title title="Equity Curve" />
       <Card.Content>
-        <View style={styles.chartContainer}>
+        <View
+          style={styles.chartContainer}
+          onTouchStart={onInteractionStart}
+          onTouchEnd={onInteractionEnd}
+          onTouchCancel={onInteractionEnd}
+        >
           <LineChart
             data={chartData}
             height={180}
@@ -110,6 +121,8 @@ export function EquityCurveCard({ data }: EquityCurveCardProps) {
             initialSpacing={0}
             endSpacing={0}
             disableScroll
+            xAxisLabelsAtBottom
+            xAxisLabelsHeight={20}
             pointerConfig={{
               pointerStripHeight: 180,
               pointerStripColor: 'transparent',
