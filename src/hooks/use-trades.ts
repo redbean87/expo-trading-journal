@@ -61,6 +61,17 @@ export function useTrades() {
   };
 }
 
+export function useTradesInRange(startTime: number | null) {
+  const data = useQuery(api.trades.getTradesInRange, {
+    startTime: startTime ?? undefined,
+  });
+
+  return {
+    trades: data?.map(mapToTrade) ?? [],
+    isLoading: data === undefined,
+  };
+}
+
 export function useTrade(id: string | null) {
   const data = useQuery(
     api.trades.getTrade,

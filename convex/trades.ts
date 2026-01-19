@@ -35,6 +35,49 @@ export const getTrades = query({
   },
 });
 
+// Query to get trades within a date range for the authenticated user
+export const getTradesInRange = query({
+  args: {
+    startTime: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error('Not authenticated');
+    }
+
+    let tradesQuery;
+    if (args.startTime !== undefined) {
+      tradesQuery = ctx.db
+        .query('trades')
+        .withIndex('by_user_and_exit_time', (q) =>
+          q.eq('userId', userId).gte('exitTime', args.startTime!)
+        );
+    } else {
+      tradesQuery = ctx.db
+        .query('trades')
+        .withIndex('by_user_and_exit_time', (q) => q.eq('userId', userId));
+    }
+
+    const trades = await tradesQuery.order('desc').collect();
+
+    return trades.map((trade) => ({
+      id: trade._id,
+      symbol: trade.symbol,
+      entryPrice: trade.entryPrice,
+      exitPrice: trade.exitPrice,
+      quantity: trade.quantity,
+      entryTime: trade.entryTime,
+      exitTime: trade.exitTime,
+      side: trade.side,
+      pnl: trade.pnl,
+      pnlPercent: trade.pnlPercent,
+      notes: trade.notes,
+      strategy: trade.strategy,
+    }));
+  },
+});
+
 // Query to get a single trade by ID
 export const getTrade = query({
   args: {

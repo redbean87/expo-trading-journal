@@ -7,14 +7,19 @@ import { StatRow } from '../components/stat-row';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useEquityCurve } from '../hooks/use-equity-curve';
 import { useTradeAnalytics } from '../hooks/use-trade-analytics';
-import { useTrades } from '../hooks/use-trades';
+import { useTradesInRange } from '../hooks/use-trades';
+import { DateRangePreset, getDateRangeStart } from '../utils/date-range';
+import { DateRangeFilter } from './analytics/date-range-filter';
 import { EquityCurveCard } from './analytics/equity-curve-card';
 import { TradeHighlightCard } from './analytics/trade-highlight-card';
 
 export default function AnalyticsScreen() {
-  const { trades, isLoading } = useTrades();
   const theme = useAppTheme();
   const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [selectedRange, setSelectedRange] = useState<DateRangePreset>('all');
+
+  const startTime = getDateRangeStart(selectedRange);
+  const { trades, isLoading } = useTradesInRange(startTime);
 
   const {
     totalTrades,
@@ -41,6 +46,11 @@ export default function AnalyticsScreen() {
     <LoadingState isLoading={isLoading}>
       <ScrollView style={styles.container} scrollEnabled={scrollEnabled}>
         <View style={styles.content}>
+          <DateRangeFilter
+            selectedRange={selectedRange}
+            onSelectRange={setSelectedRange}
+          />
+
           <Card style={styles.card}>
             <Card.Title title="Performance Overview" />
             <Card.Content>

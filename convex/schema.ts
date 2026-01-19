@@ -32,7 +32,8 @@ const schema = defineSchema({
     strategy: v.optional(v.string()),
   })
     .index('by_user', ['userId']) // Index for efficient user queries
-    .index('by_user_and_entry_time', ['userId', 'entryTime']), // Index for sorted queries
+    .index('by_user_and_entry_time', ['userId', 'entryTime']) // Index for sorted queries
+    .index('by_user_and_exit_time', ['userId', 'exitTime']), // Index for date range filtering
 });
 
 export default schema;
