@@ -1,63 +1,63 @@
 symbol,shares,entryPrice,entryTime,exitPrice,exitTime,stopLoss,target,pnl,pnl%,setup,confidence,macd,volVsAvgVolume,ruleViolation,psychology,whatWorked,whatFailed,link
 ,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,112.29,4.01,,,,,,,,,
-VERO,448.00,6.84,2026-01-16 8:46:00 AM,6.52,2026-01-16 8:54:00 AM,6.65,7.50,-142.91,-4.66,PMH support,4.00,asc,above,exit trade early,impatient,"waited for ORB to form
-decent entry",didn't wait for exit indication,
-AUID,1440.00,2.13,2026-01-15 9:24:00 AM,2.13,2026-01-15 9:30:00 AM,2.09,2.30,2.88,0.09,pull back after high vol green candle,3.00,flat,above,"flat macd
+VERO,448.00,6.839,2026-01-16 8:46:00 AM,6.520,2026-01-16 8:54:00 AM,6.650,7.500,-142.91,-4.66,PMH support,4.00,asc,above,exit trade early,impatient,"waited for ORB to form
+decent entry",didn't wait for exit indication,https://photos.app.goo.gl/vmUx7mB2VmDf1V1RA
+AUID,1440.00,2.129,2026-01-15 9:24:00 AM,2.131,2026-01-15 9:30:00 AM,2.090,2.300,2.88,0.09,pull back after high vol green candle,3.00,flat,above,"flat macd
 no support level",rushed,"waited for ORB to form
 exited when macd failed to go positive",failed to break resistance 2 times,https://photos.app.goo.gl/3LpPtv8BcLBmbXc9A
-BEEM,1440.00,2.14,2026-01-14 9:33:00 AM,2.14,2026-01-14 9:34:00 AM,2.09,2.35,1.44,0.05,200 MA support bounce,3.00,desc,same,desc macd,calm,"waited for ORB to form
+BEEM,1440.00,2.143,2026-01-14 9:33:00 AM,2.144,2026-01-14 9:34:00 AM,2.090,2.350,1.44,0.05,200 MA support bounce,3.00,desc,same,desc macd,calm,"waited for ORB to form
 exited when macd failed to go positive",failed to break resistance 2 times,https://photos.app.goo.gl/wmvTBu5QNquwhYda9
-DCOY,2560.00,1.17,2026-01-13 9:06:00 AM,1.19,2026-01-13 9:23:00 AM,1.14,1.29,58.88,1.97,ORB support,3.00,asc,below,n/a,anxious,"5 min candle new high at ORB support
+DCOY,2560.00,1.169,2026-01-13 9:06:00 AM,1.192,2026-01-13 9:23:00 AM,1.140,1.290,58.88,1.97,ORB support,3.00,asc,below,n/a,anxious,"5 min candle new high at ORB support
 macd asc",volume decreasing,https://photos.app.goo.gl/mAQQR5B8rvgaH53m6
-EVTV,1920.00,1.52,2026-01-12 9:33:00 AM,1.62,2026-01-12 9:34:00 AM,1.39,1.77,192.00,6.56,first PB after ORB break,4.00,asc,above,n/a,rushed,volume spike through ORB break,had meeting coming up so exited early,https://photos.app.goo.gl/DWVz1RhKrECtkNsG6
+EVTV,1920.00,1.524,2026-01-12 9:33:00 AM,1.624,2026-01-12 9:34:00 AM,1.390,1.770,192.00,6.56,first PB after ORB break,4.00,asc,above,n/a,rushed,volume spike through ORB break,had meeting coming up so exited early,https://photos.app.goo.gl/DWVz1RhKrECtkNsG6
 ,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,-52.16,-1.89,,,,,,,,,
-OPAD,1120.00,2.37,2026-01-09 8:58:00 AM,2.35,2026-01-09 9:04:00 AM,7.70,8.78,-24.64,-0.93,FVG under PMH,4.00,desc,same,no clear sign to enter,calm,support at FVG,"low volume
+OPAD,1120.00,2.372,2026-01-09 8:58:00 AM,2.350,2026-01-09 9:04:00 AM,7.700,8.780,-24.64,-0.93,FVG under PMH,4.00,desc,same,no clear sign to enter,calm,support at FVG,"low volume
 macd desc",https://photos.app.goo.gl/XsqNz87sYKwVoVDw6
-ACON,320.00,8.05,2026-01-08 8:56:00 AM,8.71,2026-01-08 8:58:00 AM,7.70,8.78,212.48,8.25,ORB support,4.00,asc,"below when I entered
+ACON,320.00,8.049,2026-01-08 8:56:00 AM,8.713,2026-01-08 8:58:00 AM,7.700,8.780,212.48,8.25,ORB support,4.00,asc,"below when I entered
 higher than prev bar",n/a,excited,"support at ORB low
 took profit at ORB high",exited during asc macd,https://photos.app.goo.gl/hhZrjhQ4CpBGKVwc7
-NVVE,800.00,3.45,2026-01-07 8:40:00 AM,3.33,2026-01-07 8:48:00 AM,3.30,3.70,-96.00,-3.48,10% retracement off high,3.00,asc,above,"orb not setup
+NVVE,800.00,3.450,2026-01-07 8:40:00 AM,3.330,2026-01-07 8:48:00 AM,3.300,3.700,-96.00,-3.48,10% retracement off high,3.00,asc,above,"orb not setup
 not one of my setups",fomo,under 5% loss,"bad entry
 no clear exit",https://photos.app.goo.gl/hkgqAk4xiAUK2zaY8
-BNAI,640.00,4.30,2026-01-06 8:40:00 AM,4.26,2026-01-06 8:49:00 AM,4.17,4.67,-24.96,-0.91,PM Support,3.00,asc,above,orb not setup,none,"good level identification, 4.30 PM support
+BNAI,640.00,4.299,2026-01-06 8:40:00 AM,4.260,2026-01-06 8:49:00 AM,4.170,4.670,-24.96,-0.91,PM Support,3.00,asc,above,orb not setup,none,"good level identification, 4.30 PM support
 under 5% loss",exited trade early,https://photos.app.goo.gl/c3yxcUpBVQBSFeKV8
-MNTS,240.00,10.28,2026-01-05 8:41:00 AM,9.78,2026-01-05 8:44:00 AM,9.80,11.00,-119.04,-4.83,PMH support,3.00,desc,above,"buy at support
+MNTS,240.00,10.276,2026-01-05 8:41:00 AM,9.780,2026-01-05 8:44:00 AM,9.800,11.000,-119.04,-4.83,PMH support,3.00,desc,above,"buy at support
 orb not setup",fomo,"good level identification, 10 PMH support
 under 5% loss",bad entry,https://photos.app.goo.gl/XEAKekXAK1LWjtDW9
 ,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,-268.16,-8.82,,,,,,,,,https://claude.ai/chat/d4d0714e-8069-40fb-bd6c-6ec396b40d32
-BNAI,960.00,3.16,2026-01-02,3.11,2026-01-02,,,-43.20,-1.43,high volume support,,,,,,,"hold longer on asc macd and vol
+BNAI,960.00,3.156,2026-01-02,3.111,2026-01-02,,,-43.20,-1.43,high volume support,,,,,,,"hold longer on asc macd and vol
 stop loss to close",https://photos.app.goo.gl/QuAUcNh33H5rhBnt7
-INBS,320.00,8.27,2025-12-31,8.55,2025-12-31,,,87.04,3.29,5 min candle to make new high,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/2FJcJScENfMkVXeu5
-SOPA,800.00,3.67,2025-12-30,3.43,2025-12-30,,,-187.20,-6.38,PDH & PM support,,,,,,,need patience for better entry,https://photos.app.goo.gl/vjGq8iaLGZSeyRcK6
-SOPA,960.00,3.02,2025-12-29,2.89,2025-12-29,,,-124.80,-4.30,"PMH support
+INBS,320.00,8.273,2025-12-31,8.545,2025-12-31,,,87.04,3.29,5 min candle to make new high,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/2FJcJScENfMkVXeu5
+SOPA,800.00,3.668,2025-12-30,3.434,2025-12-30,,,-187.20,-6.38,PDH & PM support,,,,,,,need patience for better entry,https://photos.app.goo.gl/vjGq8iaLGZSeyRcK6
+SOPA,960.00,3.024,2025-12-29,2.894,2025-12-29,,,-124.80,-4.30,"PMH support
 FVG",,,,,,,need patience for better entry,https://photos.app.goo.gl/KL8iU2iJRfW1o9k36
 ,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,294.72,10.98,,,,,,,,,https://claude.ai/chat/9991d0bd-070a-45fe-95b0-5585a0699bc7
-ECDA,2240.00,1.25,2025-12-26,1.43,2025-12-26,,,414.40,14.82,PM support,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/1reL22zaLzysR5U19
-TRIB,1920.00,1.52,2025-12-23,1.43,2025-12-23,,,-178.56,-6.11,PM support,,,,,,,"need patience, don't trade desc macd",https://photos.app.goo.gl/yj8Q93EYvxzPbRza6
-SIDU,1280.00,2.04,2025-12-22,2.08,2025-12-22,,,58.88,2.26,MACD reversal,,,,,,,"high vol, moves take longer",https://photos.app.goo.gl/kmLcDY3mXzgi6fRf7
+ECDA,2240.00,1.248,2025-12-26,1.433,2025-12-26,,,414.40,14.82,PM support,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/1reL22zaLzysR5U19
+TRIB,1920.00,1.523,2025-12-23,1.430,2025-12-23,,,-178.56,-6.11,PM support,,,,,,,"need patience, don't trade desc macd",https://photos.app.goo.gl/yj8Q93EYvxzPbRza6
+SIDU,1280.00,2.036,2025-12-22,2.082,2025-12-22,,,58.88,2.26,MACD reversal,,,,,,,"high vol, moves take longer",https://photos.app.goo.gl/kmLcDY3mXzgi6fRf7
 ,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,-35.35,-1.64,,,,,,,,,https://claude.ai/chat/bd099c58-5a48-4e32-abd2-44a650278663
-XRXS,800.00,3.37,2025-12-19,3.29,2025-12-19,,,-62.40,-2.31,PM support,,,,,,,"need patience, don't trade desc macd",https://photos.app.goo.gl/KrD3Zxwofm1j3i2F6
-PAVS,1120.00,2.56,2025-12-18,2.40,2025-12-18,,,-180.32,-6.30,PDH support,,,,,,,wait till support is hit,https://photos.app.goo.gl/UoBcH2NrhdPL7dEL7
-YCBD,1280.00,2.34,2025-12-17,2.29,2025-12-17,,,-74.24,-2.48,no good reason,,,,,,,"too late in the day, desc macd",https://photos.app.goo.gl/xxFPe2KDoSo63WRq5
-VERO,1350.00,2.18,2025-12-16,2.30,2025-12-16,,,160.65,5.47,back test at PM support break,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/m1S4rT1m4Yuk4GFR6
-YCBD,2240.00,1.36,2025-12-15,1.41,2025-12-15,,,120.96,3.98,consolidation at PM support,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/8Ap3D8UsYhtyVV2Q6
+XRXS,800.00,3.370,2025-12-19,3.292,2025-12-19,,,-62.40,-2.31,PM support,,,,,,,"need patience, don't trade desc macd",https://photos.app.goo.gl/KrD3Zxwofm1j3i2F6
+PAVS,1120.00,2.556,2025-12-18,2.395,2025-12-18,,,-180.32,-6.30,PDH support,,,,,,,wait till support is hit,https://photos.app.goo.gl/UoBcH2NrhdPL7dEL7
+YCBD,1280.00,2.343,2025-12-17,2.285,2025-12-17,,,-74.24,-2.48,no good reason,,,,,,,"too late in the day, desc macd",https://photos.app.goo.gl/xxFPe2KDoSo63WRq5
+VERO,1350.00,2.176,2025-12-16,2.295,2025-12-16,,,160.65,5.47,back test at PM support break,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/m1S4rT1m4Yuk4GFR6
+YCBD,2240.00,1.356,2025-12-15,1.410,2025-12-15,,,120.96,3.98,consolidation at PM support,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/8Ap3D8UsYhtyVV2Q6
 ,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,359.52,14.64,,,,,,,,,https://claude.ai/chat/9a0245fe-f3cb-47b7-a471-590c45be9ee7
-YCBD,2240.00,1.18,2025-12-12,1.20,2025-12-12,,,44.80,1.69,consolidation at PM support,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/qYYVT3dJCSRDTLxy8
-BEAT,1120.00,2.35,2025-12-11,2.36,2025-12-11,,,8.96,0.34,consolidation above resistance break,,,,,,,too late in the day + late entry,https://photos.app.goo.gl/K4A2EF1R8TH2xnZHA
-BEAT,1760.00,1.40,2025-12-10,1.46,2025-12-10,,,109.12,4.43,15 min orb low,,,,,,,quick scalp to previous candle high,https://photos.app.goo.gl/xSqPsT2PsGnNib9V9
-XCUR,320.00,8.92,2025-12-09,8.83,2025-12-09,,,-29.44,-1.03,n/a,,,,,,,n/a,https://photos.app.goo.gl/EAXpL1ubnxATWMPbA
-IBIO,1440.00,1.71,2025-12-08,1.86,2025-12-08,,,226.08,9.20,PM support,,,,,,,hold till exit indicator,https://photos.app.goo.gl/Ddwkyjo4ggpfXdpA6
+YCBD,2240.00,1.180,2025-12-12,1.200,2025-12-12,,,44.80,1.69,consolidation at PM support,,,,,,,hold longer on asc macd and vol,https://photos.app.goo.gl/qYYVT3dJCSRDTLxy8
+BEAT,1120.00,2.347,2025-12-11,2.355,2025-12-11,,,8.96,0.34,consolidation above resistance break,,,,,,,too late in the day + late entry,https://photos.app.goo.gl/K4A2EF1R8TH2xnZHA
+BEAT,1760.00,1.399,2025-12-10,1.461,2025-12-10,,,109.12,4.43,15 min orb low,,,,,,,quick scalp to previous candle high,https://photos.app.goo.gl/xSqPsT2PsGnNib9V9
+XCUR,320.00,8.917,2025-12-09,8.825,2025-12-09,,,-29.44,-1.03,n/a,,,,,,,n/a,https://photos.app.goo.gl/EAXpL1ubnxATWMPbA
+IBIO,1440.00,1.706,2025-12-08,1.863,2025-12-08,,,226.08,9.20,PM support,,,,,,,hold till exit indicator,https://photos.app.goo.gl/Ddwkyjo4ggpfXdpA6
 ,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,-501.60,-16.10,,,,,,,,,https://claude.ai/chat/bdbef0aa-f199-4c3b-92c8-4fc393482ed8
-JFBR,960.00,2.96,2025-12-05,2.66,2025-12-05,,,-296.64,-10.43,15 min orb support,,,,,,,neg macd + held loss too long,https://photos.app.goo.gl/FXr8upBqXQjfooAh7
-QCLS,480.00,6.32,2025-12-04,6.12,2025-12-04,,,-98.88,-3.26,15 min orb resistance break,,,,,,,bad entry + wait for support level,https://photos.app.goo.gl/Tqwax1jA7tBZfs34A
-QCLS,640.00,5.11,2025-12-03,4.63,2025-12-03,,,-307.20,-9.39,n/a,,,,,,,n/a,https://photos.app.goo.gl/ftRxAYggbdDfHejP7
-FTEL,1920.00,1.61,2025-12-02,1.68,2025-12-02,,,130.56,4.23,PDH support,,,,,,,used 15 orb low resitance to exit,https://photos.app.goo.gl/7fsp3nezKKGEXdsy5
-QTTB,480.00,5.35,2025-12-01,5.50,2025-12-01,,,70.56,2.75,"PMH support
+JFBR,960.00,2.964,2025-12-05,2.655,2025-12-05,,,-296.64,-10.43,15 min orb support,,,,,,,neg macd + held loss too long,https://photos.app.goo.gl/FXr8upBqXQjfooAh7
+QCLS,480.00,6.321,2025-12-04,6.115,2025-12-04,,,-98.88,-3.26,15 min orb resistance break,,,,,,,bad entry + wait for support level,https://photos.app.goo.gl/Tqwax1jA7tBZfs34A
+QCLS,640.00,5.111,2025-12-03,4.631,2025-12-03,,,-307.20,-9.39,n/a,,,,,,,n/a,https://photos.app.goo.gl/ftRxAYggbdDfHejP7
+FTEL,1920.00,1.607,2025-12-02,1.675,2025-12-02,,,130.56,4.23,PDH support,,,,,,,used 15 orb low resitance to exit,https://photos.app.goo.gl/7fsp3nezKKGEXdsy5
+QTTB,480.00,5.353,2025-12-01,5.500,2025-12-01,,,70.56,2.75,"PMH support
 FVG",,,,,,,late entry + early exit,https://photos.app.goo.gl/dBmv3VYtB9HoddZ49
