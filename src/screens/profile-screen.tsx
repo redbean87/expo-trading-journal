@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, Button, Avatar, List, Switch } from 'react-native-paper';
+import {
+  Text,
+  Card,
+  Button,
+  Avatar,
+  List,
+  Switch,
+  Dialog,
+  Portal,
+} from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
+import { useClearAllTrades } from '../hooks/use-trades';
 import { useThemeStore } from '../store/theme-store';
 
 export default function ProfileScreen() {
@@ -11,6 +21,9 @@ export default function ProfileScreen() {
   const { themeMode, toggleTheme } = useThemeStore();
   const theme = useAppTheme();
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [clearDialogVisible, setClearDialogVisible] = useState(false);
+  const [clearLoading, setClearLoading] = useState(false);
+  const clearAllTrades = useClearAllTrades();
 
   const handleLogout = async () => {
     setLogoutLoading(true);
@@ -25,6 +38,18 @@ export default function ProfileScreen() {
 
   const handleThemeToggle = () => {
     toggleTheme();
+  };
+
+  const handleClearAllTrades = async () => {
+    setClearLoading(true);
+    try {
+      await clearAllTrades();
+      setClearDialogVisible(false);
+    } catch (error) {
+      console.error('Failed to clear trades:', error);
+    } finally {
+      setClearLoading(false);
+    }
   };
 
   return (
@@ -63,10 +88,29 @@ export default function ProfileScreen() {
         <Card style={styles.card}>
           <Card.Content>
             <Text variant="titleMedium" style={styles.sectionTitle}>
+              Data Management
+            </Text>
+          </Card.Content>
+          <Card.Actions style={styles.cardActions}>
+            <Button
+              mode="outlined"
+              onPress={() => setClearDialogVisible(true)}
+              icon="delete"
+              textColor={theme.colors.error}
+              style={[styles.actionButton, { borderColor: theme.colors.error }]}
+            >
+              Remove All Trades
+            </Button>
+          </Card.Actions>
+        </Card>
+
+        <Card style={styles.card}>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
               Account
             </Text>
           </Card.Content>
-          <Card.Actions style={styles.logoutActions}>
+          <Card.Actions style={styles.cardActions}>
             <Button
               mode="outlined"
               onPress={handleLogout}
@@ -74,13 +118,39 @@ export default function ProfileScreen() {
               disabled={logoutLoading}
               icon="logout"
               textColor={theme.colors.error}
-              style={[styles.logoutButton, { borderColor: theme.colors.error }]}
+              style={[styles.actionButton, { borderColor: theme.colors.error }]}
             >
               Sign Out
             </Button>
           </Card.Actions>
         </Card>
       </View>
+
+      <Portal>
+        <Dialog
+          visible={clearDialogVisible}
+          onDismiss={() => setClearDialogVisible(false)}
+        >
+          <Dialog.Title>Remove All Trades</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              Are you sure you want to remove all trades? This action cannot be
+              undone and will permanently delete all your trade data.
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setClearDialogVisible(false)}>Cancel</Button>
+            <Button
+              onPress={handleClearAllTrades}
+              loading={clearLoading}
+              disabled={clearLoading}
+              textColor={theme.colors.error}
+            >
+              Remove All
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </ScrollView>
   );
 }
@@ -105,11 +175,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginBottom: 8,
   },
-  logoutActions: {
+  cardActions: {
     justifyContent: 'center',
     paddingVertical: 16,
   },
-  logoutButton: {
+  actionButton: {
     minWidth: 150,
   },
 });
