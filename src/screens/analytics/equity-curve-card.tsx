@@ -1,16 +1,14 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet, useWindowDimensions } from 'react-native';
-import { LineChart } from 'react-native-gifted-charts';
 import { Card, Text } from 'react-native-paper';
 
+import {
+  LineChart,
+  ChartThemeColors,
+  TooltipData,
+} from '../../components/charts';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { EquityCurveData } from '../../hooks/use-equity-curve';
-
-type ChartDataItem = {
-  value: number;
-  label: string;
-  date: Date;
-};
 
 type EquityCurveCardProps = {
   data: EquityCurveData;
@@ -51,10 +49,8 @@ export function EquityCurveCard({
   const { width } = useWindowDimensions();
   const styles = createStyles(theme);
 
-  // Account for card padding (16*2), content padding, and y-axis labels
   const yAxisLabelWidth = 50;
   const containerWidth = width - 64;
-  const chartAreaWidth = containerWidth - yAxisLabelWidth;
 
   const isProfit = data.currentBalance >= 0;
   const lineColor = isProfit ? theme.colors.profit : theme.colors.loss;
@@ -67,74 +63,64 @@ export function EquityCurveCard({
     date: point.date,
   }));
 
-  const spacing =
-    chartData.length > 1 ? chartAreaWidth / (chartData.length - 1) : 0;
-
-  const renderPointerLabel = (items: ChartDataItem[]) => {
-    const item = items[0];
-    if (!item) return null;
-
-    const isPositive = item.value >= 0;
-    const valueColor = isPositive ? theme.colors.profit : theme.colors.loss;
-
-    return (
-      <View style={styles.tooltipContainer}>
-        <Text style={styles.tooltipDate}>{formatFullDate(item.date)}</Text>
-        <Text style={[styles.tooltipValue, { color: valueColor }]}>
-          {formatCurrency(item.value)}
-        </Text>
-      </View>
-    );
+  const chartColors: ChartThemeColors = {
+    lineColor,
+    gradientStartColor: lineColor,
+    gradientEndColor: theme.colors.background,
+    backgroundColor: theme.colors.surface,
+    axisColor: theme.colors.border,
+    axisTextColor: theme.colors.textSecondary,
+    tooltipBackgroundColor: theme.colors.surface,
+    tooltipBorderColor: theme.colors.border,
   };
+
+  const handleTooltipShow = useCallback(() => {
+    onInteractionStart?.();
+  }, [onInteractionStart]);
+
+  const handleTooltipHide = useCallback(() => {
+    onInteractionEnd?.();
+  }, [onInteractionEnd]);
+
+  const renderTooltip = useCallback(
+    (tooltipData: TooltipData) => {
+      const isPositive = tooltipData.value >= 0;
+      const valueColor = isPositive ? theme.colors.profit : theme.colors.loss;
+
+      return (
+        <View style={styles.tooltipContainer}>
+          <Text style={styles.tooltipDate}>
+            {formatFullDate(tooltipData.date)}
+          </Text>
+          <Text style={[styles.tooltipValue, { color: valueColor }]}>
+            {formatCurrency(tooltipData.value)}
+          </Text>
+        </View>
+      );
+    },
+    [theme, styles]
+  );
 
   return (
     <Card style={styles.card}>
       <Card.Title title="Equity Curve" />
       <Card.Content>
-        <View
-          style={styles.chartContainer}
-          onTouchStart={onInteractionStart}
-          onTouchEnd={onInteractionEnd}
-          onTouchCancel={onInteractionEnd}
-        >
+        <View style={styles.chartContainer}>
           <LineChart
             data={chartData}
+            width={containerWidth}
             height={180}
-            color={lineColor}
-            areaChart
-            startFillColor={lineColor}
-            endFillColor={theme.colors.background}
-            startOpacity={0.3}
-            endOpacity={0.05}
-            curved
-            hideDataPoints
-            yAxisTextStyle={styles.axisText}
-            xAxisLabelTextStyle={styles.axisText}
-            backgroundColor={theme.colors.surface}
-            rulesColor={theme.colors.border}
-            yAxisColor={theme.colors.border}
-            xAxisColor={theme.colors.border}
-            noOfSections={4}
+            colors={chartColors}
             yAxisLabelPrefix="$"
             yAxisLabelWidth={yAxisLabelWidth}
-            spacing={spacing}
-            initialSpacing={0}
-            endSpacing={0}
-            disableScroll
-            xAxisLabelsAtBottom
-            xAxisLabelsHeight={20}
-            pointerConfig={{
-              pointerStripHeight: 180,
-              pointerStripColor: 'transparent',
-              pointerStripWidth: 1,
-              pointerColor: lineColor,
-              radius: 6,
-              pointerLabelWidth: 120,
-              pointerLabelHeight: 50,
-              activatePointersOnLongPress: false,
-              autoAdjustPointerLabelPosition: true,
-              pointerLabelComponent: renderPointerLabel,
-            }}
+            curved
+            areaFill
+            areaStartOpacity={0.3}
+            areaEndOpacity={0.05}
+            numberOfYSections={4}
+            onTooltipShow={handleTooltipShow}
+            onTooltipHide={handleTooltipHide}
+            renderTooltip={renderTooltip}
           />
         </View>
         {data.maxDrawdown > 0 && (
@@ -169,10 +155,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     statLabel: {
       color: theme.colors.textSecondary,
-    },
-    axisText: {
-      color: theme.colors.textSecondary,
-      fontSize: 10,
     },
     drawdownValue: {
       color: theme.colors.loss,
