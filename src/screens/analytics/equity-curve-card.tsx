@@ -1,12 +1,8 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { View, StyleSheet, useWindowDimensions } from 'react-native';
+import { LineChart } from 'react-native-gifted-charts';
 import { Card, Text } from 'react-native-paper';
 
-import {
-  LineChart,
-  ChartThemeColors,
-  TooltipData,
-} from '../../components/charts';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { EquityCurveData } from '../../hooks/use-equity-curve';
 
@@ -16,15 +12,14 @@ type EquityCurveCardProps = {
   onInteractionEnd?: () => void;
 };
 
+type ChartDataItem = {
+  value: number;
+  label: string;
+  date: Date;
+};
+
 function formatDate(date: Date): string {
   return `${date.getMonth() + 1}/${date.getDate()}`;
-}
-
-function calculateLabelInterval(dataLength: number): number {
-  if (dataLength <= 7) return 1;
-  if (dataLength <= 14) return 2;
-  if (dataLength <= 28) return 4;
-  return Math.ceil(dataLength / 7);
 }
 
 function formatFullDate(date: Date): string {
@@ -40,6 +35,13 @@ function formatCurrency(value: number): string {
   return `${prefix}$${Math.abs(value).toFixed(2)}`;
 }
 
+function calculateLabelInterval(dataLength: number): number {
+  if (dataLength <= 7) return 1;
+  if (dataLength <= 14) return 2;
+  if (dataLength <= 28) return 4;
+  return Math.ceil(dataLength / 7);
+}
+
 export function EquityCurveCard({
   data,
   onInteractionStart,
@@ -50,12 +52,16 @@ export function EquityCurveCard({
   const styles = createStyles(theme);
 
   const yAxisLabelWidth = 50;
-  const containerWidth = width - 64;
+  const chartWidth = width - 64 - yAxisLabelWidth;
 
   const isProfit = data.currentBalance >= 0;
   const lineColor = isProfit ? theme.colors.profit : theme.colors.loss;
 
   const labelInterval = calculateLabelInterval(data.dataPoints.length);
+  const spacing =
+    data.dataPoints.length > 1
+      ? chartWidth / (data.dataPoints.length - 1)
+      : chartWidth;
 
   const chartData = data.dataPoints.map((point, index) => ({
     value: point.cumulativePnl,
@@ -63,64 +69,73 @@ export function EquityCurveCard({
     date: point.date,
   }));
 
-  const chartColors: ChartThemeColors = {
-    lineColor,
-    gradientStartColor: lineColor,
-    gradientEndColor: theme.colors.background,
-    backgroundColor: theme.colors.surface,
-    axisColor: theme.colors.border,
-    axisTextColor: theme.colors.textSecondary,
-    tooltipBackgroundColor: theme.colors.surface,
-    tooltipBorderColor: theme.colors.border,
+  const axisTextStyle = {
+    color: theme.colors.textSecondary,
+    fontSize: 10,
   };
 
-  const handleTooltipShow = useCallback(() => {
-    onInteractionStart?.();
-  }, [onInteractionStart]);
+  const renderPointerLabel = (items: ChartDataItem[]) => {
+    const item = items[0];
+    const isPositive = item.value >= 0;
+    const valueColor = isPositive ? theme.colors.profit : theme.colors.loss;
 
-  const handleTooltipHide = useCallback(() => {
-    onInteractionEnd?.();
-  }, [onInteractionEnd]);
-
-  const renderTooltip = useCallback(
-    (tooltipData: TooltipData) => {
-      const isPositive = tooltipData.value >= 0;
-      const valueColor = isPositive ? theme.colors.profit : theme.colors.loss;
-
-      return (
-        <View style={styles.tooltipContainer}>
-          <Text style={styles.tooltipDate}>
-            {formatFullDate(tooltipData.date)}
-          </Text>
-          <Text style={[styles.tooltipValue, { color: valueColor }]}>
-            {formatCurrency(tooltipData.value)}
-          </Text>
-        </View>
-      );
-    },
-    [theme, styles]
-  );
+    return (
+      <View style={styles.tooltipContainer}>
+        <Text style={styles.tooltipDate}>{formatFullDate(item.date)}</Text>
+        <Text style={[styles.tooltipValue, { color: valueColor }]}>
+          {formatCurrency(item.value)}
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <Card style={styles.card}>
       <Card.Title title="Equity Curve" />
       <Card.Content>
-        <View style={styles.chartContainer}>
+        <View
+          style={styles.chartContainer}
+          onTouchStart={onInteractionStart}
+          onTouchEnd={onInteractionEnd}
+          onTouchCancel={onInteractionEnd}
+        >
           <LineChart
             data={chartData}
-            width={containerWidth}
             height={180}
-            colors={chartColors}
+            width={chartWidth}
+            color={lineColor}
+            areaChart
+            startFillColor={lineColor}
+            endFillColor={theme.colors.background}
+            startOpacity={0.3}
+            endOpacity={0.05}
+            curved
+            hideDataPoints
+            yAxisTextStyle={axisTextStyle}
+            xAxisLabelTextStyle={axisTextStyle}
+            backgroundColor={theme.colors.surface}
+            rulesColor={theme.colors.border}
+            yAxisColor={theme.colors.border}
+            xAxisColor={theme.colors.border}
+            noOfSections={4}
             yAxisLabelPrefix="$"
             yAxisLabelWidth={yAxisLabelWidth}
-            curved
-            areaFill
-            areaStartOpacity={0.3}
-            areaEndOpacity={0.05}
-            numberOfYSections={4}
-            onTooltipShow={handleTooltipShow}
-            onTooltipHide={handleTooltipHide}
-            renderTooltip={renderTooltip}
+            spacing={spacing}
+            initialSpacing={0}
+            endSpacing={0}
+            disableScroll
+            pointerConfig={{
+              pointerStripHeight: 180,
+              pointerStripColor: 'transparent',
+              pointerStripWidth: 1,
+              pointerColor: lineColor,
+              radius: 6,
+              pointerLabelWidth: 120,
+              pointerLabelHeight: 50,
+              activatePointersOnLongPress: false,
+              autoAdjustPointerLabelPosition: true,
+              pointerLabelComponent: renderPointerLabel,
+            }}
           />
         </View>
         {data.maxDrawdown > 0 && (

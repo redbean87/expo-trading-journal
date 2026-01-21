@@ -1,5 +1,13 @@
 symbol,shares,entryPrice,entryTime,exitPrice,exitTime,stopLoss,target,pnl,pnl%,setup,confidence,macd,volVsAvgVolume,ruleViolation,psychology,whatWorked,whatFailed,link
 ,,,,,,,,,,,,,,,,,,
+Week Summary,,,,,,,,211.20,7.37,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+IVF,800.00,3.581,2026-01-20 8:42:00 AM,3.845,2026-01-20 8:48:00 AM,3.390,3.940,211.20,7.37,FVG support,4.00,asc,above,exit trade early,calm,"waited for ORB to form
+decent entry","didn't wait for exit indication
+entry was a tad high",https://photos.app.goo.gl/fMcWrrA13NFDxFmM9
+,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,112.29,4.01,,,,,,,,,
 VERO,448.00,6.839,2026-01-16 8:46:00 AM,6.520,2026-01-16 8:54:00 AM,6.650,7.500,-142.91,-4.66,PMH support,4.00,asc,above,exit trade early,impatient,"waited for ORB to form
 decent entry",didn't wait for exit indication,https://photos.app.goo.gl/vmUx7mB2VmDf1V1RA
