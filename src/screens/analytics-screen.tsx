@@ -12,6 +12,7 @@ import { DateRangePreset, getDateRangeStart } from '../utils/date-range';
 import { formatDuration } from '../utils/format-duration';
 import { DateRangeFilter } from './analytics/date-range-filter';
 import { EquityCurveCard } from './analytics/equity-curve-card';
+import { RiskRewardCard } from './analytics/risk-reward-card';
 import { TradeHighlightCard } from './analytics/trade-highlight-card';
 
 export default function AnalyticsScreen() {
@@ -46,6 +47,13 @@ export default function AnalyticsScreen() {
     shortTrades,
     longPnl,
     shortPnl,
+    realizedRR,
+    expectedValue,
+    requiredWinRate,
+    longWinRate,
+    longRR,
+    shortWinRate,
+    shortRR,
   } = useTradeAnalytics(trades);
   const equityCurveData = useEquityCurve(trades);
 
@@ -87,6 +95,21 @@ export default function AnalyticsScreen() {
               />
             </Card.Content>
           </Card>
+
+          {totalTrades > 0 && (
+            <RiskRewardCard
+              realizedRR={realizedRR}
+              expectedValue={expectedValue}
+              requiredWinRate={requiredWinRate}
+              actualWinRate={winRate}
+              longRR={longRR}
+              shortRR={shortRR}
+              longWinRate={longWinRate}
+              shortWinRate={shortWinRate}
+              hasLongTrades={longTrades.length > 0}
+              hasShortTrades={shortTrades.length > 0}
+            />
+          )}
 
           {equityCurveData.dataPoints.length > 0 && (
             <EquityCurveCard

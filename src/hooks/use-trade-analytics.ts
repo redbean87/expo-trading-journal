@@ -27,6 +27,17 @@ export type TradeAnalytics = {
   shortTrades: Trade[];
   longPnl: number;
   shortPnl: number;
+  realizedRR: number;
+  expectedValue: number;
+  requiredWinRate: number;
+  longWinRate: number;
+  longAvgWin: number;
+  longAvgLoss: number;
+  longRR: number;
+  shortWinRate: number;
+  shortAvgWin: number;
+  shortAvgLoss: number;
+  shortRR: number;
 };
 
 function calculateStreaks(trades: Trade[]): {
@@ -139,6 +150,80 @@ export function useTradeAnalytics(trades: Trade[]): TradeAnalytics {
     const longPnl = longTrades.reduce((sum, t) => sum + t.pnl, 0);
     const shortPnl = shortTrades.reduce((sum, t) => sum + t.pnl, 0);
 
+    // Long trade breakdown
+    const winningLongTrades = longTrades.filter((t) => t.pnl > 0);
+    const losingLongTrades = longTrades.filter((t) => t.pnl < 0);
+    const longWinningPnlTotal = winningLongTrades.reduce(
+      (sum, t) => sum + t.pnl,
+      0
+    );
+    const longLosingPnlTotal = losingLongTrades.reduce(
+      (sum, t) => sum + t.pnl,
+      0
+    );
+    const longAvgWin =
+      winningLongTrades.length > 0
+        ? longWinningPnlTotal / winningLongTrades.length
+        : 0;
+    const longAvgLoss =
+      losingLongTrades.length > 0
+        ? Math.abs(longLosingPnlTotal / losingLongTrades.length)
+        : 0;
+    const longWinRate =
+      longTrades.length > 0
+        ? (winningLongTrades.length / longTrades.length) * 100
+        : 0;
+    const longRR =
+      longAvgLoss > 0
+        ? longAvgWin / longAvgLoss
+        : longAvgWin > 0
+          ? Infinity
+          : 0;
+
+    // Short trade breakdown
+    const winningShortTrades = shortTrades.filter((t) => t.pnl > 0);
+    const losingShortTrades = shortTrades.filter((t) => t.pnl < 0);
+    const shortWinningPnlTotal = winningShortTrades.reduce(
+      (sum, t) => sum + t.pnl,
+      0
+    );
+    const shortLosingPnlTotal = losingShortTrades.reduce(
+      (sum, t) => sum + t.pnl,
+      0
+    );
+    const shortAvgWin =
+      winningShortTrades.length > 0
+        ? shortWinningPnlTotal / winningShortTrades.length
+        : 0;
+    const shortAvgLoss =
+      losingShortTrades.length > 0
+        ? Math.abs(shortLosingPnlTotal / losingShortTrades.length)
+        : 0;
+    const shortWinRate =
+      shortTrades.length > 0
+        ? (winningShortTrades.length / shortTrades.length) * 100
+        : 0;
+    const shortRR =
+      shortAvgLoss > 0
+        ? shortAvgWin / shortAvgLoss
+        : shortAvgWin > 0
+          ? Infinity
+          : 0;
+
+    // Overall R:R metrics
+    const realizedRR =
+      avgLoss > 0 ? avgWin / avgLoss : avgWin > 0 ? Infinity : 0;
+    const lossRate =
+      totalTrades > 0 ? (losingTrades.length / totalTrades) * 100 : 0;
+    const expectedValue =
+      totalTrades > 0
+        ? (winRate / 100) * avgWin - (lossRate / 100) * avgLoss
+        : 0;
+    const requiredWinRate =
+      realizedRR > 0 && realizedRR !== Infinity
+        ? (1 / (1 + realizedRR)) * 100
+        : 0;
+
     return {
       totalTrades,
       winningTrades,
@@ -164,6 +249,17 @@ export function useTradeAnalytics(trades: Trade[]): TradeAnalytics {
       shortTrades,
       longPnl,
       shortPnl,
+      realizedRR,
+      expectedValue,
+      requiredWinRate,
+      longWinRate,
+      longAvgWin,
+      longAvgLoss,
+      longRR,
+      shortWinRate,
+      shortAvgWin,
+      shortAvgLoss,
+      shortRR,
     };
   }, [trades]);
 }
