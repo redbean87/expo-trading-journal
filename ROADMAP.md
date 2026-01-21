@@ -19,7 +19,6 @@ The app has a solid foundation with:
 - [ ] **Desktop Layout** - Responsive layout optimized for larger screens (web/tablet)
 - [ ] **Monthly/Weekly Breakdown** - Performance grouped by time period
 - [ ] **Trade Duration Analysis** - Average time in trades
-- [ ] **Risk/Reward Ratio** - Per-trade and aggregate analysis
 
 ### Low Priority / Nice to Have
 
@@ -114,3 +113,4 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Social auth (Google) - basic implementation with expo-web-browser
 - [x] CSV Export - Export trades to CSV for backup/analysis
 - [x] Equity Curve Chart - Visual chart showing cumulative P&L over time with max drawdown
+- [x] Risk/Reward Analysis - Realized R:R ratio, expected value, required win rate, side-specific breakdown
