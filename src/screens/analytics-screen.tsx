@@ -9,6 +9,7 @@ import { useEquityCurve } from '../hooks/use-equity-curve';
 import { useTradeAnalytics } from '../hooks/use-trade-analytics';
 import { useTradesInRange } from '../hooks/use-trades';
 import { DateRangePreset, getDateRangeStart } from '../utils/date-range';
+import { formatDuration } from '../utils/format-duration';
 import { DateRangeFilter } from './analytics/date-range-filter';
 import { EquityCurveCard } from './analytics/equity-curve-card';
 import { TradeHighlightCard } from './analytics/trade-highlight-card';
@@ -29,6 +30,14 @@ export default function AnalyticsScreen() {
     totalPnl,
     avgWin,
     avgLoss,
+    avgTradePnl,
+    avgPerShareWin,
+    avgPerShareLoss,
+    largestGain,
+    largestLoss,
+    maxConsecutiveWins,
+    maxConsecutiveLosses,
+    avgHoldTimeMs,
     winRate,
     profitFactor,
     bestTrade,
@@ -61,6 +70,13 @@ export default function AnalyticsScreen() {
                 value={`$${totalPnl.toFixed(2)}`}
                 valueColor={
                   totalPnl >= 0 ? theme.colors.profit : theme.colors.loss
+                }
+              />
+              <StatRow
+                label="Avg Trade P&L:"
+                value={`$${avgTradePnl.toFixed(2)}`}
+                valueColor={
+                  avgTradePnl >= 0 ? theme.colors.profit : theme.colors.loss
                 }
               />
               <StatRow
@@ -102,6 +118,46 @@ export default function AnalyticsScreen() {
               <StatRow
                 label="Avg Loss:"
                 value={`$${avgLoss.toFixed(2)}`}
+                valueColor={theme.colors.loss}
+              />
+              <StatRow
+                label="Avg Per-Share Win:"
+                value={`$${avgPerShareWin.toFixed(4)}`}
+                valueColor={theme.colors.profit}
+              />
+              <StatRow
+                label="Avg Per-Share Loss:"
+                value={`$${avgPerShareLoss.toFixed(4)}`}
+                valueColor={theme.colors.loss}
+              />
+              <StatRow
+                label="Largest Gain:"
+                value={`$${largestGain.toFixed(2)}`}
+                valueColor={theme.colors.profit}
+              />
+              <StatRow
+                label="Largest Loss:"
+                value={`$${largestLoss.toFixed(2)}`}
+                valueColor={theme.colors.loss}
+              />
+              <StatRow
+                label="Avg Hold Time:"
+                value={formatDuration(avgHoldTimeMs)}
+              />
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Title title="Streak Analysis" />
+            <Card.Content>
+              <StatRow
+                label="Max Consecutive Wins:"
+                value={maxConsecutiveWins}
+                valueColor={theme.colors.profit}
+              />
+              <StatRow
+                label="Max Consecutive Losses:"
+                value={maxConsecutiveLosses}
                 valueColor={theme.colors.loss}
               />
             </Card.Content>
