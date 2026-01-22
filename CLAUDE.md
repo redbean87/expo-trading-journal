@@ -140,7 +140,8 @@ Before marking a feature complete:
 1. Run `npm run format:check` - Verify formatting
 2. Run `npm run lint` - No lint errors
 3. Run `npx tsc --noEmit` - No type errors
-4. Run `npm test` - All tests pass
-5. Test on device/simulator - Verify UI works correctly
-6. Update ROADMAP.md - Move feature to Completed Features section
-7. Commit with descriptive message
+4. Run `npm test -- --coverage` - All tests pass, coverage maintained or improved
+5. Add tests for new logic (hooks, utils, services) - Don't decrease coverage %
+6. Test on device/simulator - Verify UI works correctly
+7. Update ROADMAP.md - Move feature to Completed Features section
+8. Commit with descriptive message
