@@ -1,9 +1,10 @@
 symbol,shares,entryPrice,entryTime,exitPrice,exitTime,stopLoss,target,pnl,pnl%,setup,confidence,macd,volVsAvgVolume,ruleViolation,psychology,whatWorked,whatFailed,link
 ,,,,,,,,,,,,,,,,,,
-Week Summary,,,,,,,,211.20,7.37,,,,,,,,,
+Week Summary,,,,,,,,199.04,7.38,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
+SXTP,880.00,3.223,2026-01-22 6:44:00 AM,3.503,2026-01-22 6:46:00 AM,2.990,2.540,246.40,8.69,support,3.00,asc,above,ORB not setup,anxious,great entry,exited during asc macd,
+BOXL,1280.00,2.327,2026-01-21 8:42:00 AM,2.125,2026-01-21 8:50:00 AM,2.170,2.550,-258.56,-8.68,FVG support,4.00,flat,above,ORB not setup,anxious,decent entry,"macd crossed over
+",
 IVF,800.00,3.581,2026-01-20 8:42:00 AM,3.845,2026-01-20 8:48:00 AM,3.390,3.940,211.20,7.37,FVG support,4.00,asc,above,exit trade early,calm,"waited for ORB to form
 decent entry","didn't wait for exit indication
 entry was a tad high",https://photos.app.goo.gl/fMcWrrA13NFDxFmM9
