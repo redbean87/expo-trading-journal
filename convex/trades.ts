@@ -34,6 +34,8 @@ export const getTrades = query({
       psychology: trade.psychology,
       whatWorked: trade.whatWorked,
       whatFailed: trade.whatFailed,
+      confidence: trade.confidence,
+      ruleViolation: trade.ruleViolation,
     }));
   },
 });
@@ -80,6 +82,8 @@ export const getTradesInRange = query({
       psychology: trade.psychology,
       whatWorked: trade.whatWorked,
       whatFailed: trade.whatFailed,
+      confidence: trade.confidence,
+      ruleViolation: trade.ruleViolation,
     }));
   },
 });
@@ -122,6 +126,8 @@ export const getTrade = query({
       psychology: trade.psychology,
       whatWorked: trade.whatWorked,
       whatFailed: trade.whatFailed,
+      confidence: trade.confidence,
+      ruleViolation: trade.ruleViolation,
     };
   },
 });
@@ -143,6 +149,8 @@ export const addTrade = mutation({
     psychology: v.optional(v.string()),
     whatWorked: v.optional(v.string()),
     whatFailed: v.optional(v.string()),
+    confidence: v.optional(v.number()),
+    ruleViolation: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -163,6 +171,11 @@ export const addTrade = mutation({
       pnlPercent: args.pnlPercent,
       notes: args.notes,
       strategy: args.strategy,
+      psychology: args.psychology,
+      whatWorked: args.whatWorked,
+      whatFailed: args.whatFailed,
+      confidence: args.confidence,
+      ruleViolation: args.ruleViolation,
     });
 
     return {
@@ -190,6 +203,8 @@ export const updateTrade = mutation({
     psychology: v.optional(v.string()),
     whatWorked: v.optional(v.string()),
     whatFailed: v.optional(v.string()),
+    confidence: v.optional(v.number()),
+    ruleViolation: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -227,6 +242,8 @@ export const updateTrade = mutation({
       psychology: updatedTrade!.psychology,
       whatWorked: updatedTrade!.whatWorked,
       whatFailed: updatedTrade!.whatFailed,
+      confidence: updatedTrade!.confidence,
+      ruleViolation: updatedTrade!.ruleViolation,
     };
   },
 });
@@ -294,6 +311,8 @@ export const importTrades = mutation({
         psychology: v.optional(v.string()),
         whatWorked: v.optional(v.string()),
         whatFailed: v.optional(v.string()),
+        confidence: v.optional(v.number()),
+        ruleViolation: v.optional(v.string()),
       })
     ),
   },

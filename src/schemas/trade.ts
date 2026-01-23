@@ -21,6 +21,8 @@ export const tradeSchema = z.object({
   psychology: z.string().max(50).optional(),
   whatWorked: z.string().max(500).optional(),
   whatFailed: z.string().max(500).optional(),
+  confidence: z.number().min(1).max(5).optional(),
+  ruleViolation: z.string().max(200).optional(),
   pnl: z.number(),
   pnlPercent: z.number(),
 });
@@ -71,6 +73,11 @@ export const tradeFormSchema = z
     whatFailed: z
       .string()
       .max(500, 'What failed must be 500 characters or less')
+      .optional(),
+    confidence: z.number().min(1).max(5).optional(),
+    ruleViolation: z
+      .string()
+      .max(200, 'Rule violation must be 200 characters or less')
       .optional(),
   })
   .refine((data) => data.exitTime >= data.entryTime, {
@@ -136,6 +143,8 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     psychology: formData.psychology,
     whatWorked: formData.whatWorked,
     whatFailed: formData.whatFailed,
+    confidence: formData.confidence,
+    ruleViolation: formData.ruleViolation,
     pnl,
     pnlPercent,
   };

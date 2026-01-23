@@ -20,6 +20,8 @@ type BackendTrade = {
   psychology?: string;
   whatWorked?: string;
   whatFailed?: string;
+  confidence?: number;
+  ruleViolation?: string;
 };
 
 function mapToTrade(trade: BackendTrade): Trade {
@@ -39,6 +41,8 @@ function mapToTrade(trade: BackendTrade): Trade {
     psychology: trade.psychology,
     whatWorked: trade.whatWorked,
     whatFailed: trade.whatFailed,
+    confidence: trade.confidence,
+    ruleViolation: trade.ruleViolation,
   };
 }
 
@@ -58,6 +62,8 @@ function mapFromTrade(trade: Trade) {
     psychology: trade.psychology,
     whatWorked: trade.whatWorked,
     whatFailed: trade.whatFailed,
+    confidence: trade.confidence,
+    ruleViolation: trade.ruleViolation,
   };
 }
 
@@ -123,6 +129,8 @@ export function useUpdateTrade() {
       psychology: updates.psychology,
       whatWorked: updates.whatWorked,
       whatFailed: updates.whatFailed,
+      confidence: updates.confidence,
+      ruleViolation: updates.ruleViolation,
     });
 
     return mapToTrade(result);

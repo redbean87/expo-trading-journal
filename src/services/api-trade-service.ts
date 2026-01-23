@@ -26,6 +26,11 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
         pnlPercent: trade.pnlPercent,
         notes: trade.notes,
         strategy: trade.strategy,
+        psychology: trade.psychology,
+        whatWorked: trade.whatWorked,
+        whatFailed: trade.whatFailed,
+        confidence: trade.confidence,
+        ruleViolation: trade.ruleViolation,
       })) ?? []
     );
   },
@@ -43,6 +48,11 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       pnlPercent: trade.pnlPercent,
       notes: trade.notes,
       strategy: trade.strategy,
+      psychology: trade.psychology,
+      whatWorked: trade.whatWorked,
+      whatFailed: trade.whatFailed,
+      confidence: trade.confidence,
+      ruleViolation: trade.ruleViolation,
     });
 
     return {
@@ -65,6 +75,11 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       pnlPercent: updates.pnlPercent,
       notes: updates.notes,
       strategy: updates.strategy,
+      psychology: updates.psychology,
+      whatWorked: updates.whatWorked,
+      whatFailed: updates.whatFailed,
+      confidence: updates.confidence,
+      ruleViolation: updates.ruleViolation,
     });
 
     return {
@@ -80,6 +95,11 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       pnlPercent: result.pnlPercent,
       notes: result.notes,
       strategy: result.strategy,
+      psychology: result.psychology,
+      whatWorked: result.whatWorked,
+      whatFailed: result.whatFailed,
+      confidence: result.confidence,
+      ruleViolation: result.ruleViolation,
     };
   },
 
@@ -109,6 +129,11 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
         pnlPercent: trade.pnlPercent,
         notes: trade.notes,
         strategy: trade.strategy,
+        psychology: trade.psychology,
+        whatWorked: trade.whatWorked,
+        whatFailed: trade.whatFailed,
+        confidence: trade.confidence,
+        ruleViolation: trade.ruleViolation,
       })),
     });
 

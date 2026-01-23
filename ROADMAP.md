@@ -18,7 +18,7 @@ The app has a solid foundation with:
 
 - [x] **Emotion/Psychology Tracking** - Tag trades with emotional state (psychology field)
 - [x] **Trade Notes** - Post-trade reflection fields (whatWorked, whatFailed)
-- [ ] **Confidence + Rule Violations** - Add confidence level (1-5) and ruleViolation field from sample CSV
+- [x] **Confidence + Rule Violations** - Add confidence level (1-5) and ruleViolation field from sample CSV
 - [ ] **Mistakes Tracking** - Categorize common trading errors with analytics dashboard
 
 ### Medium Priority
@@ -125,3 +125,4 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Monthly/Weekly Breakdown - Performance metrics grouped by time period with toggle
 - [x] Emotion/Psychology Tracking - psychology field on trades with CSV import support
 - [x] Trade Notes - whatWorked and whatFailed reflection fields with CSV import support
+- [x] Confidence + Rule Violations - confidence level (1-5) and ruleViolation field with CSV import support

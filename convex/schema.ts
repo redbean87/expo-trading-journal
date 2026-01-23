@@ -33,6 +33,8 @@ const schema = defineSchema({
     psychology: v.optional(v.string()),
     whatWorked: v.optional(v.string()),
     whatFailed: v.optional(v.string()),
+    confidence: v.optional(v.number()),
+    ruleViolation: v.optional(v.string()),
   })
     .index('by_user', ['userId']) // Index for efficient user queries
     .index('by_user_and_entry_time', ['userId', 'entryTime']) // Index for sorted queries

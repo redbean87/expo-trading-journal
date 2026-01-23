@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { TextInput, SegmentedButtons } from 'react-native-paper';
+import { TextInput, SegmentedButtons, Text } from 'react-native-paper';
 
 import { DateTimeInput } from '../../components/date-time-input';
 import { TradeFormData } from '../../types';
@@ -89,6 +89,35 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         style={styles.input}
       />
 
+      <View style={styles.confidenceContainer}>
+        <Text variant="bodyMedium" style={styles.confidenceLabel}>
+          Confidence (Optional)
+        </Text>
+        <SegmentedButtons
+          value={formData.confidence?.toString() ?? ''}
+          onValueChange={(value) =>
+            onUpdate({ confidence: value ? parseInt(value, 10) : undefined })
+          }
+          buttons={[
+            { value: '1', label: '1' },
+            { value: '2', label: '2' },
+            { value: '3', label: '3' },
+            { value: '4', label: '4' },
+            { value: '5', label: '5' },
+          ]}
+          style={styles.confidenceButtons}
+        />
+      </View>
+
+      <TextInput
+        label="Rule Violation (Optional)"
+        value={formData.ruleViolation}
+        onChangeText={(text) => onUpdate({ ruleViolation: text || undefined })}
+        mode="outlined"
+        placeholder="e.g., ORB not setup, exit trade early"
+        style={styles.input}
+      />
+
       <TextInput
         label="What Worked (Optional)"
         value={formData.whatWorked}
@@ -135,5 +164,15 @@ const styles = StyleSheet.create({
   },
   segmentedButtons: {
     marginBottom: 16,
+  },
+  confidenceContainer: {
+    marginBottom: 16,
+  },
+  confidenceLabel: {
+    marginBottom: 8,
+    opacity: 0.7,
+  },
+  confidenceButtons: {
+    marginBottom: 0,
   },
 });

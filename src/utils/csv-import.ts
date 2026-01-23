@@ -54,6 +54,8 @@ type CsvRow = {
   psychology?: string;
   whatWorked?: string;
   whatFailed?: string;
+  confidence?: string;
+  ruleViolation?: string;
   link?: string;
   side?: string;
   direction?: string;
@@ -156,6 +158,24 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
     // Build notes from link field only (psychology/whatWorked/whatFailed are now separate fields)
     const notes = row.link ? `Link: ${row.link}` : undefined;
 
+    // Parse confidence (1-5 scale)
+    let confidence: number | undefined;
+    if (row.confidence) {
+      const parsed = parseFloat(row.confidence);
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 5) {
+        confidence = Math.round(parsed);
+      }
+    }
+
+    // Parse ruleViolation (treat "n/a" as undefined)
+    let ruleViolation: string | undefined;
+    if (row.ruleViolation) {
+      const trimmed = row.ruleViolation.trim();
+      if (trimmed && trimmed.toLowerCase() !== 'n/a') {
+        ruleViolation = trimmed.substring(0, 200);
+      }
+    }
+
     return {
       id: randomUUID(),
       symbol: row.symbol.toUpperCase(),
@@ -170,6 +190,8 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
       psychology: row.psychology?.substring(0, 50),
       whatWorked: row.whatWorked?.substring(0, 500),
       whatFailed: row.whatFailed?.substring(0, 500),
+      confidence,
+      ruleViolation,
       pnl,
       pnlPercent,
     };

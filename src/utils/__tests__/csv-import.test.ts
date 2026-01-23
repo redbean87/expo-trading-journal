@@ -104,3 +104,87 @@ AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00, long `;
     expect(result.imported[0].side).toBe('long');
   });
 });
+
+describe('CSV Import - Confidence and Rule Violation', () => {
+  it('should parse confidence value in valid range (1-5)', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,confidence
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,4`;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].confidence).toBe(4);
+  });
+
+  it('should round decimal confidence values', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,confidence
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,3.00`;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].confidence).toBe(3);
+  });
+
+  it('should ignore confidence values outside 1-5 range', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,confidence
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,6`;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].confidence).toBeUndefined();
+  });
+
+  it('should handle missing confidence', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00`;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].confidence).toBeUndefined();
+  });
+
+  it('should parse ruleViolation string', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,ruleViolation
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,ORB not setup`;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].ruleViolation).toBe('ORB not setup');
+  });
+
+  it('should treat "n/a" ruleViolation as undefined', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,ruleViolation
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,n/a`;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].ruleViolation).toBeUndefined();
+  });
+
+  it('should treat "N/A" ruleViolation as undefined (case insensitive)', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,ruleViolation
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,N/A`;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].ruleViolation).toBeUndefined();
+  });
+
+  it('should trim whitespace from ruleViolation', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,ruleViolation
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,  exit trade early  `;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].ruleViolation).toBe('exit trade early');
+  });
+
+  it('should handle both confidence and ruleViolation together', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,confidence,ruleViolation
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,5,flat macd`;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].confidence).toBe(5);
+    expect(result.imported[0].ruleViolation).toBe('flat macd');
+  });
+});
