@@ -12,6 +12,7 @@ import { DateRangePreset, getDateRangeStart } from '../utils/date-range';
 import { formatDuration } from '../utils/format-duration';
 import { DateRangeFilter } from './analytics/date-range-filter';
 import { EquityCurveCard } from './analytics/equity-curve-card';
+import { PeriodBreakdownCard } from './analytics/period-breakdown-card';
 import { RiskRewardCard } from './analytics/risk-reward-card';
 import { TradeHighlightCard } from './analytics/trade-highlight-card';
 
@@ -110,6 +111,8 @@ export default function AnalyticsScreen() {
               hasShortTrades={shortTrades.length > 0}
             />
           )}
+
+          {totalTrades > 0 && <PeriodBreakdownCard trades={trades} />}
 
           {equityCurveData.dataPoints.length > 0 && (
             <EquityCurveCard

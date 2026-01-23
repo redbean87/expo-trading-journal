@@ -17,7 +17,6 @@ The app has a solid foundation with:
 ### Medium Priority
 
 - [ ] **Desktop Layout** - Responsive layout optimized for larger screens (web/tablet)
-- [ ] **Monthly/Weekly Breakdown** - Performance grouped by time period
 - [ ] **Trade Duration Analysis** - Average time in trades
 
 ### Low Priority / Nice to Have
@@ -114,3 +113,4 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] CSV Export - Export trades to CSV for backup/analysis
 - [x] Equity Curve Chart - Visual chart showing cumulative P&L over time with max drawdown
 - [x] Risk/Reward Analysis - Realized R:R ratio, expected value, required win rate, side-specific breakdown
+- [x] Monthly/Weekly Breakdown - Performance metrics grouped by time period with toggle
