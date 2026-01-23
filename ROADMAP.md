@@ -14,14 +14,22 @@ The app has a solid foundation with:
 
 ## Planned Features
 
+### High Priority
+
+- [ ] **Emotion/Psychology Tracking** - Tag trades with emotional state (Confident, Anxious, FOMO, Revenge, Disciplined), correlate emotions with performance
+- [ ] **Trade Notes** - Pre-trade thesis and post-trade reflection fields
+- [ ] **Mistakes Tracking** - Categorize common trading errors (early exit, late entry, ignored stop loss, position too big) with analytics
+
 ### Medium Priority
 
+- [ ] **Screenshot Attachments** - Add images to trades for chart analysis
+- [ ] **Strategy Analytics** - Performance breakdown by strategy tag
+- [ ] **Calendar View** - Visual calendar showing trades by date
 - [ ] **Desktop Layout** - Responsive layout optimized for larger screens (web/tablet)
 - [ ] **Trade Duration Analysis** - Average time in trades
 
 ### Low Priority / Nice to Have
 
-- [ ] **Screenshot Attachments** - Add images to trades for chart analysis
 - [ ] **Position Sizing Calculator** - Calculate size based on risk %
 - [ ] **Trade Goals** - Daily/weekly/monthly P&L targets
 - [ ] **Notifications** - Milestone alerts (reached $X profit, etc.)
