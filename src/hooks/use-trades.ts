@@ -17,6 +17,9 @@ type BackendTrade = {
   pnlPercent: number;
   notes?: string;
   strategy?: string;
+  psychology?: string;
+  whatWorked?: string;
+  whatFailed?: string;
 };
 
 function mapToTrade(trade: BackendTrade): Trade {
@@ -33,6 +36,9 @@ function mapToTrade(trade: BackendTrade): Trade {
     pnlPercent: trade.pnlPercent,
     notes: trade.notes,
     strategy: trade.strategy,
+    psychology: trade.psychology,
+    whatWorked: trade.whatWorked,
+    whatFailed: trade.whatFailed,
   };
 }
 
@@ -49,6 +55,9 @@ function mapFromTrade(trade: Trade) {
     pnlPercent: trade.pnlPercent,
     notes: trade.notes,
     strategy: trade.strategy,
+    psychology: trade.psychology,
+    whatWorked: trade.whatWorked,
+    whatFailed: trade.whatFailed,
   };
 }
 
@@ -111,6 +120,9 @@ export function useUpdateTrade() {
       pnlPercent: updates.pnlPercent,
       notes: updates.notes,
       strategy: updates.strategy,
+      psychology: updates.psychology,
+      whatWorked: updates.whatWorked,
+      whatFailed: updates.whatFailed,
     });
 
     return mapToTrade(result);

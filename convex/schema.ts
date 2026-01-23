@@ -30,6 +30,9 @@ const schema = defineSchema({
     pnlPercent: v.number(), // Profit/loss as percentage
     notes: v.optional(v.string()),
     strategy: v.optional(v.string()),
+    psychology: v.optional(v.string()),
+    whatWorked: v.optional(v.string()),
+    whatFailed: v.optional(v.string()),
   })
     .index('by_user', ['userId']) // Index for efficient user queries
     .index('by_user_and_entry_time', ['userId', 'entryTime']) // Index for sorted queries

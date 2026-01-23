@@ -31,6 +31,9 @@ export const getTrades = query({
       pnlPercent: trade.pnlPercent,
       notes: trade.notes,
       strategy: trade.strategy,
+      psychology: trade.psychology,
+      whatWorked: trade.whatWorked,
+      whatFailed: trade.whatFailed,
     }));
   },
 });
@@ -74,6 +77,9 @@ export const getTradesInRange = query({
       pnlPercent: trade.pnlPercent,
       notes: trade.notes,
       strategy: trade.strategy,
+      psychology: trade.psychology,
+      whatWorked: trade.whatWorked,
+      whatFailed: trade.whatFailed,
     }));
   },
 });
@@ -113,6 +119,9 @@ export const getTrade = query({
       pnlPercent: trade.pnlPercent,
       notes: trade.notes,
       strategy: trade.strategy,
+      psychology: trade.psychology,
+      whatWorked: trade.whatWorked,
+      whatFailed: trade.whatFailed,
     };
   },
 });
@@ -131,6 +140,9 @@ export const addTrade = mutation({
     pnlPercent: v.number(),
     notes: v.optional(v.string()),
     strategy: v.optional(v.string()),
+    psychology: v.optional(v.string()),
+    whatWorked: v.optional(v.string()),
+    whatFailed: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -175,6 +187,9 @@ export const updateTrade = mutation({
     pnlPercent: v.optional(v.number()),
     notes: v.optional(v.string()),
     strategy: v.optional(v.string()),
+    psychology: v.optional(v.string()),
+    whatWorked: v.optional(v.string()),
+    whatFailed: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -209,6 +224,9 @@ export const updateTrade = mutation({
       pnlPercent: updatedTrade!.pnlPercent,
       notes: updatedTrade!.notes,
       strategy: updatedTrade!.strategy,
+      psychology: updatedTrade!.psychology,
+      whatWorked: updatedTrade!.whatWorked,
+      whatFailed: updatedTrade!.whatFailed,
     };
   },
 });
@@ -273,6 +291,9 @@ export const importTrades = mutation({
         pnlPercent: v.number(),
         notes: v.optional(v.string()),
         strategy: v.optional(v.string()),
+        psychology: v.optional(v.string()),
+        whatWorked: v.optional(v.string()),
+        whatFailed: v.optional(v.string()),
       })
     ),
   },

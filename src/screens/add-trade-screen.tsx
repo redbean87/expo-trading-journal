@@ -43,6 +43,9 @@ export default function AddTradeScreen() {
         side: formData.side,
         strategy: formData.strategy || undefined,
         notes: formData.notes || undefined,
+        psychology: formData.psychology || undefined,
+        whatWorked: formData.whatWorked || undefined,
+        whatFailed: formData.whatFailed || undefined,
         pnl,
         pnlPercent,
       });
@@ -58,6 +61,9 @@ export default function AddTradeScreen() {
         side: formData.side,
         strategy: formData.strategy || undefined,
         notes: formData.notes || undefined,
+        psychology: formData.psychology || undefined,
+        whatWorked: formData.whatWorked || undefined,
+        whatFailed: formData.whatFailed || undefined,
         pnl,
         pnlPercent,
       };
@@ -112,6 +118,9 @@ export default function AddTradeScreen() {
           side: trade.side,
           strategy: trade.strategy || '',
           notes: trade.notes || '',
+          psychology: trade.psychology || '',
+          whatWorked: trade.whatWorked || '',
+          whatFailed: trade.whatFailed || '',
         }
       : {
           symbol: '',
@@ -123,6 +132,9 @@ export default function AddTradeScreen() {
           side: 'long',
           strategy: '',
           notes: '',
+          psychology: '',
+          whatWorked: '',
+          whatFailed: '',
         };
 
   return (

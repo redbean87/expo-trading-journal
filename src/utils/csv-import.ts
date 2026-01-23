@@ -153,14 +153,8 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
       detectedSide
     );
 
-    const notesParts = [];
-    if (row.setup) notesParts.push(`Setup: ${row.setup}`);
-    if (row.psychology) notesParts.push(`Psychology: ${row.psychology}`);
-    if (row.whatWorked) notesParts.push(`What worked: ${row.whatWorked}`);
-    if (row.whatFailed) notesParts.push(`What failed: ${row.whatFailed}`);
-    if (row.link) notesParts.push(`Link: ${row.link}`);
-
-    const notes = notesParts.join('\n').substring(0, 500);
+    // Build notes from link field only (psychology/whatWorked/whatFailed are now separate fields)
+    const notes = row.link ? `Link: ${row.link}` : undefined;
 
     return {
       id: randomUUID(),
@@ -172,7 +166,10 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
       exitTime,
       side: detectedSide,
       strategy: row.setup?.substring(0, 50),
-      notes: notes || undefined,
+      notes: notes?.substring(0, 500),
+      psychology: row.psychology?.substring(0, 50),
+      whatWorked: row.whatWorked?.substring(0, 500),
+      whatFailed: row.whatFailed?.substring(0, 500),
       pnl,
       pnlPercent,
     };

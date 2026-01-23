@@ -18,6 +18,9 @@ export const tradeSchema = z.object({
   side: tradeSideSchema,
   strategy: z.string().max(50).optional(),
   notes: z.string().max(500).optional(),
+  psychology: z.string().max(50).optional(),
+  whatWorked: z.string().max(500).optional(),
+  whatFailed: z.string().max(500).optional(),
   pnl: z.number(),
   pnlPercent: z.number(),
 });
@@ -56,6 +59,18 @@ export const tradeFormSchema = z
     notes: z
       .string()
       .max(500, 'Notes must be 500 characters or less')
+      .optional(),
+    psychology: z
+      .string()
+      .max(50, 'Psychology must be 50 characters or less')
+      .optional(),
+    whatWorked: z
+      .string()
+      .max(500, 'What worked must be 500 characters or less')
+      .optional(),
+    whatFailed: z
+      .string()
+      .max(500, 'What failed must be 500 characters or less')
       .optional(),
   })
   .refine((data) => data.exitTime >= data.entryTime, {
@@ -118,6 +133,9 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     side: formData.side,
     strategy: formData.strategy,
     notes: formData.notes,
+    psychology: formData.psychology,
+    whatWorked: formData.whatWorked,
+    whatFailed: formData.whatFailed,
     pnl,
     pnlPercent,
   };

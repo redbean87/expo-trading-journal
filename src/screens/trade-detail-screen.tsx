@@ -155,6 +155,43 @@ export default function TradeDetailScreen() {
             </Card>
           )}
 
+          {trade.psychology && (
+            <Card style={styles.card}>
+              <Card.Content>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  Psychology
+                </Text>
+                <Chip style={styles.psychologyChip}>{trade.psychology}</Chip>
+              </Card.Content>
+            </Card>
+          )}
+
+          {trade.whatWorked && (
+            <Card style={styles.card}>
+              <Card.Content>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  What Worked
+                </Text>
+                <Text variant="bodyLarge" style={styles.notes}>
+                  {trade.whatWorked}
+                </Text>
+              </Card.Content>
+            </Card>
+          )}
+
+          {trade.whatFailed && (
+            <Card style={styles.card}>
+              <Card.Content>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  What Didn&apos;t Work
+                </Text>
+                <Text variant="bodyLarge" style={styles.notes}>
+                  {trade.whatFailed}
+                </Text>
+              </Card.Content>
+            </Card>
+          )}
+
           {trade.notes && (
             <Card style={styles.card}>
               <Card.Content>
@@ -288,6 +325,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     notes: {
       lineHeight: 24,
+    },
+    psychologyChip: {
+      alignSelf: 'flex-start',
     },
     actions: {
       marginTop: 8,

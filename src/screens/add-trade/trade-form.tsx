@@ -81,12 +81,41 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
       />
 
       <TextInput
+        label="Psychology (Optional)"
+        value={formData.psychology}
+        onChangeText={(text) => onUpdate({ psychology: text })}
+        mode="outlined"
+        placeholder="anxious, calm, fomo, rushed, excited, impatient"
+        style={styles.input}
+      />
+
+      <TextInput
+        label="What Worked (Optional)"
+        value={formData.whatWorked}
+        onChangeText={(text) => onUpdate({ whatWorked: text })}
+        mode="outlined"
+        multiline
+        numberOfLines={3}
+        style={styles.input}
+      />
+
+      <TextInput
+        label="What Didn't Work (Optional)"
+        value={formData.whatFailed}
+        onChangeText={(text) => onUpdate({ whatFailed: text })}
+        mode="outlined"
+        multiline
+        numberOfLines={3}
+        style={styles.input}
+      />
+
+      <TextInput
         label="Notes (Optional)"
         value={formData.notes}
         onChangeText={(text) => onUpdate({ notes: text })}
         mode="outlined"
         multiline
-        numberOfLines={4}
+        numberOfLines={3}
         style={styles.input}
       />
     </>
