@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, SegmentedButtons, Text } from 'react-native-paper';
 
+import { MistakeCategorySelector } from './mistake-category-selector';
 import { DateTimeInput } from '../../components/date-time-input';
 import { TradeFormData } from '../../types';
 
@@ -109,12 +110,16 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         />
       </View>
 
+      <MistakeCategorySelector
+        value={formData.ruleViolation}
+        onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
+      />
       <TextInput
         label="Rule Violation (Optional)"
         value={formData.ruleViolation}
         onChangeText={(text) => onUpdate({ ruleViolation: text || undefined })}
         mode="outlined"
-        placeholder="e.g., ORB not setup, exit trade early"
+        placeholder="Select above or describe what went wrong"
         style={styles.input}
       />
 

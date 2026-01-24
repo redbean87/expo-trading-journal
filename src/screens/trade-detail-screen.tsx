@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { Text, Button, Card, Chip, Portal, Dialog } from 'react-native-paper';
 
+import { getMistakeCategoryLabel } from '../constants/mistake-categories';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTrade, useDeleteTrade } from '../hooks/use-trades';
 import { formatDateTime } from '../utils/date-format';
+import { categorizeMistake } from '../utils/mistake-categorization';
 
 export default function TradeDetailScreen() {
   const router = useRouter();
@@ -192,6 +194,30 @@ export default function TradeDetailScreen() {
             </Card>
           )}
 
+          {trade.ruleViolation && (
+            <Card style={styles.card}>
+              <Card.Content>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  Mistake / Rule Violation
+                </Text>
+                <View style={styles.ruleViolationContent}>
+                  <Chip
+                    style={styles.mistakeChip}
+                    icon="alert-circle"
+                    textStyle={{ color: theme.colors.loss }}
+                  >
+                    {getMistakeCategoryLabel(
+                      categorizeMistake(trade.ruleViolation) ?? 'other'
+                    )}
+                  </Chip>
+                  <Text variant="bodyLarge" style={styles.notes}>
+                    {trade.ruleViolation}
+                  </Text>
+                </View>
+              </Card.Content>
+            </Card>
+          )}
+
           {trade.notes && (
             <Card style={styles.card}>
               <Card.Content>
@@ -328,6 +354,13 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     psychologyChip: {
       alignSelf: 'flex-start',
+    },
+    ruleViolationContent: {
+      gap: 12,
+    },
+    mistakeChip: {
+      alignSelf: 'flex-start',
+      backgroundColor: theme.colors.loss + '20',
     },
     actions: {
       marginTop: 8,
