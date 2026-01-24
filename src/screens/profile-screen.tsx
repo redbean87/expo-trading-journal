@@ -11,6 +11,7 @@ import {
   Portal,
 } from 'react-native-paper';
 
+import { TimezonePicker } from '../components/timezone-picker';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
 import { useClearAllTrades } from '../hooks/use-trades';
@@ -83,6 +84,7 @@ export default function ProfileScreen() {
               />
             )}
           />
+          <TimezonePicker />
         </Card>
 
         <Card style={styles.card}>

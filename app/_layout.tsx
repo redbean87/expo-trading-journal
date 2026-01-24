@@ -12,6 +12,7 @@ import AuthGate from '../src/components/auth-gate';
 import { ErrorBoundary } from '../src/components/error-boundary';
 import { ConvexProvider } from '../src/providers/convex-provider';
 import { useThemeStore } from '../src/store/theme-store';
+import { useTimezoneStore } from '../src/store/timezone-store';
 import {
   lightTheme,
   darkTheme,
@@ -24,9 +25,11 @@ registerTranslation('en', enGB);
 
 export default function RootLayout() {
   const { themeMode, loadTheme } = useThemeStore();
+  const { loadTimezone } = useTimezoneStore();
 
   useEffect(() => {
     loadTheme();
+    loadTimezone();
   }, []);
 
   const paperTheme = themeMode === 'dark' ? darkTheme : lightTheme;

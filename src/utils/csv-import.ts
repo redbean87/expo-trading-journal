@@ -2,12 +2,27 @@ import { randomUUID } from 'expo-crypto';
 import Papa from 'papaparse';
 
 import { calculatePnl } from '../schemas/trade';
+import { useTimezoneStore } from '../store/timezone-store';
 
 import type { Trade, TradeSide } from '../types';
 
-// Parse date strings like "2026-01-16 9:42:00 AM" that Hermes doesn't handle natively
-function parseDateTime(dateStr: string): Date {
-  // Try native parsing first (works on web/V8)
+// Get timezone offset in milliseconds between UTC and a timezone for a given date
+function getTimezoneOffsetMs(timezone: string, date: Date): number {
+  const utcStr = date.toLocaleString('en-US', { timeZone: 'UTC' });
+  const tzStr = date.toLocaleString('en-US', { timeZone: timezone });
+  const utcDate = new Date(utcStr);
+  const tzDate = new Date(tzStr);
+  return utcDate.getTime() - tzDate.getTime();
+}
+
+// Parse date string as local time
+function parseAsLocal(dateStr: string): Date {
+  // Handle date-only format "YYYY-MM-DD" first to avoid UTC interpretation
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return new Date(`${dateStr}T00:00:00`);
+  }
+
+  // Try native parsing (works on web/V8)
   const nativeDate = new Date(dateStr);
   if (!isNaN(nativeDate.getTime())) {
     return nativeDate;
@@ -30,17 +45,34 @@ function parseDateTime(dateStr: string): Date {
       }
     }
 
-    // Create ISO format string that Hermes can parse
     const isoString = `${datePart}T${hours.toString().padStart(2, '0')}:${minutes}:${seconds}`;
     return new Date(isoString);
   }
 
-  // Handle date-only format "YYYY-MM-DD"
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-    return new Date(`${dateStr}T00:00:00`);
+  return new Date(NaN);
+}
+
+// Parse date strings, interpreting them as being in the specified timezone
+function parseDateTime(dateStr: string, sourceTimezone?: string): Date {
+  const localDate = parseAsLocal(dateStr);
+
+  if (isNaN(localDate.getTime()) || !sourceTimezone) {
+    return localDate;
   }
 
-  return new Date(NaN);
+  // Get local timezone
+  const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  if (sourceTimezone === localTimezone) {
+    return localDate;
+  }
+
+  // Adjust: the date was parsed as local, but should have been parsed as source timezone
+  const localOffset = getTimezoneOffsetMs(localTimezone, localDate);
+  const sourceOffset = getTimezoneOffsetMs(sourceTimezone, localDate);
+  const adjustment = sourceOffset - localOffset;
+
+  return new Date(localDate.getTime() + adjustment);
 }
 
 type CsvRow = {
@@ -114,7 +146,7 @@ function detectTradeSide(row: CsvRow, quantity: number): TradeSide {
   return 'long';
 }
 
-function parseCsvRowToTrade(row: CsvRow): Trade | null {
+function parseCsvRowToTrade(row: CsvRow, timezone?: string): Trade | null {
   if (
     !row.symbol ||
     !row.shares ||
@@ -141,8 +173,8 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
     const detectedSide = detectTradeSide(row, rawQuantity);
     const quantity = Math.abs(rawQuantity);
 
-    const entryTime = parseDateTime(row.entryTime);
-    const exitTime = parseDateTime(row.exitTime);
+    const entryTime = parseDateTime(row.entryTime, timezone);
+    const exitTime = parseDateTime(row.exitTime, timezone);
 
     if (isNaN(entryTime.getTime()) || isNaN(exitTime.getTime())) {
       return null;
@@ -202,6 +234,9 @@ function parseCsvRowToTrade(row: CsvRow): Trade | null {
 }
 
 export async function parseCsvFile(csvContent: string): Promise<ImportResult> {
+  // Get timezone from store (for use outside React components)
+  const timezone = useTimezoneStore.getState().timezone;
+
   return new Promise((resolve) => {
     const imported: Trade[] = [];
     const errors: string[] = [];
@@ -213,7 +248,7 @@ export async function parseCsvFile(csvContent: string): Promise<ImportResult> {
       complete: (results) => {
         results.data.forEach((row, index) => {
           try {
-            const trade = parseCsvRowToTrade(row);
+            const trade = parseCsvRowToTrade(row, timezone);
             if (trade) {
               imported.push(trade);
             } else {

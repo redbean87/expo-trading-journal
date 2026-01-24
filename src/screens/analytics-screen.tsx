@@ -104,6 +104,7 @@ export default function AnalyticsScreen() {
         return (
           <ChartsSection
             equityCurveData={equityCurveData}
+            trades={trades}
             onInteractionStart={() => setScrollEnabled(false)}
             onInteractionEnd={() => setScrollEnabled(true)}
           />
