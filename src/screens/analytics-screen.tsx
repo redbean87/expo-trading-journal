@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Card } from 'react-native-paper';
+import { SegmentedButtons } from 'react-native-paper';
 
 import { LoadingState } from '../components/loading-state';
-import { StatRow } from '../components/stat-row';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useEquityCurve } from '../hooks/use-equity-curve';
 import { useTradeAnalytics } from '../hooks/use-trade-analytics';
 import { useTradesInRange } from '../hooks/use-trades';
+import { AnalyticsSegment } from '../types';
 import { DateRangePreset, getDateRangeStart } from '../utils/date-range';
-import { formatDuration } from '../utils/format-duration';
+import { ChartsSection } from './analytics/charts-section';
 import { DateRangeFilter } from './analytics/date-range-filter';
-import { EquityCurveCard } from './analytics/equity-curve-card';
-import { MistakesCard } from './analytics/mistakes-card';
-import { PeriodBreakdownCard } from './analytics/period-breakdown-card';
-import { RiskRewardCard } from './analytics/risk-reward-card';
-import { TradeHighlightCard } from './analytics/trade-highlight-card';
+import { OverviewSection } from './analytics/overview-section';
+import { PsychologySection } from './analytics/psychology-section';
+import { TimingSection } from './analytics/timing-section';
 
 export default function AnalyticsScreen() {
   const theme = useAppTheme();
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [selectedRange, setSelectedRange] = useState<DateRangePreset>('all');
+  const [selectedSegment, setSelectedSegment] =
+    useState<AnalyticsSegment>('overview');
 
   const startTime = getDateRangeStart(selectedRange);
   const { trades, isLoading } = useTradesInRange(startTime);
@@ -61,6 +61,58 @@ export default function AnalyticsScreen() {
 
   const styles = createStyles(theme);
 
+  const renderSection = () => {
+    switch (selectedSegment) {
+      case 'overview':
+        return (
+          <OverviewSection
+            totalTrades={totalTrades}
+            winRate={winRate}
+            totalPnl={totalPnl}
+            avgTradePnl={avgTradePnl}
+            profitFactor={profitFactor}
+            winningTradesCount={winningTrades.length}
+            losingTradesCount={losingTrades.length}
+            breakEvenTradesCount={breakEvenTrades.length}
+            avgWin={avgWin}
+            avgLoss={avgLoss}
+            avgPerShareWin={avgPerShareWin}
+            avgPerShareLoss={avgPerShareLoss}
+            largestGain={largestGain}
+            largestLoss={largestLoss}
+            avgHoldTimeMs={avgHoldTimeMs}
+            maxConsecutiveWins={maxConsecutiveWins}
+            maxConsecutiveLosses={maxConsecutiveLosses}
+            longTradesCount={longTrades.length}
+            shortTradesCount={shortTrades.length}
+            longPnl={longPnl}
+            shortPnl={shortPnl}
+            realizedRR={realizedRR}
+            expectedValue={expectedValue}
+            requiredWinRate={requiredWinRate}
+            longRR={longRR}
+            shortRR={shortRR}
+            longWinRate={longWinRate}
+            shortWinRate={shortWinRate}
+            bestTrade={bestTrade}
+            worstTrade={worstTrade}
+          />
+        );
+      case 'timing':
+        return <TimingSection trades={trades} />;
+      case 'charts':
+        return (
+          <ChartsSection
+            equityCurveData={equityCurveData}
+            onInteractionStart={() => setScrollEnabled(false)}
+            onInteractionEnd={() => setScrollEnabled(true)}
+          />
+        );
+      case 'psychology':
+        return <PsychologySection trades={trades} />;
+    }
+  };
+
   return (
     <LoadingState isLoading={isLoading}>
       <ScrollView style={styles.container} scrollEnabled={scrollEnabled}>
@@ -70,157 +122,21 @@ export default function AnalyticsScreen() {
             onSelectRange={setSelectedRange}
           />
 
-          <Card style={styles.card}>
-            <Card.Title title="Performance Overview" />
-            <Card.Content>
-              <StatRow label="Total Trades:" value={totalTrades} />
-              <StatRow label="Win Rate:" value={`${winRate.toFixed(1)}%`} />
-              <StatRow
-                label="Total P&L:"
-                value={`$${totalPnl.toFixed(2)}`}
-                valueColor={
-                  totalPnl >= 0 ? theme.colors.profit : theme.colors.loss
-                }
-              />
-              <StatRow
-                label="Avg Trade P&L:"
-                value={`$${avgTradePnl.toFixed(2)}`}
-                valueColor={
-                  avgTradePnl >= 0 ? theme.colors.profit : theme.colors.loss
-                }
-              />
-              <StatRow
-                label="Profit Factor:"
-                value={
-                  profitFactor === Infinity ? '∞' : profitFactor.toFixed(2)
-                }
-              />
-            </Card.Content>
-          </Card>
+          <SegmentedButtons
+            value={selectedSegment}
+            onValueChange={(value) =>
+              setSelectedSegment(value as AnalyticsSegment)
+            }
+            buttons={[
+              { value: 'overview', label: 'Overview' },
+              { value: 'timing', label: 'Timing' },
+              { value: 'charts', label: 'Charts' },
+              { value: 'psychology', label: 'Psych' },
+            ]}
+            style={styles.segmentToggle}
+          />
 
-          {totalTrades > 0 && (
-            <RiskRewardCard
-              realizedRR={realizedRR}
-              expectedValue={expectedValue}
-              requiredWinRate={requiredWinRate}
-              actualWinRate={winRate}
-              longRR={longRR}
-              shortRR={shortRR}
-              longWinRate={longWinRate}
-              shortWinRate={shortWinRate}
-              hasLongTrades={longTrades.length > 0}
-              hasShortTrades={shortTrades.length > 0}
-            />
-          )}
-
-          {totalTrades > 0 && <PeriodBreakdownCard trades={trades} />}
-
-          {totalTrades > 0 && <MistakesCard trades={trades} />}
-
-          {equityCurveData.dataPoints.length > 0 && (
-            <EquityCurveCard
-              data={equityCurveData}
-              onInteractionStart={() => setScrollEnabled(false)}
-              onInteractionEnd={() => setScrollEnabled(true)}
-            />
-          )}
-
-          <Card style={styles.card}>
-            <Card.Title title="Trade Statistics" />
-            <Card.Content>
-              <StatRow
-                label="Winning Trades:"
-                value={winningTrades.length}
-                valueColor={theme.colors.profit}
-              />
-              <StatRow
-                label="Losing Trades:"
-                value={losingTrades.length}
-                valueColor={theme.colors.loss}
-              />
-              <StatRow label="Break Even:" value={breakEvenTrades.length} />
-              <StatRow
-                label="Avg Win:"
-                value={`$${avgWin.toFixed(2)}`}
-                valueColor={theme.colors.profit}
-              />
-              <StatRow
-                label="Avg Loss:"
-                value={`$${avgLoss.toFixed(2)}`}
-                valueColor={theme.colors.loss}
-              />
-              <StatRow
-                label="Avg Per-Share Win:"
-                value={`$${avgPerShareWin.toFixed(4)}`}
-                valueColor={theme.colors.profit}
-              />
-              <StatRow
-                label="Avg Per-Share Loss:"
-                value={`$${avgPerShareLoss.toFixed(4)}`}
-                valueColor={theme.colors.loss}
-              />
-              <StatRow
-                label="Largest Gain:"
-                value={`$${largestGain.toFixed(2)}`}
-                valueColor={theme.colors.profit}
-              />
-              <StatRow
-                label="Largest Loss:"
-                value={`$${largestLoss.toFixed(2)}`}
-                valueColor={theme.colors.loss}
-              />
-              <StatRow
-                label="Avg Hold Time:"
-                value={formatDuration(avgHoldTimeMs)}
-              />
-            </Card.Content>
-          </Card>
-
-          <Card style={styles.card}>
-            <Card.Title title="Streak Analysis" />
-            <Card.Content>
-              <StatRow
-                label="Max Consecutive Wins:"
-                value={maxConsecutiveWins}
-                valueColor={theme.colors.profit}
-              />
-              <StatRow
-                label="Max Consecutive Losses:"
-                value={maxConsecutiveLosses}
-                valueColor={theme.colors.loss}
-              />
-            </Card.Content>
-          </Card>
-
-          <Card style={styles.card}>
-            <Card.Title title="Side Analysis" />
-            <Card.Content>
-              <StatRow
-                label="Long Trades:"
-                value={`${longTrades.length} (${longPnl >= 0 ? '+' : ''}$${longPnl.toFixed(2)})`}
-              />
-              <StatRow
-                label="Short Trades:"
-                value={`${shortTrades.length} (${shortPnl >= 0 ? '+' : ''}$${shortPnl.toFixed(2)})`}
-              />
-            </Card.Content>
-          </Card>
-
-          {bestTrade && (
-            <TradeHighlightCard
-              title="Best Trade"
-              trade={bestTrade}
-              valueColor={theme.colors.profit}
-            />
-          )}
-
-          {worstTrade && (
-            <TradeHighlightCard
-              title="Worst Trade"
-              trade={worstTrade}
-              valueColor={theme.colors.loss}
-            />
-          )}
+          {renderSection()}
         </View>
       </ScrollView>
     </LoadingState>
@@ -236,7 +152,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     content: {
       padding: 16,
     },
-    card: {
+    segmentToggle: {
       marginBottom: 16,
     },
   });

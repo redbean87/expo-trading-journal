@@ -46,6 +46,10 @@ export default function RootLayout() {
                   options={{ headerShown: true }}
                 />
                 <Stack.Screen
+                  name="add-trade"
+                  options={{ headerShown: true, title: 'Add Trade' }}
+                />
+                <Stack.Screen
                   name="edit-trade/[id]"
                   options={{ headerShown: true, title: 'Edit Trade' }}
                 />

@@ -45,19 +45,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="add-trade"
-        options={{
-          title: 'Add Trade',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="plus-circle"
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="analytics"
         options={{
           title: 'Analytics',
