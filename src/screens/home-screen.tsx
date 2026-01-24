@@ -6,13 +6,11 @@ import { StatCard } from '../components/stat-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTrades } from '../hooks/use-trades';
 import { useTradesSummary } from '../hooks/use-trades-summary';
-import { useThemeStore } from '../store/theme-store';
 import { HomeHeader } from './home/home-header';
 import { RecentTradesCard } from './home/recent-trades-card';
 
 export default function HomeScreen() {
   const { trades, isLoading } = useTrades();
-  const { themeMode, toggleTheme } = useThemeStore();
   const theme = useAppTheme();
 
   const {
@@ -30,7 +28,7 @@ export default function HomeScreen() {
     <LoadingState isLoading={isLoading}>
       <ScrollView style={styles.container}>
         <View style={styles.content}>
-          <HomeHeader themeMode={themeMode} onToggleTheme={toggleTheme} />
+          <HomeHeader />
 
           <View style={styles.statsContainer}>
             <StatCard title="Total Trades" value={totalTrades} />

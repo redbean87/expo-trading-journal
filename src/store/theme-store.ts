@@ -9,6 +9,7 @@ type ThemeStore = {
   setThemeMode: (mode: ThemeMode) => Promise<void>;
   toggleTheme: () => Promise<void>;
   loadTheme: () => Promise<void>;
+  setFromCloud: (mode: ThemeMode) => void;
 };
 
 const THEME_STORAGE_KEY = '@theme_mode';
@@ -43,5 +44,9 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
   toggleTheme: async () => {
     const newMode = get().themeMode === 'light' ? 'dark' : 'light';
     await get().setThemeMode(newMode);
+  },
+
+  setFromCloud: (mode: ThemeMode) => {
+    set({ themeMode: mode });
   },
 }));

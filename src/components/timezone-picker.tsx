@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { Dialog, Portal, RadioButton, Button, List } from 'react-native-paper';
 
+import { useUpdateTimezone } from '../hooks/use-settings';
 import { TIMEZONE_OPTIONS, useTimezoneStore } from '../store/timezone-store';
 
 export function TimezonePicker() {
-  const { timezone, setTimezone } = useTimezoneStore();
+  const { timezone } = useTimezoneStore();
+  const updateTimezone = useUpdateTimezone();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState(timezone);
 
@@ -17,8 +19,8 @@ export function TimezonePicker() {
     setDialogVisible(true);
   };
 
-  const handleConfirm = () => {
-    setTimezone(selectedValue);
+  const handleConfirm = async () => {
+    await updateTimezone(selectedValue);
     setDialogVisible(false);
   };
 

@@ -19,6 +19,7 @@ type TimezoneStore = {
   isLoading: boolean;
   setTimezone: (tz: string) => Promise<void>;
   loadTimezone: () => Promise<void>;
+  setFromCloud: (tz: string) => void;
 };
 
 const TIMEZONE_STORAGE_KEY = '@timezone';
@@ -56,5 +57,9 @@ export const useTimezoneStore = create<TimezoneStore>((set) => ({
     } catch (error) {
       console.error('Error saving timezone:', error);
     }
+  },
+
+  setFromCloud: (tz: string) => {
+    set({ timezone: tz });
   },
 }));

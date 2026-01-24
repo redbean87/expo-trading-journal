@@ -14,6 +14,10 @@ const schema = defineSchema({
     emailVerificationTime: v.optional(v.number()),
     image: v.optional(v.string()),
     isAnonymous: v.optional(v.boolean()),
+    // User settings (synced across devices)
+    themeMode: v.optional(v.string()), // 'light' | 'dark'
+    timezone: v.optional(v.string()), // IANA timezone string
+    settingsUpdatedAt: v.optional(v.number()), // Timestamp for conflict resolution
   }).index('by_email', ['email']),
 
   // Trades table

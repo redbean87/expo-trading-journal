@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
+import type * as settings from "../settings.js";
 import type * as trades from "../trades.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
+  settings: typeof settings;
   trades: typeof trades;
 }>;
 

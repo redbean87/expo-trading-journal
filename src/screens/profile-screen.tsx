@@ -14,12 +14,14 @@ import {
 import { TimezonePicker } from '../components/timezone-picker';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
+import { useUpdateTheme } from '../hooks/use-settings';
 import { useClearAllTrades } from '../hooks/use-trades';
 import { useThemeStore } from '../store/theme-store';
 
 export default function ProfileScreen() {
   const { logout } = useAuth();
-  const { themeMode, toggleTheme } = useThemeStore();
+  const { themeMode } = useThemeStore();
+  const updateTheme = useUpdateTheme();
   const theme = useAppTheme();
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [clearDialogVisible, setClearDialogVisible] = useState(false);
@@ -37,8 +39,9 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleThemeToggle = () => {
-    toggleTheme();
+  const handleThemeToggle = async () => {
+    const newMode = themeMode === 'light' ? 'dark' : 'light';
+    await updateTheme(newMode);
   };
 
   const handleClearAllTrades = async () => {
