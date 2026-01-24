@@ -8,7 +8,8 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["start"],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
     },
     {
       "name": "Convex Dev",
@@ -17,7 +18,8 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["convex", "dev"],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
     },
     {
       "name": "Jest: Current File",
