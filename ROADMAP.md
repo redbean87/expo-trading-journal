@@ -16,21 +16,23 @@ The app has a solid foundation with:
 
 ### High Priority
 
-- [x] **Emotion/Psychology Tracking** - Tag trades with emotional state (psychology field)
-- [x] **Trade Notes** - Post-trade reflection fields (whatWorked, whatFailed)
-- [x] **Confidence + Rule Violations** - Add confidence level (1-5) and ruleViolation field from sample CSV
-- [x] **Mistakes Tracking** - Categorize common trading errors with analytics dashboard
+- [ ] **P&L Calendar Heatmap** - Color-coded calendar showing daily profit/loss at a glance
+- [ ] **Performance by Day of Week** - Bar chart showing P&L and win rate by weekday
+- [ ] **Performance by Time of Day** - Chart showing P&L by trading hour
 
 ### Medium Priority
 
-- [ ] **Screenshot Attachments** - Add images to trades for chart analysis
 - [ ] **Strategy Analytics** - Performance breakdown by strategy tag
-- [ ] **Calendar View** - Visual calendar showing trades by date
+- [ ] **Screenshot Attachments** - Add images to trades for chart analysis
 - [ ] **Desktop Layout** - Responsive layout optimized for larger screens (web/tablet)
-- [ ] **Trade Duration Analysis** - Average time in trades
+- [ ] **Trade Duration Histogram** - Distribution chart of trade hold times
+- [ ] **Drawdown Chart** - Visual drawdown progression over time
+- [ ] **Win/Loss Distribution** - Histogram showing distribution of trade P&L
 
 ### Low Priority / Nice to Have
 
+- [ ] **R-Multiple Distribution** - Histogram of trades expressed in risk units (R)
+- [ ] **MFE/MAE Analysis** - Max favorable/adverse excursion charts (requires additional trade data)
 - [ ] **Position Sizing Calculator** - Calculate size based on risk %
 - [ ] **Trade Goals** - Daily/weekly/monthly P&L targets
 - [ ] **Notifications** - Milestone alerts (reached $X profit, etc.)
