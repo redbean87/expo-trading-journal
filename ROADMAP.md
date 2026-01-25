@@ -16,7 +16,7 @@ The app has a solid foundation with:
 
 ### High Priority
 
-- [ ] **Performance by Day of Week** - Bar chart showing P&L and win rate by weekday
+- [x] **Performance by Day of Week** - Bar chart showing P&L and win rate by weekday
 - [ ] **Performance by Time of Day** - Chart showing P&L by trading hour
 
 ### Medium Priority
@@ -129,3 +129,4 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Confidence + Rule Violations - confidence level (1-5) and ruleViolation field with CSV import support
 - [x] Mistakes Tracking - Categorize trading errors with analytics dashboard showing frequency and P&L impact
 - [x] P&L Calendar Heatmap - Color-coded calendar showing daily profit/loss at a glance
+- [x] Performance by Day of Week - Bar chart showing P&L and win rate by weekday

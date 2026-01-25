@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { DayOfWeekCard } from './day-of-week-card';
 import { EquityCurveCard } from './equity-curve-card';
 import { PnlCalendarCard } from './pnl-calendar-card';
 import { EquityCurveData } from '../../hooks/use-equity-curve';
@@ -29,6 +30,7 @@ export function ChartsSection({
         onInteractionStart={onInteractionStart}
         onInteractionEnd={onInteractionEnd}
       />
+      <DayOfWeekCard trades={trades} />
       <PnlCalendarCard trades={trades} />
     </>
   );
