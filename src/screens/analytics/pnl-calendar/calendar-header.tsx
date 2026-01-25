@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
 
 import { useAppTheme } from '../../../hooks/use-app-theme';
@@ -8,6 +8,9 @@ import {
   formatMonthYear,
   getWeekdayLabels,
 } from '../../../utils/calendar-helpers';
+
+const COLUMNS = 7;
+const HORIZONTAL_PADDING = 64;
 
 type CalendarHeaderProps = {
   selectedMonth: Date;
@@ -21,8 +24,12 @@ export function CalendarHeader({
   onNextMonth,
 }: CalendarHeaderProps) {
   const theme = useAppTheme();
+  const { width: screenWidth } = useWindowDimensions();
   const styles = createStyles(theme);
   const weekdays = getWeekdayLabels();
+
+  const availableWidth = screenWidth - HORIZONTAL_PADDING;
+  const cellSize = Math.floor(availableWidth / COLUMNS);
 
   return (
     <View>
@@ -35,7 +42,7 @@ export function CalendarHeader({
       </View>
       <View style={styles.weekdays}>
         {weekdays.map((day) => (
-          <View key={day} style={styles.weekdayCell}>
+          <View key={day} style={[styles.weekdayCell, { width: cellSize }]}>
             <Text style={styles.weekdayText}>{day}</Text>
           </View>
         ))}
@@ -60,7 +67,6 @@ const createStyles = (theme: AppTheme) =>
       marginBottom: 4,
     },
     weekdayCell: {
-      width: '14.28%',
       alignItems: 'center',
     },
     weekdayText: {

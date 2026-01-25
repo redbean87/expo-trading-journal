@@ -17,6 +17,7 @@ type CalendarDayProps = {
   maxProfit: number;
   maxLoss: number;
   onPress: () => void;
+  size: number;
 };
 
 export function CalendarDay({
@@ -26,6 +27,7 @@ export function CalendarDay({
   maxProfit,
   maxLoss,
   onPress,
+  size,
 }: CalendarDayProps) {
   const theme = useAppTheme();
   const styles = createStyles(theme);
@@ -54,7 +56,7 @@ export function CalendarDay({
 
   return (
     <TouchableOpacity
-      style={[styles.day, { backgroundColor }]}
+      style={[styles.day, { width: size, height: size, backgroundColor }]}
       onPress={onPress}
       disabled={!hasTrades}
       activeOpacity={0.7}
@@ -80,8 +82,6 @@ export function CalendarDay({
 const createStyles = (theme: AppTheme) =>
   StyleSheet.create({
     day: {
-      width: '14.28%',
-      aspectRatio: 1,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 4,

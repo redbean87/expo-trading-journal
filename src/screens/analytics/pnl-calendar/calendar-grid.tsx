@@ -1,9 +1,12 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import { CalendarDay } from './calendar-day';
 import { DailyPnl, UseDailyPnlResult } from '../../../hooks/use-daily-pnl';
 import { getMonthDays, isSameMonth } from '../../../utils/calendar-helpers';
+
+const COLUMNS = 7;
+const HORIZONTAL_PADDING = 64; // content padding (16) + Card.Content padding (16) on each side
 
 type CalendarGridProps = {
   selectedMonth: Date;
@@ -16,10 +19,14 @@ export function CalendarGrid({
   dailyPnlData,
   onDayPress,
 }: CalendarGridProps) {
+  const { width: screenWidth } = useWindowDimensions();
   const monthDays = getMonthDays(
     selectedMonth.getFullYear(),
     selectedMonth.getMonth()
   );
+
+  const availableWidth = screenWidth - HORIZONTAL_PADDING;
+  const cellSize = Math.floor(availableWidth / COLUMNS);
 
   return (
     <View style={styles.grid}>
@@ -32,6 +39,7 @@ export function CalendarGrid({
           maxProfit={dailyPnlData.maxProfit}
           maxLoss={dailyPnlData.maxLoss}
           onPress={() => onDayPress?.(date, dailyPnlData.getDayData(date))}
+          size={cellSize}
         />
       ))}
     </View>
