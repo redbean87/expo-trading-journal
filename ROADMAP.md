@@ -17,7 +17,7 @@ The app has a solid foundation with:
 ### High Priority
 
 - [x] **Performance by Day of Week** - Bar chart showing P&L and win rate by weekday
-- [ ] **Performance by Time of Day** - Chart showing P&L by trading hour
+- [x] **Performance by Time of Day** - Chart showing P&L by trading hour
 
 ### Medium Priority
 
