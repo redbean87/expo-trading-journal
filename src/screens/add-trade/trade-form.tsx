@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { TextInput, SegmentedButtons, Text } from 'react-native-paper';
+import { TextInput, SegmentedButtons, Text, Chip } from 'react-native-paper';
 
 import { MistakeCategorySelector } from './mistake-category-selector';
 import { DateTimeInput } from '../../components/date-time-input';
@@ -94,20 +94,28 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         <Text variant="bodyMedium" style={styles.confidenceLabel}>
           Confidence (Optional)
         </Text>
-        <SegmentedButtons
-          value={formData.confidence?.toString() ?? ''}
-          onValueChange={(value) =>
-            onUpdate({ confidence: value ? parseInt(value, 10) : undefined })
-          }
-          buttons={[
-            { value: '1', label: '1' },
-            { value: '2', label: '2' },
-            { value: '3', label: '3' },
-            { value: '4', label: '4' },
-            { value: '5', label: '5' },
-          ]}
-          style={styles.confidenceButtons}
-        />
+        <View style={styles.confidenceChips}>
+          {[1, 2, 3, 4, 5].map((value) => (
+            <Chip
+              key={value}
+              selected={formData.confidence === value}
+              onPress={() =>
+                onUpdate({
+                  confidence: formData.confidence === value ? undefined : value,
+                })
+              }
+              style={[
+                styles.confidenceChip,
+                formData.confidence === value && styles.confidenceChipSelected,
+              ]}
+              textStyle={styles.confidenceChipText}
+              showSelectedOverlay
+              showSelectedCheck={false}
+            >
+              {value}
+            </Chip>
+          ))}
+        </View>
       </View>
 
       <MistakeCategorySelector
@@ -177,7 +185,20 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     opacity: 0.7,
   },
-  confidenceButtons: {
-    marginBottom: 0,
+  confidenceChips: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  confidenceChip: {
+    flex: 1,
+    marginHorizontal: 2,
+  },
+  confidenceChipText: {
+    textAlign: 'center',
+    width: '100%',
+  },
+  confidenceChipSelected: {
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
   },
 });
