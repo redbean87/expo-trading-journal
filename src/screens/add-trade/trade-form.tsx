@@ -111,6 +111,7 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
               textStyle={styles.confidenceChipText}
               showSelectedOverlay
               showSelectedCheck={false}
+              compact
             >
               {value}
             </Chip>
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
   },
   confidenceChipText: {
     textAlign: 'center',
-    width: '100%',
+    flexGrow: 1,
   },
   confidenceChipSelected: {
     borderWidth: 1,
