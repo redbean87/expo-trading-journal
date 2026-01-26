@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import {
   TextInput,
   Button,
@@ -42,8 +42,9 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
   };
 
   return (
-    <View
+    <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <Text variant="headlineMedium" style={styles.title}>
         Trading Journal
@@ -97,7 +98,7 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
       >
         Don&apos;t have an account? Sign Up
       </Button>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

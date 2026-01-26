@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import {
   TextInput,
   Button,
@@ -55,8 +55,9 @@ export default function RegisterScreen({
   };
 
   return (
-    <View
+    <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <Text variant="headlineMedium" style={styles.title}>
         Create Account
@@ -120,7 +121,7 @@ export default function RegisterScreen({
       >
         Already have an account? Sign In
       </Button>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
