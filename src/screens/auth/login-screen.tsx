@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { TextInput, Button, Text, HelperText } from 'react-native-paper';
+import {
+  TextInput,
+  Button,
+  Text,
+  HelperText,
+  useTheme,
+} from 'react-native-paper';
 
 import { useAuth } from '../../hooks/use-auth';
 
@@ -15,6 +21,7 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
+  const theme = useTheme();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -35,7 +42,9 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <Text variant="headlineMedium" style={styles.title}>
         Trading Journal
       </Text>

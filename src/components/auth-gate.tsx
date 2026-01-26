@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, useTheme } from 'react-native-paper';
 
 import { useAuth } from '../hooks/use-auth';
 import LoginScreen from '../screens/auth/login-screen';
@@ -13,10 +13,16 @@ type AuthGateProps = {
 export default function AuthGate({ children }: AuthGateProps) {
   const { isLoading, isAuthenticated } = useAuth();
   const [showRegister, setShowRegister] = useState(false);
+  const theme = useTheme();
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View
+        style={[
+          styles.loadingContainer,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <ActivityIndicator size="large" />
       </View>
     );

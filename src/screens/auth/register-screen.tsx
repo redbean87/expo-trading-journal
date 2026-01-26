@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { TextInput, Button, Text, HelperText } from 'react-native-paper';
+import {
+  TextInput,
+  Button,
+  Text,
+  HelperText,
+  useTheme,
+} from 'react-native-paper';
 
 import { useAuth } from '../../hooks/use-auth';
 
@@ -18,6 +24,7 @@ export default function RegisterScreen({
   const [loading, setLoading] = useState(false);
 
   const { register } = useAuth();
+  const theme = useTheme();
 
   const handleRegister = async () => {
     if (!email || !password || !confirmPassword) {
@@ -48,7 +55,9 @@ export default function RegisterScreen({
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <Text variant="headlineMedium" style={styles.title}>
         Create Account
       </Text>
