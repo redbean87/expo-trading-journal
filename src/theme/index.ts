@@ -7,6 +7,36 @@ import { MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 
 export type ThemeMode = 'light' | 'dark';
 
+export const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+} as const;
+
+export const layout = {
+  breakpoints: {
+    tablet: 768,
+    desktop: 1024,
+  },
+  container: {
+    maxWidth: 1200,
+  },
+  grid: {
+    gap: 12,
+    columns: {
+      mobile: 1,
+      tablet: 2,
+      desktop: 4,
+    },
+  },
+} as const;
+
+export type Spacing = typeof spacing;
+export type Layout = typeof layout;
+
 const customColors = {
   profit: '#4caf50',
   loss: '#f44336',
