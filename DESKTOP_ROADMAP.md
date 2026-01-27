@@ -35,7 +35,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Create `src/components/desktop-sidebar.tsx`
   - Vertical nav with icons + labels, highlights active route
 
-- [ ] **2.3 Adaptive Layout Wrapper**
+- [x] **2.3 Adaptive Layout Wrapper**
   - Modify `app/(tabs)/_layout.tsx`
   - Bottom tabs on mobile/tablet, sidebar on desktop
 

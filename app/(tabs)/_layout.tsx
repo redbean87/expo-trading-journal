@@ -1,21 +1,30 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
 
+import { DesktopSidebar } from '../../src/components/desktop-sidebar';
 import { useAppTheme } from '../../src/hooks/use-app-theme';
+import {
+  getTabBarStyle,
+  useNavigationMode,
+} from '../../src/hooks/use-navigation-mode';
 
 export default function TabLayout() {
   const theme = useAppTheme();
+  const mode = useNavigationMode();
+  const isSidebar = mode === 'sidebar';
 
-  return (
+  const tabs = (
     <Tabs
       screenOptions={{
         headerShown: true,
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textSecondary,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
-        },
+        tabBarStyle: getTabBarStyle(
+          isSidebar,
+          theme.colors.surface,
+          theme.colors.border
+        ),
         headerStyle: {
           backgroundColor: theme.colors.surface,
         },
@@ -72,4 +81,25 @@ export default function TabLayout() {
       />
     </Tabs>
   );
+
+  if (isSidebar) {
+    return (
+      <View style={styles.desktopContainer}>
+        <DesktopSidebar />
+        <View style={styles.content}>{tabs}</View>
+      </View>
+    );
+  }
+
+  return tabs;
 }
+
+const styles = StyleSheet.create({
+  desktopContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  content: {
+    flex: 1,
+  },
+});
