@@ -11,7 +11,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Breakpoints: mobile (<768), tablet (768-1023), desktop (1024+)
   - Returns `{ breakpoint, isMobile, isTablet, isDesktop, width }`
 
-- [ ] **1.2 Responsive Container**
+- [x] **1.2 Responsive Container**
   - Create `src/components/responsive-container.tsx`
   - Applies `maxWidth: 1200px` on desktop, centers content
 
