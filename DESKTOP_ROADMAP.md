@@ -31,7 +31,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Create `src/hooks/use-navigation-mode.ts`
   - Returns `'tabs' | 'sidebar'` based on breakpoint
 
-- [ ] **2.2 Desktop Sidebar**
+- [x] **2.2 Desktop Sidebar**
   - Create `src/components/desktop-sidebar.tsx`
   - Vertical nav with icons + labels, highlights active route
 
