@@ -15,7 +15,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Create `src/components/responsive-container.tsx`
   - Applies `maxWidth: 1200px` on desktop, centers content
 
-- [ ] **1.3 Responsive Grid**
+- [x] **1.3 Responsive Grid**
   - Create `src/components/responsive-grid.tsx`
   - Configurable columns: `columns={{ mobile: 1, tablet: 2, desktop: 4 }}`
 
