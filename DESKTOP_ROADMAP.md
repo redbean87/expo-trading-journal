@@ -58,7 +58,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - 2-column grid for overview cards on desktop
   - Files: `analytics-screen.tsx`, `overview-section.tsx`
 
-- [ ] **3.4 Profile Screen**
+- [x] **3.4 Profile Screen**
   - Wrap in `ResponsiveContainer`
   - Constrain settings cards (max 600px)
   - File: `profile-screen.tsx`

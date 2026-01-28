@@ -11,6 +11,7 @@ import {
   Portal,
 } from 'react-native-paper';
 
+import { ResponsiveContainer } from '../components/responsive-container';
 import { TimezonePicker } from '../components/timezone-picker';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
@@ -60,76 +61,84 @@ export default function ProfileScreen() {
     <ScrollView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      <View style={styles.content}>
-        <Card style={styles.card}>
-          <Card.Content style={styles.userSection}>
-            <Avatar.Icon size={64} icon="account" />
-            <Text variant="titleMedium" style={styles.userText}>
-              Signed in
-            </Text>
-          </Card.Content>
-        </Card>
+      <ResponsiveContainer>
+        <View style={styles.content}>
+          <Card style={styles.card}>
+            <Card.Content style={styles.userSection}>
+              <Avatar.Icon size={64} icon="account" />
+              <Text variant="titleMedium" style={styles.userText}>
+                Signed in
+              </Text>
+            </Card.Content>
+          </Card>
 
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Appearance
-            </Text>
-          </Card.Content>
-          <List.Item
-            title="Dark Mode"
-            description={themeMode === 'dark' ? 'On' : 'Off'}
-            left={(props) => <List.Icon {...props} icon="theme-light-dark" />}
-            right={() => (
-              <Switch
-                value={themeMode === 'dark'}
-                onValueChange={handleThemeToggle}
-              />
-            )}
-          />
-          <TimezonePicker />
-        </Card>
+          <Card style={styles.card}>
+            <Card.Content>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
+                Appearance
+              </Text>
+            </Card.Content>
+            <List.Item
+              title="Dark Mode"
+              description={themeMode === 'dark' ? 'On' : 'Off'}
+              left={(props) => <List.Icon {...props} icon="theme-light-dark" />}
+              right={() => (
+                <Switch
+                  value={themeMode === 'dark'}
+                  onValueChange={handleThemeToggle}
+                />
+              )}
+            />
+            <TimezonePicker />
+          </Card>
 
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Data Management
-            </Text>
-          </Card.Content>
-          <Card.Actions style={styles.cardActions}>
-            <Button
-              mode="outlined"
-              onPress={() => setClearDialogVisible(true)}
-              icon="delete"
-              textColor={theme.colors.error}
-              style={[styles.actionButton, { borderColor: theme.colors.error }]}
-            >
-              Remove All Trades
-            </Button>
-          </Card.Actions>
-        </Card>
+          <Card style={styles.card}>
+            <Card.Content>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
+                Data Management
+              </Text>
+            </Card.Content>
+            <Card.Actions style={styles.cardActions}>
+              <Button
+                mode="outlined"
+                onPress={() => setClearDialogVisible(true)}
+                icon="delete"
+                textColor={theme.colors.error}
+                style={[
+                  styles.actionButton,
+                  { borderColor: theme.colors.error },
+                ]}
+              >
+                Remove All Trades
+              </Button>
+            </Card.Actions>
+          </Card>
 
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Account
-            </Text>
-          </Card.Content>
-          <Card.Actions style={styles.cardActions}>
-            <Button
-              mode="outlined"
-              onPress={handleLogout}
-              loading={logoutLoading}
-              disabled={logoutLoading}
-              icon="logout"
-              textColor={theme.colors.error}
-              style={[styles.actionButton, { borderColor: theme.colors.error }]}
-            >
-              Sign Out
-            </Button>
-          </Card.Actions>
-        </Card>
-      </View>
+          <Card style={styles.card}>
+            <Card.Content>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
+                Account
+              </Text>
+            </Card.Content>
+            <Card.Actions style={styles.cardActions}>
+              <Button
+                mode="outlined"
+                onPress={handleLogout}
+                loading={logoutLoading}
+                disabled={logoutLoading}
+                icon="logout"
+                textColor={theme.colors.error}
+                style={[
+                  styles.actionButton,
+                  { borderColor: theme.colors.error },
+                ]}
+              >
+                Sign Out
+              </Button>
+            </Card.Actions>
+          </Card>
+        </View>
+      </ResponsiveContainer>
 
       <Portal>
         <Dialog
@@ -166,9 +175,12 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    alignItems: 'center',
   },
   card: {
     marginBottom: 16,
+    maxWidth: 600,
+    width: '100%',
   },
   userSection: {
     alignItems: 'center',
