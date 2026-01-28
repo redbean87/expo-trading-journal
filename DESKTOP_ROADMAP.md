@@ -48,7 +48,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Stat cards: 2 cols mobile → 4 cols desktop
   - Files: `home-screen.tsx`, `stat-card.tsx`
 
-- [ ] **3.2 Trades Screen**
+- [x] **3.2 Trades Screen**
   - Wrap in `ResponsiveContainer`
   - Constrain trade card width, adjust FAB positioning
   - File: `trades-screen.tsx`

@@ -15,9 +15,11 @@ import { FAB, Snackbar, Portal, Text, IconButton } from 'react-native-paper';
 
 import { EmptyState } from '../components/empty-state';
 import { LoadingState } from '../components/loading-state';
+import { ResponsiveContainer } from '../components/responsive-container';
 import { SearchBar } from '../components/search-bar';
 import { TradeCard } from '../components/trade-card';
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useBreakpoint } from '../hooks/use-breakpoint';
 import { useTradeFilters } from '../hooks/use-trade-filters';
 import {
   useTrades,
@@ -36,6 +38,7 @@ export default function TradesScreen() {
   const importTrades = useImportTrades();
   const router = useRouter();
   const theme = useAppTheme();
+  const { isDesktop } = useBreakpoint();
   const isFocused = useIsFocused();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -179,32 +182,37 @@ export default function TradesScreen() {
   return (
     <LoadingState isLoading={isLoading}>
       <View style={styles.container}>
-        <EmptyState
-          data={trades}
-          title="No trades yet"
-          subtitle="Tap the + button to add your first trade"
-        >
-          <SearchBar
-            value={filters.searchQuery}
-            onChangeText={(text) => updateFilter('searchQuery', text)}
-            onFilterPress={() => setFilterModalVisible(true)}
-            filterCount={activeFilterCount}
-          />
-          <EmptyState data={filteredTrades} fallback={noResultsFallback}>
-            <FlatList
-              data={filteredTrades}
-              renderItem={renderTrade}
-              keyExtractor={(item) => item.id}
-              contentContainerStyle={styles.list}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
+        <ResponsiveContainer>
+          <EmptyState
+            data={trades}
+            title="No trades yet"
+            subtitle="Tap the + button to add your first trade"
+          >
+            <SearchBar
+              value={filters.searchQuery}
+              onChangeText={(text) => updateFilter('searchQuery', text)}
+              onFilterPress={() => setFilterModalVisible(true)}
+              filterCount={activeFilterCount}
             />
+            <EmptyState data={filteredTrades} fallback={noResultsFallback}>
+              <FlatList
+                data={filteredTrades}
+                renderItem={renderTrade}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.list}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
+              />
+            </EmptyState>
           </EmptyState>
-        </EmptyState>
+        </ResponsiveContainer>
         {isFocused && (
           <Portal>
-            <View style={styles.fabContainer}>
+            <View style={[styles.fabContainer, isDesktop && { bottom: 24 }]}>
               {fabOpen && (
                 <>
                   <TouchableOpacity
