@@ -76,7 +76,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
 
 ## Phase 4: Chart Improvements
 
-- [ ] **4.1 Chart Width Utilities**
+- [x] **4.1 Chart Width Utilities**
   - Create `src/utils/chart-dimensions.ts`
   - Centralize width calculations
 

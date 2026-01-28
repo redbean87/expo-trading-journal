@@ -6,6 +6,10 @@ import { Card, Text } from 'react-native-paper';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useContentWidth } from '../../hooks/use-content-width';
 import { EquityCurveData } from '../../hooks/use-equity-curve';
+import {
+  getChartWidth,
+  Y_AXIS_LABEL_WIDTH,
+} from '../../utils/chart-dimensions';
 
 type EquityCurveCardProps = {
   data: EquityCurveData;
@@ -52,8 +56,7 @@ export function EquityCurveCard({
   const contentWidth = useContentWidth();
   const styles = createStyles(theme);
 
-  const yAxisLabelWidth = 50;
-  const chartWidth = contentWidth - 64 - yAxisLabelWidth;
+  const chartWidth = getChartWidth(contentWidth);
 
   const isProfit = data.currentBalance >= 0;
   const lineColor = isProfit ? theme.colors.profit : theme.colors.loss;
@@ -120,7 +123,7 @@ export function EquityCurveCard({
             xAxisColor={theme.colors.border}
             noOfSections={4}
             yAxisLabelPrefix="$"
-            yAxisLabelWidth={yAxisLabelWidth}
+            yAxisLabelWidth={Y_AXIS_LABEL_WIDTH}
             spacing={spacing}
             initialSpacing={0}
             endSpacing={0}

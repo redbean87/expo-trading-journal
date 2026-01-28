@@ -9,9 +9,7 @@ import {
   formatMonthYear,
   getWeekdayLabels,
 } from '../../../utils/calendar-helpers';
-
-const COLUMNS = 7;
-const HORIZONTAL_PADDING = 64;
+import { getCalendarCellSize } from '../../../utils/chart-dimensions';
 
 type CalendarHeaderProps = {
   selectedMonth: Date;
@@ -29,8 +27,7 @@ export function CalendarHeader({
   const styles = createStyles(theme);
   const weekdays = getWeekdayLabels();
 
-  const availableWidth = screenWidth - HORIZONTAL_PADDING;
-  const cellSize = Math.floor(availableWidth / COLUMNS);
+  const { cellSize } = getCalendarCellSize(screenWidth);
 
   return (
     <View>

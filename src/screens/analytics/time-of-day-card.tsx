@@ -7,6 +7,10 @@ import { useAppTheme } from '../../hooks/use-app-theme';
 import { useContentWidth } from '../../hooks/use-content-width';
 import { useTimeOfDayBreakdown } from '../../hooks/use-time-of-day-breakdown';
 import { Trade } from '../../types';
+import {
+  getChartWidth,
+  Y_AXIS_LABEL_WIDTH,
+} from '../../utils/chart-dimensions';
 
 type TimeOfDayCardProps = {
   trades: Trade[];
@@ -18,8 +22,7 @@ export function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
   const styles = createStyles(theme);
   const breakdown = useTimeOfDayBreakdown(trades);
 
-  const yAxisLabelWidth = 50;
-  const chartWidth = contentWidth - 64 - yAxisLabelWidth;
+  const chartWidth = getChartWidth(contentWidth);
   const barCount = breakdown.length || 1;
   // Use fixed bar width, enable scroll if many bars
   const barWidth = 28;
@@ -65,7 +68,7 @@ export function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
             yAxisColor={theme.colors.border}
             xAxisColor={theme.colors.border}
             yAxisLabelPrefix="$"
-            yAxisLabelWidth={yAxisLabelWidth}
+            yAxisLabelWidth={Y_AXIS_LABEL_WIDTH}
             disableScroll={!needsScroll}
             hideRules={false}
             roundedTop

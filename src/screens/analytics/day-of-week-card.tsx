@@ -7,6 +7,11 @@ import { useAppTheme } from '../../hooks/use-app-theme';
 import { useContentWidth } from '../../hooks/use-content-width';
 import { useDayOfWeekBreakdown } from '../../hooks/use-day-of-week-breakdown';
 import { Trade } from '../../types';
+import {
+  getChartWidth,
+  getDayOfWeekBarWidth,
+  Y_AXIS_LABEL_WIDTH,
+} from '../../utils/chart-dimensions';
 
 type DayOfWeekCardProps = {
   trades: Trade[];
@@ -18,9 +23,8 @@ export function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
   const styles = createStyles(theme);
   const breakdown = useDayOfWeekBreakdown(trades);
 
-  const yAxisLabelWidth = 50;
-  const chartWidth = contentWidth - 64 - yAxisLabelWidth;
-  const barWidth = Math.floor((chartWidth - 70) / 7);
+  const chartWidth = getChartWidth(contentWidth);
+  const barWidth = getDayOfWeekBarWidth(chartWidth);
 
   const chartData = breakdown.map((day) => ({
     value: day.totalPnl,
@@ -63,7 +67,7 @@ export function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
             yAxisColor={theme.colors.border}
             xAxisColor={theme.colors.border}
             yAxisLabelPrefix="$"
-            yAxisLabelWidth={yAxisLabelWidth}
+            yAxisLabelWidth={Y_AXIS_LABEL_WIDTH}
             disableScroll
             hideRules={false}
             roundedTop
