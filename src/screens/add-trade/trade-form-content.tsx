@@ -10,6 +10,7 @@ import { Button, Card } from 'react-native-paper';
 
 import { PnlPreviewCard } from './pnl-preview-card';
 import { TradeForm } from './trade-form';
+import { ResponsiveContainer } from '../../components/responsive-container';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { calculatePnl } from '../../schemas/trade';
 import { TradeFormData } from '../../types';
@@ -65,36 +66,40 @@ export function TradeFormContent({
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-        <View style={styles.content}>
-          <Card style={styles.card}>
-            <Card.Content>
-              <TradeForm
-                formData={formData}
-                onUpdate={(updates) => setFormData({ ...formData, ...updates })}
-              />
+        <ResponsiveContainer>
+          <View style={styles.content}>
+            <Card style={styles.card}>
+              <Card.Content>
+                <TradeForm
+                  formData={formData}
+                  onUpdate={(updates) =>
+                    setFormData({ ...formData, ...updates })
+                  }
+                />
 
-              {formData.entryPrice &&
-                formData.exitPrice &&
-                formData.quantity && (
-                  <PnlPreviewCard pnl={pnl} pnlPercent={pnlPercent} />
-                )}
+                {formData.entryPrice &&
+                  formData.exitPrice &&
+                  formData.quantity && (
+                    <PnlPreviewCard pnl={pnl} pnlPercent={pnlPercent} />
+                  )}
 
-              <Button
-                mode="contained"
-                onPress={handleSubmit}
-                style={styles.button}
-                disabled={
-                  !formData.symbol ||
-                  !formData.entryPrice ||
-                  !formData.exitPrice ||
-                  !formData.quantity
-                }
-              >
-                {isEditMode ? 'Update Trade' : 'Add Trade'}
-              </Button>
-            </Card.Content>
-          </Card>
-        </View>
+                <Button
+                  mode="contained"
+                  onPress={handleSubmit}
+                  style={styles.button}
+                  disabled={
+                    !formData.symbol ||
+                    !formData.entryPrice ||
+                    !formData.exitPrice ||
+                    !formData.quantity
+                  }
+                >
+                  {isEditMode ? 'Update Trade' : 'Add Trade'}
+                </Button>
+              </Card.Content>
+            </Card>
+          </View>
+        </ResponsiveContainer>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -111,9 +116,12 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     content: {
       padding: 16,
+      alignItems: 'center',
     },
     card: {
       marginBottom: 16,
+      maxWidth: 600,
+      width: '100%',
     },
     button: {
       marginTop: 8,

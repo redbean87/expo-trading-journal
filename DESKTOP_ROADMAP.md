@@ -39,6 +39,11 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Modify `app/(tabs)/_layout.tsx`
   - Bottom tabs on mobile/tablet, sidebar on desktop
 
+- [ ] **2.4 Persistent Sidebar for Detail Screens**
+  - Move sidebar logic from `(tabs)/_layout.tsx` to `_layout.tsx`
+  - Sidebar persists on trade detail, add/edit trade screens
+  - Files: `app/_layout.tsx`, `app/(tabs)/_layout.tsx`
+
 ---
 
 ## Phase 3: Screen Layouts
@@ -63,7 +68,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Constrain settings cards (max 600px)
   - File: `profile-screen.tsx`
 
-- [ ] **3.5 Trade Form**
+- [x] **3.5 Trade Form**
   - Constrain form width (max 600px, centered)
   - Files: `trade-form.tsx`, `trade-form-content.tsx`
 
@@ -118,7 +123,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
 ```
 1.1 ─┬─> 1.2 ─┐
      ├─> 1.3 ─┼─> Phase 3 (all screens)
-     ├─> 2.1 ─> 2.2 ─> 2.3
+     ├─> 2.1 ─> 2.2 ─> 2.3 ─> 2.4
      └─> 4.1 ─> 4.2, 4.3
 
 1.4 (independent)

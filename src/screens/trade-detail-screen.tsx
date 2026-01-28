@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { Text, Button, Card, Chip, Portal, Dialog } from 'react-native-paper';
 
+import { ResponsiveContainer } from '../components/responsive-container';
 import { getMistakeCategoryLabel } from '../constants/mistake-categories';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTrade, useDeleteTrade } from '../hooks/use-trades';
@@ -68,189 +69,199 @@ export default function TradeDetailScreen() {
     <>
       <Stack.Screen options={{ title: trade.symbol }} />
       <ScrollView style={styles.container}>
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Text variant="displaySmall" style={styles.symbol}>
-                {trade.symbol}
-              </Text>
-              <Chip
-                style={[
-                  styles.sideChip,
-                  {
-                    backgroundColor:
+        <ResponsiveContainer>
+          <View style={styles.content}>
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <Text variant="displaySmall" style={styles.symbol}>
+                  {trade.symbol}
+                </Text>
+                <Chip
+                  style={[
+                    styles.sideChip,
+                    {
+                      backgroundColor:
+                        trade.side === 'long'
+                          ? theme.colors.profit + '20'
+                          : theme.colors.loss + '20',
+                    },
+                  ]}
+                  textStyle={{
+                    color:
                       trade.side === 'long'
-                        ? theme.colors.profit + '20'
-                        : theme.colors.loss + '20',
-                  },
-                ]}
-                textStyle={{
-                  color:
-                    trade.side === 'long'
-                      ? theme.colors.profit
-                      : theme.colors.loss,
-                }}
-              >
-                {trade.side.toUpperCase()}
-              </Chip>
+                        ? theme.colors.profit
+                        : theme.colors.loss,
+                  }}
+                >
+                  {trade.side.toUpperCase()}
+                </Chip>
+              </View>
+              <View style={styles.headerRight}>
+                <Text
+                  variant="headlineMedium"
+                  style={[
+                    styles.pnl,
+                    {
+                      color: isProfit ? theme.colors.profit : theme.colors.loss,
+                    },
+                  ]}
+                >
+                  {isProfit ? '+' : ''}${trade.pnl.toFixed(2)}
+                </Text>
+                <Text
+                  variant="bodyLarge"
+                  style={{
+                    color: isProfit ? theme.colors.profit : theme.colors.loss,
+                  }}
+                >
+                  {isProfit ? '+' : ''}
+                  {trade.pnlPercent.toFixed(2)}%
+                </Text>
+              </View>
             </View>
-            <View style={styles.headerRight}>
-              <Text
-                variant="headlineMedium"
-                style={[
-                  styles.pnl,
-                  { color: isProfit ? theme.colors.profit : theme.colors.loss },
-                ]}
-              >
-                {isProfit ? '+' : ''}${trade.pnl.toFixed(2)}
-              </Text>
-              <Text
-                variant="bodyLarge"
-                style={{
-                  color: isProfit ? theme.colors.profit : theme.colors.loss,
-                }}
-              >
-                {isProfit ? '+' : ''}
-                {trade.pnlPercent.toFixed(2)}%
-              </Text>
-            </View>
-          </View>
 
-          <Card style={styles.card}>
-            <Card.Content>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
-                Position Details
-              </Text>
-              <DetailRow label="Quantity" value={`${trade.quantity} shares`} />
-              <DetailRow
-                label="Entry Price"
-                value={`$${trade.entryPrice.toFixed(2)}`}
-              />
-              <DetailRow
-                label="Exit Price"
-                value={`$${trade.exitPrice.toFixed(2)}`}
-              />
-            </Card.Content>
-          </Card>
-
-          <Card style={styles.card}>
-            <Card.Content>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
-                Timing
-              </Text>
-              <DetailRow
-                label="Entry"
-                value={formatDateTime(trade.entryTime)}
-              />
-              <DetailRow label="Exit" value={formatDateTime(trade.exitTime)} />
-            </Card.Content>
-          </Card>
-
-          {trade.strategy && (
             <Card style={styles.card}>
               <Card.Content>
                 <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Strategy
+                  Position Details
                 </Text>
-                <Text variant="bodyLarge">{trade.strategy}</Text>
+                <DetailRow
+                  label="Quantity"
+                  value={`${trade.quantity} shares`}
+                />
+                <DetailRow
+                  label="Entry Price"
+                  value={`$${trade.entryPrice.toFixed(2)}`}
+                />
+                <DetailRow
+                  label="Exit Price"
+                  value={`$${trade.exitPrice.toFixed(2)}`}
+                />
               </Card.Content>
             </Card>
-          )}
 
-          {trade.psychology && (
             <Card style={styles.card}>
               <Card.Content>
                 <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Psychology
+                  Timing
                 </Text>
-                <Chip style={styles.psychologyChip}>{trade.psychology}</Chip>
+                <DetailRow
+                  label="Entry"
+                  value={formatDateTime(trade.entryTime)}
+                />
+                <DetailRow
+                  label="Exit"
+                  value={formatDateTime(trade.exitTime)}
+                />
               </Card.Content>
             </Card>
-          )}
 
-          {trade.whatWorked && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  What Worked
-                </Text>
-                <Text variant="bodyLarge" style={styles.notes}>
-                  {trade.whatWorked}
-                </Text>
-              </Card.Content>
-            </Card>
-          )}
-
-          {trade.whatFailed && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  What Didn&apos;t Work
-                </Text>
-                <Text variant="bodyLarge" style={styles.notes}>
-                  {trade.whatFailed}
-                </Text>
-              </Card.Content>
-            </Card>
-          )}
-
-          {trade.ruleViolation && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Mistake / Rule Violation
-                </Text>
-                <View style={styles.ruleViolationContent}>
-                  <Chip
-                    style={styles.mistakeChip}
-                    icon="alert-circle"
-                    textStyle={{ color: theme.colors.loss }}
-                  >
-                    {getMistakeCategoryLabel(
-                      categorizeMistake(trade.ruleViolation) ?? 'other'
-                    )}
-                  </Chip>
-                  <Text variant="bodyLarge" style={styles.notes}>
-                    {trade.ruleViolation}
+            {trade.strategy && (
+              <Card style={styles.card}>
+                <Card.Content>
+                  <Text variant="titleMedium" style={styles.sectionTitle}>
+                    Strategy
                   </Text>
-                </View>
-              </Card.Content>
-            </Card>
-          )}
+                  <Text variant="bodyLarge">{trade.strategy}</Text>
+                </Card.Content>
+              </Card>
+            )}
 
-          {trade.notes && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Notes
-                </Text>
-                <Text variant="bodyLarge" style={styles.notes}>
-                  {trade.notes}
-                </Text>
-              </Card.Content>
-            </Card>
-          )}
+            {trade.psychology && (
+              <Card style={styles.card}>
+                <Card.Content>
+                  <Text variant="titleMedium" style={styles.sectionTitle}>
+                    Psychology
+                  </Text>
+                  <Chip style={styles.psychologyChip}>{trade.psychology}</Chip>
+                </Card.Content>
+              </Card>
+            )}
 
-          <View style={styles.actions}>
-            <Button
-              mode="contained"
-              onPress={handleEdit}
-              style={styles.actionButton}
-              icon="pencil"
-            >
-              Edit Trade
-            </Button>
-            <Button
-              mode="outlined"
-              onPress={() => setDeleteDialogVisible(true)}
-              style={styles.actionButton}
-              textColor={theme.colors.loss}
-              icon="delete"
-            >
-              Delete Trade
-            </Button>
+            {trade.whatWorked && (
+              <Card style={styles.card}>
+                <Card.Content>
+                  <Text variant="titleMedium" style={styles.sectionTitle}>
+                    What Worked
+                  </Text>
+                  <Text variant="bodyLarge" style={styles.notes}>
+                    {trade.whatWorked}
+                  </Text>
+                </Card.Content>
+              </Card>
+            )}
+
+            {trade.whatFailed && (
+              <Card style={styles.card}>
+                <Card.Content>
+                  <Text variant="titleMedium" style={styles.sectionTitle}>
+                    What Didn&apos;t Work
+                  </Text>
+                  <Text variant="bodyLarge" style={styles.notes}>
+                    {trade.whatFailed}
+                  </Text>
+                </Card.Content>
+              </Card>
+            )}
+
+            {trade.ruleViolation && (
+              <Card style={styles.card}>
+                <Card.Content>
+                  <Text variant="titleMedium" style={styles.sectionTitle}>
+                    Mistake / Rule Violation
+                  </Text>
+                  <View style={styles.ruleViolationContent}>
+                    <Chip
+                      style={styles.mistakeChip}
+                      icon="alert-circle"
+                      textStyle={{ color: theme.colors.loss }}
+                    >
+                      {getMistakeCategoryLabel(
+                        categorizeMistake(trade.ruleViolation) ?? 'other'
+                      )}
+                    </Chip>
+                    <Text variant="bodyLarge" style={styles.notes}>
+                      {trade.ruleViolation}
+                    </Text>
+                  </View>
+                </Card.Content>
+              </Card>
+            )}
+
+            {trade.notes && (
+              <Card style={styles.card}>
+                <Card.Content>
+                  <Text variant="titleMedium" style={styles.sectionTitle}>
+                    Notes
+                  </Text>
+                  <Text variant="bodyLarge" style={styles.notes}>
+                    {trade.notes}
+                  </Text>
+                </Card.Content>
+              </Card>
+            )}
+
+            <View style={styles.actions}>
+              <Button
+                mode="contained"
+                onPress={handleEdit}
+                style={styles.actionButton}
+                icon="pencil"
+              >
+                Edit Trade
+              </Button>
+              <Button
+                mode="outlined"
+                onPress={() => setDeleteDialogVisible(true)}
+                style={styles.actionButton}
+                textColor={theme.colors.loss}
+                icon="delete"
+              >
+                Delete Trade
+              </Button>
+            </View>
           </View>
-        </View>
+        </ResponsiveContainer>
       </ScrollView>
 
       <Portal>
@@ -313,6 +324,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     content: {
       padding: 16,
+      maxWidth: 600,
+      width: '100%',
+      alignSelf: 'center',
     },
     centerContent: {
       justifyContent: 'center',
