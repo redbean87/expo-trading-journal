@@ -53,7 +53,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Constrain trade card width, adjust FAB positioning
   - File: `trades-screen.tsx`
 
-- [ ] **3.3 Analytics Screen**
+- [x] **3.3 Analytics Screen**
   - Wrap in `ResponsiveContainer`
   - 2-column grid for overview cards on desktop
   - Files: `analytics-screen.tsx`, `overview-section.tsx`

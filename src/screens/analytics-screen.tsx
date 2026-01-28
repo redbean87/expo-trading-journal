@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { SegmentedButtons } from 'react-native-paper';
 
 import { LoadingState } from '../components/loading-state';
+import { ResponsiveContainer } from '../components/responsive-container';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useEquityCurve } from '../hooks/use-equity-curve';
 import { useTradeAnalytics } from '../hooks/use-trade-analytics';
@@ -117,28 +118,30 @@ export default function AnalyticsScreen() {
   return (
     <LoadingState isLoading={isLoading}>
       <ScrollView style={styles.container} scrollEnabled={scrollEnabled}>
-        <View style={styles.content}>
-          <DateRangeFilter
-            selectedRange={selectedRange}
-            onSelectRange={setSelectedRange}
-          />
+        <ResponsiveContainer>
+          <View style={styles.content}>
+            <DateRangeFilter
+              selectedRange={selectedRange}
+              onSelectRange={setSelectedRange}
+            />
 
-          <SegmentedButtons
-            value={selectedSegment}
-            onValueChange={(value) =>
-              setSelectedSegment(value as AnalyticsSegment)
-            }
-            buttons={[
-              { value: 'overview', label: 'Overview' },
-              { value: 'timing', label: 'Timing' },
-              { value: 'charts', label: 'Charts' },
-              { value: 'psychology', label: 'Psych' },
-            ]}
-            style={styles.segmentToggle}
-          />
+            <SegmentedButtons
+              value={selectedSegment}
+              onValueChange={(value) =>
+                setSelectedSegment(value as AnalyticsSegment)
+              }
+              buttons={[
+                { value: 'overview', label: 'Overview' },
+                { value: 'timing', label: 'Timing' },
+                { value: 'charts', label: 'Charts' },
+                { value: 'psychology', label: 'Psych' },
+              ]}
+              style={styles.segmentToggle}
+            />
 
-          {renderSection()}
-        </View>
+            {renderSection()}
+          </View>
+        </ResponsiveContainer>
       </ScrollView>
     </LoadingState>
   );
