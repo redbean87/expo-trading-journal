@@ -73,6 +73,33 @@ describe('DesktopSidebar', () => {
     expect(profileItem.props.accessibilityState).toEqual({ selected: true });
   });
 
+  it('should mark Trades as active for trade detail pathname', () => {
+    mockPathname = '/trade/abc123';
+    const { getByLabelText } = render(<DesktopSidebar />);
+
+    const tradesItem = getByLabelText('Trades');
+    expect(tradesItem.props.accessibilityState).toEqual({ selected: true });
+
+    const homeItem = getByLabelText('Home');
+    expect(homeItem.props.accessibilityState).toEqual({ selected: false });
+  });
+
+  it('should mark Trades as active for add-trade pathname', () => {
+    mockPathname = '/add-trade';
+    const { getByLabelText } = render(<DesktopSidebar />);
+
+    const tradesItem = getByLabelText('Trades');
+    expect(tradesItem.props.accessibilityState).toEqual({ selected: true });
+  });
+
+  it('should mark Trades as active for edit-trade pathname', () => {
+    mockPathname = '/edit-trade/abc123';
+    const { getByLabelText } = render(<DesktopSidebar />);
+
+    const tradesItem = getByLabelText('Trades');
+    expect(tradesItem.props.accessibilityState).toEqual({ selected: true });
+  });
+
   it('should navigate to correct route on press', () => {
     const { getByLabelText } = render(<DesktopSidebar />);
 

@@ -39,7 +39,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Modify `app/(tabs)/_layout.tsx`
   - Bottom tabs on mobile/tablet, sidebar on desktop
 
-- [ ] **2.4 Persistent Sidebar for Detail Screens**
+- [x] **2.4 Persistent Sidebar for Detail Screens**
   - Move sidebar logic from `(tabs)/_layout.tsx` to `_layout.tsx`
   - Sidebar persists on trade detail, add/edit trade screens
   - Files: `app/_layout.tsx`, `app/(tabs)/_layout.tsx`

@@ -24,7 +24,13 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     route: '/(tabs)/trades',
     label: 'Trades',
     icon: 'format-list-bulleted',
-    matchPaths: ['/(tabs)/trades', '/trades'],
+    matchPaths: [
+      '/(tabs)/trades',
+      '/trades',
+      '/trade',
+      '/add-trade',
+      '/edit-trade',
+    ],
   },
   {
     route: '/(tabs)/analytics',
@@ -48,7 +54,10 @@ export function DesktopSidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isActive = (item: SidebarItem) => item.matchPaths.includes(pathname);
+  const isActive = (item: SidebarItem) =>
+    item.matchPaths.some(
+      (path) => pathname === path || pathname.startsWith(path + '/')
+    );
 
   return (
     <View

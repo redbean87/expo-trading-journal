@@ -10,6 +10,7 @@ import { enGB, registerTranslation } from 'react-native-paper-dates';
 
 import AuthGate from '../src/components/auth-gate';
 import { ErrorBoundary } from '../src/components/error-boundary';
+import { SidebarLayout } from '../src/components/sidebar-layout';
 import { ConvexProvider } from '../src/providers/convex-provider';
 import { SettingsSyncProvider } from '../src/providers/settings-sync-provider';
 import { useThemeStore } from '../src/store/theme-store';
@@ -44,28 +45,30 @@ export default function RootLayout() {
           <PaperProvider theme={paperTheme}>
             <ThemeProvider value={navigationTheme}>
               <AuthGate>
-                <Stack>
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="trade/[id]"
-                    options={{ headerShown: true }}
-                  />
-                  <Stack.Screen
-                    name="add-trade"
-                    options={{ headerShown: true, title: 'Add Trade' }}
-                  />
-                  <Stack.Screen
-                    name="edit-trade/[id]"
-                    options={{ headerShown: true, title: 'Edit Trade' }}
-                  />
-                  <Stack.Screen
-                    name="auth/callback"
-                    options={{ headerShown: false }}
-                  />
-                </Stack>
+                <SidebarLayout>
+                  <Stack>
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="trade/[id]"
+                      options={{ headerShown: true }}
+                    />
+                    <Stack.Screen
+                      name="add-trade"
+                      options={{ headerShown: true, title: 'Add Trade' }}
+                    />
+                    <Stack.Screen
+                      name="edit-trade/[id]"
+                      options={{ headerShown: true, title: 'Edit Trade' }}
+                    />
+                    <Stack.Screen
+                      name="auth/callback"
+                      options={{ headerShown: false }}
+                    />
+                  </Stack>
+                </SidebarLayout>
               </AuthGate>
               <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
             </ThemeProvider>

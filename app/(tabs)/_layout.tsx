@@ -1,8 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
 
-import { DesktopSidebar } from '../../src/components/desktop-sidebar';
 import { useAppTheme } from '../../src/hooks/use-app-theme';
 import {
   getTabBarStyle,
@@ -14,7 +12,7 @@ export default function TabLayout() {
   const mode = useNavigationMode();
   const isSidebar = mode === 'sidebar';
 
-  const tabs = (
+  return (
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -81,25 +79,4 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-
-  if (isSidebar) {
-    return (
-      <View style={styles.desktopContainer}>
-        <DesktopSidebar />
-        <View style={styles.content}>{tabs}</View>
-      </View>
-    );
-  }
-
-  return tabs;
 }
-
-const styles = StyleSheet.create({
-  desktopContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  content: {
-    flex: 1,
-  },
-});
