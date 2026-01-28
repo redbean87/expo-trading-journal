@@ -43,7 +43,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
 
 ## Phase 3: Screen Layouts
 
-- [ ] **3.1 Home Screen**
+- [x] **3.1 Home Screen**
   - Wrap in `ResponsiveContainer`
   - Stat cards: 2 cols mobile → 4 cols desktop
   - Files: `home-screen.tsx`, `stat-card.tsx`

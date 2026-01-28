@@ -40,13 +40,16 @@ export function ResponsiveGrid({
 
   const childArray = React.Children.toArray(children);
 
+  const halfGap = gap / 2;
+
   return (
-    <View style={[styles.container, { gap }, style]}>
+    <View style={[styles.container, { margin: -halfGap }, style]}>
       {childArray.map((child, index) => (
         <View
           key={index}
           style={{
             width: `${100 / columnCount}%` as unknown as ViewStyle['width'],
+            padding: halfGap,
           }}
         >
           {child}

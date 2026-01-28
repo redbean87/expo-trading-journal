@@ -27,8 +27,6 @@ export function StatCard({ title, value, valueColor }: StatCardProps) {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    minWidth: '45%',
-    marginBottom: 12,
   },
   value: {
     marginTop: 8,

@@ -2,6 +2,8 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
 import { LoadingState } from '../components/loading-state';
+import { ResponsiveContainer } from '../components/responsive-container';
+import { ResponsiveGrid } from '../components/responsive-grid';
 import { StatCard } from '../components/stat-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTrades } from '../hooks/use-trades';
@@ -27,27 +29,31 @@ export default function HomeScreen() {
   return (
     <LoadingState isLoading={isLoading}>
       <ScrollView style={styles.container}>
-        <View style={styles.content}>
-          <HomeHeader />
+        <ResponsiveContainer>
+          <View style={styles.content}>
+            <HomeHeader />
 
-          <View style={styles.statsContainer}>
-            <StatCard title="Total Trades" value={totalTrades} />
-            <StatCard
-              title="Total P&L"
-              value={`$${totalPnl.toFixed(2)}`}
-              valueColor={
-                totalPnl >= 0 ? theme.colors.profit : theme.colors.loss
-              }
-            />
-            <StatCard title="Win Rate" value={`${winRate.toFixed(1)}%`} />
-            <StatCard
-              title="W/L Ratio"
-              value={`${winningTrades}/${losingTrades}`}
-            />
+            <View style={styles.statsGrid}>
+              <ResponsiveGrid columns={{ mobile: 2, tablet: 2, desktop: 4 }}>
+                <StatCard title="Total Trades" value={totalTrades} />
+                <StatCard
+                  title="Total P&L"
+                  value={`$${totalPnl.toFixed(2)}`}
+                  valueColor={
+                    totalPnl >= 0 ? theme.colors.profit : theme.colors.loss
+                  }
+                />
+                <StatCard title="Win Rate" value={`${winRate.toFixed(1)}%`} />
+                <StatCard
+                  title="W/L Ratio"
+                  value={`${winningTrades}/${losingTrades}`}
+                />
+              </ResponsiveGrid>
+            </View>
+
+            <RecentTradesCard trades={recentTrades} />
           </View>
-
-          <RecentTradesCard trades={recentTrades} />
-        </View>
+        </ResponsiveContainer>
       </ScrollView>
     </LoadingState>
   );
@@ -62,10 +68,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     content: {
       padding: 16,
     },
-    statsContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 12,
-      marginBottom: 24,
+    statsGrid: {
+      marginBottom: 16,
     },
   });

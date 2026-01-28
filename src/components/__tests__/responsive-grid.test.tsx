@@ -137,7 +137,7 @@ describe('ResponsiveGrid', () => {
     );
   });
 
-  it('should apply default gap of 12', () => {
+  it('should apply default gap of 12 via negative margin and child padding', () => {
     const { toJSON } = render(
       <ResponsiveGrid>
         <Text>Item 1</Text>
@@ -146,12 +146,20 @@ describe('ResponsiveGrid', () => {
 
     const tree = toJSON();
     expect(tree).toBeTruthy();
+    // Container uses negative margin of half the gap
     expect(
       (tree as { props?: { style?: object[] } })?.props?.style
-    ).toContainEqual(expect.objectContaining({ gap: 12 }));
+    ).toContainEqual(expect.objectContaining({ margin: -6 }));
+    // Children get padding of half the gap
+    const container = tree as {
+      children?: Array<{ props?: { style?: object } }>;
+    };
+    expect(container.children?.[0]?.props?.style).toEqual(
+      expect.objectContaining({ padding: 6 })
+    );
   });
 
-  it('should apply custom gap', () => {
+  it('should apply custom gap via negative margin and child padding', () => {
     const { toJSON } = render(
       <ResponsiveGrid gap={24}>
         <Text>Item 1</Text>
@@ -162,7 +170,13 @@ describe('ResponsiveGrid', () => {
     expect(tree).toBeTruthy();
     expect(
       (tree as { props?: { style?: object[] } })?.props?.style
-    ).toContainEqual(expect.objectContaining({ gap: 24 }));
+    ).toContainEqual(expect.objectContaining({ margin: -12 }));
+    const container = tree as {
+      children?: Array<{ props?: { style?: object } }>;
+    };
+    expect(container.children?.[0]?.props?.style).toEqual(
+      expect.objectContaining({ padding: 12 })
+    );
   });
 
   it('should merge additional style prop', () => {
