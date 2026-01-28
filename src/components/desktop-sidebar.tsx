@@ -41,7 +41,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 ];
 
 const ICON_SIZE = 24;
-const SIDEBAR_WIDTH = 240;
+export const SIDEBAR_WIDTH = 240;
 
 export function DesktopSidebar() {
   const theme = useAppTheme();

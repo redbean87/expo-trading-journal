@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { CalendarDay } from './calendar-day';
+import { useContentWidth } from '../../../hooks/use-content-width';
 import { DailyPnl, UseDailyPnlResult } from '../../../hooks/use-daily-pnl';
 import { getMonthDays, isSameMonth } from '../../../utils/calendar-helpers';
 
@@ -19,7 +20,7 @@ export function CalendarGrid({
   dailyPnlData,
   onDayPress,
 }: CalendarGridProps) {
-  const { width: screenWidth } = useWindowDimensions();
+  const screenWidth = useContentWidth();
   const monthDays = getMonthDays(
     selectedMonth.getFullYear(),
     selectedMonth.getMonth()
