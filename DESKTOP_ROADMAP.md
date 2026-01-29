@@ -84,7 +84,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Use utility, increase height on desktop
   - File: `equity-curve-card.tsx`
 
-- [ ] **4.3 Calendar & Bar Charts**
+- [x] **4.3 Calendar & Bar Charts**
   - Larger calendar cells, max width constraints
   - Files: `calendar-grid.tsx`, `day-of-week-card.tsx`, `time-of-day-card.tsx`
 

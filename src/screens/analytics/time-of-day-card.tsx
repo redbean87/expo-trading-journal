@@ -4,10 +4,12 @@ import { BarChart } from 'react-native-gifted-charts';
 import { Card, Text } from 'react-native-paper';
 
 import { useAppTheme } from '../../hooks/use-app-theme';
+import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { useContentWidth } from '../../hooks/use-content-width';
 import { useTimeOfDayBreakdown } from '../../hooks/use-time-of-day-breakdown';
 import { Trade } from '../../types';
 import {
+  getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
 } from '../../utils/chart-dimensions';
@@ -18,11 +20,13 @@ type TimeOfDayCardProps = {
 
 export function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
   const theme = useAppTheme();
+  const { breakpoint } = useBreakpoint();
   const contentWidth = useContentWidth();
   const styles = createStyles(theme);
   const breakdown = useTimeOfDayBreakdown(trades);
 
   const chartWidth = getChartWidth(contentWidth);
+  const chartHeight = getChartHeight('bar', breakpoint);
   const barCount = breakdown.length || 1;
   // Use fixed bar width, enable scroll if many bars
   const barWidth = 28;
@@ -55,7 +59,7 @@ export function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
         <View style={styles.chartContainer}>
           <BarChart
             data={chartData}
-            height={160}
+            height={chartHeight}
             width={chartWidth}
             barWidth={barWidth}
             spacing={spacing}

@@ -4,10 +4,12 @@ import { BarChart } from 'react-native-gifted-charts';
 import { Card, Text } from 'react-native-paper';
 
 import { useAppTheme } from '../../hooks/use-app-theme';
+import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { useContentWidth } from '../../hooks/use-content-width';
 import { useDayOfWeekBreakdown } from '../../hooks/use-day-of-week-breakdown';
 import { Trade } from '../../types';
 import {
+  getChartHeight,
   getChartWidth,
   getDayOfWeekBarWidth,
   Y_AXIS_LABEL_WIDTH,
@@ -19,11 +21,13 @@ type DayOfWeekCardProps = {
 
 export function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
   const theme = useAppTheme();
+  const { breakpoint } = useBreakpoint();
   const contentWidth = useContentWidth();
   const styles = createStyles(theme);
   const breakdown = useDayOfWeekBreakdown(trades);
 
   const chartWidth = getChartWidth(contentWidth);
+  const chartHeight = getChartHeight('bar', breakpoint);
   const barWidth = getDayOfWeekBarWidth(chartWidth);
 
   const chartData = breakdown.map((day) => ({
@@ -54,7 +58,7 @@ export function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
         <View style={styles.chartContainer}>
           <BarChart
             data={chartData}
-            height={160}
+            height={chartHeight}
             width={chartWidth}
             barWidth={barWidth}
             spacing={10}

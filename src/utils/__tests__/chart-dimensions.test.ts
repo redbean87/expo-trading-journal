@@ -4,6 +4,7 @@ import {
   CALENDAR_COLUMNS,
   DEFAULT_LINE_CHART_HEIGHT,
   DEFAULT_BAR_CHART_HEIGHT,
+  DESKTOP_BAR_CHART_HEIGHT,
   getChartWidth,
   getAvailableWidth,
   getCalendarCellSize,
@@ -27,6 +28,10 @@ describe('chart-dimensions constants', () => {
   it('should export correct default chart heights', () => {
     expect(DEFAULT_LINE_CHART_HEIGHT).toBe(180);
     expect(DEFAULT_BAR_CHART_HEIGHT).toBe(160);
+  });
+
+  it('should export correct desktop bar chart height', () => {
+    expect(DESKTOP_BAR_CHART_HEIGHT).toBe(220);
   });
 });
 
@@ -117,5 +122,11 @@ describe('getChartHeight', () => {
     expect(getChartHeight('line', 'mobile')).toBe(180);
     expect(getChartHeight('line', 'tablet')).toBe(180);
     expect(getChartHeight('line', 'desktop')).toBe(280);
+  });
+
+  it('should return taller height for bar charts on desktop', () => {
+    expect(getChartHeight('bar', 'mobile')).toBe(160);
+    expect(getChartHeight('bar', 'tablet')).toBe(160);
+    expect(getChartHeight('bar', 'desktop')).toBe(220);
   });
 });

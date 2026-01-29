@@ -23,6 +23,9 @@ export const DESKTOP_LINE_CHART_HEIGHT = 280;
 /** Default height for bar charts (day of week, time of day) */
 export const DEFAULT_BAR_CHART_HEIGHT = 160;
 
+/** Desktop height for bar charts (day of week, time of day) */
+export const DESKTOP_BAR_CHART_HEIGHT = 220;
+
 /**
  * Calculate chart width for charts with a Y-axis (line, bar).
  * Subtracts horizontal padding and Y-axis label width from content width.
@@ -62,7 +65,7 @@ export function getDayOfWeekBarWidth(chartWidth: number): number {
 
 /**
  * Get chart height based on chart type and breakpoint.
- * Line charts are taller on desktop for better visibility.
+ * Line and bar charts are taller on desktop for better visibility.
  */
 export function getChartHeight(
   chartType: ChartType,
@@ -74,7 +77,9 @@ export function getChartHeight(
         ? DESKTOP_LINE_CHART_HEIGHT
         : DEFAULT_LINE_CHART_HEIGHT;
     case 'bar':
-      return DEFAULT_BAR_CHART_HEIGHT;
+      return breakpoint === 'desktop'
+        ? DESKTOP_BAR_CHART_HEIGHT
+        : DEFAULT_BAR_CHART_HEIGHT;
     case 'calendar':
       return 0;
     default:
