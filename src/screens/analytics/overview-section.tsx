@@ -104,22 +104,6 @@ export function OverviewSection({
       </Card.Content>
     </Card>,
 
-    totalTrades > 0 ? (
-      <RiskRewardCard
-        key="risk-reward"
-        realizedRR={realizedRR}
-        expectedValue={expectedValue}
-        requiredWinRate={requiredWinRate}
-        actualWinRate={winRate}
-        longRR={longRR}
-        shortRR={shortRR}
-        longWinRate={longWinRate}
-        shortWinRate={shortWinRate}
-        hasLongTrades={longTradesCount > 0}
-        hasShortTrades={shortTradesCount > 0}
-      />
-    ) : null,
-
     <Card key="statistics" style={styles.card}>
       <Card.Title title="Trade Statistics" />
       <Card.Content>
@@ -167,6 +151,22 @@ export function OverviewSection({
         <StatRow label="Avg Hold Time:" value={formatDuration(avgHoldTimeMs)} />
       </Card.Content>
     </Card>,
+
+    totalTrades > 0 ? (
+      <RiskRewardCard
+        key="risk-reward"
+        realizedRR={realizedRR}
+        expectedValue={expectedValue}
+        requiredWinRate={requiredWinRate}
+        actualWinRate={winRate}
+        longRR={longRR}
+        shortRR={shortRR}
+        longWinRate={longWinRate}
+        shortWinRate={shortWinRate}
+        hasLongTrades={longTradesCount > 0}
+        hasShortTrades={shortTradesCount > 0}
+      />
+    ) : null,
 
     <Card key="streak" style={styles.card}>
       <Card.Title title="Streak Analysis" />

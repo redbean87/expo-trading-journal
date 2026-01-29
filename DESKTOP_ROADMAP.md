@@ -80,7 +80,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Create `src/utils/chart-dimensions.ts`
   - Centralize width calculations
 
-- [ ] **4.2 Equity Curve Enhancement**
+- [x] **4.2 Equity Curve Enhancement**
   - Use utility, increase height on desktop
   - File: `equity-curve-card.tsx`
 

@@ -113,10 +113,9 @@ describe('getChartHeight', () => {
     expect(getChartHeight('calendar')).toBe(0);
   });
 
-  it('should accept optional breakpoint parameter', () => {
-    // Currently unused, but should not throw
+  it('should return taller height for line charts on desktop', () => {
     expect(getChartHeight('line', 'mobile')).toBe(180);
     expect(getChartHeight('line', 'tablet')).toBe(180);
-    expect(getChartHeight('line', 'desktop')).toBe(180);
+    expect(getChartHeight('line', 'desktop')).toBe(280);
   });
 });

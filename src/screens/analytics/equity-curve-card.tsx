@@ -4,9 +4,11 @@ import { LineChart } from 'react-native-gifted-charts';
 import { Card, Text } from 'react-native-paper';
 
 import { useAppTheme } from '../../hooks/use-app-theme';
+import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { useContentWidth } from '../../hooks/use-content-width';
 import { EquityCurveData } from '../../hooks/use-equity-curve';
 import {
+  getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
 } from '../../utils/chart-dimensions';
@@ -53,10 +55,12 @@ export function EquityCurveCard({
   onInteractionEnd,
 }: EquityCurveCardProps) {
   const theme = useAppTheme();
+  const { breakpoint } = useBreakpoint();
   const contentWidth = useContentWidth();
   const styles = createStyles(theme);
 
   const chartWidth = getChartWidth(contentWidth);
+  const chartHeight = getChartHeight('line', breakpoint);
 
   const isProfit = data.currentBalance >= 0;
   const lineColor = isProfit ? theme.colors.profit : theme.colors.loss;
@@ -105,7 +109,7 @@ export function EquityCurveCard({
         >
           <LineChart
             data={chartData}
-            height={180}
+            height={chartHeight}
             width={chartWidth}
             color={lineColor}
             areaChart
@@ -129,7 +133,7 @@ export function EquityCurveCard({
             endSpacing={0}
             disableScroll
             pointerConfig={{
-              pointerStripHeight: 180,
+              pointerStripHeight: chartHeight,
               pointerStripColor: 'transparent',
               pointerStripWidth: 1,
               pointerColor: lineColor,

@@ -17,6 +17,9 @@ export const CALENDAR_COLUMNS = 7;
 /** Default height for line charts (equity curve) */
 export const DEFAULT_LINE_CHART_HEIGHT = 180;
 
+/** Desktop height for line charts (equity curve) */
+export const DESKTOP_LINE_CHART_HEIGHT = 280;
+
 /** Default height for bar charts (day of week, time of day) */
 export const DEFAULT_BAR_CHART_HEIGHT = 160;
 
@@ -58,16 +61,18 @@ export function getDayOfWeekBarWidth(chartWidth: number): number {
 }
 
 /**
- * Get chart height based on chart type.
- * Breakpoint parameter prepared for Phase 4.2 (currently unused).
+ * Get chart height based on chart type and breakpoint.
+ * Line charts are taller on desktop for better visibility.
  */
 export function getChartHeight(
   chartType: ChartType,
-  _breakpoint?: 'mobile' | 'tablet' | 'desktop'
+  breakpoint?: 'mobile' | 'tablet' | 'desktop'
 ): number {
   switch (chartType) {
     case 'line':
-      return DEFAULT_LINE_CHART_HEIGHT;
+      return breakpoint === 'desktop'
+        ? DESKTOP_LINE_CHART_HEIGHT
+        : DEFAULT_LINE_CHART_HEIGHT;
     case 'bar':
       return DEFAULT_BAR_CHART_HEIGHT;
     case 'calendar':
