@@ -92,7 +92,7 @@ Track progress on desktop support implementation. Check off each chunk as comple
 
 ## Phase 5: Input Improvements
 
-- [ ] **5.1 Hover States**
+- [x] **5.1 Hover States**
   - Add hover styles to `TradeCard`
   - File: `trade-card.tsx`
 
