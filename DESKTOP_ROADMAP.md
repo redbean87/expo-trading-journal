@@ -96,9 +96,9 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Add hover styles to `TradeCard`
   - File: `trade-card.tsx`
 
-- [ ] **5.2 Keyboard Shortcuts**
+- [x] **5.2 Keyboard Shortcuts**
   - Create `src/hooks/use-keyboard-shortcuts.ts`
-  - `Ctrl/Cmd + N`: New trade, `Escape`: Close modals
+  - `Alt + N`: New trade, `Escape`: Close modals (native Paper behavior)
 
 - [ ] **5.3 Form Tab Navigation**
   - Proper `tabIndex` ordering, `returnKeyType="next"` chaining

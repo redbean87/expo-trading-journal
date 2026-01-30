@@ -11,6 +11,7 @@ import { enGB, registerTranslation } from 'react-native-paper-dates';
 import AuthGate from '../src/components/auth-gate';
 import { ErrorBoundary } from '../src/components/error-boundary';
 import { SidebarLayout } from '../src/components/sidebar-layout';
+import { useKeyboardShortcuts } from '../src/hooks/use-keyboard-shortcuts';
 import { ConvexProvider } from '../src/providers/convex-provider';
 import { SettingsSyncProvider } from '../src/providers/settings-sync-provider';
 import { useThemeStore } from '../src/store/theme-store';
@@ -24,6 +25,11 @@ import {
 
 // Register locale for date picker
 registerTranslation('en', enGB);
+
+function KeyboardShortcutsHandler() {
+  useKeyboardShortcuts();
+  return null;
+}
 
 export default function RootLayout() {
   const { themeMode, loadTheme } = useThemeStore();
@@ -45,6 +51,7 @@ export default function RootLayout() {
           <PaperProvider theme={paperTheme}>
             <ThemeProvider value={navigationTheme}>
               <AuthGate>
+                <KeyboardShortcutsHandler />
                 <SidebarLayout>
                   <Stack>
                     <Stack.Screen
