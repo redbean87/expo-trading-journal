@@ -100,9 +100,9 @@ Track progress on desktop support implementation. Check off each chunk as comple
   - Create `src/hooks/use-keyboard-shortcuts.ts`
   - `Alt + N`: New trade, `Escape`: Close modals (native Paper behavior)
 
-- [ ] **5.3 Form Tab Navigation**
+- [x] **5.3 Form Tab Navigation**
   - Proper `tabIndex` ordering, `returnKeyType="next"` chaining
-  - File: `trade-form.tsx`
+  - Files: `trade-form.tsx`, `use-form-navigation.ts`
 
 ---
 
