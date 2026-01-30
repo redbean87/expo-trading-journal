@@ -108,11 +108,11 @@ Track progress on desktop support implementation. Check off each chunk as comple
 
 ## Phase 6: Polish
 
-- [ ] **6.1 Empty States**
+- [x] **6.1 Empty States**
   - Larger illustrations on desktop
   - File: `empty-state.tsx`
 
-- [ ] **6.2 Loading States**
+- [x] **6.2 Loading States**
   - Centered, appropriate sizing
   - File: `loading-state.tsx`
 

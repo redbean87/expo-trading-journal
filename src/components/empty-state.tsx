@@ -1,13 +1,15 @@
 import React, { ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Icon, Text } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useBreakpoint } from '../hooks/use-breakpoint';
 
 type EmptyStateProps = {
   data: unknown[];
   title?: string;
   subtitle?: string;
+  icon?: string;
   fallback?: ReactNode;
   children: ReactNode;
 };
@@ -16,11 +18,13 @@ export function EmptyState({
   data,
   title,
   subtitle,
+  icon,
   fallback,
   children,
 }: EmptyStateProps) {
   const theme = useAppTheme();
-  const styles = createStyles(theme);
+  const { isDesktop } = useBreakpoint();
+  const styles = createStyles(theme, isDesktop);
 
   if (data.length > 0) {
     return <>{children}</>;
@@ -30,8 +34,19 @@ export function EmptyState({
     return <>{fallback}</>;
   }
 
+  const iconSize = isDesktop ? 64 : 48;
+
   return (
     <View style={styles.container}>
+      {icon && (
+        <View style={styles.iconContainer}>
+          <Icon
+            source={icon}
+            size={iconSize}
+            color={theme.colors.textTertiary}
+          />
+        </View>
+      )}
       <Text variant="headlineSmall" style={styles.title}>
         {title}
       </Text>
@@ -44,13 +59,19 @@ export function EmptyState({
   );
 }
 
-const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+const createStyles = (
+  theme: ReturnType<typeof useAppTheme>,
+  isDesktop: boolean
+) =>
   StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 32,
+      padding: isDesktop ? 48 : 32,
+    },
+    iconContainer: {
+      marginBottom: 16,
     },
     title: {
       marginBottom: 8,
