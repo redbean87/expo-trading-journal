@@ -64,10 +64,11 @@ describe('getAvailableWidth', () => {
 });
 
 describe('getCalendarCellSize', () => {
-  it('should return floored cell size for 7 columns', () => {
+  it('should return floored cell size for 7 columns accounting for gaps', () => {
     const contentWidth = 400;
     const availableWidth = 400 - 64; // 336
-    const expectedCellSize = Math.floor(336 / 7); // 48
+    const totalGapWidth = 4 * 6; // CALENDAR_GAP * (CALENDAR_COLUMNS - 1) = 24
+    const expectedCellSize = Math.floor((336 - totalGapWidth) / 7); // 44
 
     const result = getCalendarCellSize(contentWidth);
     expect(result.cellSize).toBe(expectedCellSize);
@@ -75,15 +76,15 @@ describe('getCalendarCellSize', () => {
   });
 
   it('should floor the cell size correctly', () => {
-    // 320 - 64 = 256, 256 / 7 = 36.57... -> 36
+    // 320 - 64 = 256, (256 - 24) / 7 = 33.14... -> 33
     const result = getCalendarCellSize(320);
-    expect(result.cellSize).toBe(36);
+    expect(result.cellSize).toBe(33);
   });
 
   it('should handle various screen sizes', () => {
-    expect(getCalendarCellSize(320).cellSize).toBe(36);
-    expect(getCalendarCellSize(768).cellSize).toBe(100);
-    expect(getCalendarCellSize(1200).cellSize).toBe(162);
+    expect(getCalendarCellSize(320).cellSize).toBe(33);
+    expect(getCalendarCellSize(768).cellSize).toBe(97);
+    expect(getCalendarCellSize(1200).cellSize).toBe(158);
   });
 });
 
