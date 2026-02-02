@@ -12,7 +12,8 @@
       "Bash(npm run format:check:*)",
       "Bash(npx prettier:*)",
       "Bash(find:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(tree:*)"
     ]
   }
 }
