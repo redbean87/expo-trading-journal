@@ -150,4 +150,21 @@ describe('calculateDailyPnl', () => {
     expect(result.maxProfit).toBe(500);
     expect(result.maxLoss).toBe(300);
   });
+
+  it('should count wins and losses correctly', () => {
+    const trades = [
+      createTrade({ exitTime: new Date(2024, 0, 15, 10, 0), pnl: 100 }),
+      createTrade({ exitTime: new Date(2024, 0, 15, 11, 0), pnl: -50 }),
+      createTrade({ exitTime: new Date(2024, 0, 15, 12, 0), pnl: 200 }),
+      createTrade({ exitTime: new Date(2024, 0, 15, 13, 0), pnl: 0 }),
+      createTrade({ exitTime: new Date(2024, 0, 15, 14, 0), pnl: -25 }),
+    ];
+
+    const result = calculateDailyPnl(trades);
+    const dayData = result.dailyPnlMap.get('2024-01-15');
+
+    expect(dayData?.winCount).toBe(2);
+    expect(dayData?.lossCount).toBe(2);
+    expect(dayData?.tradeCount).toBe(5);
+  });
 });

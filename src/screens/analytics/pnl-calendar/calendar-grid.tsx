@@ -5,7 +5,10 @@ import { CalendarDay } from './calendar-day';
 import { useContentWidth } from '../../../hooks/use-content-width';
 import { DailyPnl, UseDailyPnlResult } from '../../../hooks/use-daily-pnl';
 import { getMonthDays, isSameMonth } from '../../../utils/calendar-helpers';
-import { getCalendarCellSize } from '../../../utils/chart-dimensions';
+import {
+  CALENDAR_GAP,
+  getCalendarCellSize,
+} from '../../../utils/chart-dimensions';
 
 type CalendarGridProps = {
   selectedMonth: Date;
@@ -48,5 +51,6 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    gap: CALENDAR_GAP,
   },
 });

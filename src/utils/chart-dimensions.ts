@@ -14,6 +14,9 @@ export const Y_AXIS_LABEL_WIDTH = 50;
 /** Number of columns in calendar grid */
 export const CALENDAR_COLUMNS = 7;
 
+/** Gap between calendar cells */
+export const CALENDAR_GAP = 4;
+
 /** Default height for line charts (equity curve) */
 export const DEFAULT_LINE_CHART_HEIGHT = 180;
 
@@ -45,12 +48,16 @@ export function getAvailableWidth(contentWidth: number): number {
 /**
  * Calculate calendar cell dimensions.
  * Returns both cell size and available width for flexibility.
+ * Accounts for gaps between cells.
  */
 export function getCalendarCellSize(
   contentWidth: number
 ): CalendarCellDimensions {
   const availableWidth = contentWidth - CHART_HORIZONTAL_PADDING;
-  const cellSize = Math.floor(availableWidth / CALENDAR_COLUMNS);
+  const totalGapWidth = CALENDAR_GAP * (CALENDAR_COLUMNS - 1);
+  const cellSize = Math.floor(
+    (availableWidth - totalGapWidth) / CALENDAR_COLUMNS
+  );
   return { cellSize, availableWidth };
 }
 

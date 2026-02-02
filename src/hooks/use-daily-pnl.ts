@@ -8,6 +8,8 @@ export type DailyPnl = {
   date: Date;
   totalPnl: number;
   tradeCount: number;
+  winCount: number;
+  lossCount: number;
   trades: Trade[];
 };
 
@@ -37,10 +39,14 @@ export function calculateDailyPnl(trades: Trade[]): DailyPnlData {
   for (const trade of trades) {
     const dateKey = formatDateKey(trade.exitTime);
     const existing = dailyPnlMap.get(dateKey);
+    const isWin = trade.pnl > 0;
+    const isLoss = trade.pnl < 0;
 
     if (existing) {
       existing.totalPnl += trade.pnl;
       existing.tradeCount += 1;
+      existing.winCount += isWin ? 1 : 0;
+      existing.lossCount += isLoss ? 1 : 0;
       existing.trades.push(trade);
     } else {
       dailyPnlMap.set(dateKey, {
@@ -48,6 +54,8 @@ export function calculateDailyPnl(trades: Trade[]): DailyPnlData {
         date: startOfDay(trade.exitTime),
         totalPnl: trade.pnl,
         tradeCount: 1,
+        winCount: isWin ? 1 : 0,
+        lossCount: isLoss ? 1 : 0,
         trades: [trade],
       });
     }

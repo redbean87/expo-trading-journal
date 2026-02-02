@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-paper';
 
 import { useAppTheme } from '../../../hooks/use-app-theme';
@@ -9,6 +9,7 @@ import {
   calculatePnlColor,
   ColorIntensityResult,
 } from '../../../utils/color-intensity';
+import { formatCompactPnl } from '../../../utils/format-pnl';
 
 type CalendarDayProps = {
   date: Date;
@@ -30,7 +31,7 @@ export function CalendarDay({
   size,
 }: CalendarDayProps) {
   const theme = useAppTheme();
-  const styles = createStyles(theme);
+  const styles = createStyles(theme, size);
 
   const pnl = dayData?.totalPnl ?? 0;
   const hasTrades = dayData && dayData.tradeCount > 0;
@@ -63,7 +64,7 @@ export function CalendarDay({
     >
       <Text
         style={[
-          styles.dayText,
+          styles.dayNumber,
           !isCurrentMonth && styles.outsideMonth,
           textColor !== 'inherit' && { color: textColor },
         ]}
@@ -71,35 +72,48 @@ export function CalendarDay({
         {date.getDate()}
       </Text>
       {hasTrades && (
-        <View style={styles.indicator}>
-          <Text style={styles.tradeCount}>{dayData.tradeCount}</Text>
-        </View>
+        <>
+          <Text style={styles.pnlText}>{formatCompactPnl(pnl)}</Text>
+          <Text style={styles.winLossText}>
+            {dayData.winCount}W · {dayData.lossCount}L
+          </Text>
+        </>
       )}
     </TouchableOpacity>
   );
 }
 
-const createStyles = (theme: AppTheme) =>
+const createStyles = (theme: AppTheme, size: number) =>
   StyleSheet.create({
     day: {
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: 4,
+      borderRadius: 8,
+      padding: 2,
     },
-    dayText: {
-      fontSize: 12,
+    dayNumber: {
+      position: 'absolute',
+      top: 2,
+      right: 4,
+      fontSize: size > 50 ? 12 : 10,
+      fontWeight: '600',
       color: theme.colors.onSurface,
     },
     outsideMonth: {
       opacity: 0.3,
     },
-    indicator: {
+    pnlText: {
+      fontSize: size > 50 ? 12 : 10,
+      fontWeight: '700',
+      color: '#ffffff',
+      marginTop: 4,
+    },
+    winLossText: {
       position: 'absolute',
       bottom: 2,
-      right: 4,
-    },
-    tradeCount: {
-      fontSize: 8,
-      color: theme.colors.textSecondary,
+      fontSize: size > 50 ? 10 : 8,
+      fontWeight: '500',
+      color: '#ffffff',
+      opacity: 0.9,
     },
   });
