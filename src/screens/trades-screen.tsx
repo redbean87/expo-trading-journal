@@ -26,10 +26,12 @@ import {
   useDeleteTrade,
   useImportTrades,
 } from '../hooks/use-trades';
+import { useTradesUIStore } from '../store/trades-ui-store';
 import { Trade } from '../types';
 import { tradesToCsv, generateExportFilename } from '../utils/csv-export';
 import { parseCsvFile } from '../utils/csv-import';
 import { downloadFile } from '../utils/file-download';
+import { TradeDetailPanel } from './trades/trade-detail-panel';
 import { TradeFilterModal } from './trades/trade-filter-modal';
 
 export default function TradesScreen() {
@@ -40,6 +42,8 @@ export default function TradesScreen() {
   const theme = useAppTheme();
   const { isDesktop } = useBreakpoint();
   const isFocused = useIsFocused();
+  const { selectedTradeId, setSelectedTradeId, clearSelection } =
+    useTradesUIStore();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -141,6 +145,9 @@ export default function TradesScreen() {
 
   const handleDeleteTrade = async (id: string) => {
     await deleteTrade(id);
+    if (selectedTradeId === id) {
+      clearSelection();
+    }
   };
 
   const handleEditTrade = (id: string) => {
@@ -161,6 +168,8 @@ export default function TradesScreen() {
       trade={item}
       onDelete={handleDeleteTrade}
       onEdit={handleEditTrade}
+      onSelect={isDesktop ? setSelectedTradeId : undefined}
+      isSelected={isDesktop && selectedTradeId === item.id}
     />
   );
 
@@ -179,37 +188,48 @@ export default function TradesScreen() {
     </View>
   );
 
+  const listContent = (
+    <EmptyState
+      data={trades}
+      title="No trades yet"
+      subtitle="Tap the + button to add your first trade"
+    >
+      <SearchBar
+        value={filters.searchQuery}
+        onChangeText={(text) => updateFilter('searchQuery', text)}
+        onFilterPress={() => setFilterModalVisible(true)}
+        filterCount={activeFilterCount}
+      />
+      <EmptyState data={filteredTrades} fallback={noResultsFallback}>
+        <FlatList
+          data={filteredTrades}
+          renderItem={renderTrade}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      </EmptyState>
+    </EmptyState>
+  );
+
   return (
     <LoadingState isLoading={isLoading}>
       <View style={styles.container}>
-        <ResponsiveContainer>
-          <EmptyState
-            data={trades}
-            title="No trades yet"
-            subtitle="Tap the + button to add your first trade"
-          >
-            <SearchBar
-              value={filters.searchQuery}
-              onChangeText={(text) => updateFilter('searchQuery', text)}
-              onFilterPress={() => setFilterModalVisible(true)}
-              filterCount={activeFilterCount}
-            />
-            <EmptyState data={filteredTrades} fallback={noResultsFallback}>
-              <FlatList
-                data={filteredTrades}
-                renderItem={renderTrade}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.list}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                  />
-                }
+        {isDesktop ? (
+          <View style={styles.masterDetailContainer}>
+            <View style={styles.masterPane}>{listContent}</View>
+            <View style={styles.detailPane}>
+              <TradeDetailPanel
+                tradeId={selectedTradeId}
+                onClose={clearSelection}
               />
-            </EmptyState>
-          </EmptyState>
-        </ResponsiveContainer>
+            </View>
+          </View>
+        ) : (
+          <ResponsiveContainer>{listContent}</ResponsiveContainer>
+        )}
         {isFocused && (
           <Portal>
             <View style={[styles.fabContainer, isDesktop && { bottom: 24 }]}>
@@ -322,6 +342,18 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
+    },
+    masterDetailContainer: {
+      flex: 1,
+      flexDirection: 'row',
+    },
+    masterPane: {
+      flex: 4,
+      borderRightWidth: 1,
+      borderRightColor: theme.colors.outline,
+    },
+    detailPane: {
+      flex: 6,
     },
     list: {
       padding: 16,

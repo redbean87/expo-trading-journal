@@ -19,6 +19,8 @@ type TradeCardProps = {
   onDelete?: (id: string) => void;
   onEdit?: (id: string) => void;
   disableNavigation?: boolean;
+  onSelect?: (id: string) => void;
+  isSelected?: boolean;
 };
 
 export function TradeCard({
@@ -26,13 +28,17 @@ export function TradeCard({
   onDelete,
   onEdit,
   disableNavigation,
+  onSelect,
+  isSelected,
 }: TradeCardProps) {
   const router = useRouter();
   const theme = useAppTheme();
   const styles = createStyles(theme);
 
   const handlePress = () => {
-    if (!disableNavigation) {
+    if (onSelect) {
+      onSelect(trade.id);
+    } else if (!disableNavigation) {
       router.push(`/trade/${trade.id}`);
     }
   };
@@ -40,7 +46,13 @@ export function TradeCard({
   return (
     <Pressable onPress={handlePress}>
       {({ hovered }: PressableState) => (
-        <Card style={[styles.card, hovered && styles.cardHovered]}>
+        <Card
+          style={[
+            styles.card,
+            hovered && styles.cardHovered,
+            isSelected && styles.cardSelected,
+          ]}
+        >
           <Card.Content>
             <View style={styles.header}>
               <View>
@@ -116,6 +128,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     cardHovered: {
       backgroundColor: theme.colors.surfaceVariant,
+    },
+    cardSelected: {
+      backgroundColor: theme.colors.primaryContainer,
     },
     header: {
       flexDirection: 'row',
