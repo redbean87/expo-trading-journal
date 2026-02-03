@@ -86,7 +86,7 @@ Located in the `convex/` directory:
 - **[ConvexProvider](src/providers/convex-provider.tsx)** - Wraps app with Convex client and secure storage
 - **[AuthGate](src/components/auth-gate.tsx)** - Shows login/register screens when not authenticated
 - **[useAuth](src/hooks/use-auth.ts)** - Hook for login, register, logout
-- **[useConvexTrades](src/hooks/use-convex-trades.ts)** - Hooks for trade CRUD operations
+- **[useTrades](src/hooks/use-trades.ts)** - Hooks for trade CRUD operations
 
 ### Authentication Flow
 

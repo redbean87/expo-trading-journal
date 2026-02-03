@@ -7,9 +7,12 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
 - Track trades with detailed entry/exit information
 - View analytics and performance metrics
 - **Equity curve chart** with max drawdown tracking
+- P&L calendar heatmap
+- Performance by time of day and day of week
 - Import/export trades via CSV
 - Cloud sync across devices with Convex
-- User authentication (email/password)
+- User authentication (email/password + Google Sign-In)
+- Responsive desktop layout with master-detail view
 - Offline support with automatic sync
 - Dark mode support
 
@@ -19,7 +22,7 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
 - **Language**: TypeScript
 - **UI Library**: React Native Paper
 - **Navigation**: Expo Router (file-based routing)
-- **State Management**: Zustand (UI state) + React Query (data)
+- **State Management**: Zustand (UI state) + Convex hooks (data)
 - **Backend**: Convex (cloud database + auth + real-time sync)
 - **Storage**: AsyncStorage (offline cache)
 - **Node**: 20.x (managed via Volta)
@@ -73,8 +76,8 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
 **Local-first with cloud sync** - Works offline, syncs when online
 
 - **Service Layer** abstracts backend (easy to swap Convex for Firebase/Supabase)
-- **React Query** handles caching and data fetching
-- **Convex** provides real-time sync and authentication
+- **Convex hooks** handle caching and data fetching with real-time sync
+- **Convex Auth** provides authentication (email/password + Google OAuth)
 - **AsyncStorage** caches data locally for offline use
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for details.
@@ -83,11 +86,24 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for details.
 
 ```text
 app/                    # Expo Router screens
+  _layout.tsx          # Root layout (ConvexProvider, PaperProvider)
+  add-trade.tsx        # Add trade modal
   (tabs)/              # Tab navigation
     index.tsx          # Home
     trades.tsx         # Trades list
-    add-trade.tsx      # Add trade
-    analytics.tsx      # Analytics
+    profile.tsx        # Profile/settings
+    analytics/         # Analytics nested routes
+      _layout.tsx      # Analytics tab navigator
+      index.tsx        # Overview
+      charts.tsx       # Charts
+      psychology.tsx   # Psychology
+      timing.tsx       # Timing analysis
+  auth/
+    callback.tsx       # OAuth callback handler
+  edit-trade/
+    [id].tsx           # Edit trade modal
+  trade/
+    [id].tsx           # Trade detail modal
 
 convex/                # Backend (Convex)
   schema.ts           # Database schema
@@ -96,13 +112,14 @@ convex/                # Backend (Convex)
 
 src/
   components/         # Reusable UI components
+  hooks/             # Custom hooks (20+)
   screens/           # Screen components
     auth/            # Login/register
-  hooks/             # Custom hooks
   services/          # Backend abstraction
-  providers/         # React context
+  providers/         # React context providers
   store/             # Zustand stores
   types/             # TypeScript types
+  utils/             # Utility functions
 ```
 
 ## Key Files
@@ -127,14 +144,15 @@ npm run typecheck      # TypeScript checks
 
 1. Backend changes: Edit `convex/*.ts` files
 2. Frontend changes: Edit `src/` files
-3. Screens: Use existing React Query hooks
+3. Screens: Use existing Convex hooks from `src/hooks/use-trades.ts`
 4. No need to modify screens when switching backends!
 
 ## Authentication
 
-Email/password auth via Convex:
+Email/password and Google Sign-In via Convex Auth:
 
 - Login/register screens show automatically when not authenticated
+- Google OAuth supported for quick sign-in
 - Auth tokens stored securely (expo-secure-store)
 - All routes protected by AuthGate component
 
@@ -169,7 +187,7 @@ See [CONVEX_SETUP.md](CONVEX_SETUP.md) for more help.
 
 - [Expo Docs](https://docs.expo.dev/)
 - [Convex Docs](https://docs.convex.dev/)
-- [React Query Docs](https://tanstack.com/query/latest)
+- [Convex Auth Docs](https://labs.convex.dev/auth)
 - [React Native Paper](https://callstack.github.io/react-native-paper/)
 
 ## License

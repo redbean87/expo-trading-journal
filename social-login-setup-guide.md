@@ -1,7 +1,10 @@
 # Social Login Setup Guide
+
 ## Expo + React Native + Convex
 
-**Last Updated:** January 2026  
+> **Note**: The Trading Journal app already has Google OAuth implemented using a simpler approach with `expo-web-browser`. See [docs/google-oauth-setup.md](docs/google-oauth-setup.md) for the current implementation details. This guide is retained as a reference for adding Apple Sign-In or implementing OAuth in other projects using `expo-auth-session`.
+
+**Last Updated:** January 2026
 **Stack:** Expo, React Native, Convex, Vercel (free redirect service)
 
 ---

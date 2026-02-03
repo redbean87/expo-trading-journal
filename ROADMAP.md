@@ -23,7 +23,6 @@ The app has a solid foundation with:
 
 - [ ] **Strategy Analytics** - Performance breakdown by strategy tag
 - [ ] **Screenshot Attachments** - Add images to trades for chart analysis
-- [ ] **Desktop Layout** - Responsive layout optimized for larger screens (web/tablet)
 - [ ] **Trade Duration Histogram** - Distribution chart of trade hold times
 - [ ] **Drawdown Chart** - Visual drawdown progression over time
 - [ ] **Win/Loss Distribution** - Histogram showing distribution of trade P&L
@@ -130,3 +129,4 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Mistakes Tracking - Categorize trading errors with analytics dashboard showing frequency and P&L impact
 - [x] P&L Calendar Heatmap - Color-coded calendar showing daily profit/loss at a glance
 - [x] Performance by Day of Week - Bar chart showing P&L and win rate by weekday
+- [x] Desktop Layout - Responsive layout with sidebar navigation and master-detail view for trades

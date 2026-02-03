@@ -11,6 +11,7 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
 - **UI Library**: React Native Paper
 - **Navigation**: Expo Router (file-based routing)
 - **State Management**: Zustand
+- **Backend**: Convex (cloud database + auth + real-time sync)
 - **Storage**: AsyncStorage
 - **Node**: 20.x (managed via Volta)
 
@@ -18,19 +19,40 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
 
 ```
 app/
-  _layout.tsx        # Root layout (PaperProvider)
+  _layout.tsx        # Root layout (ConvexProvider, PaperProvider)
+  add-trade.tsx      # Add trade modal route
   (tabs)/
     _layout.tsx      # Tab navigator configuration
     index.tsx        # Home screen route
     trades.tsx       # Trades list screen route
-    add-trade.tsx    # Add trade form screen route
-    analytics.tsx    # Analytics screen route
+    profile.tsx      # Profile/settings screen route
+    analytics/       # Analytics with nested tab routes
+      _layout.tsx    # Analytics tab navigator
+      index.tsx      # Overview tab
+      charts.tsx     # Charts tab
+      psychology.tsx # Psychology tab
+      timing.tsx     # Timing tab
+  auth/
+    callback.tsx     # OAuth callback handler
+  edit-trade/
+    [id].tsx         # Edit trade modal (dynamic route)
+  trade/
+    [id].tsx         # Trade detail modal (dynamic route)
 src/
   components/        # Reusable components (used across multiple screens)
+  config/            # App configuration
+  constants/         # Constant values (e.g., mistake categories)
+  hooks/             # Custom React hooks
+  polyfills/         # Platform polyfills
+  providers/         # React context providers (Convex, settings sync)
+  schemas/           # Zod validation schemas
   screens/           # Screen components (re-exported by app/ routes)
     <screen-name>/   # Screen-specific components (co-located)
+  services/          # Backend service abstraction
   store/             # Zustand stores
+  theme/             # Theme configuration
   types/             # TypeScript interfaces and types
+  utils/             # Utility functions
 ```
 
 ## Code Style

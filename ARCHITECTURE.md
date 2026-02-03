@@ -1,18 +1,44 @@
 # Architecture Overview
 
-## Data Layer Migration: Zustand → React Query
+## Current Architecture: Convex Backend with Zustand UI State
 
-The app has been migrated from Zustand store to React Query for data management. This architecture supports the current local-first approach while making future cloud sync straightforward.
+The app uses a **local-first with cloud sync** architecture:
 
-## Current Architecture (Local Storage)
+- **Convex** handles data persistence, real-time sync, and authentication
+- **Zustand** manages client-side UI state
+- **AsyncStorage** provides offline caching
 
-### Services Layer
+## Data Layer
+
+### Backend (Convex)
+
+**Location**: `convex/` directory
+
+- **[schema.ts](convex/schema.ts)** - Database schema with trades and auth tables
+- **[auth.config.ts](convex/auth.config.ts)** - Authentication configuration (email/password + Google)
+- **[trades.ts](convex/trades.ts)** - CRUD operations for trades with user authorization
+- **[http.ts](convex/http.ts)** - HTTP routes for authentication endpoints
+
+### Frontend Hooks
+
+**Location**: [src/hooks/use-trades.ts](src/hooks/use-trades.ts)
+
+Custom hooks that wrap Convex's `useQuery` and `useMutation`:
+
+- `useTrades()` - Fetch all trades for the current user
+- `useTradesInRange(from, to)` - Fetch trades within a date range
+- `useTrade(id)` - Fetch a single trade by ID
+- `useAddTrade()` - Add a new trade
+- `useUpdateTrade()` - Update an existing trade
+- `useDeleteTrade()` - Delete a trade
+- `useClearAllTrades()` - Remove all trades
+- `useImportTrades()` - Bulk import with duplicate detection
+
+### Service Abstraction
 
 **Location**: [src/services/trade-service.ts](src/services/trade-service.ts)
 
-The service layer abstracts all storage operations. Currently uses AsyncStorage, but the interface makes it easy to swap in a cloud API later.
-
-**Key Functions**:
+The service layer abstracts Convex operations, making it easy to swap backends if needed:
 
 - `getTrades()` - Fetch all trades
 - `addTrade(trade)` - Add a new trade
@@ -21,206 +47,123 @@ The service layer abstracts all storage operations. Currently uses AsyncStorage,
 - `clearAllTrades()` - Delete all trades
 - `importTrades(trades)` - Import multiple trades with duplicate detection
 
-### React Query Hooks
+## State Management
 
-**Location**: [src/hooks/use-trades-query.ts](src/hooks/use-trades-query.ts)
+### Convex (Server/Data State)
 
-Custom hooks that wrap the service layer with React Query functionality:
+- Trade data with real-time sync across devices
+- Authentication state (user session)
+- Automatic cache invalidation on mutations
 
-- `useTradesQuery()` - Fetch and cache all trades
-- `useAddTradeMutation()` - Add a trade with automatic cache invalidation
-- `useUpdateTradeMutation()` - Update a trade with automatic cache invalidation
-- `useDeleteTradeMutation()` - Delete a trade with automatic cache invalidation
-- `useClearTradesMutation()` - Clear all trades with automatic cache invalidation
-- `useImportTradesMutation()` - Import trades with automatic cache invalidation
+### Zustand Stores (Client/UI State)
 
-### Query Configuration
+**Location**: `src/store/`
 
-**Location**: [src/providers/query-provider.tsx](src/providers/query-provider.tsx)
+| Store                                               | Purpose                                    |
+| --------------------------------------------------- | ------------------------------------------ |
+| [theme-store.ts](src/store/theme-store.ts)          | Light/dark mode preference                 |
+| [timezone-store.ts](src/store/timezone-store.ts)    | User timezone setting                      |
+| [analytics-store.ts](src/store/analytics-store.ts)  | Selected date range for analytics          |
+| [trades-ui-store.ts](src/store/trades-ui-store.ts)  | Selected trade ID for master-detail view   |
+| [trade-store.ts](src/store/trade-store.ts)          | Legacy local storage (offline fallback)    |
 
-React Query client configured for mobile:
+## Authentication
 
-- **staleTime**: 5 minutes (data stays fresh)
-- **gcTime**: 30 minutes (cache garbage collection)
-- **retry**: 1 attempt on failure
-- **refetchOnWindowFocus**: disabled (not relevant for mobile)
+**Provider**: Convex Auth with `@auth/core`
+
+- **Email/password** authentication
+- **Google Sign-In** via OAuth
+- Secure token storage with `expo-secure-store`
+- All routes protected by `AuthGate` component
+
+**Key Files**:
+
+- [src/hooks/use-auth.ts](src/hooks/use-auth.ts) - Auth hooks (signIn, signUp, signOut, signInWithGoogle)
+- [src/components/auth-gate.tsx](src/components/auth-gate.tsx) - Protects routes when not authenticated
+- [src/providers/convex-provider.tsx](src/providers/convex-provider.tsx) - Convex client with secure storage
 
 ## Benefits of This Architecture
 
-### 1. Automatic Caching
+### 1. Real-time Sync
 
-React Query caches trade data automatically, reducing AsyncStorage reads.
+Convex provides automatic real-time updates across devices. Add a trade on mobile, it appears instantly on web.
 
-### 2. Optimistic Updates (Easy to Add)
+### 2. Type Safety
 
-Can add optimistic UI updates for instant feedback before server confirms.
+Convex generates TypeScript types from your schema, ensuring end-to-end type safety.
 
-### 3. Background Refetching
+### 3. Simple Abstraction
 
-Automatically refetches stale data when screen comes into focus (when enabled).
+Screens use hooks (`useTrades`), hooks use Convex. Components don't need to know about the backend implementation.
 
-### 4. Deduplication
+### 4. Offline Support
 
-Multiple components requesting the same data will only trigger one network/storage request.
+AsyncStorage caches data locally. The trade store provides fallback when offline.
 
-### 5. Easy Migration to Cloud
+### 5. Easy Backend Swaps
 
-The service layer abstraction means cloud sync requires minimal changes to components.
+The service layer abstraction means switching from Convex to another backend (Firebase, Supabase) requires minimal changes to components.
 
-## Migration Path to Cloud Sync
+## Key Patterns
 
-### Phase 1: Add Cloud API (Recommended: Supabase or Firebase)
+### Screen Components
 
-1. **Create API Service**
-
-   ```typescript
-   // src/services/api-service.ts
-   export const apiService = {
-     async getTrades(userId: string): Promise<Trade[]> {
-       // Fetch from cloud API
-     },
-     async addTrade(userId: string, trade: Trade): Promise<Trade> {
-       // Post to cloud API
-     },
-     // ... other CRUD operations
-   }
-   ```
-
-2. **Update Service Layer to Sync**
-
-   ```typescript
-   // src/services/trade-service.ts
-   export const tradeService = {
-     async getTrades(): Promise<Trade[]> {
-       // Try cloud first, fallback to local
-       try {
-         const cloudTrades = await apiService.getTrades(userId);
-         // Save to local cache
-         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(cloudTrades));
-         return cloudTrades;
-       } catch (error) {
-         // Offline: use local cache
-         return getLocalTrades();
-       }
-     },
-     // ... similar for other operations
-   }
-   ```
-
-3. **No Component Changes Needed!**
-   Components use the same hooks, they just automatically sync to cloud now.
-
-### Phase 2: Add Offline Queue (Optional)
-
-For better offline support, add a queue for mutations that failed while offline:
+Screens fetch data using hooks and compose UI components:
 
 ```typescript
-// src/services/sync-queue.ts
-export const syncQueue = {
-  async addToQueue(operation: PendingOperation): Promise<void> {
-    // Store operation in queue
-  },
-  async processQueue(): Promise<void> {
-    // Process all pending operations when back online
-  }
+// Example: trades-screen.tsx
+function TradesScreen() {
+  const trades = useTrades();
+  const deleteTrade = useDeleteTrade();
+
+  return <TradeList trades={trades} onDelete={deleteTrade} />;
 }
 ```
 
-### Phase 3: Real-time Sync (Optional)
+### Mutations with Optimistic Updates
 
-Add WebSocket/SSE for real-time updates across devices:
+Convex mutations update the cache immediately, providing instant feedback:
 
 ```typescript
-// Listen for changes from other devices
-useEffect(() => {
-  const unsubscribe = apiService.subscribeToTrades(userId, (updatedTrades) => {
-    queryClient.setQueryData(tradeKeys.list(), updatedTrades);
-  });
-  return unsubscribe;
-}, [userId]);
+const addTrade = useAddTrade();
+
+// This updates the UI immediately, then syncs to server
+await addTrade(newTrade);
 ```
 
-## Current State Management
+### Analytics Hooks
 
-### React Query (Data/Server State)
+Analytics are computed client-side from trade data:
 
-- Trade data (CRUD operations)
-- Cache management
-- Loading/error states
-- Automatic refetching
+- [use-trade-analytics.ts](src/hooks/use-trade-analytics.ts) - Core metrics (win rate, P&L, streaks)
+- [use-equity-curve.ts](src/hooks/use-equity-curve.ts) - Cumulative P&L chart data
+- [use-daily-pnl.ts](src/hooks/use-daily-pnl.ts) - Daily breakdown
+- [use-time-of-day-breakdown.ts](src/hooks/use-time-of-day-breakdown.ts) - Hourly analysis
+- [use-day-of-week-breakdown.ts](src/hooks/use-day-of-week-breakdown.ts) - Weekday analysis
+- [use-mistake-analytics.ts](src/hooks/use-mistake-analytics.ts) - Error pattern analysis
 
-### Zustand (Client/UI State)
+## Development Workflow
 
-**Location**: [src/store/theme-store.ts](src/store/theme-store.ts)
+### Daily Development
 
-- Theme mode (light/dark)
-- Other UI preferences
+```bash
+# Terminal 1: Start Convex dev server
+npx convex dev
 
-**Note**: The old [trade-store.ts](src/store/trade-store.ts) is now unused and can be deleted.
+# Terminal 2: Start Expo
+npm start
+```
 
-## Testing
+### Making Changes
 
-All screens have been migrated:
+1. **Schema changes**: Edit `convex/schema.ts`, types regenerate automatically
+2. **Backend logic**: Edit `convex/*.ts` files
+3. **Frontend**: Edit `src/` files, use existing hooks
+4. **New queries**: Add to `convex/trades.ts`, create hook in `src/hooks/`
 
-- [x] Home Screen - Uses `useTradesQuery()`
-- [x] Trades Screen - Uses `useTradesQuery()`, `useDeleteTradeMutation()`, `useImportTradesMutation()`
-- [x] Add Trade Screen - Uses `useAddTradeMutation()`
-- [x] Analytics Screen - Uses `useTradesQuery()`
+## Resources
 
-Type checking passes: `npm run typecheck` ✓
-
-## Recommended Next Steps
-
-1. **Test the app** - Ensure all CRUD operations work correctly
-2. **Delete old store** - Remove `src/store/trade-store.ts` and its tests
-3. **Choose cloud provider** - Research Supabase (PostgreSQL) vs Firebase (NoSQL)
-4. **Add authentication** - Users need accounts for cloud sync
-5. **Implement API service** - Create cloud CRUD operations
-6. **Update trade-service.ts** - Add cloud sync logic with offline fallback
-
-## Cloud Service Recommendations
-
-### Supabase (Recommended)
-
-**Pros**:
-
-- PostgreSQL (relational, powerful queries)
-- Built-in auth, real-time subscriptions
-- Row-level security
-- Free tier: 500MB database, 2GB bandwidth
-- TypeScript SDK with great DX
-
-**Best for**: You want structure, complex analytics, and real-time sync
-
-### Firebase
-
-**Pros**:
-
-- NoSQL (simple, flexible)
-- Offline persistence built-in
-- Great mobile SDKs
-- Free tier: 1GB storage, 10GB bandwidth
-
-**Best for**: Rapid prototyping, simple data model
-
-### Custom API (Node.js/Postgres)
-
-**Pros**:
-
-- Full control
-- Can add advanced features later
-
-**Cons**:
-
-- More setup/maintenance
-- Need to handle auth, hosting, backups
-
-## Questions?
-
-Reach out if you need help with:
-
-- Choosing a cloud provider
-- Implementing authentication
-- Setting up the sync logic
-- Handling offline scenarios
-- Real-time updates
+- [Convex Docs](https://docs.convex.dev/)
+- [Convex Auth Docs](https://labs.convex.dev/auth)
+- [Zustand Docs](https://docs.pmnd.rs/zustand)
+- [Expo Router Docs](https://docs.expo.dev/router/introduction/)
