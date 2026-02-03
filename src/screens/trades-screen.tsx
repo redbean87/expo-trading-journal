@@ -1,8 +1,8 @@
 import { useIsFocused } from '@react-navigation/native';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import {
   View,
@@ -20,19 +20,72 @@ import { SearchBar } from '../components/search-bar';
 import { TradeCard } from '../components/trade-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useBreakpoint } from '../hooks/use-breakpoint';
-import { useTradeFilters } from '../hooks/use-trade-filters';
+import {
+  PnlFilter,
+  TradeFilters,
+  useTradeFilters,
+} from '../hooks/use-trade-filters';
 import {
   useTrades,
   useDeleteTrade,
   useImportTrades,
 } from '../hooks/use-trades';
 import { useTradesUIStore } from '../store/trades-ui-store';
-import { Trade } from '../types';
+import { Trade, TradeSide } from '../types';
+import { formatDateKey } from '../utils/calendar-helpers';
 import { tradesToCsv, generateExportFilename } from '../utils/csv-export';
 import { parseCsvFile } from '../utils/csv-import';
 import { downloadFile } from '../utils/file-download';
 import { TradeDetailPanel } from './trades/trade-detail-panel';
 import { TradeFilterModal } from './trades/trade-filter-modal';
+
+type TradeSearchParams = {
+  dateFrom?: string;
+  dateTo?: string;
+  side?: string;
+  pnl?: string;
+  strategy?: string;
+  q?: string;
+};
+
+function parseLocalDate(dateStr: string): Date | null {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
+  return new Date(year, month - 1, day);
+}
+
+function parseFiltersFromParams(
+  params: TradeSearchParams
+): Partial<TradeFilters> {
+  const filters: Partial<TradeFilters> = {};
+
+  if (params.dateFrom) {
+    const date = parseLocalDate(params.dateFrom);
+    if (date) filters.dateFrom = date;
+  }
+  if (params.dateTo) {
+    const date = parseLocalDate(params.dateTo);
+    if (date) filters.dateTo = date;
+  }
+
+  if (params.side === 'long' || params.side === 'short') {
+    filters.side = params.side as TradeSide;
+  }
+
+  if (params.pnl === 'winning' || params.pnl === 'losing') {
+    filters.pnl = params.pnl as PnlFilter;
+  }
+
+  if (params.strategy) {
+    filters.strategy = params.strategy;
+  }
+
+  if (params.q) {
+    filters.searchQuery = params.q;
+  }
+
+  return filters;
+}
 
 export default function TradesScreen() {
   const { trades, isLoading } = useTrades();
@@ -52,14 +105,78 @@ export default function TradesScreen() {
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  const params = useLocalSearchParams<TradeSearchParams>();
+  const isUpdatingUrl = useRef(false);
+
   const {
     filters,
+    setFilters,
     filteredTrades,
     uniqueStrategies,
     activeFilterCount,
     updateFilter,
-    clearFilters,
+    clearFilters: clearFiltersState,
   } = useTradeFilters(trades);
+
+  // Sync URL params to filter state (on mount and when URL changes externally)
+  useEffect(() => {
+    // Skip if we're the ones updating the URL
+    if (isUpdatingUrl.current) {
+      isUpdatingUrl.current = false;
+      return;
+    }
+
+    const urlFilters = parseFiltersFromParams(params);
+    const hasUrlFilters = Object.keys(urlFilters).length > 0;
+
+    if (hasUrlFilters) {
+      setFilters((prev) => ({ ...prev, ...urlFilters }));
+    }
+  }, [params, setFilters]);
+
+  // Sync filter changes to URL
+  useEffect(() => {
+    const newParams: Record<string, string> = {};
+
+    if (filters.dateFrom) {
+      newParams.dateFrom = formatDateKey(filters.dateFrom);
+    }
+    if (filters.dateTo) {
+      newParams.dateTo = formatDateKey(filters.dateTo);
+    }
+
+    if (filters.side !== 'all') {
+      newParams.side = filters.side;
+    }
+
+    if (filters.pnl !== 'all') {
+      newParams.pnl = filters.pnl;
+    }
+
+    if (filters.strategy !== 'all') {
+      newParams.strategy = filters.strategy;
+    }
+
+    if (filters.searchQuery) {
+      newParams.q = filters.searchQuery;
+    }
+
+    isUpdatingUrl.current = true;
+    router.setParams(newParams);
+  }, [filters, router]);
+
+  const clearFilters = () => {
+    clearFiltersState();
+    isUpdatingUrl.current = true;
+    router.setParams({
+      dateFrom: undefined,
+      dateTo: undefined,
+      side: undefined,
+      pnl: undefined,
+      strategy: undefined,
+      q: undefined,
+    });
+  };
 
   const handleExportCsv = async () => {
     if (filteredTrades.length === 0) {
@@ -329,7 +446,7 @@ export default function TradesScreen() {
           onDismiss={() => setFilterModalVisible(false)}
           filters={filters}
           uniqueStrategies={uniqueStrategies}
-          onUpdateFilter={updateFilter}
+          onApplyFilters={setFilters}
           onClearFilters={clearFilters}
         />
       </View>

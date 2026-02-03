@@ -7,16 +7,16 @@ import { useAppTheme } from '../../hooks/use-app-theme';
 import { TradeFilters, PnlFilter } from '../../hooks/use-trade-filters';
 import { TradeSide } from '../../types';
 
-type TradeFilterModalProps = {
-  visible: boolean;
+type TradeFilterModalContentProps = {
   onDismiss: () => void;
   filters: TradeFilters;
   uniqueStrategies: string[];
-  onUpdateFilter: <K extends keyof TradeFilters>(
-    key: K,
-    value: TradeFilters[K]
-  ) => void;
+  onApplyFilters: (filters: TradeFilters) => void;
   onClearFilters: () => void;
+};
+
+type TradeFilterModalProps = TradeFilterModalContentProps & {
+  visible: boolean;
 };
 
 type SideOption = { label: string; value: TradeSide | 'all' };
@@ -34,19 +34,31 @@ const pnlOptions: PnlOption[] = [
   { label: 'Losing', value: 'losing' },
 ];
 
-export function TradeFilterModal({
-  visible,
+function TradeFilterModalContent({
   onDismiss,
   filters,
   uniqueStrategies,
-  onUpdateFilter,
+  onApplyFilters,
   onClearFilters,
-}: TradeFilterModalProps) {
+}: TradeFilterModalContentProps) {
   const theme = useAppTheme();
   const styles = createStyles(theme);
 
+  const [localFilters, setLocalFilters] = useState<TradeFilters>(filters);
   const [showDateFromPicker, setShowDateFromPicker] = useState(false);
   const [showDateToPicker, setShowDateToPicker] = useState(false);
+
+  const updateLocalFilter = <K extends keyof TradeFilters>(
+    key: K,
+    value: TradeFilters[K]
+  ) => {
+    setLocalFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleApply = () => {
+    onApplyFilters(localFilters);
+    onDismiss();
+  };
 
   const formatDate = (date: Date | null) => {
     if (!date) return 'Any';
@@ -65,7 +77,7 @@ export function TradeFilterModal({
   return (
     <Portal>
       <Modal
-        visible={visible}
+        visible={true}
         onDismiss={onDismiss}
         contentContainerStyle={styles.modal}
       >
@@ -83,8 +95,8 @@ export function TradeFilterModal({
               {sideOptions.map((option) => (
                 <Chip
                   key={option.value}
-                  selected={filters.side === option.value}
-                  onPress={() => onUpdateFilter('side', option.value)}
+                  selected={localFilters.side === option.value}
+                  onPress={() => updateLocalFilter('side', option.value)}
                   style={styles.chip}
                 >
                   {option.label}
@@ -104,8 +116,8 @@ export function TradeFilterModal({
               {pnlOptions.map((option) => (
                 <Chip
                   key={option.value}
-                  selected={filters.pnl === option.value}
-                  onPress={() => onUpdateFilter('pnl', option.value)}
+                  selected={localFilters.pnl === option.value}
+                  onPress={() => updateLocalFilter('pnl', option.value)}
                   style={styles.chip}
                 >
                   {option.label}
@@ -123,8 +135,8 @@ export function TradeFilterModal({
             </Text>
             <View style={styles.chipRow}>
               <Chip
-                selected={filters.strategy === 'all'}
-                onPress={() => onUpdateFilter('strategy', 'all')}
+                selected={localFilters.strategy === 'all'}
+                onPress={() => updateLocalFilter('strategy', 'all')}
                 style={styles.chip}
               >
                 All
@@ -132,8 +144,8 @@ export function TradeFilterModal({
               {uniqueStrategies.map((strategy) => (
                 <Chip
                   key={strategy}
-                  selected={filters.strategy === strategy}
-                  onPress={() => onUpdateFilter('strategy', strategy)}
+                  selected={localFilters.strategy === strategy}
+                  onPress={() => updateLocalFilter('strategy', strategy)}
                   style={styles.chip}
                 >
                   {strategy}
@@ -156,7 +168,7 @@ export function TradeFilterModal({
                 style={styles.dateButton}
                 compact
               >
-                From: {formatDate(filters.dateFrom)}
+                From: {formatDate(localFilters.dateFrom)}
               </Button>
               <Button
                 mode="outlined"
@@ -164,15 +176,15 @@ export function TradeFilterModal({
                 style={styles.dateButton}
                 compact
               >
-                To: {formatDate(filters.dateTo)}
+                To: {formatDate(localFilters.dateTo)}
               </Button>
             </View>
-            {(filters.dateFrom || filters.dateTo) && (
+            {(localFilters.dateFrom || localFilters.dateTo) && (
               <Button
                 mode="text"
                 onPress={() => {
-                  onUpdateFilter('dateFrom', null);
-                  onUpdateFilter('dateTo', null);
+                  updateLocalFilter('dateFrom', null);
+                  updateLocalFilter('dateTo', null);
                 }}
                 compact
               >
@@ -186,7 +198,7 @@ export function TradeFilterModal({
           <Button mode="outlined" onPress={handleClearAndClose}>
             Clear All
           </Button>
-          <Button mode="contained" onPress={onDismiss}>
+          <Button mode="contained" onPress={handleApply}>
             Apply
           </Button>
         </View>
@@ -197,10 +209,10 @@ export function TradeFilterModal({
         mode="single"
         visible={showDateFromPicker}
         onDismiss={() => setShowDateFromPicker(false)}
-        date={filters.dateFrom || undefined}
+        date={localFilters.dateFrom || undefined}
         onConfirm={({ date }) => {
           setShowDateFromPicker(false);
-          onUpdateFilter('dateFrom', date || null);
+          updateLocalFilter('dateFrom', date || null);
         }}
       />
 
@@ -209,14 +221,19 @@ export function TradeFilterModal({
         mode="single"
         visible={showDateToPicker}
         onDismiss={() => setShowDateToPicker(false)}
-        date={filters.dateTo || undefined}
+        date={localFilters.dateTo || undefined}
         onConfirm={({ date }) => {
           setShowDateToPicker(false);
-          onUpdateFilter('dateTo', date || null);
+          updateLocalFilter('dateTo', date || null);
         }}
       />
     </Portal>
   );
+}
+
+export function TradeFilterModal({ visible, ...props }: TradeFilterModalProps) {
+  if (!visible) return null;
+  return <TradeFilterModalContent {...props} />;
 }
 
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>

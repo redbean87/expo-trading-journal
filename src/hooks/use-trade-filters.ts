@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { Trade, TradeSide } from '../types';
 
@@ -22,8 +22,14 @@ const defaultFilters: TradeFilters = {
   dateTo: null,
 };
 
-export function useTradeFilters(trades: Trade[]) {
-  const [filters, setFilters] = useState<TradeFilters>(defaultFilters);
+export function useTradeFilters(
+  trades: Trade[],
+  initialFilters?: Partial<TradeFilters>
+) {
+  const [filters, setFilters] = useState<TradeFilters>(() => ({
+    ...defaultFilters,
+    ...initialFilters,
+  }));
 
   const uniqueStrategies = useMemo(() => {
     const strategies = trades
@@ -89,19 +95,20 @@ export function useTradeFilters(trades: Trade[]) {
 
   const hasActiveFilters = filters.searchQuery !== '' || activeFilterCount > 0;
 
-  const updateFilter = <K extends keyof TradeFilters>(
-    key: K,
-    value: TradeFilters[K]
-  ) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
+  const updateFilter = useCallback(
+    <K extends keyof TradeFilters>(key: K, value: TradeFilters[K]) => {
+      setFilters((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setFilters(defaultFilters);
-  };
+  }, []);
 
   return {
     filters,
+    setFilters,
     filteredTrades,
     uniqueStrategies,
     activeFilterCount,
