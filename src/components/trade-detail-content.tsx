@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Button, Card, Chip, Portal, Dialog } from 'react-native-paper';
 
 import { AttachmentGallery } from './attachment-gallery';
+import { LinkedText } from './linked-text';
 import { getMistakeCategoryLabel } from '../constants/mistake-categories';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAttachments } from '../hooks/use-attachments';
@@ -148,9 +149,9 @@ export function TradeDetailContent({
                 <Text variant="titleMedium" style={styles.sectionTitle}>
                   What Worked
                 </Text>
-                <Text variant="bodyLarge" style={styles.notes}>
+                <LinkedText variant="bodyLarge" style={styles.notes}>
                   {trade.whatWorked}
-                </Text>
+                </LinkedText>
               </Card.Content>
             </Card>
           )}
@@ -161,9 +162,9 @@ export function TradeDetailContent({
                 <Text variant="titleMedium" style={styles.sectionTitle}>
                   What Didn&apos;t Work
                 </Text>
-                <Text variant="bodyLarge" style={styles.notes}>
+                <LinkedText variant="bodyLarge" style={styles.notes}>
                   {trade.whatFailed}
-                </Text>
+                </LinkedText>
               </Card.Content>
             </Card>
           )}
@@ -184,9 +185,9 @@ export function TradeDetailContent({
                       categorizeMistake(trade.ruleViolation) ?? 'other'
                     )}
                   </Chip>
-                  <Text variant="bodyLarge" style={styles.notes}>
+                  <LinkedText variant="bodyLarge" style={styles.notes}>
                     {trade.ruleViolation}
-                  </Text>
+                  </LinkedText>
                 </View>
               </Card.Content>
             </Card>
@@ -198,9 +199,9 @@ export function TradeDetailContent({
                 <Text variant="titleMedium" style={styles.sectionTitle}>
                   Notes
                 </Text>
-                <Text variant="bodyLarge" style={styles.notes}>
+                <LinkedText variant="bodyLarge" style={styles.notes}>
                   {trade.notes}
-                </Text>
+                </LinkedText>
               </Card.Content>
             </Card>
           )}
