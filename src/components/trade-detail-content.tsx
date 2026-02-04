@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Button, Card, Chip, Portal, Dialog } from 'react-native-paper';
 
+import { AttachmentGallery } from './attachment-gallery';
 import { getMistakeCategoryLabel } from '../constants/mistake-categories';
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useAttachments } from '../hooks/use-attachments';
 import { Trade } from '../types';
 import { formatDateTime } from '../utils/date-format';
 import { categorizeMistake } from '../utils/mistake-categorization';
@@ -23,6 +25,7 @@ export function TradeDetailContent({
 }: TradeDetailContentProps) {
   const theme = useAppTheme();
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const { attachments } = useAttachments(trade.id);
 
   const styles = createStyles(theme);
 
@@ -198,6 +201,17 @@ export function TradeDetailContent({
                 <Text variant="bodyLarge" style={styles.notes}>
                   {trade.notes}
                 </Text>
+              </Card.Content>
+            </Card>
+          )}
+
+          {attachments.length > 0 && (
+            <Card style={styles.card}>
+              <Card.Content>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  Screenshots
+                </Text>
+                <AttachmentGallery attachments={attachments} />
               </Card.Content>
             </Card>
           )}

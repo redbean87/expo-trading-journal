@@ -5,9 +5,10 @@ import { Button, Text } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useImageUpload } from '../hooks/use-image-upload';
 import { useAddTrade, useUpdateTrade, useTrade } from '../hooks/use-trades';
 import { calculatePnl } from '../schemas/trade';
-import { TradeFormData } from '../types';
+import { PendingImage, TradeFormData } from '../types';
 import { TradeFormContent } from './add-trade/trade-form-content';
 
 export default function AddTradeScreen() {
@@ -15,12 +16,16 @@ export default function AddTradeScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const addTrade = useAddTrade();
   const updateTrade = useUpdateTrade();
+  const { uploadImages } = useImageUpload();
   const theme = useAppTheme();
 
   const isEditMode = !!params.id;
   const { trade, isLoading, notFound } = useTrade(params.id || null);
 
-  const handleSubmit = async (formData: TradeFormData) => {
+  const handleSubmit = async (
+    formData: TradeFormData,
+    pendingImages: PendingImage[]
+  ) => {
     const entryPrice = parseFloat(formData.entryPrice);
     const exitPrice = parseFloat(formData.exitPrice);
     const quantity = parseFloat(formData.quantity);
@@ -31,6 +36,8 @@ export default function AddTradeScreen() {
       quantity,
       formData.side
     );
+
+    let savedTradeId: string;
 
     if (isEditMode && params.id) {
       await updateTrade(params.id, {
@@ -51,6 +58,7 @@ export default function AddTradeScreen() {
         pnl,
         pnlPercent,
       });
+      savedTradeId = params.id;
     } else {
       const newTrade = {
         id: uuidv4(),
@@ -72,7 +80,12 @@ export default function AddTradeScreen() {
         pnlPercent,
       };
 
-      await addTrade(newTrade);
+      const savedTrade = await addTrade(newTrade);
+      savedTradeId = savedTrade.id;
+    }
+
+    if (pendingImages.length > 0) {
+      await uploadImages(savedTradeId, pendingImages);
     }
 
     router.back();
@@ -149,6 +162,7 @@ export default function AddTradeScreen() {
     <TradeFormContent
       initialData={initialData}
       isEditMode={isEditMode}
+      tradeId={params.id || null}
       onSubmit={handleSubmit}
     />
   );

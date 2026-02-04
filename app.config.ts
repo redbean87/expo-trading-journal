@@ -20,6 +20,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.tradingjournal.app',
+    infoPlist: {
+      NSPhotoLibraryUsageDescription:
+        'We need access to your photo library to attach trade screenshots.',
+      NSCameraUsageDescription:
+        'We need access to your camera to capture trade screenshots.',
+    },
   },
   android: {
     adaptiveIcon: {
@@ -32,7 +38,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: {
     favicon: './assets/favicon.png',
   },
-  plugins: ['expo-router'],
+  plugins: ['expo-router', 'expo-image-picker'],
   extra: {
     apiUrl: process.env.API_URL,
     enableAnalytics: process.env.ENABLE_ANALYTICS === 'true',

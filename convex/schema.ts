@@ -43,6 +43,19 @@ const schema = defineSchema({
     .index('by_user', ['userId']) // Index for efficient user queries
     .index('by_user_and_entry_time', ['userId', 'entryTime']) // Index for sorted queries
     .index('by_user_and_exit_time', ['userId', 'exitTime']), // Index for date range filtering
+
+  // Trade screenshot attachments stored in Cloudflare R2
+  attachments: defineTable({
+    userId: v.string(),
+    tradeId: v.id('trades'),
+    storageKey: v.string(), // R2 object key
+    filename: v.string(),
+    contentType: v.string(), // image/jpeg or image/png
+    size: v.number(), // File size in bytes
+    uploadedAt: v.number(), // Unix timestamp
+  })
+    .index('by_trade', ['tradeId'])
+    .index('by_user', ['userId']),
 });
 
 export default schema;

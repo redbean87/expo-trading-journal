@@ -9,24 +9,31 @@ import {
 import { Button, Card } from 'react-native-paper';
 
 import { PnlPreviewCard } from './pnl-preview-card';
+import { ScreenshotPicker } from './screenshot-picker';
 import { TradeForm } from './trade-form';
 import { ResponsiveContainer } from '../../components/responsive-container';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { calculatePnl } from '../../schemas/trade';
-import { TradeFormData } from '../../types';
+import { PendingImage, TradeFormData } from '../../types';
 
 type TradeFormContentProps = {
   initialData: TradeFormData;
   isEditMode: boolean;
-  onSubmit: (data: TradeFormData) => Promise<void>;
+  tradeId: string | null;
+  onSubmit: (
+    data: TradeFormData,
+    pendingImages: PendingImage[]
+  ) => Promise<void>;
 };
 
 export function TradeFormContent({
   initialData,
   isEditMode,
+  tradeId,
   onSubmit,
 }: TradeFormContentProps) {
   const [formData, setFormData] = useState<TradeFormData>(initialData);
+  const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
   const theme = useAppTheme();
 
   const { pnl, pnlPercent } = useMemo(() => {
@@ -55,7 +62,7 @@ export function TradeFormContent({
       return;
     }
 
-    await onSubmit(formData);
+    await onSubmit(formData, pendingImages);
   };
 
   const styles = createStyles(theme);
@@ -82,6 +89,12 @@ export function TradeFormContent({
                   formData.quantity && (
                     <PnlPreviewCard pnl={pnl} pnlPercent={pnlPercent} />
                   )}
+
+                <ScreenshotPicker
+                  tradeId={tradeId}
+                  pendingImages={pendingImages}
+                  onPendingImagesChange={setPendingImages}
+                />
 
                 <Button
                   mode="contained"
