@@ -163,7 +163,6 @@ export default function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
             <BarChart
               style={[styles.chart, { height: chartHeight, width: chartWidth }]}
               data={data}
-              svg={{ fill: theme.colors.profit }}
               contentInset={contentInset}
               spacingInner={0.3}
               spacingOuter={0.2}
