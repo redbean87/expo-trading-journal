@@ -26,9 +26,27 @@ export type UserProfile = {
 
 export type CustomColors = {
   primary: string; // Accent color (#RRGGBB)
-  background: string; // Single background for both modes (#RRGGBB)
   profit: string; // Trading green (#RRGGBB)
   loss: string; // Trading red (#RRGGBB)
+
+  // Optional - not currently used in UI (kept for backward compatibility)
+  background?: string;
+  light?: {
+    background: string;
+    surface: string;
+    surfaceVariant: string;
+    text: string;
+    textSecondary: string;
+    border: string;
+  };
+  dark?: {
+    background: string;
+    surface: string;
+    surfaceVariant: string;
+    text: string;
+    textSecondary: string;
+    border: string;
+  };
 };
 
 export type CustomThemePreset = 'default' | 'custom';

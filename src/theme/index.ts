@@ -104,7 +104,6 @@ export type AppTheme = typeof lightTheme;
 
 export const DEFAULT_CUSTOM_COLORS: CustomColors = {
   primary: '#6750A4', // MD3 purple
-  background: '#FFFFFF', // White background (works for both light/dark modes)
   profit: '#4caf50', // Green
   loss: '#f44336', // Red
 };
@@ -118,12 +117,12 @@ export function createCustomTheme(
     return baseTheme;
   }
 
+  // Only apply accent colors, leave background/surface/text to base theme
   return {
     ...baseTheme,
     colors: {
       ...baseTheme.colors,
       primary: customColors.primary,
-      background: customColors.background, // Same background for both modes
       profit: customColors.profit,
       loss: customColors.loss,
     },

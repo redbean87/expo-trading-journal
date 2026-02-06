@@ -23,15 +23,10 @@ const CUSTOM_THEME_STORAGE_KEY = '@custom_theme';
 const HEX_PATTERN = /^#[0-9A-F]{6}$/i;
 
 function validateCustomColors(colors: CustomColors): boolean {
-  // Validate all color fields are valid HEX
-  const allColors = [
-    colors.primary,
-    colors.background,
-    colors.profit,
-    colors.loss,
-  ];
+  // Validate required colors
+  const requiredColors = [colors.primary, colors.profit, colors.loss];
 
-  return allColors.every((color) => HEX_PATTERN.test(color));
+  return requiredColors.every((color) => HEX_PATTERN.test(color));
 }
 
 export const useCustomThemeStore = create<CustomThemeStore>((set) => ({
