@@ -14,7 +14,8 @@
       "Bash(find:*)",
       "Bash(ls:*)",
       "Bash(tree:*)",
-      "Bash(npm run lint:fix:*)"
+      "Bash(npm run lint:fix:*)",
+      "Bash(git push:*)"
     ]
   }
 }

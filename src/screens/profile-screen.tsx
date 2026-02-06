@@ -22,7 +22,7 @@ import { useClearAllTrades } from '../hooks/use-trades';
 import { useCustomThemeStore } from '../store/custom-theme-store';
 import { useProfileStore } from '../store/profile-store';
 import { useThemeStore } from '../store/theme-store';
-import { DEFAULT_CUSTOM_COLORS } from '../theme';
+import { rgbaToHex } from '../utils/color-intensity';
 
 import type { CustomColors } from '../types';
 
@@ -264,7 +264,12 @@ export default function ProfileScreen() {
         <CustomColorsDialog
           visible={customColorsDialogVisible}
           onDismiss={() => setCustomColorsDialogVisible(false)}
-          initialColors={customColors || DEFAULT_CUSTOM_COLORS}
+          initialColors={{
+            primary: rgbaToHex(theme.colors.primary),
+            profit: rgbaToHex(theme.colors.profit),
+            loss: rgbaToHex(theme.colors.loss),
+            ...(customColors || {}),
+          }}
           onSave={handleSaveCustomColors}
           onReset={handleResetColors}
         />

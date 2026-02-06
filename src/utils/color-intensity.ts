@@ -3,6 +3,40 @@ export type ColorIntensityResult = {
   textColor: string;
 };
 
+/**
+ * Converts an RGBA or RGB color string to hex format (#RRGGBB).
+ * If the input is already in hex format, returns it as-is.
+ *
+ * @param color - Color string in format "rgba(r, g, b, a)" or "rgb(r, g, b)" or "#RRGGBB"
+ * @returns Hex color string in format "#RRGGBB"
+ *
+ * @example
+ * rgbaToHex("rgba(208, 188, 255, 1)") // "#D0BCFF"
+ * rgbaToHex("rgb(76, 175, 80)") // "#4CAF50"
+ * rgbaToHex("#4CAF50") // "#4CAF50"
+ */
+export function rgbaToHex(color: string): string {
+  // Already in hex format
+  if (color.startsWith('#')) {
+    return color.toUpperCase();
+  }
+
+  // Extract RGB values from rgba() or rgb() format
+  const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (!match) {
+    // Invalid format, return as-is
+    return color;
+  }
+
+  const r = parseInt(match[1], 10);
+  const g = parseInt(match[2], 10);
+  const b = parseInt(match[3], 10);
+
+  // Convert to 2-digit hex and combine
+  const toHex = (n: number) => n.toString(16).padStart(2, '0').toUpperCase();
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
 export function calculatePnlColor(
   pnl: number,
   maxProfit: number,

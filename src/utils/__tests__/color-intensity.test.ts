@@ -1,4 +1,4 @@
-import { calculatePnlColor } from '../color-intensity';
+import { calculatePnlColor, rgbaToHex } from '../color-intensity';
 
 describe('calculatePnlColor', () => {
   const profitColor = '#4caf50';
@@ -175,5 +175,40 @@ describe('calculatePnlColor', () => {
       );
       expect(alpha).toBeLessThanOrEqual(1.0);
     });
+  });
+});
+
+describe('rgbaToHex', () => {
+  it('should convert rgba() to hex', () => {
+    expect(rgbaToHex('rgba(208, 188, 255, 1)')).toBe('#D0BCFF');
+    expect(rgbaToHex('rgba(76, 175, 80, 0.5)')).toBe('#4CAF50');
+    expect(rgbaToHex('rgba(244, 67, 54, 1)')).toBe('#F44336');
+  });
+
+  it('should convert rgb() to hex', () => {
+    expect(rgbaToHex('rgb(208, 188, 255)')).toBe('#D0BCFF');
+    expect(rgbaToHex('rgb(76, 175, 80)')).toBe('#4CAF50');
+  });
+
+  it('should handle hex colors as-is', () => {
+    expect(rgbaToHex('#D0BCFF')).toBe('#D0BCFF');
+    expect(rgbaToHex('#4caf50')).toBe('#4CAF50');
+    expect(rgbaToHex('#F44336')).toBe('#F44336');
+  });
+
+  it('should handle colors with extra spacing', () => {
+    expect(rgbaToHex('rgba(208,  188,  255,  1)')).toBe('#D0BCFF');
+    expect(rgbaToHex('rgb(76,175,80)')).toBe('#4CAF50');
+  });
+
+  it('should convert single-digit values correctly', () => {
+    expect(rgbaToHex('rgba(0, 0, 0, 1)')).toBe('#000000');
+    expect(rgbaToHex('rgba(255, 255, 255, 1)')).toBe('#FFFFFF');
+    expect(rgbaToHex('rgba(1, 2, 3, 0.5)')).toBe('#010203');
+  });
+
+  it('should return invalid formats as-is', () => {
+    expect(rgbaToHex('invalid')).toBe('invalid');
+    expect(rgbaToHex('hsl(0, 100%, 50%)')).toBe('hsl(0, 100%, 50%)');
   });
 });
