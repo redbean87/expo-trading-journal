@@ -8,7 +8,7 @@ import { ResponsiveContainer } from '../components/responsive-container';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTradesInRange } from '../hooks/use-trades';
 import { useAnalyticsStore } from '../store/analytics-store';
-import { AnalyticsSegment } from '../types';
+import { AnalyticsSegment, Trade } from '../types';
 import { getDateRangeStart } from '../utils/date-range';
 import { DateRangeFilter } from './analytics/date-range-filter';
 
@@ -22,6 +22,16 @@ const AnalyticsLayoutContext = createContext<AnalyticsLayoutContextValue>({
 
 export const useAnalyticsLayout = () => useContext(AnalyticsLayoutContext);
 
+type AnalyticsDataContextValue = {
+  trades: Trade[];
+};
+
+const AnalyticsDataContext = createContext<AnalyticsDataContextValue>({
+  trades: [],
+});
+
+export const useAnalyticsData = () => useContext(AnalyticsDataContext);
+
 type AnalyticsLayoutProps = {
   children?: ReactNode;
 };
@@ -34,7 +44,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
   const { selectedRange, setSelectedRange } = useAnalyticsStore();
 
   const startTime = getDateRangeStart(selectedRange);
-  const { isLoading } = useTradesInRange(startTime);
+  const { trades, isLoading } = useTradesInRange(startTime);
 
   const getSegment = (): AnalyticsSegment => {
     if (pathname.includes('/timing')) return 'timing';
@@ -57,32 +67,34 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
 
   return (
     <AnalyticsLayoutContext.Provider value={{ setScrollEnabled }}>
-      <LoadingState isLoading={isLoading}>
-        <ScrollView style={styles.container} scrollEnabled={scrollEnabled}>
-          <ResponsiveContainer>
-            <View style={styles.content}>
-              <DateRangeFilter
-                selectedRange={selectedRange}
-                onSelectRange={setSelectedRange}
-              />
+      <AnalyticsDataContext.Provider value={{ trades }}>
+        <LoadingState isLoading={isLoading}>
+          <ScrollView style={styles.container} scrollEnabled={scrollEnabled}>
+            <ResponsiveContainer>
+              <View style={styles.content}>
+                <DateRangeFilter
+                  selectedRange={selectedRange}
+                  onSelectRange={setSelectedRange}
+                />
 
-              <SegmentedButtons
-                value={getSegment()}
-                onValueChange={handleSegmentChange}
-                buttons={[
-                  { value: 'overview', label: 'Overview' },
-                  { value: 'timing', label: 'Timing' },
-                  { value: 'charts', label: 'Charts' },
-                  { value: 'psychology', label: 'Psych' },
-                ]}
-                style={styles.segmentToggle}
-              />
+                <SegmentedButtons
+                  value={getSegment()}
+                  onValueChange={handleSegmentChange}
+                  buttons={[
+                    { value: 'overview', label: 'Overview' },
+                    { value: 'timing', label: 'Timing' },
+                    { value: 'charts', label: 'Charts' },
+                    { value: 'psychology', label: 'Psych' },
+                  ]}
+                  style={styles.segmentToggle}
+                />
 
-              {children ?? <Slot />}
-            </View>
-          </ResponsiveContainer>
-        </ScrollView>
-      </LoadingState>
+                {children ?? <Slot />}
+              </View>
+            </ResponsiveContainer>
+          </ScrollView>
+        </LoadingState>
+      </AnalyticsDataContext.Provider>
     </AnalyticsLayoutContext.Provider>
   );
 }

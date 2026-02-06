@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from 'convex/react';
+import React from 'react';
 
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
@@ -81,9 +82,18 @@ export function useTradesInRange(startTime: number | null) {
     startTime: startTime ?? undefined,
   });
 
+  const [previousData, setPreviousData] =
+    React.useState<typeof data>(undefined);
+
+  React.useEffect(() => {
+    if (data !== undefined) {
+      setPreviousData(data);
+    }
+  }, [data]);
+
   return {
-    trades: data?.map(mapToTrade) ?? [],
-    isLoading: data === undefined,
+    trades: (data ?? previousData)?.map(mapToTrade) ?? [],
+    isLoading: data === undefined && previousData === undefined,
   };
 }
 

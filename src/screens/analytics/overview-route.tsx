@@ -2,14 +2,10 @@ import React from 'react';
 
 import { OverviewSection } from './overview-section';
 import { useTradeAnalytics } from '../../hooks/use-trade-analytics';
-import { useTradesInRange } from '../../hooks/use-trades';
-import { useAnalyticsStore } from '../../store/analytics-store';
-import { getDateRangeStart } from '../../utils/date-range';
+import { useAnalyticsData } from '../analytics-layout';
 
 export default function OverviewRoute() {
-  const { selectedRange } = useAnalyticsStore();
-  const startTime = getDateRangeStart(selectedRange);
-  const { trades } = useTradesInRange(startTime);
+  const { trades } = useAnalyticsData();
 
   const {
     totalTrades,
