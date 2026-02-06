@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Card } from 'react-native-paper';
 
-import { useAppTheme } from '../../hooks/use-app-theme';
 import { DailyPnl, useDailyPnl } from '../../hooks/use-daily-pnl';
-import { AppTheme } from '../../theme';
 import { Trade } from '../../types';
 import { CalendarGrid } from './pnl-calendar/calendar-grid';
 import { CalendarHeader } from './pnl-calendar/calendar-header';
@@ -16,10 +14,8 @@ type PnlCalendarCardProps = {
 };
 
 export function PnlCalendarCard({ trades, onDayPress }: PnlCalendarCardProps) {
-  const theme = useAppTheme();
   const [selectedMonth, setSelectedMonth] = useState(() => new Date());
   const dailyPnlData = useDailyPnl(trades);
-  const styles = createStyles(theme);
 
   const handlePrevMonth = () => {
     setSelectedMonth((prev) => addMonths(prev, -1));
@@ -48,10 +44,8 @@ export function PnlCalendarCard({ trades, onDayPress }: PnlCalendarCardProps) {
   );
 }
 
-const createStyles = (theme: AppTheme) =>
-  StyleSheet.create({
-    card: {
-      marginBottom: 16,
-      backgroundColor: theme.colors.surface,
-    },
-  });
+const styles = StyleSheet.create({
+  card: {
+    marginBottom: 16,
+  },
+});

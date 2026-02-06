@@ -140,7 +140,7 @@ export default function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
 
   return (
     <Card style={styles.card}>
-      <Card.Title title="Day of Week Performance" />
+      <Card.Title title="P&L by Day" />
       <Card.Content>
         <View style={styles.container}>
           {/* Y-axis labels */}
