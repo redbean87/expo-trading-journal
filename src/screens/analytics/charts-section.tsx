@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 
-import { DayOfWeekCard } from './day-of-week-card';
+import DayOfWeekCard from './day-of-week-card';
 import EquityCurveCard from './equity-curve-card';
 import { PnlCalendarCard } from './pnl-calendar-card';
 import { TimeOfDayCard } from './time-of-day-card';
