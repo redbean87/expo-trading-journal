@@ -26,6 +26,17 @@ function validateCustomColors(colors: CustomColors): boolean {
   // Validate required colors
   const requiredColors = [colors.primary, colors.profit, colors.loss];
 
+  // primaryContainer and onPrimaryContainer are optional for backward compatibility
+  if (colors.primaryContainer && !HEX_PATTERN.test(colors.primaryContainer)) {
+    return false;
+  }
+  if (
+    colors.onPrimaryContainer &&
+    !HEX_PATTERN.test(colors.onPrimaryContainer)
+  ) {
+    return false;
+  }
+
   return requiredColors.every((color) => HEX_PATTERN.test(color));
 }
 

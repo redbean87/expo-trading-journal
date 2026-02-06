@@ -31,6 +31,8 @@ export function CustomColorsDialog({
         primary: initialColors.primary,
         profit: initialColors.profit,
         loss: initialColors.loss,
+        primaryContainer: initialColors.primaryContainer!,
+        onPrimaryContainer: initialColors.onPrimaryContainer!,
       });
     }
   }, [visible, initialColors]);
@@ -87,6 +89,27 @@ export function CustomColorsDialog({
               label="Loss Color"
               value={tempColors.loss}
               onChange={(val) => setTempColors({ ...tempColors, loss: val })}
+            />
+
+            <Text
+              variant="labelLarge"
+              style={{ marginTop: 16, marginBottom: 12 }}
+            >
+              Active States
+            </Text>
+            <ColorPicker
+              label="Active Background"
+              value={tempColors.primaryContainer!}
+              onChange={(val) =>
+                setTempColors({ ...tempColors, primaryContainer: val })
+              }
+            />
+            <ColorPicker
+              label="Active Text Color"
+              value={tempColors.onPrimaryContainer!}
+              onChange={(val) =>
+                setTempColors({ ...tempColors, onPrimaryContainer: val })
+              }
             />
           </ScrollView>
         </Dialog.ScrollArea>

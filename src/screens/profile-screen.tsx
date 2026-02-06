@@ -104,7 +104,7 @@ export default function ProfileScreen() {
   const handleResetColors = async () => {
     const { resetToDefaults } = useCustomThemeStore.getState();
     await resetToDefaults();
-    setCustomColorsDialogVisible(false);
+    // Keep dialog open so user can continue editing after reset
   };
 
   return (
@@ -268,6 +268,8 @@ export default function ProfileScreen() {
             primary: rgbaToHex(theme.colors.primary),
             profit: rgbaToHex(theme.colors.profit),
             loss: rgbaToHex(theme.colors.loss),
+            primaryContainer: rgbaToHex(theme.colors.primaryContainer),
+            onPrimaryContainer: rgbaToHex(theme.colors.onPrimaryContainer),
             ...(customColors || {}),
           }}
           onSave={handleSaveCustomColors}

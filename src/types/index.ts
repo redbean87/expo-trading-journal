@@ -28,6 +28,8 @@ export type CustomColors = {
   primary: string; // Accent color (#RRGGBB)
   profit: string; // Trading green (#RRGGBB)
   loss: string; // Trading red (#RRGGBB)
+  primaryContainer?: string; // Active/selected background (#RRGGBB)
+  onPrimaryContainer?: string; // Text/icon color on primaryContainer (#RRGGBB)
 
   // Optional - not currently used in UI (kept for backward compatibility)
   background?: string;

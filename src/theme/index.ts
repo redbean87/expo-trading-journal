@@ -102,10 +102,14 @@ export const darkNavigationTheme: NavigationTheme = {
 
 export type AppTheme = typeof lightTheme;
 
-export const DEFAULT_CUSTOM_COLORS: CustomColors = {
+// Default color values (for reference and testing only)
+// Note: In practice, defaults come from the current theme (light/dark) in ProfileScreen
+export const DEFAULT_CUSTOM_COLORS = {
   primary: '#6750A4', // MD3 purple
   profit: '#4caf50', // Green
   loss: '#f44336', // Red
+  primaryContainer: '#EADDFF', // MD3 light theme default (light purple)
+  onPrimaryContainer: '#21005D', // MD3 dark purple for text on light purple
 };
 
 export function createCustomTheme(
@@ -125,6 +129,13 @@ export function createCustomTheme(
       primary: customColors.primary,
       profit: customColors.profit,
       loss: customColors.loss,
+      // Only override if provided, otherwise use base theme values
+      ...(customColors.primaryContainer && {
+        primaryContainer: customColors.primaryContainer,
+      }),
+      ...(customColors.onPrimaryContainer && {
+        onPrimaryContainer: customColors.onPrimaryContainer,
+      }),
     },
   };
 }
