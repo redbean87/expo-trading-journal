@@ -1,3 +1,8 @@
+export function formatCurrency(value: number): string {
+  const prefix = value >= 0 ? '' : '-';
+  return `${prefix}$${Math.abs(value).toFixed(2)}`;
+}
+
 export function formatCompactPnl(value: number): string {
   const absValue = Math.abs(value);
   const sign = value >= 0 ? '+' : '-';
