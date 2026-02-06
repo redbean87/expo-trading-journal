@@ -1,7 +1,9 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { BarChart } from 'react-native-gifted-charts';
+import React, { useMemo } from 'react';
+import { View, StyleSheet, Text as RNText } from 'react-native';
 import { Card, Text } from 'react-native-paper';
+import { Line, Text as SVGText, Rect } from 'react-native-svg';
+// @ts-expect-error - react-native-svg-charts doesn't have TypeScript definitions
+import { BarChart, XAxis } from 'react-native-svg-charts';
 
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
@@ -18,7 +20,31 @@ type TimeOfDayCardProps = {
   trades: Trade[];
 };
 
-export function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
+type CustomBarsProps = {
+  x: (index: number) => number;
+  y: (value: number) => number;
+  bandwidth: number;
+  data: number[];
+};
+
+type WinRateLabelsProps = {
+  x: (index: number) => number;
+  y: (value: number) => number;
+  bandwidth: number;
+};
+
+type ZeroLineProps = {
+  y: (value: number) => number;
+};
+
+type HourBreakdown = {
+  hourLabel: string;
+  totalPnl: number;
+  tradeCount: number;
+  winRate: number;
+};
+
+export default function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
   const theme = useAppTheme();
   const { breakpoint } = useBreakpoint();
   const contentWidth = useContentWidth();
@@ -27,61 +53,146 @@ export function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
 
   const chartWidth = getChartWidth(contentWidth);
   const chartHeight = getChartHeight('bar', breakpoint);
-  const barCount = breakdown.length || 1;
-  // Use fixed bar width, enable scroll if many bars
-  const barWidth = 28;
-  const spacing = 8;
-  const needsScroll = barCount > 7;
 
-  const chartData = breakdown.map((hour) => ({
-    value: hour.totalPnl,
-    label: hour.hourLabel,
-    frontColor: hour.totalPnl >= 0 ? theme.colors.profit : theme.colors.loss,
-    topLabelComponent: () =>
-      hour.tradeCount > 0 ? (
-        <Text style={styles.topLabel}>{hour.winRate.toFixed(0)}%</Text>
-      ) : null,
-  }));
+  const data = useMemo(
+    () => breakdown.map((hour) => hour.totalPnl),
+    [breakdown]
+  );
+  const labels = useMemo(
+    () => breakdown.map((hour) => hour.hourLabel),
+    [breakdown]
+  );
+  const yAxisMax = useMemo(() => Math.max(...data).toFixed(0), [data]);
+  const yAxisMin = useMemo(() => Math.min(...data).toFixed(0), [data]);
 
-  if (breakdown.length === 0) {
+  const hasData = breakdown.some((hour) => hour.tradeCount > 0);
+
+  const contentInset = { top: 30, bottom: 10, left: 8, right: 8 };
+
+  // Decorator functions for react-native-svg-charts
+  // These are not React components but decorator functions called by the chart library
+  /* eslint-disable react-hooks/static-components */
+  const CustomBars = useMemo(
+    () =>
+      ({ x, y, bandwidth, data: chartData }: CustomBarsProps) =>
+        chartData.map((value: number, index: number) => {
+          const barColor = value >= 0 ? theme.colors.profit : theme.colors.loss;
+          const barHeight = Math.abs(y(value) - y(0));
+          const barY = value >= 0 ? y(value) : y(0);
+
+          return (
+            <Rect
+              key={`bar-${index}`}
+              x={x(index)}
+              y={barY}
+              width={bandwidth}
+              height={barHeight}
+              fill={barColor}
+              rx={4}
+            />
+          );
+        }),
+    [theme.colors.profit, theme.colors.loss]
+  );
+
+  const WinRateLabels = useMemo(
+    () =>
+      ({ x, y, bandwidth }: WinRateLabelsProps) =>
+        breakdown.map((hour: HourBreakdown, index: number) => {
+          if (hour.tradeCount === 0) return null;
+
+          const labelY = hour.totalPnl >= 0 ? y(hour.totalPnl) - 10 : y(0) - 10;
+          const labelX = x(index) + bandwidth / 2;
+
+          return (
+            <SVGText
+              key={`label-${index}`}
+              x={labelX}
+              y={labelY}
+              fontSize={9}
+              fill={theme.colors.textSecondary}
+              textAnchor="middle"
+            >
+              {hour.winRate.toFixed(0)}%
+            </SVGText>
+          );
+        }),
+    [breakdown, theme.colors.textSecondary]
+  );
+
+  const ZeroLine = useMemo(
+    () =>
+      // eslint-disable-next-line react/display-name
+      ({ y }: ZeroLineProps) => (
+        <Line
+          x1="0%"
+          x2="100%"
+          y1={y(0)}
+          y2={y(0)}
+          stroke={theme.colors.border}
+          strokeWidth={1}
+        />
+      ),
+    [theme.colors.border]
+  );
+  /* eslint-enable react-hooks/static-components */
+
+  if (!hasData) {
     return null;
   }
-
-  const axisTextStyle = {
-    color: theme.colors.textSecondary,
-    fontSize: 10,
-  };
 
   return (
     <Card style={styles.card}>
       <Card.Title title="P&L by Hour" />
       <Card.Content>
-        <View style={styles.chartContainer}>
-          <BarChart
-            data={chartData}
-            height={chartHeight}
-            width={chartWidth}
-            barWidth={barWidth}
-            spacing={spacing}
-            initialSpacing={10}
-            noOfSections={4}
-            yAxisTextStyle={axisTextStyle}
-            xAxisLabelTextStyle={axisTextStyle}
-            backgroundColor={theme.colors.surface}
-            rulesColor={theme.colors.border}
-            yAxisColor={theme.colors.border}
-            xAxisColor={theme.colors.border}
-            yAxisLabelPrefix="$"
-            yAxisLabelWidth={Y_AXIS_LABEL_WIDTH}
-            disableScroll={!needsScroll}
-            hideRules={false}
-            roundedTop
-          />
+        <View style={styles.container}>
+          {/* Y-axis labels */}
+          <View style={styles.yAxisContainer}>
+            <RNText style={styles.yAxisLabel}>{yAxisMax}</RNText>
+            <RNText style={styles.yAxisLabel}>0</RNText>
+            <RNText style={styles.yAxisLabel}>{yAxisMin}</RNText>
+          </View>
+
+          {/* Chart */}
+          <View style={styles.chartWrapper}>
+            {/*
+              Note: Decorator components for react-native-svg-charts are created during render by design.
+              The library calls these functions with specific props. This is the intended pattern.
+            */}
+            {/* eslint-disable react-hooks/static-components */}
+            <BarChart
+              style={[styles.chart, { height: chartHeight, width: chartWidth }]}
+              data={data}
+              svg={{ fill: theme.colors.profit }}
+              contentInset={contentInset}
+              spacingInner={0.3}
+              spacingOuter={0.2}
+            >
+              {/* @ts-expect-error - react-native-svg-charts passes props to decorators internally */}
+              <ZeroLine />
+              {/* @ts-expect-error - react-native-svg-charts passes props to decorators internally */}
+              <CustomBars />
+              {/* @ts-expect-error - react-native-svg-charts passes props to decorators internally */}
+              <WinRateLabels />
+            </BarChart>
+            {/* eslint-enable react-hooks/static-components */}
+
+            {/* X-axis */}
+            <XAxis
+              style={styles.xAxis}
+              data={data}
+              formatLabel={(_, index) => labels[index]}
+              contentInset={{ left: 24, right: 24 }}
+              svg={{
+                fontSize: 10,
+                fill: theme.colors.textSecondary,
+              }}
+            />
+          </View>
         </View>
         <View style={styles.legend}>
           <Text variant="bodySmall" style={styles.legendText}>
             Win rate shown above each bar
-            {needsScroll ? ' • Scroll for more' : ''}
           </Text>
         </View>
       </Card.Content>
@@ -94,13 +205,30 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     card: {
       marginBottom: 16,
     },
-    chartContainer: {
+    container: {
+      flexDirection: 'row',
       marginLeft: -10,
     },
-    topLabel: {
-      fontSize: 9,
+    yAxisContainer: {
+      width: Y_AXIS_LABEL_WIDTH,
+      justifyContent: 'space-between',
+      paddingVertical: 30,
+    },
+    yAxisLabel: {
+      fontSize: 10,
       color: theme.colors.textSecondary,
-      marginBottom: 2,
+      textAlign: 'right',
+      paddingRight: 8,
+    },
+    chartWrapper: {
+      flex: 1,
+    },
+    chart: {
+      width: '100%',
+    },
+    xAxis: {
+      marginTop: 4,
+      height: 20,
     },
     legend: {
       marginTop: 8,

@@ -4,7 +4,7 @@ import React from 'react';
 import DayOfWeekCard from './day-of-week-card';
 import EquityCurveCard from './equity-curve-card';
 import { PnlCalendarCard } from './pnl-calendar-card';
-import { TimeOfDayCard } from './time-of-day-card';
+import TimeOfDayCard from './time-of-day-card';
 import { DailyPnl } from '../../hooks/use-daily-pnl';
 import { EquityCurveData } from '../../hooks/use-equity-curve';
 import { Trade } from '../../types';
