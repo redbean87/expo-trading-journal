@@ -14,6 +14,7 @@ import { SidebarLayout } from '../src/components/sidebar-layout';
 import { useKeyboardShortcuts } from '../src/hooks/use-keyboard-shortcuts';
 import { ConvexProvider } from '../src/providers/convex-provider';
 import { SettingsSyncProvider } from '../src/providers/settings-sync-provider';
+import { useProfileStore } from '../src/store/profile-store';
 import { useThemeStore } from '../src/store/theme-store';
 import { useTimezoneStore } from '../src/store/timezone-store';
 import {
@@ -34,11 +35,13 @@ function KeyboardShortcutsHandler() {
 export default function RootLayout() {
   const { themeMode, loadTheme } = useThemeStore();
   const { loadTimezone } = useTimezoneStore();
+  const { loadProfile } = useProfileStore();
 
   useEffect(() => {
     loadTheme();
     loadTimezone();
-  }, []);
+    loadProfile();
+  }, [loadTheme, loadTimezone, loadProfile]);
 
   const paperTheme = themeMode === 'dark' ? darkTheme : lightTheme;
   const navigationTheme =

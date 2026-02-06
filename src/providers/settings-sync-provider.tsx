@@ -4,6 +4,7 @@ import {
   useCloudSettings,
   useUpdateCloudSettings,
 } from '../hooks/use-settings';
+import { useProfileStore } from '../store/profile-store';
 import { useThemeStore } from '../store/theme-store';
 import { useTimezoneStore } from '../store/timezone-store';
 import { ThemeMode } from '../theme';
@@ -32,6 +33,8 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
 
   const { themeMode, setFromCloud: setThemeFromCloud } = useThemeStore();
   const { timezone, setFromCloud: setTimezoneFromCloud } = useTimezoneStore();
+  const { displayName, setFromCloud: setDisplayNameFromCloud } =
+    useProfileStore();
 
   // Track if we've done the initial migration check (one-time per auth session)
   const hasMigratedRef = useRef(false);
@@ -52,13 +55,16 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     // Check if cloud has any settings
     const hasCloudSettings =
       cloudSettings !== null &&
-      (cloudSettings.themeMode !== null || cloudSettings.timezone !== null);
+      (cloudSettings.themeMode !== null ||
+        cloudSettings.timezone !== null ||
+        cloudSettings.displayName !== null);
 
     if (!hasCloudSettings) {
       // Cloud is empty - upload local settings (migration)
       updateCloudSettings({
         themeMode: themeMode,
         timezone: timezone,
+        displayName: displayName ?? undefined,
       }).catch((error) => {
         console.error('Failed to migrate settings to cloud:', error);
       });
@@ -69,6 +75,7 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     cloudSettings,
     themeMode,
     timezone,
+    displayName,
     updateCloudSettings,
   ]);
 
@@ -95,12 +102,18 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     if (cloudSettings.timezone) {
       setTimezoneFromCloud(cloudSettings.timezone);
     }
+
+    // Apply display name from cloud if it exists
+    if (cloudSettings.displayName !== undefined) {
+      setDisplayNameFromCloud(cloudSettings.displayName);
+    }
   }, [
     isAuthenticated,
     isLoading,
     cloudSettings,
     setThemeFromCloud,
     setTimezoneFromCloud,
+    setDisplayNameFromCloud,
   ]);
 
   return <>{children}</>;

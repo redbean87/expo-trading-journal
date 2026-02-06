@@ -17,6 +17,7 @@ const schema = defineSchema({
     // User settings (synced across devices)
     themeMode: v.optional(v.string()), // 'light' | 'dark'
     timezone: v.optional(v.string()), // IANA timezone string
+    displayName: v.optional(v.string()), // Custom journal name (max 50 chars)
     settingsUpdatedAt: v.optional(v.number()), // Timestamp for conflict resolution
   }).index('by_email', ['email']),
 

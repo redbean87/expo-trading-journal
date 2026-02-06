@@ -20,6 +20,7 @@ export const getSettings = query({
     return {
       themeMode: user.themeMode ?? null,
       timezone: user.timezone ?? null,
+      displayName: user.displayName ?? null,
       settingsUpdatedAt: user.settingsUpdatedAt ?? null,
     };
   },
@@ -30,6 +31,7 @@ export const updateSettings = mutation({
   args: {
     themeMode: v.optional(v.string()),
     timezone: v.optional(v.string()),
+    displayName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -38,7 +40,7 @@ export const updateSettings = mutation({
     }
 
     // Build update object with only provided fields
-    const updates: Record<string, string | number> = {
+    const updates: Record<string, string | number | null> = {
       settingsUpdatedAt: Date.now(),
     };
 
@@ -48,6 +50,15 @@ export const updateSettings = mutation({
     if (args.timezone !== undefined) {
       updates.timezone = args.timezone;
     }
+    if (args.displayName !== undefined) {
+      // Validate max length
+      if (args.displayName && args.displayName.length > 50) {
+        throw new Error('Display name must be 50 characters or less');
+      }
+      // Normalize empty string to null
+      const trimmed = args.displayName.trim();
+      updates.displayName = trimmed === '' ? null : trimmed;
+    }
 
     await ctx.db.patch(userId, updates);
 
@@ -55,6 +66,7 @@ export const updateSettings = mutation({
     return {
       themeMode: user?.themeMode ?? null,
       timezone: user?.timezone ?? null,
+      displayName: user?.displayName ?? null,
       settingsUpdatedAt: user?.settingsUpdatedAt ?? null,
     };
   },

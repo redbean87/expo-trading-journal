@@ -19,3 +19,7 @@ export type PendingImage = {
   contentType: string;
   size: number;
 };
+
+export type UserProfile = {
+  displayName: string | null;
+};

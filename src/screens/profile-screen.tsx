@@ -9,24 +9,32 @@ import {
   Switch,
   Dialog,
   Portal,
+  TextInput,
 } from 'react-native-paper';
 
 import { ResponsiveContainer } from '../components/responsive-container';
 import { TimezonePicker } from '../components/timezone-picker';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
-import { useUpdateTheme } from '../hooks/use-settings';
+import { useUpdateTheme, useUpdateDisplayName } from '../hooks/use-settings';
 import { useClearAllTrades } from '../hooks/use-trades';
+import { useProfileStore } from '../store/profile-store';
 import { useThemeStore } from '../store/theme-store';
 
 export default function ProfileScreen() {
   const { logout } = useAuth();
   const { themeMode } = useThemeStore();
+  const { displayName } = useProfileStore();
   const updateTheme = useUpdateTheme();
+  const updateDisplayName = useUpdateDisplayName();
   const theme = useAppTheme();
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [clearDialogVisible, setClearDialogVisible] = useState(false);
   const [clearLoading, setClearLoading] = useState(false);
+  const [displayNameDialogVisible, setDisplayNameDialogVisible] =
+    useState(false);
+  const [tempDisplayName, setTempDisplayName] = useState('');
+  const [saveLoading, setSaveLoading] = useState(false);
   const clearAllTrades = useClearAllTrades();
 
   const handleLogout = async () => {
@@ -55,6 +63,28 @@ export default function ProfileScreen() {
     } finally {
       setClearLoading(false);
     }
+  };
+
+  const handleOpenDisplayNameDialog = () => {
+    setTempDisplayName(displayName || '');
+    setDisplayNameDialogVisible(true);
+  };
+
+  const handleSaveDisplayName = async () => {
+    setSaveLoading(true);
+    try {
+      await updateDisplayName(tempDisplayName);
+      setDisplayNameDialogVisible(false);
+    } catch (error) {
+      console.error('Failed to save display name:', error);
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const handleCancelDisplayName = () => {
+    setTempDisplayName(displayName || '');
+    setDisplayNameDialogVisible(false);
   };
 
   return (
@@ -90,6 +120,12 @@ export default function ProfileScreen() {
               )}
             />
             <TimezonePicker />
+            <List.Item
+              title="Journal Name"
+              description={displayName || 'Trading Journal'}
+              left={(props) => <List.Icon {...props} icon="book-edit" />}
+              onPress={handleOpenDisplayNameDialog}
+            />
           </Card>
 
           <Card style={styles.card}>
@@ -161,6 +197,40 @@ export default function ProfileScreen() {
               textColor={theme.colors.error}
             >
               Remove All
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+
+        <Dialog
+          visible={displayNameDialogVisible}
+          onDismiss={handleCancelDisplayName}
+        >
+          <Dialog.Title>Journal Name</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              label="Display Name"
+              value={tempDisplayName}
+              onChangeText={setTempDisplayName}
+              maxLength={50}
+              placeholder="Trading Journal"
+              mode="outlined"
+              autoFocus
+            />
+            <Text
+              variant="bodySmall"
+              style={{ marginTop: 8, color: theme.colors.outline }}
+            >
+              {tempDisplayName.length}/50 characters
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={handleCancelDisplayName}>Cancel</Button>
+            <Button
+              onPress={handleSaveDisplayName}
+              loading={saveLoading}
+              disabled={saveLoading}
+            >
+              Save
             </Button>
           </Dialog.Actions>
         </Dialog>
