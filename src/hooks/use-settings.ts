@@ -1,16 +1,20 @@
 import { useMutation, useQuery } from 'convex/react';
 
 import { api } from '../../convex/_generated/api';
+import { useCustomThemeStore } from '../store/custom-theme-store';
 import { useProfileStore } from '../store/profile-store';
 import { useThemeStore } from '../store/theme-store';
 import { useTimezoneStore } from '../store/timezone-store';
 import { ThemeMode } from '../theme';
+import { type CustomColors, type CustomThemePreset } from '../types';
 import { useAuth } from './use-auth';
 
 export type CloudSettings = {
   themeMode: string | null;
   timezone: string | null;
   displayName: string | null;
+  customThemePreset: string | null;
+  customColors: string | null; // JSON string
   settingsUpdatedAt: number | null;
 };
 
@@ -118,6 +122,42 @@ export function useUpdateDisplayName() {
         });
       } catch (error) {
         console.error('Failed to sync display name to cloud:', error);
+        // Local state is already correct, just log the error
+      }
+    }
+  };
+}
+
+/**
+ * Hook to update custom theme both locally and in cloud
+ */
+export function useUpdateCustomTheme() {
+  const { isAuthenticated } = useAuth();
+  const { setCustomColors, setPreset } = useCustomThemeStore();
+  const updateCloudSettings = useUpdateCloudSettings();
+
+  return async (preset: CustomThemePreset, colors: CustomColors | null) => {
+    // Validate: custom preset requires colors
+    if (preset === 'custom' && !colors) {
+      throw new Error('Custom preset requires colors');
+    }
+
+    // Always update local (optimistic + offline support)
+    if (preset === 'default') {
+      await setPreset('default');
+    } else {
+      await setCustomColors(colors!);
+    }
+
+    // Sync to cloud if authenticated
+    if (isAuthenticated) {
+      try {
+        await updateCloudSettings({
+          customThemePreset: preset,
+          customColors: colors ? JSON.stringify(colors) : undefined,
+        });
+      } catch (error) {
+        console.error('Failed to sync custom theme to cloud:', error);
         // Local state is already correct, just log the error
       }
     }

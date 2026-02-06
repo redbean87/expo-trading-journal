@@ -4,10 +4,13 @@ import {
   useCloudSettings,
   useUpdateCloudSettings,
 } from '../hooks/use-settings';
+import { useCustomThemeStore } from '../store/custom-theme-store';
 import { useProfileStore } from '../store/profile-store';
 import { useThemeStore } from '../store/theme-store';
 import { useTimezoneStore } from '../store/timezone-store';
 import { ThemeMode } from '../theme';
+
+import type { CustomColors, CustomThemePreset } from '../types';
 
 type SettingsSyncProviderProps = {
   children: ReactNode;
@@ -35,6 +38,11 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
   const { timezone, setFromCloud: setTimezoneFromCloud } = useTimezoneStore();
   const { displayName, setFromCloud: setDisplayNameFromCloud } =
     useProfileStore();
+  const {
+    preset,
+    customColors,
+    setFromCloud: setCustomThemeFromCloud,
+  } = useCustomThemeStore();
 
   // Track if we've done the initial migration check (one-time per auth session)
   const hasMigratedRef = useRef(false);
@@ -57,7 +65,8 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
       cloudSettings !== null &&
       (cloudSettings.themeMode !== null ||
         cloudSettings.timezone !== null ||
-        cloudSettings.displayName !== null);
+        cloudSettings.displayName !== null ||
+        cloudSettings.customThemePreset !== null);
 
     if (!hasCloudSettings) {
       // Cloud is empty - upload local settings (migration)
@@ -65,6 +74,8 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
         themeMode: themeMode,
         timezone: timezone,
         displayName: displayName ?? undefined,
+        customThemePreset: preset,
+        customColors: customColors ? JSON.stringify(customColors) : undefined,
       }).catch((error) => {
         console.error('Failed to migrate settings to cloud:', error);
       });
@@ -76,6 +87,8 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     themeMode,
     timezone,
     displayName,
+    preset,
+    customColors,
     updateCloudSettings,
   ]);
 
@@ -107,6 +120,22 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     if (cloudSettings.displayName !== undefined) {
       setDisplayNameFromCloud(cloudSettings.displayName);
     }
+
+    // Apply custom theme from cloud
+    if (cloudSettings.customThemePreset) {
+      const themePreset = cloudSettings.customThemePreset as CustomThemePreset;
+      let parsedColors: CustomColors | null = null;
+
+      if (cloudSettings.customColors) {
+        try {
+          parsedColors = JSON.parse(cloudSettings.customColors);
+        } catch (error) {
+          console.error('Failed to parse custom colors from cloud:', error);
+        }
+      }
+
+      setCustomThemeFromCloud(themePreset, parsedColors);
+    }
   }, [
     isAuthenticated,
     isLoading,
@@ -114,6 +143,7 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     setThemeFromCloud,
     setTimezoneFromCloud,
     setDisplayNameFromCloud,
+    setCustomThemeFromCloud,
   ]);
 
   return <>{children}</>;

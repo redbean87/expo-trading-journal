@@ -14,6 +14,7 @@ import { SidebarLayout } from '../src/components/sidebar-layout';
 import { useKeyboardShortcuts } from '../src/hooks/use-keyboard-shortcuts';
 import { ConvexProvider } from '../src/providers/convex-provider';
 import { SettingsSyncProvider } from '../src/providers/settings-sync-provider';
+import { useCustomThemeStore } from '../src/store/custom-theme-store';
 import { useProfileStore } from '../src/store/profile-store';
 import { useThemeStore } from '../src/store/theme-store';
 import { useTimezoneStore } from '../src/store/timezone-store';
@@ -22,6 +23,7 @@ import {
   darkTheme,
   lightNavigationTheme,
   darkNavigationTheme,
+  createCustomTheme,
 } from '../src/theme';
 
 // Register locale for date picker
@@ -34,16 +36,22 @@ function KeyboardShortcutsHandler() {
 
 export default function RootLayout() {
   const { themeMode, loadTheme } = useThemeStore();
+  const { preset, customColors, loadCustomTheme } = useCustomThemeStore();
   const { loadTimezone } = useTimezoneStore();
   const { loadProfile } = useProfileStore();
 
   useEffect(() => {
     loadTheme();
+    loadCustomTheme();
     loadTimezone();
     loadProfile();
-  }, [loadTheme, loadTimezone, loadProfile]);
+  }, [loadTheme, loadCustomTheme, loadTimezone, loadProfile]);
 
-  const paperTheme = themeMode === 'dark' ? darkTheme : lightTheme;
+  const baseTheme = themeMode === 'dark' ? darkTheme : lightTheme;
+  const paperTheme =
+    preset === 'custom'
+      ? createCustomTheme(baseTheme, customColors, themeMode)
+      : baseTheme;
   const navigationTheme =
     themeMode === 'dark' ? darkNavigationTheme : lightNavigationTheme;
 
