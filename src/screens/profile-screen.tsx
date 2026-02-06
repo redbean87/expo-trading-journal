@@ -12,19 +12,25 @@ import {
   TextInput,
 } from 'react-native-paper';
 
+import { ColorPicker } from '../components/color-picker';
 import { ResponsiveContainer } from '../components/responsive-container';
 import { TimezonePicker } from '../components/timezone-picker';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
 import { useUpdateTheme, useUpdateDisplayName } from '../hooks/use-settings';
 import { useClearAllTrades } from '../hooks/use-trades';
+import { useCustomThemeStore } from '../store/custom-theme-store';
 import { useProfileStore } from '../store/profile-store';
 import { useThemeStore } from '../store/theme-store';
+import { DEFAULT_CUSTOM_COLORS } from '../theme';
+
+import type { CustomColors } from '../types';
 
 export default function ProfileScreen() {
   const { logout } = useAuth();
   const { themeMode } = useThemeStore();
   const { displayName } = useProfileStore();
+  const { preset, customColors } = useCustomThemeStore();
   const updateTheme = useUpdateTheme();
   const updateDisplayName = useUpdateDisplayName();
   const theme = useAppTheme();
@@ -35,6 +41,12 @@ export default function ProfileScreen() {
     useState(false);
   const [tempDisplayName, setTempDisplayName] = useState('');
   const [saveLoading, setSaveLoading] = useState(false);
+  const [customColorsDialogVisible, setCustomColorsDialogVisible] =
+    useState(false);
+  const [tempColors, setTempColors] = useState<CustomColors>(
+    DEFAULT_CUSTOM_COLORS
+  );
+  const [saveColorsLoading, setSaveColorsLoading] = useState(false);
   const clearAllTrades = useClearAllTrades();
 
   const handleLogout = async () => {
@@ -87,6 +99,39 @@ export default function ProfileScreen() {
     setDisplayNameDialogVisible(false);
   };
 
+  const handleOpenCustomColors = () => {
+    // Initialize with current colors or defaults
+    const currentColors = customColors || DEFAULT_CUSTOM_COLORS;
+    setTempColors(currentColors);
+    setCustomColorsDialogVisible(true);
+  };
+
+  const handleSaveCustomColors = async () => {
+    setSaveColorsLoading(true);
+    try {
+      const { setCustomColors } = useCustomThemeStore.getState();
+      await setCustomColors(tempColors);
+      setCustomColorsDialogVisible(false);
+    } catch (error) {
+      console.error('Failed to save custom colors:', error);
+    } finally {
+      setSaveColorsLoading(false);
+    }
+  };
+
+  const handleResetColors = async () => {
+    setSaveColorsLoading(true);
+    try {
+      const { resetToDefaults } = useCustomThemeStore.getState();
+      await resetToDefaults();
+      setCustomColorsDialogVisible(false);
+    } catch (error) {
+      console.error('Failed to reset colors:', error);
+    } finally {
+      setSaveColorsLoading(false);
+    }
+  };
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -125,6 +170,12 @@ export default function ProfileScreen() {
               description={displayName || 'Trading Journal'}
               left={(props) => <List.Icon {...props} icon="book-edit" />}
               onPress={handleOpenDisplayNameDialog}
+            />
+            <List.Item
+              title="Custom Colors"
+              description={preset === 'custom' ? 'Customized' : 'Default'}
+              left={(props) => <List.Icon {...props} icon="palette" />}
+              onPress={handleOpenCustomColors}
             />
           </Card>
 
@@ -229,6 +280,76 @@ export default function ProfileScreen() {
               onPress={handleSaveDisplayName}
               loading={saveLoading}
               disabled={saveLoading}
+            >
+              Save
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+
+        <Dialog
+          visible={customColorsDialogVisible}
+          onDismiss={() => setCustomColorsDialogVisible(false)}
+        >
+          <Dialog.Title>Customize Colors</Dialog.Title>
+          <Dialog.ScrollArea style={{ maxHeight: 400 }}>
+            <ScrollView style={{ paddingHorizontal: 24 }}>
+              <Text
+                variant="labelLarge"
+                style={{ marginTop: 8, marginBottom: 12 }}
+              >
+                Primary Color
+              </Text>
+              <ColorPicker
+                label="Accent Color"
+                value={tempColors.primary}
+                onChange={(val) =>
+                  setTempColors({ ...tempColors, primary: val })
+                }
+              />
+
+              <Text
+                variant="labelLarge"
+                style={{ marginTop: 16, marginBottom: 12 }}
+              >
+                Background
+              </Text>
+              <ColorPicker
+                label="Background Color"
+                value={tempColors.background}
+                onChange={(val) =>
+                  setTempColors({ ...tempColors, background: val })
+                }
+              />
+
+              <Text
+                variant="labelLarge"
+                style={{ marginTop: 16, marginBottom: 12 }}
+              >
+                Trading Colors
+              </Text>
+              <ColorPicker
+                label="Profit Color"
+                value={tempColors.profit}
+                onChange={(val) =>
+                  setTempColors({ ...tempColors, profit: val })
+                }
+              />
+              <ColorPicker
+                label="Loss Color"
+                value={tempColors.loss}
+                onChange={(val) => setTempColors({ ...tempColors, loss: val })}
+              />
+            </ScrollView>
+          </Dialog.ScrollArea>
+          <Dialog.Actions>
+            <Button onPress={handleResetColors}>Reset to Defaults</Button>
+            <Button onPress={() => setCustomColorsDialogVisible(false)}>
+              Cancel
+            </Button>
+            <Button
+              onPress={handleSaveCustomColors}
+              loading={saveColorsLoading}
+              disabled={saveColorsLoading}
             >
               Save
             </Button>

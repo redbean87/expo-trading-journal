@@ -21,6 +21,8 @@ export const getSettings = query({
       themeMode: user.themeMode ?? null,
       timezone: user.timezone ?? null,
       displayName: user.displayName ?? null,
+      customThemePreset: user.customThemePreset ?? null,
+      customColors: user.customColors ?? null,
       settingsUpdatedAt: user.settingsUpdatedAt ?? null,
     };
   },
@@ -32,6 +34,8 @@ export const updateSettings = mutation({
     themeMode: v.optional(v.string()),
     timezone: v.optional(v.string()),
     displayName: v.optional(v.string()),
+    customThemePreset: v.optional(v.string()),
+    customColors: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -59,6 +63,35 @@ export const updateSettings = mutation({
       const trimmed = args.displayName.trim();
       updates.displayName = trimmed === '' ? null : trimmed;
     }
+    if (args.customThemePreset !== undefined) {
+      if (
+        args.customThemePreset !== 'default' &&
+        args.customThemePreset !== 'custom'
+      ) {
+        throw new Error('Invalid theme preset');
+      }
+      updates.customThemePreset = args.customThemePreset;
+    }
+    if (args.customColors !== undefined) {
+      // Validate JSON structure if provided
+      if (args.customColors) {
+        try {
+          const parsed = JSON.parse(args.customColors);
+          // Basic validation - check for required fields (simplified structure)
+          if (
+            !parsed.primary ||
+            !parsed.background ||
+            !parsed.profit ||
+            !parsed.loss
+          ) {
+            throw new Error('Invalid custom colors structure');
+          }
+        } catch {
+          throw new Error('Invalid custom colors JSON');
+        }
+      }
+      updates.customColors = args.customColors || null;
+    }
 
     await ctx.db.patch(userId, updates);
 
@@ -67,6 +100,8 @@ export const updateSettings = mutation({
       themeMode: user?.themeMode ?? null,
       timezone: user?.timezone ?? null,
       displayName: user?.displayName ?? null,
+      customThemePreset: user?.customThemePreset ?? null,
+      customColors: user?.customColors ?? null,
       settingsUpdatedAt: user?.settingsUpdatedAt ?? null,
     };
   },

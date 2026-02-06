@@ -23,3 +23,12 @@ export type PendingImage = {
 export type UserProfile = {
   displayName: string | null;
 };
+
+export type CustomColors = {
+  primary: string; // Accent color (#RRGGBB)
+  background: string; // Single background for both modes (#RRGGBB)
+  profit: string; // Trading green (#RRGGBB)
+  loss: string; // Trading red (#RRGGBB)
+};
+
+export type CustomThemePreset = 'default' | 'custom';

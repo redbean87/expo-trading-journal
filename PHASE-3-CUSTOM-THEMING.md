@@ -372,13 +372,50 @@ export function createCustomTheme(
 
 ## Future Enhancements (Post-Phase 3)
 
-- Visual color picker component (React Native Color Picker)
-- Preset color palettes (Ocean Blue, Forest Green, etc.)
-- Import/export theme JSON
-- Share themes with other users
-- Accessibility checker (contrast ratios)
-- Live preview mode in editor
-- Color scheme generator (auto-generate complementary colors)
+### Implemented Changes (Simplified Version)
+
+✅ **Phase 3 Complete** - Simplified to 4 colors based on user feedback:
+- Primary accent color
+- Single background (works for both light/dark modes)
+- Profit color
+- Loss color
+
+**Rationale**: Separate light/dark backgrounds added unnecessary complexity. Single background keeps UX clean and simple.
+
+### Potential Future Enhancements
+
+If users request more control after the simplified version:
+
+1. **Add "Advanced" Toggle in Dialog**
+   - Default: 4 simple colors (current implementation)
+   - Advanced mode: Separate light/dark backgrounds + surface colors
+   - Best of both worlds: Simple by default, powerful when needed
+
+2. **Smart Background Suggestions**
+   - When user picks a background, suggest complementary colors
+   - "This background works best in light mode. Want a dark mode background too?"
+   - Auto-adjust text colors for contrast
+
+3. **Visual Color Picker**
+   - React Native Color Picker library
+   - More intuitive than HEX codes for some users
+   - Color wheel or palette UI
+
+4. **Preset Color Themes**
+   - "Ocean Blue", "Forest Green", "Sunset Orange", "Midnight Purple"
+   - One-click to apply coordinated color schemes
+   - Community-shared themes
+
+5. **Accessibility Features**
+   - Contrast ratio checker (WCAG AA/AAA compliance)
+   - Warn if text/background contrast is too low
+   - "Check Accessibility" button in editor
+
+6. **Advanced Features**
+   - Import/export theme JSON
+   - Share themes with other users via URL or code
+   - Live preview mode showing sample trades/analytics
+   - Color scheme generator (auto-generate complementary colors)
 
 ---
 

@@ -5,6 +5,8 @@ import {
 } from '@react-navigation/native';
 import { MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 
+import type { CustomColors } from '../types';
+
 export type ThemeMode = 'light' | 'dark';
 
 export const spacing = {
@@ -99,3 +101,31 @@ export const darkNavigationTheme: NavigationTheme = {
 };
 
 export type AppTheme = typeof lightTheme;
+
+export const DEFAULT_CUSTOM_COLORS: CustomColors = {
+  primary: '#6750A4', // MD3 purple
+  background: '#FFFFFF', // White background (works for both light/dark modes)
+  profit: '#4caf50', // Green
+  loss: '#f44336', // Red
+};
+
+export function createCustomTheme(
+  baseTheme: typeof lightTheme | typeof darkTheme,
+  customColors: CustomColors | null,
+  _mode: ThemeMode
+): AppTheme {
+  if (!customColors) {
+    return baseTheme;
+  }
+
+  return {
+    ...baseTheme,
+    colors: {
+      ...baseTheme.colors,
+      primary: customColors.primary,
+      background: customColors.background, // Same background for both modes
+      profit: customColors.profit,
+      loss: customColors.loss,
+    },
+  };
+}
