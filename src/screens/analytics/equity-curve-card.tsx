@@ -9,6 +9,7 @@ import {
 import { Card, Text } from 'react-native-paper';
 import { AreaChart, YAxis, XAxis } from 'react-native-svg-charts';
 
+import { CardEmptyState } from '../../components/card-empty-state';
 import { DataPointTooltip } from '../../components/data-point-tooltip';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
@@ -126,88 +127,102 @@ export default function EquityCurveCard({
   const point =
     activePointIndex != null ? data.dataPoints[activePointIndex] : null;
 
+  const hasData = data.dataPoints.length > 0;
+
   return (
     <Card style={styles.card}>
       <Card.Title title="Equity Curve" />
       <Card.Content>
-        <View style={styles.chartRow}>
-          <YAxis
-            data={chartData}
-            yAccessor={({ item }) => (item as ChartDataItem).cumulativePnl}
-            numberOfTicks={4}
-            contentInset={yAxisInset}
-            style={styles.yAxis}
-            formatLabel={(value: number) => `$${value.toFixed(0)}`}
-            svg={{
-              fontSize: 10,
-              fill: theme.colors.textSecondary,
-            }}
+        {!hasData ? (
+          <CardEmptyState
+            icon="chart-line"
+            title="No equity curve data yet"
+            subtitle="Start trading to track your equity growth"
           />
-          <View
-            style={styles.chartWrapper}
-            onLayout={handleChartLayout}
-            {...panResponder.panHandlers}
-          >
-            {point && (
-              <View style={styles.tooltipWrapper} pointerEvents="none">
-                <DataPointTooltip
-                  label={formatDate(point.date)}
-                  value={formatCurrency(point.cumulativePnl)}
-                  valueColor={
-                    point.cumulativePnl >= 0
-                      ? theme.colors.profit
-                      : theme.colors.loss
+        ) : (
+          <>
+            <View style={styles.chartRow}>
+              <YAxis
+                data={chartData}
+                yAccessor={({ item }) => (item as ChartDataItem).cumulativePnl}
+                numberOfTicks={4}
+                contentInset={yAxisInset}
+                style={styles.yAxis}
+                formatLabel={(value: number) => `$${value.toFixed(0)}`}
+                svg={{
+                  fontSize: 10,
+                  fill: theme.colors.textSecondary,
+                }}
+              />
+              <View
+                style={styles.chartWrapper}
+                onLayout={handleChartLayout}
+                {...panResponder.panHandlers}
+              >
+                {point && (
+                  <View style={styles.tooltipWrapper} pointerEvents="none">
+                    <DataPointTooltip
+                      label={formatDate(point.date)}
+                      value={formatCurrency(point.cumulativePnl)}
+                      valueColor={
+                        point.cumulativePnl >= 0
+                          ? theme.colors.profit
+                          : theme.colors.loss
+                      }
+                    />
+                  </View>
+                )}
+                <AreaChart
+                  data={chartData}
+                  xAccessor={({ index }) => index}
+                  yAccessor={({ item }) =>
+                    (item as ChartDataItem).cumulativePnl
                   }
+                  contentInset={contentInset}
+                  style={[styles.chart, { height: chartHeight }]}
+                  curve={shape.curveNatural}
+                  start={0}
+                  svg={{
+                    fill: lineColor,
+                    fillOpacity: 0.3,
+                    stroke: lineColor,
+                    strokeWidth: 2,
+                  }}
+                />
+                <XAxis
+                  data={chartData}
+                  xAccessor={({ index }) => index}
+                  contentInset={{
+                    left: contentInset.left,
+                    right: contentInset.right,
+                  }}
+                  numberOfTicks={5}
+                  style={styles.xAxis}
+                  formatLabel={(value: number, _tickIndex: number) => {
+                    const point = data.dataPoints[value];
+                    return point
+                      ? `${point.date.getMonth() + 1}/${point.date.getDate()}`
+                      : '';
+                  }}
+                  svg={{
+                    fontSize: 10,
+                    fill: theme.colors.textSecondary,
+                  }}
                 />
               </View>
+            </View>
+            {data.maxDrawdown > 0 && (
+              <View style={styles.stats}>
+                <Text variant="bodySmall" style={styles.statLabel}>
+                  Max Drawdown:{' '}
+                  <Text style={styles.drawdownValue}>
+                    -${data.maxDrawdown.toFixed(2)} (
+                    {data.maxDrawdownPercent.toFixed(1)}%)
+                  </Text>
+                </Text>
+              </View>
             )}
-            <AreaChart
-              data={chartData}
-              xAccessor={({ index }) => index}
-              yAccessor={({ item }) => (item as ChartDataItem).cumulativePnl}
-              contentInset={contentInset}
-              style={[styles.chart, { height: chartHeight }]}
-              curve={shape.curveNatural}
-              start={0}
-              svg={{
-                fill: lineColor,
-                fillOpacity: 0.3,
-                stroke: lineColor,
-                strokeWidth: 2,
-              }}
-            />
-            <XAxis
-              data={chartData}
-              xAccessor={({ index }) => index}
-              contentInset={{
-                left: contentInset.left,
-                right: contentInset.right,
-              }}
-              numberOfTicks={5}
-              style={styles.xAxis}
-              formatLabel={(value: number, _tickIndex: number) => {
-                const point = data.dataPoints[value];
-                return point
-                  ? `${point.date.getMonth() + 1}/${point.date.getDate()}`
-                  : '';
-              }}
-              svg={{
-                fontSize: 10,
-                fill: theme.colors.textSecondary,
-              }}
-            />
-          </View>
-        </View>
-        {data.maxDrawdown > 0 && (
-          <View style={styles.stats}>
-            <Text variant="bodySmall" style={styles.statLabel}>
-              Max Drawdown:{' '}
-              <Text style={styles.drawdownValue}>
-                -${data.maxDrawdown.toFixed(2)} (
-                {data.maxDrawdownPercent.toFixed(1)}%)
-              </Text>
-            </Text>
-          </View>
+          </>
         )}
       </Card.Content>
     </Card>

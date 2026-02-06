@@ -32,10 +32,6 @@ export function ChartsSection({
     }
   };
 
-  if (equityCurveData.dataPoints.length === 0) {
-    return null;
-  }
-
   return (
     <>
       <EquityCurveCard

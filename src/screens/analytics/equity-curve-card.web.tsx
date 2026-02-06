@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 
+import { CardEmptyState } from '../../components/card-empty-state';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { EquityCurveData } from '../../hooks/use-equity-curve';
@@ -50,86 +51,101 @@ export default function EquityCurveCard({
   const { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } =
     Recharts;
 
-  if (chartData.length === 0) {
-    return null;
-  }
+  const hasData = chartData.length > 0;
 
   return (
     <Card style={styles.card}>
       <Card.Title title="Equity Curve" />
       <Card.Content>
-        <View
-          style={[styles.chartContainer, { height: chartHeight }]}
-          onTouchStart={onInteractionStart}
-          onTouchEnd={onInteractionEnd}
-          onTouchCancel={onInteractionEnd}
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={chartData}
-              margin={{ top: 8, right: 8, left: 8, bottom: 8 }}
+        {!hasData ? (
+          <CardEmptyState
+            icon="chart-line"
+            title="No equity curve data yet"
+            subtitle="Start trading to track your equity growth"
+          />
+        ) : (
+          <>
+            <View
+              style={[styles.chartContainer, { height: chartHeight }]}
+              onTouchStart={onInteractionStart}
+              onTouchEnd={onInteractionEnd}
+              onTouchCancel={onInteractionEnd}
             >
-              <defs>
-                <linearGradient id="equityFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={lineColor} stopOpacity={0.3} />
-                  <stop
-                    offset="100%"
-                    stopColor={lineColor}
-                    stopOpacity={0.05}
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={chartData}
+                  margin={{ top: 8, right: 8, left: 8, bottom: 8 }}
+                >
+                  <defs>
+                    <linearGradient id="equityFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="0%"
+                        stopColor={lineColor}
+                        stopOpacity={0.3}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor={lineColor}
+                        stopOpacity={0.05}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
+                    axisLine={{ stroke: theme.colors.border }}
+                    tickLine={false}
                   />
-                </linearGradient>
-              </defs>
-              <XAxis
-                dataKey="date"
-                tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
-                axisLine={{ stroke: theme.colors.border }}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
-                axisLine={{ stroke: theme.colors.border }}
-                tickLine={false}
-                tickFormatter={(v: number) => `$${v.toFixed(0)}`}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: theme.colors.surface,
-                  border: `1px solid ${theme.colors.border}`,
-                  borderRadius: 8,
-                }}
-                labelStyle={{ color: theme.colors.textSecondary, fontSize: 11 }}
-                formatter={(value: number) => [
-                  `$${value >= 0 ? '' : '-'}${Math.abs(value).toFixed(2)}`,
-                  'Cumulative PnL',
-                ]}
-                labelFormatter={(
-                  label: string,
-                  payload: { payload?: RechartsDataItem }[]
-                ) => {
-                  const p = payload?.[0]?.payload;
-                  return p?.fullDate ?? label;
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="cumulativePnl"
-                stroke={lineColor}
-                strokeWidth={2}
-                fill="url(#equityFill)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </View>
-        {data.maxDrawdown > 0 && (
-          <View style={styles.stats}>
-            <Text variant="bodySmall" style={styles.statLabel}>
-              Max Drawdown:{' '}
-              <Text style={styles.drawdownValue}>
-                -${data.maxDrawdown.toFixed(2)} (
-                {data.maxDrawdownPercent.toFixed(1)}%)
-              </Text>
-            </Text>
-          </View>
+                  <YAxis
+                    tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
+                    axisLine={{ stroke: theme.colors.border }}
+                    tickLine={false}
+                    tickFormatter={(v: number) => `$${v.toFixed(0)}`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: theme.colors.surface,
+                      border: `1px solid ${theme.colors.border}`,
+                      borderRadius: 8,
+                    }}
+                    labelStyle={{
+                      color: theme.colors.textSecondary,
+                      fontSize: 11,
+                    }}
+                    formatter={(value: number) => [
+                      `$${value >= 0 ? '' : '-'}${Math.abs(value).toFixed(2)}`,
+                      'Cumulative PnL',
+                    ]}
+                    labelFormatter={(
+                      label: string,
+                      payload: { payload?: RechartsDataItem }[]
+                    ) => {
+                      const p = payload?.[0]?.payload;
+                      return p?.fullDate ?? label;
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="cumulativePnl"
+                    stroke={lineColor}
+                    strokeWidth={2}
+                    fill="url(#equityFill)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </View>
+            {data.maxDrawdown > 0 && (
+              <View style={styles.stats}>
+                <Text variant="bodySmall" style={styles.statLabel}>
+                  Max Drawdown:{' '}
+                  <Text style={styles.drawdownValue}>
+                    -${data.maxDrawdown.toFixed(2)} (
+                    {data.maxDrawdownPercent.toFixed(1)}%)
+                  </Text>
+                </Text>
+              </View>
+            )}
+          </>
         )}
       </Card.Content>
     </Card>

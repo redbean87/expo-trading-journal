@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, SegmentedButtons, Text } from 'react-native-paper';
 
+import { CardEmptyState } from '../../components/card-empty-state';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import {
   usePeriodBreakdown,
@@ -68,7 +69,11 @@ export function PeriodBreakdownCard({ trades }: PeriodBreakdownCardProps) {
           style={styles.toggle}
         />
         {periods.length === 0 ? (
-          <Text style={themedStyles.emptyText}>No trades in this period</Text>
+          <CardEmptyState
+            icon="calendar-blank-outline"
+            title="No trades in this period"
+            subtitle="Try a different time range or add trades"
+          />
         ) : (
           <View style={styles.periodsList}>
             {periods.map((period) => (

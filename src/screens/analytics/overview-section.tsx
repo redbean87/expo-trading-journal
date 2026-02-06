@@ -152,21 +152,20 @@ export function OverviewSection({
       </Card.Content>
     </Card>,
 
-    totalTrades > 0 ? (
-      <RiskRewardCard
-        key="risk-reward"
-        realizedRR={realizedRR}
-        expectedValue={expectedValue}
-        requiredWinRate={requiredWinRate}
-        actualWinRate={winRate}
-        longRR={longRR}
-        shortRR={shortRR}
-        longWinRate={longWinRate}
-        shortWinRate={shortWinRate}
-        hasLongTrades={longTradesCount > 0}
-        hasShortTrades={shortTradesCount > 0}
-      />
-    ) : null,
+    <RiskRewardCard
+      key="risk-reward"
+      realizedRR={realizedRR}
+      expectedValue={expectedValue}
+      requiredWinRate={requiredWinRate}
+      actualWinRate={winRate}
+      longRR={longRR}
+      shortRR={shortRR}
+      longWinRate={longWinRate}
+      shortWinRate={shortWinRate}
+      hasLongTrades={longTradesCount > 0}
+      hasShortTrades={shortTradesCount > 0}
+      totalTrades={totalTrades}
+    />,
 
     <Card key="streak" style={styles.card}>
       <Card.Title title="Streak Analysis" />
@@ -198,24 +197,24 @@ export function OverviewSection({
       </Card.Content>
     </Card>,
 
-    bestTrade ? (
-      <TradeHighlightCard
-        key="best"
-        title="Best Trade"
-        trade={bestTrade}
-        valueColor={theme.colors.profit}
-      />
-    ) : null,
+    <TradeHighlightCard
+      key="best"
+      title="Best Trade"
+      trade={bestTrade}
+      valueColor={theme.colors.profit}
+      emptyIcon="trophy-outline"
+      emptySubtitle="Your best trade will appear here"
+    />,
 
-    worstTrade ? (
-      <TradeHighlightCard
-        key="worst"
-        title="Worst Trade"
-        trade={worstTrade}
-        valueColor={theme.colors.loss}
-      />
-    ) : null,
-  ].filter((card): card is React.ReactElement => card !== null);
+    <TradeHighlightCard
+      key="worst"
+      title="Worst Trade"
+      trade={worstTrade}
+      valueColor={theme.colors.loss}
+      emptyIcon="alert-circle-outline"
+      emptySubtitle="Your worst trade will appear here"
+    />,
+  ];
 
   if (!isDesktop) {
     return <>{allCards}</>;

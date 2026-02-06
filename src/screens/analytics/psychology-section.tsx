@@ -8,9 +8,5 @@ type PsychologySectionProps = {
 };
 
 export function PsychologySection({ trades }: PsychologySectionProps) {
-  if (trades.length === 0) {
-    return null;
-  }
-
   return <MistakesCard trades={trades} />;
 }

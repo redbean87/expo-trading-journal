@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 
+import { CardEmptyState } from '../../components/card-empty-state';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { useTimeOfDayBreakdown } from '../../hooks/use-time-of-day-breakdown';
@@ -21,10 +22,6 @@ export default function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
   const chartHeight = getChartHeight('bar', breakpoint);
 
   const hasData = breakdown.some((hour) => hour.tradeCount > 0);
-
-  if (!hasData) {
-    return null;
-  }
 
   // Transform data for recharts
   const chartData = breakdown.map((hour) => ({
@@ -68,41 +65,53 @@ export default function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
     <Card style={styles.card}>
       <Card.Title title="P&L by Hour" />
       <Card.Content>
-        <View style={[styles.chartContainer, { height: chartHeight }]}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{ top: 30, right: 20, left: 0, bottom: 5 }}
-            >
-              <XAxis
-                dataKey="name"
-                tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
-                stroke={theme.colors.border}
-              />
-              <YAxis
-                tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
-                stroke={theme.colors.border}
-                tickFormatter={(value: number) => `$${value}`}
-              />
-              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                {chartData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={
-                      entry.value >= 0 ? theme.colors.profit : theme.colors.loss
-                    }
+        {!hasData ? (
+          <CardEmptyState
+            icon="clock-outline"
+            title="No trading data by hour yet"
+            subtitle="Add trades to see your best trading hours"
+          />
+        ) : (
+          <>
+            <View style={[styles.chartContainer, { height: chartHeight }]}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 30, right: 20, left: 0, bottom: 5 }}
+                >
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
+                    stroke={theme.colors.border}
                   />
-                ))}
-                <LabelList content={renderWinRateLabel} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </View>
-        <View style={styles.legend}>
-          <Text variant="bodySmall" style={styles.legendText}>
-            Win rate shown above each bar
-          </Text>
-        </View>
+                  <YAxis
+                    tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
+                    stroke={theme.colors.border}
+                    tickFormatter={(value: number) => `$${value}`}
+                  />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                    {chartData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={
+                          entry.value >= 0
+                            ? theme.colors.profit
+                            : theme.colors.loss
+                        }
+                      />
+                    ))}
+                    <LabelList content={renderWinRateLabel} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </View>
+            <View style={styles.legend}>
+              <Text variant="bodySmall" style={styles.legendText}>
+                Win rate shown above each bar
+              </Text>
+            </View>
+          </>
+        )}
       </Card.Content>
     </Card>
   );

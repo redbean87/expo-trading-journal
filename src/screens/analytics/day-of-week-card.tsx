@@ -5,6 +5,7 @@ import { Line, Text as SVGText, Rect } from 'react-native-svg';
 // @ts-expect-error - react-native-svg-charts doesn't have TypeScript definitions
 import { BarChart, XAxis } from 'react-native-svg-charts';
 
+import { CardEmptyState } from '../../components/card-empty-state';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { useContentWidth } from '../../hooks/use-content-width';
@@ -134,63 +135,72 @@ export default function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
   );
   /* eslint-enable react-hooks/static-components */
 
-  if (!hasData) {
-    return null;
-  }
-
   return (
     <Card style={styles.card}>
       <Card.Title title="P&L by Day" />
       <Card.Content>
-        <View style={styles.container}>
-          {/* Y-axis labels */}
-          <View style={styles.yAxisContainer}>
-            <RNText style={styles.yAxisLabel}>{yAxisMax}</RNText>
-            <RNText style={styles.yAxisLabel}>0</RNText>
-            <RNText style={styles.yAxisLabel}>{yAxisMin}</RNText>
-          </View>
+        {!hasData ? (
+          <CardEmptyState
+            icon="calendar-week"
+            title="No trading data by day yet"
+            subtitle="Add trades to see which days perform best"
+          />
+        ) : (
+          <>
+            <View style={styles.container}>
+              {/* Y-axis labels */}
+              <View style={styles.yAxisContainer}>
+                <RNText style={styles.yAxisLabel}>{yAxisMax}</RNText>
+                <RNText style={styles.yAxisLabel}>0</RNText>
+                <RNText style={styles.yAxisLabel}>{yAxisMin}</RNText>
+              </View>
 
-          {/* Chart */}
-          <View style={styles.chartWrapper}>
-            {/*
+              {/* Chart */}
+              <View style={styles.chartWrapper}>
+                {/*
               Note: Decorator components for react-native-svg-charts are created during render by design.
               The library calls these functions with specific props. This is the intended pattern.
             */}
-            {/* eslint-disable react-hooks/static-components */}
-            <BarChart
-              style={[styles.chart, { height: chartHeight, width: chartWidth }]}
-              data={data}
-              contentInset={contentInset}
-              spacingInner={0.3}
-              spacingOuter={0.2}
-            >
-              {/* @ts-expect-error - react-native-svg-charts passes props to decorators internally */}
-              <ZeroLine />
-              {/* @ts-expect-error - react-native-svg-charts passes props to decorators internally */}
-              <CustomBars />
-              {/* @ts-expect-error - react-native-svg-charts passes props to decorators internally */}
-              <WinRateLabels />
-            </BarChart>
-            {/* eslint-enable react-hooks/static-components */}
+                {/* eslint-disable react-hooks/static-components */}
+                <BarChart
+                  style={[
+                    styles.chart,
+                    { height: chartHeight, width: chartWidth },
+                  ]}
+                  data={data}
+                  contentInset={contentInset}
+                  spacingInner={0.3}
+                  spacingOuter={0.2}
+                >
+                  {/* @ts-expect-error - react-native-svg-charts passes props to decorators internally */}
+                  <ZeroLine />
+                  {/* @ts-expect-error - react-native-svg-charts passes props to decorators internally */}
+                  <CustomBars />
+                  {/* @ts-expect-error - react-native-svg-charts passes props to decorators internally */}
+                  <WinRateLabels />
+                </BarChart>
+                {/* eslint-enable react-hooks/static-components */}
 
-            {/* X-axis */}
-            <XAxis
-              style={styles.xAxis}
-              data={data}
-              formatLabel={(_, index) => labels[index]}
-              contentInset={{ left: 24, right: 24 }}
-              svg={{
-                fontSize: 10,
-                fill: theme.colors.textSecondary,
-              }}
-            />
-          </View>
-        </View>
-        <View style={styles.legend}>
-          <Text variant="bodySmall" style={styles.legendText}>
-            Win rate shown above each bar
-          </Text>
-        </View>
+                {/* X-axis */}
+                <XAxis
+                  style={styles.xAxis}
+                  data={data}
+                  formatLabel={(_, index) => labels[index]}
+                  contentInset={{ left: 24, right: 24 }}
+                  svg={{
+                    fontSize: 10,
+                    fill: theme.colors.textSecondary,
+                  }}
+                />
+              </View>
+            </View>
+            <View style={styles.legend}>
+              <Text variant="bodySmall" style={styles.legendText}>
+                Win rate shown above each bar
+              </Text>
+            </View>
+          </>
+        )}
       </Card.Content>
     </Card>
   );

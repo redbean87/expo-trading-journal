@@ -8,9 +8,5 @@ type TimingSectionProps = {
 };
 
 export function TimingSection({ trades }: TimingSectionProps) {
-  if (trades.length === 0) {
-    return null;
-  }
-
   return <PeriodBreakdownCard trades={trades} />;
 }
