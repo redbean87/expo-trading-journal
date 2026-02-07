@@ -17,7 +17,11 @@ import { TimezonePicker } from '../components/timezone-picker';
 import { CustomColorsDialog } from './profile/custom-colors-dialog';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
-import { useUpdateTheme, useUpdateDisplayName } from '../hooks/use-settings';
+import {
+  useUpdateTheme,
+  useUpdateDisplayName,
+  useUpdateCustomTheme,
+} from '../hooks/use-settings';
 import { useClearAllTrades } from '../hooks/use-trades';
 import { useCustomThemeStore } from '../store/custom-theme-store';
 import { useProfileStore } from '../store/profile-store';
@@ -33,6 +37,7 @@ export default function ProfileScreen() {
   const { preset, customColors } = useCustomThemeStore();
   const updateTheme = useUpdateTheme();
   const updateDisplayName = useUpdateDisplayName();
+  const updateCustomTheme = useUpdateCustomTheme();
   const theme = useAppTheme();
   const themedStyles = createThemedStyles(theme);
   const [logoutLoading, setLogoutLoading] = useState(false);
@@ -97,14 +102,12 @@ export default function ProfileScreen() {
   };
 
   const handleSaveCustomColors = async (colors: CustomColors) => {
-    const { setCustomColors } = useCustomThemeStore.getState();
-    await setCustomColors(colors);
+    await updateCustomTheme('custom', colors);
     setCustomColorsDialogVisible(false);
   };
 
   const handleResetColors = async () => {
-    const { resetToDefaults } = useCustomThemeStore.getState();
-    await resetToDefaults();
+    await updateCustomTheme('default', null);
     // Keep dialog open so user can continue editing after reset
   };
 

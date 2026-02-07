@@ -1,5 +1,22 @@
 symbol,shares,entryPrice,entryTime,exitPrice,exitTime,stopLoss,target,pnl,pnl%,setup,confidence,macd,volVsAvgVolume,ruleViolation,psychology,whatWorked,whatFailed,link
 ,,,,,,,,,,,,,,,,,,
+Week Summary,,,,,,,,-93.20,-3.32,,,,,,,,,
+LIMN,1120.00,2.296,2026-02-06 9:25:00 AM,2.304,2026-02-06 9:27:00 AM,2.210,2.530,8.96,0.35,PMH Resistance Break,4.00,asc,above,n/a,exited,"macd asc
+broke resistance","early entry
+didn't exit on quick pop over resistance",
+LIMN,1440.00,1.769,2026-02-05 8:35:00 AM,1.780,2026-02-05 8:41:00 AM,1.730,1.900,15.84,0.62,PMH Support,4.00,asc,above,ORB not formed,"anxious
+fomo",macd asc,early entry,
+LIMN,2080.00,1.254,2026-02-04 8:47:00 AM,1.250,2026-02-04 8:52:00 AM,1.220,1.370,-8.32,-0.32,n/a,3.00,asc,above,no exit stradegy,"anxious
+fomo","waited for ORB to form
+macd asc","early entry
+no clear exit defined",
+FUSE,960.00,2.873,2026-02-03 8:45:00 AM,2.756,2026-02-03 8:55:00 AM,n/a,3.050,-112.32,-4.07,n/a,3.00,asc,above,no exit stradegy,"anxious
+fomo","waited for ORB to form
+macd asc","early entry
+no exit defined",
+FUSE,880.00,3.017,2026-02-02 8:55:00 AM,3.020,2026-02-02 8:58:00 AM,2.890,3.310,2.64,0.10,200 MA Support,4.00,asc,above,exited trade early,anxious,"waited for ORB to form
+macd asc",early exit,https://photos.app.goo.gl/WfTwhThb7inHwqio7
+,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,-30.16,-0.69,,,,,,,,,
 VIVS,880.00,2.990,2026-01-30 9:03:00 AM,3.171,2026-01-30 9:04:00 AM,2.870,3.300,159.28,6.05,ORB Support,4.00,asc,above,exited trade early,anxious,"waited for ORB to form
 macd asc",early exit,https://photos.app.goo.gl/2WzTxJ5jNn4PQ8c4A

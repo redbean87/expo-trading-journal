@@ -126,5 +126,11 @@ export const useCustomThemeStore = create<CustomThemeStore>((set) => ({
 
   setFromCloud: (preset: CustomThemePreset, colors: CustomColors | null) => {
     set({ preset, customColors: colors });
+    AsyncStorage.setItem(
+      CUSTOM_THEME_STORAGE_KEY,
+      JSON.stringify({ preset, customColors: colors })
+    ).catch((error) => {
+      console.error('Error persisting cloud theme:', error);
+    });
   },
 }));

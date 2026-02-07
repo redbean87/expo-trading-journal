@@ -48,5 +48,8 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
 
   setFromCloud: (mode: ThemeMode) => {
     set({ themeMode: mode });
+    AsyncStorage.setItem(THEME_STORAGE_KEY, mode).catch((error) => {
+      console.error('Error persisting cloud theme mode:', error);
+    });
   },
 }));

@@ -133,7 +133,7 @@ export function useUpdateDisplayName() {
  */
 export function useUpdateCustomTheme() {
   const { isAuthenticated } = useAuth();
-  const { setCustomColors, setPreset } = useCustomThemeStore();
+  const { setCustomColors, resetToDefaults } = useCustomThemeStore();
   const updateCloudSettings = useUpdateCloudSettings();
 
   return async (preset: CustomThemePreset, colors: CustomColors | null) => {
@@ -144,7 +144,7 @@ export function useUpdateCustomTheme() {
 
     // Always update local (optimistic + offline support)
     if (preset === 'default') {
-      await setPreset('default');
+      await resetToDefaults();
     } else {
       await setCustomColors(colors!);
     }
@@ -154,7 +154,7 @@ export function useUpdateCustomTheme() {
       try {
         await updateCloudSettings({
           customThemePreset: preset,
-          customColors: colors ? JSON.stringify(colors) : undefined,
+          customColors: colors ? JSON.stringify(colors) : '',
         });
       } catch (error) {
         console.error('Failed to sync custom theme to cloud:', error);
