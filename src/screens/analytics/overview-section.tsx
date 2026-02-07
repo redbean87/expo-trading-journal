@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card } from 'react-native-paper';
 
 import { RiskRewardCard } from './risk-reward-card';
 import { TradeHighlightCard } from './trade-highlight-card';
+import { SectionCard } from '../../components/section-card';
 import { StatRow } from '../../components/stat-row';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
@@ -80,77 +80,69 @@ export function OverviewSection({
   const styles = createStyles();
 
   const allCards = [
-    <Card key="performance" style={styles.card}>
-      <Card.Title title="Performance Overview" />
-      <Card.Content>
-        <StatRow label="Total Trades:" value={totalTrades} />
-        <StatRow label="Win Rate:" value={`${winRate.toFixed(1)}%`} />
-        <StatRow
-          label="Total P&L:"
-          value={`$${totalPnl.toFixed(2)}`}
-          valueColor={totalPnl >= 0 ? theme.colors.profit : theme.colors.loss}
-        />
-        <StatRow
-          label="Avg Trade P&L:"
-          value={`$${avgTradePnl.toFixed(2)}`}
-          valueColor={
-            avgTradePnl >= 0 ? theme.colors.profit : theme.colors.loss
-          }
-        />
-        <StatRow
-          label="Profit Factor:"
-          value={profitFactor === Infinity ? '∞' : profitFactor.toFixed(2)}
-        />
-      </Card.Content>
-    </Card>,
+    <SectionCard key="performance" title="Performance Overview">
+      <StatRow label="Total Trades:" value={totalTrades} />
+      <StatRow label="Win Rate:" value={`${winRate.toFixed(1)}%`} />
+      <StatRow
+        label="Total P&L:"
+        value={`$${totalPnl.toFixed(2)}`}
+        valueColor={totalPnl >= 0 ? theme.colors.profit : theme.colors.loss}
+      />
+      <StatRow
+        label="Avg Trade P&L:"
+        value={`$${avgTradePnl.toFixed(2)}`}
+        valueColor={avgTradePnl >= 0 ? theme.colors.profit : theme.colors.loss}
+      />
+      <StatRow
+        label="Profit Factor:"
+        value={profitFactor === Infinity ? '∞' : profitFactor.toFixed(2)}
+      />
+    </SectionCard>,
 
-    <Card key="statistics" style={styles.card}>
-      <Card.Title title="Trade Statistics" />
-      <Card.Content>
-        <StatRow
-          label="Winning Trades:"
-          value={winningTradesCount}
-          valueColor={theme.colors.profit}
-        />
-        <StatRow
-          label="Losing Trades:"
-          value={losingTradesCount}
-          valueColor={theme.colors.loss}
-        />
-        <StatRow label="Break Even:" value={breakEvenTradesCount} />
-        <StatRow
-          label="Avg Win:"
-          value={`$${avgWin.toFixed(2)}`}
-          valueColor={theme.colors.profit}
-        />
-        <StatRow
-          label="Avg Loss:"
-          value={`$${avgLoss.toFixed(2)}`}
-          valueColor={theme.colors.loss}
-        />
-        <StatRow
-          label="Avg Per-Share Win:"
-          value={`$${avgPerShareWin.toFixed(4)}`}
-          valueColor={theme.colors.profit}
-        />
-        <StatRow
-          label="Avg Per-Share Loss:"
-          value={`$${avgPerShareLoss.toFixed(4)}`}
-          valueColor={theme.colors.loss}
-        />
-        <StatRow
-          label="Largest Gain:"
-          value={`$${largestGain.toFixed(2)}`}
-          valueColor={theme.colors.profit}
-        />
-        <StatRow
-          label="Largest Loss:"
-          value={`$${largestLoss.toFixed(2)}`}
-          valueColor={theme.colors.loss}
-        />
-        <StatRow label="Avg Hold Time:" value={formatDuration(avgHoldTimeMs)} />
-      </Card.Content>
-    </Card>,
+    <SectionCard key="statistics" title="Trade Statistics">
+      <StatRow
+        label="Winning Trades:"
+        value={winningTradesCount}
+        valueColor={theme.colors.profit}
+      />
+      <StatRow
+        label="Losing Trades:"
+        value={losingTradesCount}
+        valueColor={theme.colors.loss}
+      />
+      <StatRow label="Break Even:" value={breakEvenTradesCount} />
+      <StatRow
+        label="Avg Win:"
+        value={`$${avgWin.toFixed(2)}`}
+        valueColor={theme.colors.profit}
+      />
+      <StatRow
+        label="Avg Loss:"
+        value={`$${avgLoss.toFixed(2)}`}
+        valueColor={theme.colors.loss}
+      />
+      <StatRow
+        label="Avg Per-Share Win:"
+        value={`$${avgPerShareWin.toFixed(4)}`}
+        valueColor={theme.colors.profit}
+      />
+      <StatRow
+        label="Avg Per-Share Loss:"
+        value={`$${avgPerShareLoss.toFixed(4)}`}
+        valueColor={theme.colors.loss}
+      />
+      <StatRow
+        label="Largest Gain:"
+        value={`$${largestGain.toFixed(2)}`}
+        valueColor={theme.colors.profit}
+      />
+      <StatRow
+        label="Largest Loss:"
+        value={`$${largestLoss.toFixed(2)}`}
+        valueColor={theme.colors.loss}
+      />
+      <StatRow label="Avg Hold Time:" value={formatDuration(avgHoldTimeMs)} />
+    </SectionCard>,
 
     <RiskRewardCard
       key="risk-reward"
@@ -167,35 +159,29 @@ export function OverviewSection({
       totalTrades={totalTrades}
     />,
 
-    <Card key="streak" style={styles.card}>
-      <Card.Title title="Streak Analysis" />
-      <Card.Content>
-        <StatRow
-          label="Max Consecutive Wins:"
-          value={maxConsecutiveWins}
-          valueColor={theme.colors.profit}
-        />
-        <StatRow
-          label="Max Consecutive Losses:"
-          value={maxConsecutiveLosses}
-          valueColor={theme.colors.loss}
-        />
-      </Card.Content>
-    </Card>,
+    <SectionCard key="streak" title="Streak Analysis">
+      <StatRow
+        label="Max Consecutive Wins:"
+        value={maxConsecutiveWins}
+        valueColor={theme.colors.profit}
+      />
+      <StatRow
+        label="Max Consecutive Losses:"
+        value={maxConsecutiveLosses}
+        valueColor={theme.colors.loss}
+      />
+    </SectionCard>,
 
-    <Card key="side" style={styles.card}>
-      <Card.Title title="Side Analysis" />
-      <Card.Content>
-        <StatRow
-          label="Long Trades:"
-          value={`${longTradesCount} (${longPnl >= 0 ? '+' : ''}$${longPnl.toFixed(2)})`}
-        />
-        <StatRow
-          label="Short Trades:"
-          value={`${shortTradesCount} (${shortPnl >= 0 ? '+' : ''}$${shortPnl.toFixed(2)})`}
-        />
-      </Card.Content>
-    </Card>,
+    <SectionCard key="side" title="Side Analysis">
+      <StatRow
+        label="Long Trades:"
+        value={`${longTradesCount} (${longPnl >= 0 ? '+' : ''}$${longPnl.toFixed(2)})`}
+      />
+      <StatRow
+        label="Short Trades:"
+        value={`${shortTradesCount} (${shortPnl >= 0 ? '+' : ''}$${shortPnl.toFixed(2)})`}
+      />
+    </SectionCard>,
 
     <TradeHighlightCard
       key="best"
@@ -236,9 +222,6 @@ const HALF_GAP = COLUMN_GAP / 2;
 
 const createStyles = () =>
   StyleSheet.create({
-    card: {
-      marginBottom: 16,
-    },
     masonry: {
       flexDirection: 'row',
       marginHorizontal: -HALF_GAP,

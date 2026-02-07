@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
 import { CardEmptyState } from '../../components/card-empty-state';
+import { SectionCard } from '../../components/section-card';
 import { SegmentedButtons } from '../../components/segmented-buttons';
 import { StatRow } from '../../components/stat-row';
 import { useAppTheme } from '../../hooks/use-app-theme';
@@ -82,106 +83,100 @@ export function MistakesCard({ trades }: MistakesCardProps) {
   const hasData = analytics.totalTradesWithMistakes > 0;
 
   return (
-    <Card style={themedStyles.card}>
-      <Card.Title title="Mistakes Analysis" />
-      <Card.Content>
-        {!hasData ? (
-          <CardEmptyState
-            icon="check-circle-outline"
-            title="No mistakes recorded yet"
-            subtitle="Great trading! Or start tracking mistakes to improve"
-          />
-        ) : (
-          <>
-            {(() => {
-              const totalTrades =
-                analytics.totalTradesWithMistakes +
-                analytics.totalTradesWithoutMistakes;
-              const mistakePercentage =
-                (analytics.totalTradesWithMistakes / totalTrades) * 100;
+    <SectionCard title="Mistakes Analysis">
+      {!hasData ? (
+        <CardEmptyState
+          icon="check-circle-outline"
+          title="No mistakes recorded yet"
+          subtitle="Great trading! Or start tracking mistakes to improve"
+        />
+      ) : (
+        <>
+          {(() => {
+            const totalTrades =
+              analytics.totalTradesWithMistakes +
+              analytics.totalTradesWithoutMistakes;
+            const mistakePercentage =
+              (analytics.totalTradesWithMistakes / totalTrades) * 100;
 
-              const sortedMistakes =
-                viewMode === 'frequency'
-                  ? [...analytics.mistakesByCategory].sort(
-                      (a, b) => b.count - a.count
-                    )
-                  : [...analytics.mistakesByCategory].sort(
-                      (a, b) => a.totalPnl - b.totalPnl
-                    );
+            const sortedMistakes =
+              viewMode === 'frequency'
+                ? [...analytics.mistakesByCategory].sort(
+                    (a, b) => b.count - a.count
+                  )
+                : [...analytics.mistakesByCategory].sort(
+                    (a, b) => a.totalPnl - b.totalPnl
+                  );
 
-              return (
-                <>
-                  <View style={themedStyles.summarySection}>
-                    <StatRow
-                      label="Trades with Mistakes:"
-                      value={`${analytics.totalTradesWithMistakes} (${mistakePercentage.toFixed(0)}%)`}
-                    />
-                    <StatRow
-                      label="P&L with Mistakes:"
-                      value={`$${analytics.pnlWithMistakes.toFixed(2)}`}
-                      valueColor={
-                        analytics.pnlWithMistakes >= 0
-                          ? theme.colors.profit
-                          : theme.colors.loss
-                      }
-                    />
-                    <StatRow
-                      label="P&L without Mistakes:"
-                      value={`$${analytics.pnlWithoutMistakes.toFixed(2)}`}
-                      valueColor={
-                        analytics.pnlWithoutMistakes >= 0
-                          ? theme.colors.profit
-                          : theme.colors.loss
-                      }
-                    />
-                    <StatRow
-                      label="Avg P&L Difference:"
-                      value={`$${(analytics.avgPnlWithoutMistakes - analytics.avgPnlWithMistakes).toFixed(2)}`}
-                      valueColor={theme.colors.textSecondary}
-                    />
-                  </View>
+            return (
+              <>
+                <View style={themedStyles.summarySection}>
+                  <StatRow
+                    label="Trades with Mistakes:"
+                    value={`${analytics.totalTradesWithMistakes} (${mistakePercentage.toFixed(0)}%)`}
+                  />
+                  <StatRow
+                    label="P&L with Mistakes:"
+                    value={`$${analytics.pnlWithMistakes.toFixed(2)}`}
+                    valueColor={
+                      analytics.pnlWithMistakes >= 0
+                        ? theme.colors.profit
+                        : theme.colors.loss
+                    }
+                  />
+                  <StatRow
+                    label="P&L without Mistakes:"
+                    value={`$${analytics.pnlWithoutMistakes.toFixed(2)}`}
+                    valueColor={
+                      analytics.pnlWithoutMistakes >= 0
+                        ? theme.colors.profit
+                        : theme.colors.loss
+                    }
+                  />
+                  <StatRow
+                    label="Avg P&L Difference:"
+                    value={`$${(analytics.avgPnlWithoutMistakes - analytics.avgPnlWithMistakes).toFixed(2)}`}
+                    valueColor={theme.colors.textSecondary}
+                  />
+                </View>
 
-                  <View style={themedStyles.breakdownSection}>
-                    <Text
-                      variant="titleSmall"
-                      style={themedStyles.sectionTitle}
-                    >
-                      Breakdown
+                <View style={themedStyles.breakdownSection}>
+                  <Text variant="titleSmall" style={themedStyles.sectionTitle}>
+                    Breakdown
+                  </Text>
+                  <SegmentedButtons
+                    value={viewMode}
+                    onValueChange={(value) => setViewMode(value as ViewMode)}
+                    buttons={[
+                      { value: 'frequency', label: 'By Frequency' },
+                      { value: 'impact', label: 'By Impact' },
+                    ]}
+                    style={styles.toggle}
+                  />
+                  {sortedMistakes.length === 0 ? (
+                    <Text style={themedStyles.emptyText}>
+                      No categorized mistakes
                     </Text>
-                    <SegmentedButtons
-                      value={viewMode}
-                      onValueChange={(value) => setViewMode(value as ViewMode)}
-                      buttons={[
-                        { value: 'frequency', label: 'By Frequency' },
-                        { value: 'impact', label: 'By Impact' },
-                      ]}
-                      style={styles.toggle}
-                    />
-                    {sortedMistakes.length === 0 ? (
-                      <Text style={themedStyles.emptyText}>
-                        No categorized mistakes
-                      </Text>
-                    ) : (
-                      <View style={styles.mistakesList}>
-                        {sortedMistakes.map((mistake) => (
-                          <MistakeRow
-                            key={mistake.categoryId}
-                            mistake={mistake}
-                            viewMode={viewMode}
-                            profitColor={theme.colors.profit}
-                            lossColor={theme.colors.loss}
-                          />
-                        ))}
-                      </View>
-                    )}
-                  </View>
-                </>
-              );
-            })()}
-          </>
-        )}
-      </Card.Content>
-    </Card>
+                  ) : (
+                    <View style={styles.mistakesList}>
+                      {sortedMistakes.map((mistake) => (
+                        <MistakeRow
+                          key={mistake.categoryId}
+                          mistake={mistake}
+                          viewMode={viewMode}
+                          profitColor={theme.colors.profit}
+                          lossColor={theme.colors.loss}
+                        />
+                      ))}
+                    </View>
+                  )}
+                </View>
+              </>
+            );
+          })()}
+        </>
+      )}
+    </SectionCard>
   );
 }
 
@@ -209,9 +204,6 @@ const styles = StyleSheet.create({
 
 const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
-    card: {
-      marginBottom: 16,
-    },
     summarySection: {
       marginBottom: 16,
     },

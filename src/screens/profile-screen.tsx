@@ -34,6 +34,7 @@ export default function ProfileScreen() {
   const updateTheme = useUpdateTheme();
   const updateDisplayName = useUpdateDisplayName();
   const theme = useAppTheme();
+  const themedStyles = createThemedStyles(theme);
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [clearDialogVisible, setClearDialogVisible] = useState(false);
   const [clearLoading, setClearLoading] = useState(false);
@@ -124,7 +125,7 @@ export default function ProfileScreen() {
 
           <Card style={styles.card}>
             <Card.Content>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
+              <Text variant="titleMedium" style={themedStyles.sectionTitle}>
                 Appearance
               </Text>
             </Card.Content>
@@ -156,7 +157,7 @@ export default function ProfileScreen() {
 
           <Card style={styles.card}>
             <Card.Content>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
+              <Text variant="titleMedium" style={themedStyles.sectionTitle}>
                 Data Management
               </Text>
             </Card.Content>
@@ -178,7 +179,7 @@ export default function ProfileScreen() {
 
           <Card style={styles.card}>
             <Card.Content>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
+              <Text variant="titleMedium" style={themedStyles.sectionTitle}>
                 Account
               </Text>
             </Card.Content>
@@ -303,9 +304,6 @@ const styles = StyleSheet.create({
   userText: {
     marginTop: 12,
   },
-  sectionTitle: {
-    marginBottom: 8,
-  },
   cardActions: {
     justifyContent: 'center',
     paddingVertical: 16,
@@ -314,3 +312,11 @@ const styles = StyleSheet.create({
     minWidth: 150,
   },
 });
+
+const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    sectionTitle: {
+      marginBottom: 8,
+      color: theme.colors.primary,
+    },
+  });

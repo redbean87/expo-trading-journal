@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
 import { EmptyState } from '../../components/empty-state';
+import { SectionCard } from '../../components/section-card';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { Trade } from '../../types';
 
@@ -21,49 +22,46 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
   };
 
   return (
-    <Card style={styles.card}>
-      <Card.Title title="Recent Trades" />
-      <Card.Content>
-        <EmptyState
-          data={trades}
-          fallback={
-            <Text style={styles.emptyText}>
-              No trades yet. Add your first trade!
-            </Text>
-          }
-        >
-          <>
-            {trades.map((trade) => (
-              <Pressable
-                key={trade.id}
-                style={styles.tradeItem}
-                onPress={() => handleTradePress(trade.id)}
-              >
-                <View style={styles.tradeHeader}>
-                  <Text variant="titleMedium">{trade.symbol}</Text>
-                  <Text
-                    style={[
-                      styles.pnl,
-                      {
-                        color:
-                          trade.pnl >= 0
-                            ? theme.colors.profit
-                            : theme.colors.loss,
-                      },
-                    ]}
-                  >
-                    {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
-                  </Text>
-                </View>
-                <Text variant="bodySmall" style={styles.tradeDetails}>
-                  {trade.side.toUpperCase()} • {trade.quantity} shares
+    <SectionCard title="Recent Trades" style={styles.card}>
+      <EmptyState
+        data={trades}
+        fallback={
+          <Text style={styles.emptyText}>
+            No trades yet. Add your first trade!
+          </Text>
+        }
+      >
+        <>
+          {trades.map((trade) => (
+            <Pressable
+              key={trade.id}
+              style={styles.tradeItem}
+              onPress={() => handleTradePress(trade.id)}
+            >
+              <View style={styles.tradeHeader}>
+                <Text variant="titleMedium">{trade.symbol}</Text>
+                <Text
+                  style={[
+                    styles.pnl,
+                    {
+                      color:
+                        trade.pnl >= 0
+                          ? theme.colors.profit
+                          : theme.colors.loss,
+                    },
+                  ]}
+                >
+                  {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
                 </Text>
-              </Pressable>
-            ))}
-          </>
-        </EmptyState>
-      </Card.Content>
-    </Card>
+              </View>
+              <Text variant="bodySmall" style={styles.tradeDetails}>
+                {trade.side.toUpperCase()} • {trade.quantity} shares
+              </Text>
+            </Pressable>
+          ))}
+        </>
+      </EmptyState>
+    </SectionCard>
   );
 }
 

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
 import { CardEmptyState } from '../../components/card-empty-state';
+import { SectionCard } from '../../components/section-card';
 import { SegmentedButtons } from '../../components/segmented-buttons';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import {
@@ -54,41 +55,36 @@ export function PeriodBreakdownCard({ trades }: PeriodBreakdownCardProps) {
   const [periodType, setPeriodType] = useState<PeriodType>('month');
   const periods = usePeriodBreakdown(trades, periodType);
 
-  const themedStyles = createThemedStyles(theme);
-
   return (
-    <Card style={themedStyles.card}>
-      <Card.Title title="Performance Breakdown" />
-      <Card.Content>
-        <SegmentedButtons
-          value={periodType}
-          onValueChange={(value) => setPeriodType(value as PeriodType)}
-          buttons={[
-            { value: 'week', label: 'Weekly' },
-            { value: 'month', label: 'Monthly' },
-          ]}
-          style={styles.toggle}
+    <SectionCard title="Performance Breakdown">
+      <SegmentedButtons
+        value={periodType}
+        onValueChange={(value) => setPeriodType(value as PeriodType)}
+        buttons={[
+          { value: 'week', label: 'Weekly' },
+          { value: 'month', label: 'Monthly' },
+        ]}
+        style={styles.toggle}
+      />
+      {periods.length === 0 ? (
+        <CardEmptyState
+          icon="calendar-blank-outline"
+          title="No trades in this period"
+          subtitle="Try a different time range or add trades"
         />
-        {periods.length === 0 ? (
-          <CardEmptyState
-            icon="calendar-blank-outline"
-            title="No trades in this period"
-            subtitle="Try a different time range or add trades"
-          />
-        ) : (
-          <View style={styles.periodsList}>
-            {periods.map((period) => (
-              <PeriodRow
-                key={period.periodKey}
-                period={period}
-                profitColor={theme.colors.profit}
-                lossColor={theme.colors.loss}
-              />
-            ))}
-          </View>
-        )}
-      </Card.Content>
-    </Card>
+      ) : (
+        <View style={styles.periodsList}>
+          {periods.map((period) => (
+            <PeriodRow
+              key={period.periodKey}
+              period={period}
+              profitColor={theme.colors.profit}
+              lossColor={theme.colors.loss}
+            />
+          ))}
+        </View>
+      )}
+    </SectionCard>
   );
 }
 
@@ -113,15 +109,3 @@ const styles = StyleSheet.create({
     minWidth: 70,
   },
 });
-
-const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
-  StyleSheet.create({
-    card: {
-      marginBottom: 16,
-    },
-    emptyText: {
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-      marginTop: 8,
-    },
-  });

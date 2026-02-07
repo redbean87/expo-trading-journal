@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
 import { CardEmptyState } from '../../components/card-empty-state';
+import { SectionCard } from '../../components/section-card';
 import { StatRow } from '../../components/stat-row';
 import { useAppTheme } from '../../hooks/use-app-theme';
 
@@ -45,92 +46,86 @@ export function RiskRewardCard({
   const hasData = totalTrades > 0;
 
   return (
-    <Card style={styles.card}>
-      <Card.Title title="Risk/Reward Analysis" />
-      <Card.Content>
-        {!hasData ? (
-          <CardEmptyState
-            icon="scale-balance"
-            title="No risk/reward data yet"
-            subtitle="Add trades with entry/exit prices to see R:R analysis"
-          />
-        ) : (
-          <>
-            {(() => {
-              const winRateEdge = actualWinRate - requiredWinRate;
-              const hasPositiveEdge = expectedValue > 0;
-              const showSideBreakdown = hasLongTrades || hasShortTrades;
+    <SectionCard title="Risk/Reward Analysis">
+      {!hasData ? (
+        <CardEmptyState
+          icon="scale-balance"
+          title="No risk/reward data yet"
+          subtitle="Add trades with entry/exit prices to see R:R analysis"
+        />
+      ) : (
+        <>
+          {(() => {
+            const winRateEdge = actualWinRate - requiredWinRate;
+            const hasPositiveEdge = expectedValue > 0;
+            const showSideBreakdown = hasLongTrades || hasShortTrades;
 
-              return (
-                <>
-                  <StatRow
-                    label="Realized R:R:"
-                    value={formatRR(realizedRR)}
-                    valueColor={
-                      realizedRR >= 1 ? theme.colors.profit : theme.colors.loss
-                    }
-                  />
-                  <StatRow
-                    label="Expected Value:"
-                    value={`$${expectedValue.toFixed(2)}/trade`}
-                    valueColor={
-                      hasPositiveEdge ? theme.colors.profit : theme.colors.loss
-                    }
-                  />
-                  <StatRow
-                    label="Required Win Rate:"
-                    value={
-                      requiredWinRate > 0
-                        ? `${requiredWinRate.toFixed(1)}%`
-                        : 'N/A'
-                    }
-                  />
-                  <StatRow
-                    label="Win Rate Edge:"
-                    value={
-                      requiredWinRate > 0
-                        ? `${winRateEdge >= 0 ? '+' : ''}${winRateEdge.toFixed(1)}%`
-                        : 'N/A'
-                    }
-                    valueColor={
-                      winRateEdge >= 0 ? theme.colors.profit : theme.colors.loss
-                    }
-                  />
+            return (
+              <>
+                <StatRow
+                  label="Realized R:R:"
+                  value={formatRR(realizedRR)}
+                  valueColor={
+                    realizedRR >= 1 ? theme.colors.profit : theme.colors.loss
+                  }
+                />
+                <StatRow
+                  label="Expected Value:"
+                  value={`$${expectedValue.toFixed(2)}/trade`}
+                  valueColor={
+                    hasPositiveEdge ? theme.colors.profit : theme.colors.loss
+                  }
+                />
+                <StatRow
+                  label="Required Win Rate:"
+                  value={
+                    requiredWinRate > 0
+                      ? `${requiredWinRate.toFixed(1)}%`
+                      : 'N/A'
+                  }
+                />
+                <StatRow
+                  label="Win Rate Edge:"
+                  value={
+                    requiredWinRate > 0
+                      ? `${winRateEdge >= 0 ? '+' : ''}${winRateEdge.toFixed(1)}%`
+                      : 'N/A'
+                  }
+                  valueColor={
+                    winRateEdge >= 0 ? theme.colors.profit : theme.colors.loss
+                  }
+                />
 
-                  {showSideBreakdown && (
-                    <View style={styles.sideSection}>
-                      <Text variant="titleSmall" style={styles.sectionTitle}>
-                        By Side
-                      </Text>
-                      {hasLongTrades && (
-                        <StatRow
-                          label="Long R:R:"
-                          value={`${formatRR(longRR)} (${longWinRate.toFixed(1)}% WR)`}
-                        />
-                      )}
-                      {hasShortTrades && (
-                        <StatRow
-                          label="Short R:R:"
-                          value={`${formatRR(shortRR)} (${shortWinRate.toFixed(1)}% WR)`}
-                        />
-                      )}
-                    </View>
-                  )}
-                </>
-              );
-            })()}
-          </>
-        )}
-      </Card.Content>
-    </Card>
+                {showSideBreakdown && (
+                  <View style={styles.sideSection}>
+                    <Text variant="titleSmall" style={styles.sectionTitle}>
+                      By Side
+                    </Text>
+                    {hasLongTrades && (
+                      <StatRow
+                        label="Long R:R:"
+                        value={`${formatRR(longRR)} (${longWinRate.toFixed(1)}% WR)`}
+                      />
+                    )}
+                    {hasShortTrades && (
+                      <StatRow
+                        label="Short R:R:"
+                        value={`${formatRR(shortRR)} (${shortWinRate.toFixed(1)}% WR)`}
+                      />
+                    )}
+                  </View>
+                )}
+              </>
+            );
+          })()}
+        </>
+      )}
+    </SectionCard>
   );
 }
 
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
-    card: {
-      marginBottom: 16,
-    },
     sideSection: {
       marginTop: 12,
       paddingTop: 12,

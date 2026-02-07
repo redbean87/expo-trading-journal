@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { Card } from 'react-native-paper';
 
+import { SectionCard } from '../../components/section-card';
 import { DailyPnl, useDailyPnl } from '../../hooks/use-daily-pnl';
 import { Trade } from '../../types';
 import { CalendarGrid } from './pnl-calendar/calendar-grid';
@@ -26,26 +25,17 @@ export function PnlCalendarCard({ trades, onDayPress }: PnlCalendarCardProps) {
   };
 
   return (
-    <Card style={styles.card}>
-      <Card.Title title="P&L Calendar" />
-      <Card.Content>
-        <CalendarHeader
-          selectedMonth={selectedMonth}
-          onPrevMonth={handlePrevMonth}
-          onNextMonth={handleNextMonth}
-        />
-        <CalendarGrid
-          selectedMonth={selectedMonth}
-          dailyPnlData={dailyPnlData}
-          onDayPress={onDayPress}
-        />
-      </Card.Content>
-    </Card>
+    <SectionCard title="P&L Calendar">
+      <CalendarHeader
+        selectedMonth={selectedMonth}
+        onPrevMonth={handlePrevMonth}
+        onNextMonth={handleNextMonth}
+      />
+      <CalendarGrid
+        selectedMonth={selectedMonth}
+        dailyPnlData={dailyPnlData}
+        onDayPress={onDayPress}
+      />
+    </SectionCard>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: 16,
-  },
-});

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Button, Card, Portal, Dialog } from 'react-native-paper';
+import { Text, Button, Portal, Dialog } from 'react-native-paper';
 
 import { AttachmentGallery } from './attachment-gallery';
 import { Chip } from './chip';
 import { LinkedText } from './linked-text';
+import { SectionCard } from './section-card';
 import { getMistakeCategoryLabel } from '../constants/mistake-categories';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAttachments } from '../hooks/use-attachments';
@@ -92,130 +93,82 @@ export function TradeDetailContent({
             </View>
           </View>
 
-          <Card style={styles.card}>
-            <Card.Content>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
-                Position Details
-              </Text>
-              <DetailRow label="Quantity" value={`${trade.quantity} shares`} />
-              <DetailRow
-                label="Entry Price"
-                value={`$${trade.entryPrice.toFixed(2)}`}
-              />
-              <DetailRow
-                label="Exit Price"
-                value={`$${trade.exitPrice.toFixed(2)}`}
-              />
-            </Card.Content>
-          </Card>
+          <SectionCard title="Position Details">
+            <DetailRow label="Quantity" value={`${trade.quantity} shares`} />
+            <DetailRow
+              label="Entry Price"
+              value={`$${trade.entryPrice.toFixed(2)}`}
+            />
+            <DetailRow
+              label="Exit Price"
+              value={`$${trade.exitPrice.toFixed(2)}`}
+            />
+          </SectionCard>
 
-          <Card style={styles.card}>
-            <Card.Content>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
-                Timing
-              </Text>
-              <DetailRow
-                label="Entry"
-                value={formatDateTime(trade.entryTime)}
-              />
-              <DetailRow label="Exit" value={formatDateTime(trade.exitTime)} />
-            </Card.Content>
-          </Card>
+          <SectionCard title="Timing">
+            <DetailRow label="Entry" value={formatDateTime(trade.entryTime)} />
+            <DetailRow label="Exit" value={formatDateTime(trade.exitTime)} />
+          </SectionCard>
 
           {trade.strategy && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Strategy
-                </Text>
-                <Text variant="bodyLarge">{trade.strategy}</Text>
-              </Card.Content>
-            </Card>
+            <SectionCard title="Strategy">
+              <Text variant="bodyLarge">{trade.strategy}</Text>
+            </SectionCard>
           )}
 
           {trade.psychology && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Psychology
-                </Text>
-                <Chip style={styles.psychologyChip}>{trade.psychology}</Chip>
-              </Card.Content>
-            </Card>
+            <SectionCard title="Psychology">
+              <Chip style={styles.psychologyChip}>{trade.psychology}</Chip>
+            </SectionCard>
           )}
 
           {trade.whatWorked && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  What Worked
-                </Text>
-                <LinkedText variant="bodyLarge" style={styles.notes}>
-                  {trade.whatWorked}
-                </LinkedText>
-              </Card.Content>
-            </Card>
+            <SectionCard title="What Worked">
+              <LinkedText variant="bodyLarge" style={styles.notes}>
+                {trade.whatWorked}
+              </LinkedText>
+            </SectionCard>
           )}
 
           {trade.whatFailed && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  What Didn&apos;t Work
-                </Text>
-                <LinkedText variant="bodyLarge" style={styles.notes}>
-                  {trade.whatFailed}
-                </LinkedText>
-              </Card.Content>
-            </Card>
+            <SectionCard title="What Didn't Work">
+              <LinkedText variant="bodyLarge" style={styles.notes}>
+                {trade.whatFailed}
+              </LinkedText>
+            </SectionCard>
           )}
 
           {trade.ruleViolation && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Mistake / Rule Violation
-                </Text>
-                <View style={styles.ruleViolationContent}>
-                  <Chip
-                    style={styles.mistakeChip}
-                    icon="alert-circle"
-                    textStyle={{ color: theme.colors.loss }}
-                  >
-                    {getMistakeCategoryLabel(
-                      categorizeMistake(trade.ruleViolation) ?? 'other'
-                    )}
-                  </Chip>
-                  <LinkedText variant="bodyLarge" style={styles.notes}>
-                    {trade.ruleViolation}
-                  </LinkedText>
-                </View>
-              </Card.Content>
-            </Card>
+            <SectionCard title="Mistake / Rule Violation">
+              <View style={styles.ruleViolationContent}>
+                <Chip
+                  style={styles.mistakeChip}
+                  icon="alert-circle"
+                  textStyle={{ color: theme.colors.loss }}
+                >
+                  {getMistakeCategoryLabel(
+                    categorizeMistake(trade.ruleViolation) ?? 'other'
+                  )}
+                </Chip>
+                <LinkedText variant="bodyLarge" style={styles.notes}>
+                  {trade.ruleViolation}
+                </LinkedText>
+              </View>
+            </SectionCard>
           )}
 
           {trade.notes && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Notes
-                </Text>
-                <LinkedText variant="bodyLarge" style={styles.notes}>
-                  {trade.notes}
-                </LinkedText>
-              </Card.Content>
-            </Card>
+            <SectionCard title="Notes">
+              <LinkedText variant="bodyLarge" style={styles.notes}>
+                {trade.notes}
+              </LinkedText>
+            </SectionCard>
           )}
 
           {attachments.length > 0 && (
-            <Card style={styles.card}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Screenshots
-                </Text>
-                <AttachmentGallery attachments={attachments} />
-              </Card.Content>
-            </Card>
+            <SectionCard title="Screenshots">
+              <AttachmentGallery attachments={attachments} />
+            </SectionCard>
           )}
 
           <View style={styles.actions}>
@@ -326,13 +279,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     pnl: {
       fontWeight: 'bold',
-    },
-    card: {
-      marginBottom: 16,
-    },
-    sectionTitle: {
-      marginBottom: 8,
-      color: theme.colors.primary,
     },
     notes: {
       lineHeight: 24,

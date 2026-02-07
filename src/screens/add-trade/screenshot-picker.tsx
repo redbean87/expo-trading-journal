@@ -27,6 +27,7 @@ export function ScreenshotPicker({
   onPendingImagesChange,
 }: ScreenshotPickerProps) {
   const theme = useAppTheme();
+  const themedStyles = createThemedStyles(theme);
   const [menuVisible, setMenuVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [downloadUrls, setDownloadUrls] = useState<Record<string, string>>({});
@@ -108,7 +109,7 @@ export function ScreenshotPicker({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text variant="titleMedium" style={{ color: theme.colors.primary }}>
+        <Text variant="titleMedium" style={themedStyles.sectionTitle}>
           Screenshots
         </Text>
         <Menu
@@ -167,6 +168,13 @@ export function ScreenshotPicker({
     </View>
   );
 }
+
+const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    sectionTitle: {
+      color: theme.colors.primary,
+    },
+  });
 
 const styles = StyleSheet.create({
   container: {
