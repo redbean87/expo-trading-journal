@@ -103,14 +103,14 @@ export function CustomColorsDialog({
             </Text>
             <ColorPicker
               label="Selected Background"
-              value={tempColors.selectedBackground!}
+              value={tempColors.selectedBackground}
               onChange={(val) =>
                 setTempColors({ ...tempColors, selectedBackground: val })
               }
             />
             <ColorPicker
               label="Selected Text"
-              value={tempColors.selectedText!}
+              value={tempColors.selectedText}
               onChange={(val) =>
                 setTempColors({ ...tempColors, selectedText: val })
               }

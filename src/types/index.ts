@@ -28,8 +28,8 @@ export type CustomColors = {
   primary: string; // Accent color (#RRGGBB)
   profit: string; // Trading green (#RRGGBB)
   loss: string; // Trading red (#RRGGBB)
-  selectedBackground?: string; // Selected/active element background (#RRGGBB)
-  selectedText?: string; // Text color on selected/active elements (#RRGGBB)
+  selectedBackground: string; // Selected/active element background (#RRGGBB)
+  selectedText: string; // Text color on selected/active elements (#RRGGBB)
 };
 
 export type CustomThemePreset = 'default' | 'custom';

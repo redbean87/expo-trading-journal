@@ -19,23 +19,21 @@ type CustomThemeStore = {
 
 const CUSTOM_THEME_STORAGE_KEY = '@custom_theme';
 
+// Defaults for backward compat with old data missing selectedBackground/selectedText
+const DEFAULT_SELECTED_BG = '#EADDFF';
+const DEFAULT_SELECTED_TEXT = '#21005D';
+
 // HEX validation regex
 const HEX_PATTERN = /^#[0-9A-F]{6}$/i;
 
 function validateCustomColors(colors: CustomColors): boolean {
-  const requiredColors = [colors.primary, colors.profit, colors.loss];
-
-  if (
-    colors.selectedBackground &&
-    !HEX_PATTERN.test(colors.selectedBackground)
-  ) {
-    return false;
-  }
-  if (colors.selectedText && !HEX_PATTERN.test(colors.selectedText)) {
-    return false;
-  }
-
-  return requiredColors.every((color) => HEX_PATTERN.test(color));
+  return [
+    colors.primary,
+    colors.profit,
+    colors.loss,
+    colors.selectedBackground,
+    colors.selectedText,
+  ].every((color) => HEX_PATTERN.test(color));
 }
 
 export const useCustomThemeStore = create<CustomThemeStore>((set) => ({
@@ -50,10 +48,18 @@ export const useCustomThemeStore = create<CustomThemeStore>((set) => ({
         const parsed = JSON.parse(stored);
         // Validate before setting
         if (parsed.preset === 'custom' && parsed.customColors) {
-          if (validateCustomColors(parsed.customColors)) {
+          // Backfill defaults for old data missing selectedBackground/selectedText
+          const colors = {
+            ...parsed.customColors,
+            selectedBackground:
+              parsed.customColors.selectedBackground || DEFAULT_SELECTED_BG,
+            selectedText:
+              parsed.customColors.selectedText || DEFAULT_SELECTED_TEXT,
+          };
+          if (validateCustomColors(colors)) {
             set({
               preset: parsed.preset,
-              customColors: parsed.customColors,
+              customColors: colors,
               isLoading: false,
             });
             return;

@@ -44,7 +44,7 @@ export const updateSettings = mutation({
     }
 
     // Build update object with only provided fields
-    const updates: Record<string, string | number | null> = {
+    const updates: Record<string, string | number | null | undefined> = {
       settingsUpdatedAt: Date.now(),
     };
 
@@ -77,31 +77,30 @@ export const updateSettings = mutation({
       if (args.customColors) {
         try {
           const parsed = JSON.parse(args.customColors);
-          if (!parsed.primary || !parsed.profit || !parsed.loss) {
+          if (
+            !parsed.primary ||
+            !parsed.profit ||
+            !parsed.loss ||
+            !parsed.selectedBackground ||
+            !parsed.selectedText
+          ) {
             throw new Error('Invalid custom colors structure');
           }
           const hexPattern = /^#[0-9A-F]{6}$/i;
           if (
             !hexPattern.test(parsed.primary) ||
             !hexPattern.test(parsed.profit) ||
-            !hexPattern.test(parsed.loss)
+            !hexPattern.test(parsed.loss) ||
+            !hexPattern.test(parsed.selectedBackground) ||
+            !hexPattern.test(parsed.selectedText)
           ) {
             throw new Error('Invalid color format');
-          }
-          if (
-            parsed.selectedBackground &&
-            !hexPattern.test(parsed.selectedBackground)
-          ) {
-            throw new Error('Invalid selectedBackground format');
-          }
-          if (parsed.selectedText && !hexPattern.test(parsed.selectedText)) {
-            throw new Error('Invalid selectedText format');
           }
         } catch {
           throw new Error('Invalid custom colors JSON');
         }
       }
-      updates.customColors = args.customColors || null;
+      updates.customColors = args.customColors || undefined;
     }
 
     await ctx.db.patch(userId, updates);

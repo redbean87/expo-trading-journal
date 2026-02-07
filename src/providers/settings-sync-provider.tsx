@@ -10,7 +10,7 @@ import { useThemeStore } from '../store/theme-store';
 import { useTimezoneStore } from '../store/timezone-store';
 import { ThemeMode } from '../theme';
 
-import type { CustomColors, CustomThemePreset } from '../types';
+import type { CustomColors } from '../types';
 
 type SettingsSyncProviderProps = {
   children: ReactNode;
@@ -122,19 +122,26 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     }
 
     // Apply custom theme from cloud
-    if (cloudSettings.customThemePreset) {
-      const themePreset = cloudSettings.customThemePreset as CustomThemePreset;
+    if (cloudSettings.customThemePreset === 'custom') {
       let parsedColors: CustomColors | null = null;
 
       if (cloudSettings.customColors) {
         try {
-          parsedColors = JSON.parse(cloudSettings.customColors);
+          const raw = JSON.parse(cloudSettings.customColors);
+          // Backfill defaults for old data missing selectedBackground/selectedText
+          parsedColors = {
+            ...raw,
+            selectedBackground: raw.selectedBackground || '#EADDFF',
+            selectedText: raw.selectedText || '#21005D',
+          };
         } catch (error) {
           console.error('Failed to parse custom colors from cloud:', error);
         }
       }
 
-      setCustomThemeFromCloud(themePreset, parsedColors);
+      setCustomThemeFromCloud('custom', parsedColors);
+    } else if (cloudSettings.customThemePreset === 'default') {
+      setCustomThemeFromCloud('default', null);
     }
   }, [
     isAuthenticated,
