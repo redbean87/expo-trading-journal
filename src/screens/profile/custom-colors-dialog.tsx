@@ -31,8 +31,8 @@ export function CustomColorsDialog({
         primary: initialColors.primary,
         profit: initialColors.profit,
         loss: initialColors.loss,
-        primaryContainer: initialColors.primaryContainer!,
-        onPrimaryContainer: initialColors.onPrimaryContainer!,
+        selectedBackground: initialColors.selectedBackground,
+        selectedText: initialColors.selectedText,
       });
     }
   }, [visible, initialColors]);
@@ -57,7 +57,11 @@ export function CustomColorsDialog({
 
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={onDismiss}>
+      <Dialog
+        visible={visible}
+        onDismiss={onDismiss}
+        style={{ maxWidth: 600, alignSelf: 'center', width: '100%' }}
+      >
         <Dialog.Title>Customize Colors</Dialog.Title>
 
         <Dialog.ScrollArea style={{ maxHeight: 400 }}>
@@ -95,20 +99,20 @@ export function CustomColorsDialog({
               variant="labelLarge"
               style={{ marginTop: 16, marginBottom: 12 }}
             >
-              Active States
+              Selected States
             </Text>
             <ColorPicker
-              label="Active Background"
-              value={tempColors.primaryContainer!}
+              label="Selected Background"
+              value={tempColors.selectedBackground!}
               onChange={(val) =>
-                setTempColors({ ...tempColors, primaryContainer: val })
+                setTempColors({ ...tempColors, selectedBackground: val })
               }
             />
             <ColorPicker
-              label="Active Text Color"
-              value={tempColors.onPrimaryContainer!}
+              label="Selected Text"
+              value={tempColors.selectedText!}
               onChange={(val) =>
-                setTempColors({ ...tempColors, onPrimaryContainer: val })
+                setTempColors({ ...tempColors, selectedText: val })
               }
             />
           </ScrollView>

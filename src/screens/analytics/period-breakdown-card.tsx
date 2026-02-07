@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card, SegmentedButtons, Text } from 'react-native-paper';
+import { Card, Text } from 'react-native-paper';
 
 import { CardEmptyState } from '../../components/card-empty-state';
+import { SegmentedButtons } from '../../components/segmented-buttons';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import {
   usePeriodBreakdown,

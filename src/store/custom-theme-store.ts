@@ -23,17 +23,15 @@ const CUSTOM_THEME_STORAGE_KEY = '@custom_theme';
 const HEX_PATTERN = /^#[0-9A-F]{6}$/i;
 
 function validateCustomColors(colors: CustomColors): boolean {
-  // Validate required colors
   const requiredColors = [colors.primary, colors.profit, colors.loss];
 
-  // primaryContainer and onPrimaryContainer are optional for backward compatibility
-  if (colors.primaryContainer && !HEX_PATTERN.test(colors.primaryContainer)) {
+  if (
+    colors.selectedBackground &&
+    !HEX_PATTERN.test(colors.selectedBackground)
+  ) {
     return false;
   }
-  if (
-    colors.onPrimaryContainer &&
-    !HEX_PATTERN.test(colors.onPrimaryContainer)
-  ) {
+  if (colors.selectedText && !HEX_PATTERN.test(colors.selectedText)) {
     return false;
   }
 

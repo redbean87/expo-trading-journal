@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Chip, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
+import { Chip } from '../../components/chip';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { DateRangePreset, dateRangeOptions } from '../../utils/date-range';
 

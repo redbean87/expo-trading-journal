@@ -1,10 +1,10 @@
 import { Slot, usePathname, useRouter } from 'expo-router';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { SegmentedButtons } from 'react-native-paper';
 
 import { LoadingState } from '../components/loading-state';
 import { ResponsiveContainer } from '../components/responsive-container';
+import { SegmentedButtons } from '../components/segmented-buttons';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTradesInRange } from '../hooks/use-trades';
 import { useAnalyticsStore } from '../store/analytics-store';

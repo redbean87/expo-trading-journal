@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { TextInput, SegmentedButtons, Text, Chip } from 'react-native-paper';
+import { TextInput, Text } from 'react-native-paper';
 
 import { MistakeCategorySelector } from './mistake-category-selector';
+import { Chip } from '../../components/chip';
 import { DateTimeInput } from '../../components/date-time-input';
+import { SegmentedButtons } from '../../components/segmented-buttons';
 import { useFormNavigation } from '../../hooks/use-form-navigation';
 import { TradeFormData } from '../../types';
 

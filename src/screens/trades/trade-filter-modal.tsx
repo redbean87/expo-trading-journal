@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Chip, Divider, Modal, Portal, Text } from 'react-native-paper';
+import { Button, Divider, Modal, Portal, Text } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 
+import { Chip } from '../../components/chip';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { TradeFilters, PnlFilter } from '../../hooks/use-trade-filters';
 import { TradeSide } from '../../types';

@@ -52,6 +52,11 @@ const lightColors = {
   textSecondary: '#757575',
   textTertiary: '#9e9e9e',
   border: '#e0e0e0',
+  // Chip and tab colors (match MD3 light theme defaults)
+  chipSelectedBackground: '#EADDFF', // MD3 primaryContainer
+  chipSelectedText: '#21005D', // MD3 onPrimaryContainer
+  tabSelectedBackground: '#EADDFF', // MD3 primaryContainer
+  tabSelectedText: '#21005D', // MD3 onPrimaryContainer
 };
 
 const darkColors = {
@@ -62,6 +67,11 @@ const darkColors = {
   textSecondary: '#a0a0a0',
   textTertiary: '#707070',
   border: '#3c3c3c',
+  // Chip and tab colors (match MD3 dark theme defaults)
+  chipSelectedBackground: '#4A4458', // MD3 dark theme primaryContainer
+  chipSelectedText: '#EADDFF', // MD3 dark theme onPrimaryContainer
+  tabSelectedBackground: '#4A4458', // MD3 dark theme primaryContainer
+  tabSelectedText: '#EADDFF', // MD3 dark theme onPrimaryContainer
 };
 
 export const lightTheme = {
@@ -108,8 +118,8 @@ export const DEFAULT_CUSTOM_COLORS = {
   primary: '#6750A4', // MD3 purple
   profit: '#4caf50', // Green
   loss: '#f44336', // Red
-  primaryContainer: '#EADDFF', // MD3 light theme default (light purple)
-  onPrimaryContainer: '#21005D', // MD3 dark purple for text on light purple
+  selectedBackground: '#EADDFF', // MD3 primaryContainer (light purple)
+  selectedText: '#21005D', // MD3 onPrimaryContainer (dark purple)
 };
 
 export function createCustomTheme(
@@ -121,7 +131,11 @@ export function createCustomTheme(
     return baseTheme;
   }
 
-  // Only apply accent colors, leave background/surface/text to base theme
+  const selectedBg =
+    customColors.selectedBackground || baseTheme.colors.primaryContainer;
+  const selectedTxt =
+    customColors.selectedText || baseTheme.colors.onPrimaryContainer;
+
   return {
     ...baseTheme,
     colors: {
@@ -129,13 +143,13 @@ export function createCustomTheme(
       primary: customColors.primary,
       profit: customColors.profit,
       loss: customColors.loss,
-      // Only override if provided, otherwise use base theme values
-      ...(customColors.primaryContainer && {
-        primaryContainer: customColors.primaryContainer,
-      }),
-      ...(customColors.onPrimaryContainer && {
-        onPrimaryContainer: customColors.onPrimaryContainer,
-      }),
+      // Apply consolidated selected colors to all active/selected states
+      primaryContainer: selectedBg,
+      onPrimaryContainer: selectedTxt,
+      chipSelectedBackground: selectedBg,
+      chipSelectedText: selectedTxt,
+      tabSelectedBackground: selectedBg,
+      tabSelectedText: selectedTxt,
     },
   };
 }

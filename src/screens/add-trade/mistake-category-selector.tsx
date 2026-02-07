@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Chip, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
+import { Chip } from '../../components/chip';
 import { MISTAKE_CATEGORIES } from '../../constants/mistake-categories';
 import { useAppTheme } from '../../hooks/use-app-theme';
 

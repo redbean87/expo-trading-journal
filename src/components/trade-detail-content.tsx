@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Button, Card, Chip, Portal, Dialog } from 'react-native-paper';
+import { Text, Button, Card, Portal, Dialog } from 'react-native-paper';
 
 import { AttachmentGallery } from './attachment-gallery';
+import { Chip } from './chip';
 import { LinkedText } from './linked-text';
 import { getMistakeCategoryLabel } from '../constants/mistake-categories';
 import { useAppTheme } from '../hooks/use-app-theme';

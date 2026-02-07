@@ -268,9 +268,12 @@ export default function ProfileScreen() {
             primary: rgbaToHex(theme.colors.primary),
             profit: rgbaToHex(theme.colors.profit),
             loss: rgbaToHex(theme.colors.loss),
-            primaryContainer: rgbaToHex(theme.colors.primaryContainer),
-            onPrimaryContainer: rgbaToHex(theme.colors.onPrimaryContainer),
-            ...(customColors || {}),
+            selectedBackground:
+              customColors?.selectedBackground ||
+              rgbaToHex(theme.colors.primaryContainer),
+            selectedText:
+              customColors?.selectedText ||
+              rgbaToHex(theme.colors.onPrimaryContainer),
           }}
           onSave={handleSaveCustomColors}
           onReset={handleResetColors}

@@ -77,11 +77,9 @@ export const updateSettings = mutation({
       if (args.customColors) {
         try {
           const parsed = JSON.parse(args.customColors);
-          // Validate current structure: primary, profit, loss required; primaryContainer & onPrimaryContainer optional
           if (!parsed.primary || !parsed.profit || !parsed.loss) {
             throw new Error('Invalid custom colors structure');
           }
-          // Validate hex format if provided
           const hexPattern = /^#[0-9A-F]{6}$/i;
           if (
             !hexPattern.test(parsed.primary) ||
@@ -91,16 +89,13 @@ export const updateSettings = mutation({
             throw new Error('Invalid color format');
           }
           if (
-            parsed.primaryContainer &&
-            !hexPattern.test(parsed.primaryContainer)
+            parsed.selectedBackground &&
+            !hexPattern.test(parsed.selectedBackground)
           ) {
-            throw new Error('Invalid primaryContainer format');
+            throw new Error('Invalid selectedBackground format');
           }
-          if (
-            parsed.onPrimaryContainer &&
-            !hexPattern.test(parsed.onPrimaryContainer)
-          ) {
-            throw new Error('Invalid onPrimaryContainer format');
+          if (parsed.selectedText && !hexPattern.test(parsed.selectedText)) {
+            throw new Error('Invalid selectedText format');
           }
         } catch {
           throw new Error('Invalid custom colors JSON');
