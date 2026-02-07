@@ -3,9 +3,11 @@ import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { Text } from 'react-native-paper';
 
+import { CardEmptyState } from '../../components/card-empty-state';
 import { EmptyState } from '../../components/empty-state';
 import { SectionCard } from '../../components/section-card';
 import { useAppTheme } from '../../hooks/use-app-theme';
+import { spacing } from '../../theme';
 import { Trade } from '../../types';
 
 type RecentTradesCardProps = {
@@ -22,13 +24,15 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
   };
 
   return (
-    <SectionCard title="Recent Trades" style={styles.card}>
+    <SectionCard title="Recent Trades">
       <EmptyState
         data={trades}
         fallback={
-          <Text style={styles.emptyText}>
-            No trades yet. Add your first trade!
-          </Text>
+          <CardEmptyState
+            icon="chart-line-variant"
+            title="No trades yet"
+            subtitle="Add your first trade to get started"
+          />
         }
       >
         <>
@@ -41,6 +45,7 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
               <View style={styles.tradeHeader}>
                 <Text variant="titleMedium">{trade.symbol}</Text>
                 <Text
+                  variant="bodyLarge"
                   style={[
                     styles.pnl,
                     {
@@ -67,11 +72,8 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
 
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
-    card: {
-      marginBottom: 24,
-    },
     tradeItem: {
-      paddingVertical: 12,
+      paddingVertical: spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border,
     },
@@ -79,18 +81,12 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 4,
+      marginBottom: spacing.xs,
     },
     pnl: {
       fontWeight: 'bold',
-      fontSize: 16,
     },
     tradeDetails: {
       color: theme.colors.textSecondary,
-    },
-    emptyText: {
-      textAlign: 'center',
-      color: theme.colors.textSecondary,
-      paddingVertical: 24,
     },
   });

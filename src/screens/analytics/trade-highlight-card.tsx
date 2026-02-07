@@ -4,6 +4,7 @@ import { Text } from 'react-native-paper';
 
 import { CardEmptyState } from '../../components/card-empty-state';
 import { SectionCard } from '../../components/section-card';
+import { spacing } from '../../theme';
 import { Trade } from '../../types';
 
 type TradeHighlightCardProps = {
@@ -45,6 +46,7 @@ export function TradeHighlightCard({
 
 const styles = StyleSheet.create({
   pnl: {
-    marginTop: 8,
+    fontWeight: 'bold',
+    marginTop: spacing.sm,
   },
 });

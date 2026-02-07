@@ -11,6 +11,7 @@ import {
   useMistakeAnalytics,
   MistakeSummary,
 } from '../../hooks/use-mistake-analytics';
+import { spacing } from '../../theme';
 import { Trade } from '../../types';
 
 type MistakesCardProps = {
@@ -182,20 +183,20 @@ export function MistakesCard({ trades }: MistakesCardProps) {
 
 const styles = StyleSheet.create({
   toggle: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   mistakesList: {
-    gap: 12,
+    gap: spacing.md,
   },
   mistakeRow: {
-    paddingVertical: 8,
+    paddingVertical: spacing.sm,
   },
   mistakeLabel: {
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   metricsRow: {
     flexDirection: 'row',
-    gap: 16,
+    gap: spacing.lg,
   },
   metric: {
     minWidth: 70,
@@ -205,21 +206,21 @@ const styles = StyleSheet.create({
 const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     summarySection: {
-      marginBottom: 16,
+      marginBottom: spacing.lg,
     },
     breakdownSection: {
-      marginTop: 12,
-      paddingTop: 12,
+      marginTop: spacing.md,
+      paddingTop: spacing.md,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
     },
     sectionTitle: {
-      marginBottom: 12,
+      marginBottom: spacing.sm,
       color: theme.colors.textSecondary,
     },
     emptyText: {
       color: theme.colors.textSecondary,
       textAlign: 'center',
-      marginTop: 8,
+      marginTop: spacing.sm,
     },
   });
