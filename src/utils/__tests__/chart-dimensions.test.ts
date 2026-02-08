@@ -31,7 +31,7 @@ describe('chart-dimensions constants', () => {
   });
 
   it('should export correct desktop bar chart height', () => {
-    expect(DESKTOP_BAR_CHART_HEIGHT).toBe(220);
+    expect(DESKTOP_BAR_CHART_HEIGHT).toBe(280);
   });
 });
 
@@ -122,12 +122,12 @@ describe('getChartHeight', () => {
   it('should return taller height for line charts on desktop', () => {
     expect(getChartHeight('line', 'mobile')).toBe(180);
     expect(getChartHeight('line', 'tablet')).toBe(180);
-    expect(getChartHeight('line', 'desktop')).toBe(280);
+    expect(getChartHeight('line', 'desktop')).toBe(340);
   });
 
   it('should return taller height for bar charts on desktop', () => {
     expect(getChartHeight('bar', 'mobile')).toBe(160);
     expect(getChartHeight('bar', 'tablet')).toBe(160);
-    expect(getChartHeight('bar', 'desktop')).toBe(220);
+    expect(getChartHeight('bar', 'desktop')).toBe(280);
   });
 });

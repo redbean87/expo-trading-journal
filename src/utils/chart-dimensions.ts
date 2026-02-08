@@ -21,13 +21,13 @@ export const CALENDAR_GAP = 4;
 export const DEFAULT_LINE_CHART_HEIGHT = 180;
 
 /** Desktop height for line charts (equity curve) */
-export const DESKTOP_LINE_CHART_HEIGHT = 280;
+export const DESKTOP_LINE_CHART_HEIGHT = 340;
 
 /** Default height for bar charts (day of week, time of day) */
 export const DEFAULT_BAR_CHART_HEIGHT = 160;
 
 /** Desktop height for bar charts (day of week, time of day) */
-export const DESKTOP_BAR_CHART_HEIGHT = 220;
+export const DESKTOP_BAR_CHART_HEIGHT = 280;
 
 /**
  * Calculate chart width for charts with a Y-axis (line, bar).
