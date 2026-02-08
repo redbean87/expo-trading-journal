@@ -18,6 +18,7 @@ export const getSettings = query({
     }
 
     return {
+      email: user.email ?? null,
       themeMode: user.themeMode ?? null,
       timezone: user.timezone ?? null,
       displayName: user.displayName ?? null,
