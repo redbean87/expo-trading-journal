@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Dialog, Text, Button, Portal } from 'react-native-paper';
 
 import { ColorPicker } from '../../components/color-picker';
@@ -57,19 +57,12 @@ export function CustomColorsDialog({
 
   return (
     <Portal>
-      <Dialog
-        visible={visible}
-        onDismiss={onDismiss}
-        style={{ maxWidth: 600, alignSelf: 'center', width: '100%' }}
-      >
+      <Dialog visible={visible} onDismiss={onDismiss} style={styles.dialog}>
         <Dialog.Title>Customize Colors</Dialog.Title>
 
-        <Dialog.ScrollArea style={{ maxHeight: 400 }}>
-          <ScrollView style={{ paddingHorizontal: 24 }}>
-            <Text
-              variant="labelLarge"
-              style={{ marginTop: 8, marginBottom: 12 }}
-            >
+        <Dialog.ScrollArea style={styles.scrollArea}>
+          <ScrollView style={styles.scrollContent}>
+            <Text variant="labelLarge" style={styles.firstSectionLabel}>
               Primary Color
             </Text>
             <ColorPicker
@@ -78,10 +71,7 @@ export function CustomColorsDialog({
               onChange={(val) => setTempColors({ ...tempColors, primary: val })}
             />
 
-            <Text
-              variant="labelLarge"
-              style={{ marginTop: 16, marginBottom: 12 }}
-            >
+            <Text variant="labelLarge" style={styles.sectionLabel}>
               Trading Colors
             </Text>
             <ColorPicker
@@ -95,10 +85,7 @@ export function CustomColorsDialog({
               onChange={(val) => setTempColors({ ...tempColors, loss: val })}
             />
 
-            <Text
-              variant="labelLarge"
-              style={{ marginTop: 16, marginBottom: 12 }}
-            >
+            <Text variant="labelLarge" style={styles.sectionLabel}>
               Selected States
             </Text>
             <ColorPicker
@@ -137,3 +124,23 @@ export function CustomColorsDialog({
     </Portal>
   );
 }
+
+const styles = StyleSheet.create({
+  dialog: {
+    maxWidth: 600,
+  },
+  scrollArea: {
+    maxHeight: 400,
+  },
+  scrollContent: {
+    paddingHorizontal: 24,
+  },
+  firstSectionLabel: {
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  sectionLabel: {
+    marginTop: 16,
+    marginBottom: 12,
+  },
+});

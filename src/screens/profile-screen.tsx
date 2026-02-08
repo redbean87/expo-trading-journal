@@ -17,6 +17,7 @@ import { TimezonePicker } from '../components/timezone-picker';
 import { CustomColorsDialog } from './profile/custom-colors-dialog';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
+import { useCloudSettings } from '../hooks/use-settings';
 import {
   useUpdateTheme,
   useUpdateDisplayName,
@@ -32,6 +33,7 @@ import type { CustomColors } from '../types';
 
 export default function ProfileScreen() {
   const { logout } = useAuth();
+  const { settings } = useCloudSettings();
   const { themeMode } = useThemeStore();
   const { displayName } = useProfileStore();
   const { preset, customColors } = useCustomThemeStore();
@@ -121,7 +123,7 @@ export default function ProfileScreen() {
             <Card.Content style={styles.userSection}>
               <Avatar.Icon size={64} icon="account" />
               <Text variant="titleMedium" style={styles.userText}>
-                Signed in
+                {settings?.email ?? 'Signed in'}
               </Text>
             </Card.Content>
           </Card>
@@ -210,6 +212,7 @@ export default function ProfileScreen() {
         <Dialog
           visible={clearDialogVisible}
           onDismiss={() => setClearDialogVisible(false)}
+          style={themedStyles.dialog}
         >
           <Dialog.Title>Remove All Trades</Dialog.Title>
           <Dialog.Content>
@@ -234,6 +237,7 @@ export default function ProfileScreen() {
         <Dialog
           visible={displayNameDialogVisible}
           onDismiss={handleCancelDisplayName}
+          style={themedStyles.dialog}
         >
           <Dialog.Title>Journal Name</Dialog.Title>
           <Dialog.Content>
@@ -246,10 +250,7 @@ export default function ProfileScreen() {
               mode="outlined"
               autoFocus
             />
-            <Text
-              variant="bodySmall"
-              style={{ marginTop: 8, color: theme.colors.outline }}
-            >
+            <Text variant="bodySmall" style={themedStyles.characterCount}>
               {tempDisplayName.length}/50 characters
             </Text>
           </Dialog.Content>
@@ -321,5 +322,12 @@ const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
     sectionTitle: {
       marginBottom: 8,
       color: theme.colors.primary,
+    },
+    dialog: {
+      maxWidth: 600,
+    },
+    characterCount: {
+      marginTop: 8,
+      color: theme.colors.outline,
     },
   });

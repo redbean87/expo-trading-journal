@@ -38,7 +38,11 @@ export function TimezonePicker() {
         onPress={handleOpen}
       />
       <Portal>
-        <Dialog visible={dialogVisible} onDismiss={handleCancel}>
+        <Dialog
+          visible={dialogVisible}
+          onDismiss={handleCancel}
+          style={styles.dialog}
+        >
           <Dialog.Title>Select Timezone</Dialog.Title>
           <Dialog.ScrollArea style={styles.scrollArea}>
             <ScrollView>
@@ -67,7 +71,10 @@ export function TimezonePicker() {
 }
 
 const styles = StyleSheet.create({
+  dialog: {
+    maxWidth: 600,
+  },
   scrollArea: {
-    maxHeight: 300,
+    maxHeight: 400,
   },
 });

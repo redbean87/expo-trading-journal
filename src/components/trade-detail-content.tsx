@@ -184,7 +184,7 @@ export function TradeDetailContent({
               mode="outlined"
               onPress={() => setDeleteDialogVisible(true)}
               style={styles.actionButton}
-              textColor={theme.colors.loss}
+              textColor={theme.colors.error}
               icon="delete"
             >
               Delete Trade
@@ -197,6 +197,7 @@ export function TradeDetailContent({
         <Dialog
           visible={deleteDialogVisible}
           onDismiss={() => setDeleteDialogVisible(false)}
+          style={styles.dialog}
         >
           <Dialog.Title>Delete Trade</Dialog.Title>
           <Dialog.Content>
@@ -209,7 +210,7 @@ export function TradeDetailContent({
             <Button onPress={() => setDeleteDialogVisible(false)}>
               Cancel
             </Button>
-            <Button onPress={handleDelete} textColor={theme.colors.loss}>
+            <Button onPress={handleDelete} textColor={theme.colors.error}>
               Delete
             </Button>
           </Dialog.Actions>
@@ -299,5 +300,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     actionButton: {
       paddingVertical: 4,
+    },
+    dialog: {
+      maxWidth: 600,
     },
   });

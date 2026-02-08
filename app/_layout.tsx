@@ -71,15 +71,26 @@ export default function RootLayout() {
                     />
                     <Stack.Screen
                       name="trade/[id]"
-                      options={{ headerShown: true }}
+                      options={{
+                        headerShown: true,
+                        presentation: 'modal',
+                      }}
                     />
                     <Stack.Screen
                       name="add-trade"
-                      options={{ headerShown: true, title: 'Add Trade' }}
+                      options={{
+                        headerShown: true,
+                        title: 'Add Trade',
+                        presentation: 'modal',
+                      }}
                     />
                     <Stack.Screen
                       name="edit-trade/[id]"
-                      options={{ headerShown: true, title: 'Edit Trade' }}
+                      options={{
+                        headerShown: true,
+                        title: 'Edit Trade',
+                        presentation: 'modal',
+                      }}
                     />
                     <Stack.Screen
                       name="auth/callback"
