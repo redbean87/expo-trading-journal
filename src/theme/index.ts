@@ -3,7 +3,11 @@ import {
   DarkTheme as NavigationDarkTheme,
   Theme as NavigationTheme,
 } from '@react-navigation/native';
-import { MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
+import {
+  MD3LightTheme,
+  MD3DarkTheme,
+  configureFonts,
+} from 'react-native-paper';
 
 import type { CustomColors } from '../types';
 
@@ -87,6 +91,71 @@ export type BorderRadius = typeof borderRadius;
 export type Elevation = typeof elevation;
 export type IconSizes = typeof iconSizes;
 
+// Custom Typography Variants
+// Extends MD3 typescale with app-specific typography
+export const customTypography = {
+  // Chart-specific typography for data visualization
+  chartLabel: {
+    fontSize: 9,
+    fontWeight: '400' as const,
+    letterSpacing: 0,
+    lineHeight: 12,
+  },
+  chartAxis: {
+    fontSize: 10,
+    fontWeight: '400' as const,
+    letterSpacing: 0,
+    lineHeight: 14,
+  },
+  chartValue: {
+    fontSize: 11,
+    fontWeight: '500' as const,
+    letterSpacing: 0,
+    lineHeight: 15,
+  },
+  // Value display typography for P&L and stats
+  profitLarge: {
+    fontSize: 28,
+    fontWeight: '700' as const,
+    letterSpacing: 0,
+    lineHeight: 36,
+  },
+  lossLarge: {
+    fontSize: 28,
+    fontWeight: '700' as const,
+    letterSpacing: 0,
+    lineHeight: 36,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: '600' as const,
+    letterSpacing: 0,
+    lineHeight: 32,
+  },
+  statLabel: {
+    fontSize: 12,
+    fontWeight: '500' as const,
+    letterSpacing: 0.5,
+    lineHeight: 16,
+  },
+  // Meta text for secondary information
+  metaText: {
+    fontSize: 12,
+    fontWeight: '400' as const,
+    letterSpacing: 0.4,
+    lineHeight: 16,
+  },
+  // Section titles with primary color
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '500' as const,
+    letterSpacing: 0.15,
+    lineHeight: 24,
+  },
+} as const;
+
+export type CustomTypography = typeof customTypography;
+
 const customColors = {
   profit: '#4caf50',
   loss: '#f44336',
@@ -122,12 +191,23 @@ const darkColors = {
   tabSelectedText: '#EADDFF', // MD3 dark theme onPrimaryContainer
 };
 
+// Configure fonts with custom typography variants
+const configureAppFonts = (baseFonts: typeof MD3LightTheme.fonts) => {
+  return configureFonts({
+    config: {
+      ...baseFonts,
+      ...customTypography,
+    },
+  });
+};
+
 export const lightTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
     ...lightColors,
   },
+  fonts: configureAppFonts(MD3LightTheme.fonts),
 };
 
 export const darkTheme = {
@@ -136,6 +216,7 @@ export const darkTheme = {
     ...MD3DarkTheme.colors,
     ...darkColors,
   },
+  fonts: configureAppFonts(MD3DarkTheme.fonts),
 };
 
 export const lightNavigationTheme: NavigationTheme = {
