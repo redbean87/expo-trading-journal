@@ -1,17 +1,30 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Icon, Text } from 'react-native-paper';
+import { Button, Icon, Text } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useBreakpoint } from '../hooks/use-breakpoint';
+import { iconSizes, spacing } from '../theme';
+
+type CardEmptyStateAction = {
+  label: string;
+  onPress: () => void;
+  icon?: string;
+};
 
 type CardEmptyStateProps = {
   title: string;
   subtitle?: string;
   icon?: string;
+  action?: CardEmptyStateAction;
 };
 
-export function CardEmptyState({ title, subtitle, icon }: CardEmptyStateProps) {
+export function CardEmptyState({
+  title,
+  subtitle,
+  icon,
+  action,
+}: CardEmptyStateProps) {
   const theme = useAppTheme();
   const { isDesktop } = useBreakpoint();
   const styles = createStyles(theme, isDesktop);
@@ -20,7 +33,11 @@ export function CardEmptyState({ title, subtitle, icon }: CardEmptyStateProps) {
     <View style={styles.container}>
       {icon && (
         <View style={styles.iconContainer}>
-          <Icon source={icon} size={24} color={theme.colors.textTertiary} />
+          <Icon
+            source={icon}
+            size={iconSizes.sm}
+            color={theme.colors.textTertiary}
+          />
         </View>
       )}
       <Text variant="bodyLarge" style={styles.title}>
@@ -30,6 +47,17 @@ export function CardEmptyState({ title, subtitle, icon }: CardEmptyStateProps) {
         <Text variant="bodyMedium" style={styles.subtitle}>
           {subtitle}
         </Text>
+      )}
+      {action && (
+        <Button
+          mode="outlined"
+          onPress={action.onPress}
+          icon={action.icon}
+          style={styles.actionButton}
+          compact
+        >
+          {action.label}
+        </Button>
       )}
     </View>
   );
@@ -44,20 +72,24 @@ const createStyles = (
       minHeight: 120,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingVertical: isDesktop ? 32 : 24,
-      paddingHorizontal: 16,
+      paddingVertical: isDesktop ? spacing.xl : spacing.lg,
+      paddingHorizontal: spacing.lg,
     },
     iconContainer: {
-      marginBottom: 12,
+      marginBottom: spacing.md,
     },
     title: {
       color: theme.colors.textSecondary,
       textAlign: 'center',
-      marginBottom: 8,
+      marginBottom: spacing.sm,
     },
     subtitle: {
       color: theme.colors.textTertiary,
       textAlign: 'center',
       lineHeight: 20,
+      marginBottom: spacing.md,
+    },
+    actionButton: {
+      marginTop: spacing.xs,
     },
   });

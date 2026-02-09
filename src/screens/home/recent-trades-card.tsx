@@ -23,6 +23,10 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
     router.push(`/trade/${id}`);
   };
 
+  const handleAddTrade = () => {
+    router.push('/add-trade');
+  };
+
   return (
     <SectionCard title="Recent Trades">
       <EmptyState
@@ -31,7 +35,12 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
           <CardEmptyState
             icon="chart-line-variant"
             title="No trades yet"
-            subtitle="Add your first trade to get started"
+            subtitle="Add your first trade to start tracking your performance"
+            action={{
+              label: 'Add Trade',
+              onPress: handleAddTrade,
+              icon: 'plus',
+            }}
           />
         }
       >

@@ -42,7 +42,7 @@ _None_
 
 ## Medium Priority (Polish & Consistency)
 
-### 4. Typography System
+### 2. Typography System
 
 **Impact:** High effort, establishes design foundation
 **Files to modify:**
@@ -68,7 +68,7 @@ _None_
 
 ---
 
-### 5. Skeleton Loading States
+### 3. Skeleton Loading States
 
 **Impact:** Medium effort, improves perceived performance
 **Files to create:**
@@ -97,7 +97,7 @@ _None_
 
 ---
 
-### 6. Form Input Standardization
+### 4. Form Input Standardization
 
 **Impact:** Medium effort, improves form UX
 **Files to create:**
@@ -126,7 +126,7 @@ _None_
 
 ---
 
-### 7. Button Hierarchy & Patterns
+### 5. Button Hierarchy & Patterns
 
 **Impact:** Low effort, improves action clarity
 **Files to modify:**
@@ -150,7 +150,9 @@ _None_
 - Destructive actions use consistent styling
 - All action buttons have appropriate icons
 
-### 8. Standardize Theme Access Pattern
+---
+
+### 6. Standardize Theme Access Pattern
 
 **Impact:** Medium effort, improves code consistency and maintainability
 **Files to modify:**
@@ -180,7 +182,7 @@ _None_
 
 ## Enhancements (Nice to Have)
 
-### 9. Micro-interactions & Animations
+### 7. Micro-interactions & Animations
 
 **Impact:** Medium effort, delightful UX
 **Files to modify:**
@@ -206,7 +208,7 @@ _None_
 
 ---
 
-### 10. Trade Card Improvements
+### 8. Trade Card Improvements
 
 **Impact:** Medium effort, improves list usability
 **Files to create:**
@@ -235,7 +237,7 @@ _None_
 
 ---
 
-### 11. Responsive Design Polish
+### 9. Responsive Design Polish
 
 **Impact:** Medium effort, improves tablet experience
 **Files to modify:**
@@ -297,6 +299,30 @@ _None_
 
 ---
 
+### 3. Empty States Enhancement ✓
+
+**Completed:** February 2026
+**Files modified:**
+
+- `src/theme/index.ts` - Added `iconSizes` tokens (sm: 24, md: 48, lg: 64)
+- `src/components/empty-state.tsx` - Added icon size tokens, CTA action prop, consistent styling
+- `src/components/card-empty-state.tsx` - Added icon size tokens, CTA action prop, consistent styling
+- `src/screens/trades-screen.tsx` - Added icon and "Add Trade" CTA button to empty state
+- `src/screens/home/recent-trades-card.tsx` - Added CTA button to empty state
+
+**Summary:**
+
+- Created icon size design system with 3 levels (sm: 24 for cards, lg: 64 for full-page)
+- EmptyState component now supports optional CTA action with button
+- CardEmptyState component now supports optional CTA action with outlined button
+- Trades screen empty state shows chart icon and prominent "Add Trade" button
+- Recent trades card shows CTA button when no trades exist
+- All analytics cards already had appropriate contextual icons
+- All empty states now use consistent spacing tokens
+- All success criteria met per roadmap requirements
+
+---
+
 ## Working Notes
 
 ### Theme Token Additions Needed
@@ -340,4 +366,4 @@ export const elevation = {
 ---
 
 _Last updated: February 2026_
-_Next review: After completing item #1 or #8_
+_Next review: After completing item #1 or #6_

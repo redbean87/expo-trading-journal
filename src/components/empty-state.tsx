@@ -1,9 +1,16 @@
 import React, { ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Icon, Text } from 'react-native-paper';
+import { Button, Icon, Text } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useBreakpoint } from '../hooks/use-breakpoint';
+import { iconSizes, spacing } from '../theme';
+
+type EmptyStateAction = {
+  label: string;
+  onPress: () => void;
+  icon?: string;
+};
 
 type EmptyStateProps = {
   data: unknown[];
@@ -11,6 +18,7 @@ type EmptyStateProps = {
   subtitle?: string;
   icon?: string;
   fallback?: ReactNode;
+  action?: EmptyStateAction;
   children: ReactNode;
 };
 
@@ -20,6 +28,7 @@ export function EmptyState({
   subtitle,
   icon,
   fallback,
+  action,
   children,
 }: EmptyStateProps) {
   const theme = useAppTheme();
@@ -34,15 +43,13 @@ export function EmptyState({
     return <>{fallback}</>;
   }
 
-  const iconSize = isDesktop ? 64 : 48;
-
   return (
     <View style={styles.container}>
       {icon && (
         <View style={styles.iconContainer}>
           <Icon
             source={icon}
-            size={iconSize}
+            size={iconSizes.lg}
             color={theme.colors.textTertiary}
           />
         </View>
@@ -54,6 +61,16 @@ export function EmptyState({
         <Text variant="bodyMedium" style={styles.subtitle}>
           {subtitle}
         </Text>
+      )}
+      {action && (
+        <Button
+          mode="contained"
+          onPress={action.onPress}
+          icon={action.icon}
+          style={styles.actionButton}
+        >
+          {action.label}
+        </Button>
       )}
     </View>
   );
@@ -68,17 +85,22 @@ const createStyles = (
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: isDesktop ? 48 : 32,
+      padding: isDesktop ? spacing.xxl : spacing.xl,
     },
     iconContainer: {
-      marginBottom: 16,
+      marginBottom: spacing.lg,
     },
     title: {
-      marginBottom: 8,
+      marginBottom: spacing.sm,
       color: theme.colors.textSecondary,
+      textAlign: 'center',
     },
     subtitle: {
       color: theme.colors.textTertiary,
       textAlign: 'center',
+      marginBottom: spacing.lg,
+    },
+    actionButton: {
+      marginTop: spacing.sm,
     },
   });

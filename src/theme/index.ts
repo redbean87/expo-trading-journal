@@ -44,6 +44,12 @@ export const borderRadius = {
   xxl: 24,
 } as const;
 
+export const iconSizes = {
+  sm: 24,
+  md: 48,
+  lg: 64,
+} as const;
+
 export const elevation = {
   0: {
     elevation: 0,
@@ -79,6 +85,7 @@ export type Spacing = typeof spacing;
 export type Layout = typeof layout;
 export type BorderRadius = typeof borderRadius;
 export type Elevation = typeof elevation;
+export type IconSizes = typeof iconSizes;
 
 const customColors = {
   profit: '#4caf50',

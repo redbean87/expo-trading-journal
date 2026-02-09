@@ -306,11 +306,21 @@ export default function TradesScreen() {
     </View>
   );
 
+  const handleAddTrade = () => {
+    router.push('/add-trade');
+  };
+
   const listContent = (
     <EmptyState
       data={trades}
       title="No trades yet"
-      subtitle="Tap the + button to add your first trade"
+      subtitle="Start tracking your trades to analyze your performance"
+      icon="chart-line-variant"
+      action={{
+        label: 'Add Trade',
+        onPress: handleAddTrade,
+        icon: 'plus',
+      }}
     >
       <SearchBar
         value={filters.searchQuery}
