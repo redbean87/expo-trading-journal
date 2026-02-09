@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Dialog, Divider, Portal, Text } from 'react-native-paper';
-import { DatePickerModal } from 'react-native-paper-dates';
 
 import { Chip } from '../../components/chip';
+import { DatePickerDialog } from '../../components/date-picker-dialog';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { TradeFilters, PnlFilter } from '../../hooks/use-trade-filters';
 import { TradeSide } from '../../types';
@@ -76,151 +76,151 @@ function TradeFilterModalContent({
   };
 
   return (
-    <Portal>
-      <Dialog visible={true} onDismiss={onDismiss} style={styles.dialog}>
-        <Dialog.Title>Filter Trades</Dialog.Title>
+    <>
+      <Portal>
+        <Dialog visible={true} onDismiss={onDismiss} style={styles.dialog}>
+          <Dialog.Title>Filter Trades</Dialog.Title>
 
-        <Dialog.ScrollArea style={styles.scrollArea}>
-          <ScrollView>
-            {/* Side Filter */}
-            <View style={styles.section}>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
-                Side
-              </Text>
-              <View style={styles.chipRow}>
-                {sideOptions.map((option) => (
+          <Dialog.ScrollArea style={styles.scrollArea}>
+            <ScrollView>
+              {/* Side Filter */}
+              <View style={styles.section}>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  Side
+                </Text>
+                <View style={styles.chipRow}>
+                  {sideOptions.map((option) => (
+                    <Chip
+                      key={option.value}
+                      selected={localFilters.side === option.value}
+                      onPress={() => updateLocalFilter('side', option.value)}
+                      style={styles.chip}
+                    >
+                      {option.label}
+                    </Chip>
+                  ))}
+                </View>
+              </View>
+
+              <Divider />
+
+              {/* P&L Filter */}
+              <View style={styles.section}>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  Result
+                </Text>
+                <View style={styles.chipRow}>
+                  {pnlOptions.map((option) => (
+                    <Chip
+                      key={option.value}
+                      selected={localFilters.pnl === option.value}
+                      onPress={() => updateLocalFilter('pnl', option.value)}
+                      style={styles.chip}
+                    >
+                      {option.label}
+                    </Chip>
+                  ))}
+                </View>
+              </View>
+
+              <Divider />
+
+              {/* Strategy Filter */}
+              <View style={styles.section}>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  Strategy
+                </Text>
+                <View style={styles.chipRow}>
                   <Chip
-                    key={option.value}
-                    selected={localFilters.side === option.value}
-                    onPress={() => updateLocalFilter('side', option.value)}
+                    selected={localFilters.strategy === 'all'}
+                    onPress={() => updateLocalFilter('strategy', 'all')}
                     style={styles.chip}
                   >
-                    {option.label}
+                    All
                   </Chip>
-                ))}
+                  {uniqueStrategies.map((strategy) => (
+                    <Chip
+                      key={strategy}
+                      selected={localFilters.strategy === strategy}
+                      onPress={() => updateLocalFilter('strategy', strategy)}
+                      style={styles.chip}
+                    >
+                      {strategy}
+                    </Chip>
+                  ))}
+                </View>
               </View>
-            </View>
 
-            <Divider />
+              <Divider />
 
-            {/* P&L Filter */}
-            <View style={styles.section}>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
-                Result
-              </Text>
-              <View style={styles.chipRow}>
-                {pnlOptions.map((option) => (
-                  <Chip
-                    key={option.value}
-                    selected={localFilters.pnl === option.value}
-                    onPress={() => updateLocalFilter('pnl', option.value)}
-                    style={styles.chip}
+              {/* Date Range Filter */}
+              <View style={styles.section}>
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  Date Range
+                </Text>
+                <View style={styles.dateRow}>
+                  <Button
+                    mode="outlined"
+                    onPress={() => setShowDateFromPicker(true)}
+                    style={styles.dateButton}
+                    compact
                   >
-                    {option.label}
-                  </Chip>
-                ))}
-              </View>
-            </View>
-
-            <Divider />
-
-            {/* Strategy Filter */}
-            <View style={styles.section}>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
-                Strategy
-              </Text>
-              <View style={styles.chipRow}>
-                <Chip
-                  selected={localFilters.strategy === 'all'}
-                  onPress={() => updateLocalFilter('strategy', 'all')}
-                  style={styles.chip}
-                >
-                  All
-                </Chip>
-                {uniqueStrategies.map((strategy) => (
-                  <Chip
-                    key={strategy}
-                    selected={localFilters.strategy === strategy}
-                    onPress={() => updateLocalFilter('strategy', strategy)}
-                    style={styles.chip}
+                    From: {formatDate(localFilters.dateFrom)}
+                  </Button>
+                  <Button
+                    mode="outlined"
+                    onPress={() => setShowDateToPicker(true)}
+                    style={styles.dateButton}
+                    compact
                   >
-                    {strategy}
-                  </Chip>
-                ))}
+                    To: {formatDate(localFilters.dateTo)}
+                  </Button>
+                </View>
+                {(localFilters.dateFrom || localFilters.dateTo) && (
+                  <Button
+                    mode="text"
+                    onPress={() => {
+                      updateLocalFilter('dateFrom', null);
+                      updateLocalFilter('dateTo', null);
+                    }}
+                    compact
+                  >
+                    Clear dates
+                  </Button>
+                )}
               </View>
-            </View>
+            </ScrollView>
+          </Dialog.ScrollArea>
 
-            <Divider />
+          <Dialog.Actions>
+            <Button onPress={handleClearAndClose}>Clear All</Button>
+            <Button onPress={handleApply}>Apply</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
 
-            {/* Date Range Filter */}
-            <View style={styles.section}>
-              <Text variant="titleMedium" style={styles.sectionTitle}>
-                Date Range
-              </Text>
-              <View style={styles.dateRow}>
-                <Button
-                  mode="outlined"
-                  onPress={() => setShowDateFromPicker(true)}
-                  style={styles.dateButton}
-                  compact
-                >
-                  From: {formatDate(localFilters.dateFrom)}
-                </Button>
-                <Button
-                  mode="outlined"
-                  onPress={() => setShowDateToPicker(true)}
-                  style={styles.dateButton}
-                  compact
-                >
-                  To: {formatDate(localFilters.dateTo)}
-                </Button>
-              </View>
-              {(localFilters.dateFrom || localFilters.dateTo) && (
-                <Button
-                  mode="text"
-                  onPress={() => {
-                    updateLocalFilter('dateFrom', null);
-                    updateLocalFilter('dateTo', null);
-                  }}
-                  compact
-                >
-                  Clear dates
-                </Button>
-              )}
-            </View>
-          </ScrollView>
-        </Dialog.ScrollArea>
-
-        <Dialog.Actions>
-          <Button onPress={handleClearAndClose}>Clear All</Button>
-          <Button onPress={handleApply}>Apply</Button>
-        </Dialog.Actions>
-      </Dialog>
-
-      <DatePickerModal
-        locale="en"
-        mode="single"
+      <DatePickerDialog
         visible={showDateFromPicker}
-        onDismiss={() => setShowDateFromPicker(false)}
         date={localFilters.dateFrom || undefined}
-        onConfirm={({ date }) => {
+        onDismiss={() => setShowDateFromPicker(false)}
+        onConfirm={(date) => {
           setShowDateFromPicker(false);
-          updateLocalFilter('dateFrom', date || null);
+          updateLocalFilter('dateFrom', date);
         }}
+        label="Select start date"
       />
 
-      <DatePickerModal
-        locale="en"
-        mode="single"
+      <DatePickerDialog
         visible={showDateToPicker}
-        onDismiss={() => setShowDateToPicker(false)}
         date={localFilters.dateTo || undefined}
-        onConfirm={({ date }) => {
+        onDismiss={() => setShowDateToPicker(false)}
+        onConfirm={(date) => {
           setShowDateToPicker(false);
-          updateLocalFilter('dateTo', date || null);
+          updateLocalFilter('dateTo', date);
         }}
+        label="Select end date"
       />
-    </Portal>
+    </>
   );
 }
 

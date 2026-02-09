@@ -1,7 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, IconButton } from 'react-native-paper';
-import { DatePickerModal, TimePickerModal } from 'react-native-paper-dates';
+import { TimePickerModal } from 'react-native-paper-dates';
+
+import { DatePickerDialog } from './date-picker-dialog';
 
 type DateTimeInputProps = {
   label: string;
@@ -14,13 +16,11 @@ export function DateTimeInput({ label, value, onChange }: DateTimeInputProps) {
   const [showTimePicker, setShowTimePicker] = useState(false);
 
   const onConfirmDate = useCallback(
-    (params: { date: Date | undefined }) => {
+    (date: Date) => {
       setShowDatePicker(false);
-      if (params.date) {
-        const newDate = new Date(params.date);
-        newDate.setHours(value.getHours(), value.getMinutes());
-        onChange(newDate);
-      }
+      const newDate = new Date(date);
+      newDate.setHours(value.getHours(), value.getMinutes());
+      onChange(newDate);
     },
     [value, onChange]
   );
@@ -64,12 +64,10 @@ export function DateTimeInput({ label, value, onChange }: DateTimeInputProps) {
         icon="clock-outline"
         onPress={() => setShowTimePicker(true)}
       />
-      <DatePickerModal
-        locale="en"
-        mode="single"
+      <DatePickerDialog
         visible={showDatePicker}
-        onDismiss={() => setShowDatePicker(false)}
         date={value}
+        onDismiss={() => setShowDatePicker(false)}
         onConfirm={onConfirmDate}
       />
       <TimePickerModal
