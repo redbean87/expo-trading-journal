@@ -12,37 +12,13 @@ _None_
 
 ## High Priority (Immediate Visual Impact)
 
-### 1. Empty States Enhancement
-
-**Impact:** Low effort, improves UX significantly
-**Files to modify:**
-
-- `src/components/empty-state.tsx`
-- `src/components/card-empty-state.tsx`
-- `src/screens/trades-screen.tsx`
-- `src/screens/home-screen.tsx`
-- `src/screens/analytics/**/*.tsx`
-
-**Tasks:**
-
-- Unify icon sizes (create size tokens: sm: 24, md: 48, lg: 64)
-- Add contextual icons to all empty states
-- Add CTA buttons to key empty states (trades list, analytics)
-- Ensure consistent styling between EmptyState and CardEmptyState
-- Add illustrations/graphics to main empty states
-
-**Success Criteria:**
-
-- All empty screens have icons
-- Icon sizes are consistent per context
-- Trades empty state has "Add Trade" CTA button
-- Analytics empty states guide users to add data
+_None_
 
 ---
 
 ## Medium Priority (Polish & Consistency)
 
-### 2. Typography System
+### 1. Typography System
 
 **Impact:** High effort, establishes design foundation
 **Files to modify:**
@@ -68,7 +44,7 @@ _None_
 
 ---
 
-### 3. Skeleton Loading States
+### 2. Skeleton Loading States
 
 **Impact:** Medium effort, improves perceived performance
 **Files to create:**
@@ -97,7 +73,7 @@ _None_
 
 ---
 
-### 4. Form Input Standardization
+### 3. Form Input Standardization
 
 **Impact:** Medium effort, improves form UX
 **Files to create:**
@@ -126,7 +102,7 @@ _None_
 
 ---
 
-### 5. Button Hierarchy & Patterns
+### 4. Button Hierarchy & Patterns
 
 **Impact:** Low effort, improves action clarity
 **Files to modify:**
@@ -152,7 +128,7 @@ _None_
 
 ---
 
-### 6. Standardize Theme Access Pattern
+### 5. Standardize Theme Access Pattern
 
 **Impact:** Medium effort, improves code consistency and maintainability
 **Files to modify:**
@@ -182,7 +158,7 @@ _None_
 
 ## Enhancements (Nice to Have)
 
-### 7. Micro-interactions & Animations
+### 1. Micro-interactions & Animations
 
 **Impact:** Medium effort, delightful UX
 **Files to modify:**
@@ -208,7 +184,7 @@ _None_
 
 ---
 
-### 8. Trade Card Improvements
+### 2. Trade Card Improvements
 
 **Impact:** Medium effort, improves list usability
 **Files to create:**
@@ -237,7 +213,7 @@ _None_
 
 ---
 
-### 9. Responsive Design Polish
+### 3. Responsive Design Polish
 
 **Impact:** Medium effort, improves tablet experience
 **Files to modify:**
@@ -366,4 +342,4 @@ export const elevation = {
 ---
 
 _Last updated: February 2026_
-_Next review: After completing item #1 or #6_
+_Next review: After completing item #1 or #5_
