@@ -155,13 +155,8 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
                   confidence: formData.confidence === value ? undefined : value,
                 })
               }
-              style={[
-                styles.confidenceChip,
-                formData.confidence === value && styles.confidenceChipSelected,
-              ]}
+              style={styles.confidenceChip}
               textStyle={styles.confidenceChipText}
-              showSelectedOverlay
-              showSelectedCheck={false}
               compact
             >
               {value}
@@ -267,9 +262,5 @@ const styles = StyleSheet.create({
   confidenceChipText: {
     textAlign: 'center',
     flexGrow: 1,
-  },
-  confidenceChipSelected: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
   },
 });
