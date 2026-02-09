@@ -36,8 +36,17 @@ export const layout = {
   },
 } as const;
 
+export const borderRadius = {
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  xxl: 24,
+} as const;
+
 export type Spacing = typeof spacing;
 export type Layout = typeof layout;
+export type BorderRadius = typeof borderRadius;
 
 const customColors = {
   profit: '#4caf50',

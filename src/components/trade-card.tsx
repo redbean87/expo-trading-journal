@@ -9,6 +9,7 @@ import {
 import { Text, Card, IconButton } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
+import { spacing } from '../theme';
 import { Trade } from '../types';
 import { formatDate } from '../utils/date-format';
 
@@ -124,7 +125,7 @@ export function TradeCard({
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     card: {
-      marginBottom: 12,
+      marginBottom: spacing.md,
     },
     cardHovered: {
       backgroundColor: theme.colors.surfaceVariant,
@@ -135,11 +136,11 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 8,
+      marginBottom: spacing.sm,
     },
     meta: {
       color: theme.colors.textSecondary,
-      marginTop: 4,
+      marginTop: spacing.xs,
     },
     right: {
       alignItems: 'flex-end',
@@ -152,13 +153,13 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       marginTop: 2,
     },
     details: {
-      marginTop: 8,
+      marginTop: spacing.sm,
     },
     date: {
-      marginTop: 4,
+      marginTop: spacing.xs,
     },
     strategy: {
-      marginTop: 4,
+      marginTop: spacing.xs,
       fontStyle: 'italic',
     },
   });

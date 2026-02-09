@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 
+import { spacing } from '../theme';
+
 type StatCardProps = {
   title: string;
   value: string | number;
@@ -29,7 +31,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   value: {
-    marginTop: 8,
+    marginTop: spacing.sm,
     fontWeight: 'bold',
   },
 });

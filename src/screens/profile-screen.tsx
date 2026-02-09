@@ -27,6 +27,7 @@ import { useClearAllTrades } from '../hooks/use-trades';
 import { useCustomThemeStore } from '../store/custom-theme-store';
 import { useProfileStore } from '../store/profile-store';
 import { useThemeStore } from '../store/theme-store';
+import { spacing } from '../theme';
 import { rgbaToHex } from '../utils/color-intensity';
 
 import type { CustomColors } from '../types';
@@ -293,24 +294,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
+    padding: spacing.lg,
     alignItems: 'center',
   },
   card: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
     maxWidth: 600,
     width: '100%',
   },
   userSection: {
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: spacing.lg,
   },
   userText: {
-    marginTop: 12,
+    marginTop: spacing.md,
   },
   cardActions: {
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: spacing.lg,
   },
   actionButton: {
     minWidth: 150,
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
 const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     sectionTitle: {
-      marginBottom: 8,
+      marginBottom: spacing.sm,
       color: theme.colors.primary,
     },
     dialog: {
@@ -328,7 +329,7 @@ const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
       alignSelf: 'center',
     },
     characterCount: {
-      marginTop: 8,
+      marginTop: spacing.sm,
       color: theme.colors.outline,
     },
   });

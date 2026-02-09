@@ -8,6 +8,7 @@ import { StatCard } from '../components/stat-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTrades } from '../hooks/use-trades';
 import { useTradesSummary } from '../hooks/use-trades-summary';
+import { spacing } from '../theme';
 import { HomeHeader } from './home/home-header';
 import { RecentTradesCard } from './home/recent-trades-card';
 
@@ -66,9 +67,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       backgroundColor: theme.colors.background,
     },
     content: {
-      padding: 16,
+      padding: spacing.lg,
     },
     statsGrid: {
-      marginBottom: 16,
+      marginBottom: spacing.lg,
     },
   });

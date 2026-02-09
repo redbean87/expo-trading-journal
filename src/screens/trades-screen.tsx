@@ -31,6 +31,7 @@ import {
   useImportTrades,
 } from '../hooks/use-trades';
 import { useTradesUIStore } from '../store/trades-ui-store';
+import { spacing } from '../theme';
 import { Trade, TradeSide } from '../types';
 import { formatDateKey } from '../utils/calendar-helpers';
 import { tradesToCsv, generateExportFilename } from '../utils/csv-export';
@@ -350,7 +351,9 @@ export default function TradesScreen() {
         )}
         {isFocused && (
           <Portal>
-            <View style={[styles.fabContainer, isDesktop && { bottom: 24 }]}>
+            <View
+              style={[styles.fabContainer, isDesktop && { bottom: spacing.xl }]}
+            >
               {fabOpen && (
                 <>
                   <TouchableOpacity
@@ -474,12 +477,12 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flex: 6,
     },
     list: {
-      padding: 16,
-      paddingTop: 8,
+      padding: spacing.lg,
+      paddingTop: spacing.sm,
     },
     fabContainer: {
       position: 'absolute',
-      right: 16,
+      right: spacing.lg,
       bottom: 80,
       alignItems: 'flex-end',
     },
@@ -487,11 +490,11 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       backgroundColor: theme.colors.primary,
     },
     pillButton: {
-      marginBottom: 12,
+      marginBottom: spacing.md,
       backgroundColor: theme.colors.surface,
       borderRadius: 24,
-      paddingHorizontal: 4,
-      paddingVertical: 4,
+      paddingHorizontal: spacing.xs,
+      paddingVertical: spacing.xs,
       elevation: 4,
       shadowColor: theme.colors.shadow,
       shadowOffset: { width: 0, height: 2 },
@@ -499,29 +502,29 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       shadowRadius: 3.84,
     },
     pillButtonSecond: {
-      marginBottom: 12,
+      marginBottom: spacing.md,
     },
     pillContent: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingRight: 12,
+      paddingRight: spacing.md,
     },
     pillIcon: {
       margin: 0,
     },
     pillLabel: {
       color: theme.colors.onSurface,
-      marginLeft: 4,
+      marginLeft: spacing.xs,
     },
     noResults: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 32,
+      padding: spacing.xxl,
     },
     noResultsText: {
       color: theme.colors.textSecondary,
-      marginBottom: 8,
+      marginBottom: spacing.sm,
     },
     clearFiltersLink: {
       color: theme.colors.primary,
