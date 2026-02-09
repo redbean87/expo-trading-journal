@@ -325,6 +325,7 @@ const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     dialog: {
       maxWidth: 600,
+      alignSelf: 'center',
     },
     characterCount: {
       marginTop: 8,

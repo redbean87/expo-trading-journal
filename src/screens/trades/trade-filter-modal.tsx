@@ -233,6 +233,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     dialog: {
       maxWidth: 600,
+      alignSelf: 'center',
     },
     scrollArea: {
       maxHeight: 400,

@@ -73,6 +73,7 @@ export function TimezonePicker() {
 const styles = StyleSheet.create({
   dialog: {
     maxWidth: 600,
+    alignSelf: 'center',
   },
   scrollArea: {
     maxHeight: 400,
