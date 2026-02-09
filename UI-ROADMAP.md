@@ -12,60 +12,7 @@ _None_
 
 ## High Priority (Immediate Visual Impact)
 
-### 1. Standardize Spacing Tokens
-
-**Impact:** Medium effort, high consistency gain
-**Files to modify:**
-
-- `src/screens/home-screen.tsx`
-- `src/screens/trades-screen.tsx`
-- `src/screens/profile-screen.tsx`
-- `src/components/stat-card.tsx`
-- `src/components/trade-card.tsx`
-- `src/theme/index.ts` (add borderRadius tokens if needed)
-
-**Tasks:**
-
-- Replace all hardcoded `padding: 16` with `theme.spacing.lg`
-- Replace hardcoded `marginBottom: 12/16` with theme spacing
-- Audit for any remaining hardcoded spacing values
-- Add `borderRadius` tokens to theme (sm: 4, md: 8, lg: 12, xl: 16, xxl: 24)
-
-**Success Criteria:**
-
-- All spacing uses theme tokens
-- No hardcoded padding/margin values > 8
-- Visual appearance unchanged (pixel-perfect)
-
----
-
-### 2. Enhance Card Visual Hierarchy
-
-**Impact:** Medium effort, modernizes appearance
-**Files to modify:**
-
-- `src/components/stat-card.tsx`
-- `src/components/trade-card.tsx`
-- `src/components/section-card.tsx`
-- `src/theme/index.ts` (add elevation/shadow tokens)
-
-**Tasks:**
-
-- Add subtle elevation to stat cards (level 1)
-- Standardize card border radius (use theme token)
-- Enhance trade card selected state with border
-- Add hover feedback animation to trade cards
-- Create elevation design system (levels 0-5)
-
-**Success Criteria:**
-
-- Cards have consistent elevation
-- Trade cards show clear hover/selection states
-- All cards use standardized border radius
-
----
-
-### 3. Empty States Enhancement
+### 1. Empty States Enhancement
 
 **Impact:** Low effort, improves UX significantly
 **Files to modify:**
@@ -315,7 +262,38 @@ _None_
 
 ## Completed
 
-_None yet_
+### 1. Standardize Spacing Tokens ✓
+
+**Completed:** February 2026
+**Files modified:**
+
+- `src/screens/home-screen.tsx` - 2 spacing tokens
+- `src/screens/trades-screen.tsx` - 11 spacing tokens
+- `src/screens/profile-screen.tsx` - 7 spacing tokens
+- `src/components/stat-card.tsx` - 1 spacing token
+- `src/components/trade-card.tsx` - 5 spacing tokens
+- `src/theme/index.ts` - Added borderRadius tokens
+
+**Summary:** Replaced 26 hardcoded spacing values with theme tokens. Added borderRadius design tokens (sm: 4, md: 8, lg: 12, xl: 16, xxl: 24). All imports follow project conventions.
+
+---
+
+### 2. Enhance Card Visual Hierarchy ✓
+
+**Completed:** February 2026
+**Files modified:**
+
+- `src/theme/index.ts` - Added elevation tokens (levels 0-3)
+- `src/components/stat-card.tsx` - Elevation level 1, borderRadius
+- `src/components/trade-card.tsx` - Elevation, selected border, hover animation
+- `src/components/section-card.tsx` - Elevation, spacing tokens, borderRadius
+
+**Summary:**
+
+- Created elevation design system with 4 levels
+- Stat cards: subtle elevation (level 1), 8px border radius
+- Trade cards: elevation (level 2), 2px primary border when selected, spring scale animation (1.02) on press
+- Section cards: elevation (level 2), spacing.lg, 8px border radius
 
 ---
 
@@ -350,16 +328,16 @@ export const elevation = {
 
 ### Spacing Audit Checklist
 
-- [ ] `home-screen.tsx` - padding: 16 → theme.spacing.lg
-- [ ] `trades-screen.tsx` - padding: 16 → theme.spacing.lg (line 477)
-- [ ] `trades-screen.tsx` - marginBottom: 12 → theme.spacing.md
-- [ ] `profile-screen.tsx` - padding: 16 → theme.spacing.lg (line 296)
-- [ ] `profile-screen.tsx` - marginBottom: 16 → theme.spacing.lg (line 300)
-- [ ] `stat-card.tsx` - marginTop: 8 → theme.spacing.sm
-- [ ] `trade-card.tsx` - marginBottom: 12 → theme.spacing.md
-- [ ] `trade-card.tsx` - marginTop: 4/8 → theme.spacing.xs/sm
+- [x] `home-screen.tsx` - padding: 16 → theme.spacing.lg
+- [x] `trades-screen.tsx` - padding: 16 → theme.spacing.lg
+- [x] `trades-screen.tsx` - marginBottom: 12 → theme.spacing.md
+- [x] `profile-screen.tsx` - padding: 16 → theme.spacing.lg
+- [x] `profile-screen.tsx` - marginBottom: 16 → theme.spacing.lg
+- [x] `stat-card.tsx` - marginTop: 8 → theme.spacing.sm
+- [x] `trade-card.tsx` - marginBottom: 12 → theme.spacing.md
+- [x] `trade-card.tsx` - marginTop: 4/8 → theme.spacing.xs/sm
 
 ---
 
 _Last updated: February 2026_
-_Next review: After completing item #3 or #8_
+_Next review: After completing item #1 or #8_

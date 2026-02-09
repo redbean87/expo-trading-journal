@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 
-import { spacing } from '../theme';
+import { useAppTheme } from '../hooks/use-app-theme';
+import { borderRadius, elevation, spacing } from '../theme';
 
 type StatCardProps = {
   title: string;
@@ -11,6 +12,9 @@ type StatCardProps = {
 };
 
 export function StatCard({ title, value, valueColor }: StatCardProps) {
+  const theme = useAppTheme();
+  const styles = createStyles(theme);
+
   return (
     <Card style={styles.card}>
       <Card.Content>
@@ -26,12 +30,16 @@ export function StatCard({ title, value, valueColor }: StatCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    flex: 1,
-  },
-  value: {
-    marginTop: spacing.sm,
-    fontWeight: 'bold',
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    card: {
+      flex: 1,
+      backgroundColor: theme.colors.surface,
+      borderRadius: borderRadius.md,
+      ...elevation[1],
+    },
+    value: {
+      marginTop: spacing.sm,
+      fontWeight: 'bold',
+    },
+  });
