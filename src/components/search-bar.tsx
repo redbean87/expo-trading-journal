@@ -7,6 +7,7 @@ import { useAppTheme } from '../hooks/use-app-theme';
 type SearchBarProps = {
   value: string;
   onChangeText: (text: string) => void;
+  onBlur?: () => void;
   onFilterPress: () => void;
   filterCount?: number;
   placeholder?: string;
@@ -15,6 +16,7 @@ type SearchBarProps = {
 export function SearchBar({
   value,
   onChangeText,
+  onBlur,
   onFilterPress,
   filterCount = 0,
   placeholder = 'Search symbol or strategy...',
@@ -27,6 +29,7 @@ export function SearchBar({
       <Searchbar
         placeholder={placeholder}
         onChangeText={onChangeText}
+        onBlur={onBlur}
         value={value}
         style={styles.searchbar}
         inputStyle={styles.input}

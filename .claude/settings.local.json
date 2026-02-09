@@ -15,7 +15,9 @@
       "Bash(ls:*)",
       "Bash(tree:*)",
       "Bash(npm run lint:fix:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(npx eslint:*)",
+      "Bash(node -e:*)"
     ]
   }
 }

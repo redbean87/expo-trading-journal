@@ -2,7 +2,7 @@ import { useIsFocused } from '@react-navigation/native';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Platform } from 'react-native';
 import {
   View,
@@ -106,7 +106,6 @@ export default function TradesScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const params = useLocalSearchParams<TradeSearchParams>();
-  const isUpdatingUrl = useRef(false);
 
   const {
     filters,
@@ -118,23 +117,18 @@ export default function TradesScreen() {
     clearFilters: clearFiltersState,
   } = useTradeFilters(trades);
 
-  // Sync URL params to filter state (on mount and when URL changes externally)
+  // Sync URL params to filter state on mount (deep-linking support)
   useEffect(() => {
-    // Skip if we're the ones updating the URL
-    if (isUpdatingUrl.current) {
-      isUpdatingUrl.current = false;
-      return;
-    }
-
     const urlFilters = parseFiltersFromParams(params);
     const hasUrlFilters = Object.keys(urlFilters).length > 0;
 
     if (hasUrlFilters) {
       setFilters((prev) => ({ ...prev, ...urlFilters }));
     }
-  }, [params, setFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Sync filter changes to URL
+  // Sync non-search filter changes to URL
   useEffect(() => {
     const newParams: Record<string, string> = {};
 
@@ -157,17 +151,23 @@ export default function TradesScreen() {
       newParams.strategy = filters.strategy;
     }
 
-    if (filters.searchQuery) {
-      newParams.q = filters.searchQuery;
-    }
-
-    isUpdatingUrl.current = true;
     router.setParams(newParams);
-  }, [filters, router]);
+  }, [
+    filters.dateFrom,
+    filters.dateTo,
+    filters.side,
+    filters.pnl,
+    filters.strategy,
+    router,
+  ]);
+
+  // Sync search query to URL on blur
+  const handleSearchBlur = useCallback(() => {
+    router.setParams({ q: filters.searchQuery || undefined });
+  }, [filters.searchQuery, router]);
 
   const clearFilters = () => {
     clearFiltersState();
-    isUpdatingUrl.current = true;
     router.setParams({
       dateFrom: undefined,
       dateTo: undefined,
@@ -314,6 +314,7 @@ export default function TradesScreen() {
       <SearchBar
         value={filters.searchQuery}
         onChangeText={(text) => updateFilter('searchQuery', text)}
+        onBlur={handleSearchBlur}
         onFilterPress={() => setFilterModalVisible(true)}
         filterCount={activeFilterCount}
       />
