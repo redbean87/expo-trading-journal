@@ -1,7 +1,58 @@
 symbol,shares,entryPrice,entryTime,exitPrice,exitTime,stopLoss,target,pnl,pnl%,setup,confidence,macd,volVsAvgVolume,ruleViolation,psychology,whatWorked,whatFailed,link
 ,,,,,,,,,,,,,,,,,,
+Week Summary,,,,,,,,0.00,0.00,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+Week Summary,,,,,,,,-211.20,-6.65,,,,,,,,,
+XWEL,1520.00,2.028,2026-02-27 8:45:00 AM,1.890,2026-02-26 8:48:00 AM,1.890,2.220,-209.76,-6.80,n/a,3.00,flat,above,no setup,impatient,n/a,"desc macd
+couldn't break ORB high",
+XWEL,2400.00,1.336,2026-02-26 8:45:00 AM,1.275,2026-02-26 8:48:00 AM,1.260,1.400,-146.40,-4.57,n/a,3.00,desc,same,resistance ORB,anxious,n/a,"desc macd
+couldn't break ORB high",
+VSME,2560.00,1.191,2026-02-25 8:45:00 AM,1.222,2026-02-25 8:48:00 AM,1.090,1.300,79.36,2.60,ORB break retest,4.00,asc,above,exit without indication,anxious,A+ setup,exited early,
+CDIO,880.00,3.591,2026-02-24 8:45:00 AM,3.635,2026-02-24 8:48:00 AM,3.390,3.960,38.72,1.23,PMH break,4.00,asc,above,a little before ORB setup,ready,ok entry,"macd crossed
+couldn't break ORB high",
+ALUR,1920.00,1.576,2026-02-23 8:45:00 AM,1.590,2026-02-23 8:48:00 AM,1.490,1.750,26.88,0.89,ORB support,3.00,flat,same,no setup,"cautious
+",ok entry,"macd crossed
+price increasing while macd going down?",
+,,,,,,,,,,,,,,,,,,
+Week Summary,,,,,,,,-101.18,-3.14,,,,,,,,,
+ABTS,720.00,4.455,2026-02-20 8:45:00 AM,4.220,2026-02-20 8:48:00 AM,n/a,4.890,-169.20,-5.27,n/a,2.00,asc,above,no setup,"cautious
+",n/a,"no setup
+no defined stop loss",
+BATL,848.00,3.804,2026-02-19 8:45:00 AM,3.831,2026-02-19 8:48:00 AM,n/a,4.180,22.90,0.71,n/a,3.00,asc,above,no setup,"cautious
+",n/a,"no setup
+no defined stop loss",
+ATOM,480.00,6.025,2026-02-18 8:45:00 AM,5.965,2026-02-18 8:48:00 AM,5.830,6.620,-28.80,-1.00,PMH support,4.00,flat,above,macd,"cautious
+","great entry
+clear support level",failed to break previous candle high,
+GVH,2640.00,1.157,2026-02-17 8:45:00 AM,1.185,2026-02-17 8:48:00 AM,1.120,1.270,73.92,2.42,PM support,3.00,desc,above,ORB not formed,"cautious
+","great entry
+clear support level","huge red candle
+too high volume",
+,,,,,,,,,,,,,,,,,,
+Week Summary,,,,,,,,487.92,18.28,,,,,,,,,
+RIME,2560.00,1.226,2026-02-13 8:45:00 AM,1.245,2026-02-13 8:48:00 AM,1.190,1.340,48.64,1.55,ORB support,3.00,flat,above,macd,cautious,"great entry
+clear support level","slow market
+too high volume",
+VRME,2560.00,1.206,2026-02-12 8:52:00 AM,1.235,2026-02-12 8:54:00 AM,1.160,1.320,74.24,2.40,ORB resistance break/retest,3.00,flat,above,macd,nervous,"great entry
+clear support level",slow market,
+CCHH,1760.00,1.607,2026-02-11 8:59:00 AM,1.715,2026-02-11 9:01:00 AM,1.570,1.760,190.08,6.72,ORB resistance break/retest,4.00,asc,above,n/a,calm,"great entry
+macd asc
+clear support level",could have held longer,
+ABP,960.00,2.477,2026-02-10 8:40:00 AM,2.711,2026-02-10 8:42:00 AM,2.340,2.710,224.64,9.45,PML Support,4.00,asc,above,ORB not formed,excited,"macd asc
+clear support level","good entry
+could have held longer",
+MNTS,368.00,7.328,2026-02-09 9:39:00 AM,7.193,2026-02-09 9:45:00 AM,7.180,8.020,-49.68,-1.84,ORB low Resistance Break,3.00,flat,below,"flat macd
+low volume
+",nervous,broke resistance,"didn't stay above resistance
+",
+,,,,,,,,,,,,,,,,,,
 Week Summary,,,,,,,,-93.20,-3.32,,,,,,,,,
-LIMN,1120.00,2.296,2026-02-06 9:25:00 AM,2.304,2026-02-06 9:27:00 AM,2.210,2.530,8.96,0.35,PMH Resistance Break,4.00,asc,above,n/a,exited,"macd asc
+LIMN,1120.00,2.296,2026-02-06 9:25:00 AM,2.304,2026-02-06 9:27:00 AM,2.210,2.530,8.96,0.35,PMH Resistance Break,4.00,asc,above,n/a,excited,"macd asc
 broke resistance","early entry
 didn't exit on quick pop over resistance",
 LIMN,1440.00,1.769,2026-02-05 8:35:00 AM,1.780,2026-02-05 8:41:00 AM,1.730,1.900,15.84,0.62,PMH Support,4.00,asc,above,ORB not formed,"anxious

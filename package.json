@@ -19,7 +19,7 @@
     "build:dev": "eas build --profile development",
     "build:preview": "eas build --profile preview",
     "build:web": "npx expo export --platform web",
-    "deploy:web": "eas deploy",
+    "deploy:web": "eas deploy --alias dev",
     "deploy:web:prod": "eas deploy --prod"
   },
   "lint-staged": {

@@ -18,9 +18,11 @@ export function StatCard({ title, value, valueColor }: StatCardProps) {
   return (
     <Card style={styles.card}>
       <Card.Content>
-        <Text variant="titleLarge">{title}</Text>
+        <Text variant="sectionTitle" style={{ color: theme.colors.primary }}>
+          {title}
+        </Text>
         <Text
-          variant="headlineMedium"
+          variant="statValue"
           style={[styles.value, valueColor && { color: valueColor }]}
         >
           {value}
@@ -40,6 +42,5 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     value: {
       marginTop: spacing.sm,
-      fontWeight: 'bold',
     },
   });
