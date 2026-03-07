@@ -36,6 +36,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     edgeToEdgeEnabled: true,
   },
   web: {
+    output: 'static',
     favicon: './assets/favicon.png',
   },
   plugins: ['expo-router', 'expo-image-picker'],

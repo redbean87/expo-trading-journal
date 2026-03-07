@@ -19,8 +19,8 @@
     "build:dev": "eas build --profile development",
     "build:preview": "eas build --profile preview",
     "build:web": "npx expo export --platform web",
-    "deploy:web": "eas deploy --alias dev",
-    "deploy:web:prod": "eas deploy --prod"
+    "deploy:web": "npm run build:web && eas deploy --environment preview --alias dev",
+    "deploy:web:prod": "npm run build:web && eas deploy --prod --environment production"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
