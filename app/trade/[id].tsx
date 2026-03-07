@@ -1,3 +1,3 @@
-import TradeDetailScreen from '../../src/screens/trade-detail-screen';
+import TradeDetailScreen from '@/screens/trade-detail-screen';
 
 export default TradeDetailScreen;

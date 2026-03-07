@@ -1,1 +1,1 @@
-export { default } from '../../../src/screens/analytics/overview-route';
+export { default } from '@/screens/analytics/overview-route';

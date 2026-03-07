@@ -1,1 +1,1 @@
-export { default } from '../../src/screens/add-trade-screen';
+export { default } from '@/screens/add-trade-screen';

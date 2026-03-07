@@ -1,5 +1,5 @@
 // Polyfill must be imported first, before any Convex imports
-import '../src/polyfills/window-polyfill';
+import '@/polyfills/window-polyfill';
 
 import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
@@ -8,23 +8,23 @@ import { useEffect } from 'react';
 import { PaperProvider } from 'react-native-paper';
 import { enGB, registerTranslation } from 'react-native-paper-dates';
 
-import AuthGate from '../src/components/auth-gate';
-import { ErrorBoundary } from '../src/components/error-boundary';
-import { SidebarLayout } from '../src/components/sidebar-layout';
-import { useKeyboardShortcuts } from '../src/hooks/use-keyboard-shortcuts';
-import { ConvexProvider } from '../src/providers/convex-provider';
-import { SettingsSyncProvider } from '../src/providers/settings-sync-provider';
-import { useCustomThemeStore } from '../src/store/custom-theme-store';
-import { useProfileStore } from '../src/store/profile-store';
-import { useThemeStore } from '../src/store/theme-store';
-import { useTimezoneStore } from '../src/store/timezone-store';
+import AuthGate from '@/components/auth-gate';
+import { ErrorBoundary } from '@/components/error-boundary';
+import { SidebarLayout } from '@/components/sidebar-layout';
+import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
+import { ConvexProvider } from '@/providers/convex-provider';
+import { SettingsSyncProvider } from '@/providers/settings-sync-provider';
+import { useCustomThemeStore } from '@/store/custom-theme-store';
+import { useProfileStore } from '@/store/profile-store';
+import { useThemeStore } from '@/store/theme-store';
+import { useTimezoneStore } from '@/store/timezone-store';
 import {
   lightTheme,
   darkTheme,
   lightNavigationTheme,
   darkNavigationTheme,
   createCustomTheme,
-} from '../src/theme';
+} from '@/theme';
 
 // Register locale for date picker
 registerTranslation('en', enGB);

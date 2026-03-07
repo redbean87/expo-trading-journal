@@ -1,1 +1,1 @@
-export { default } from '../../../src/screens/analytics-layout';
+export { default } from '@/screens/analytics-layout';

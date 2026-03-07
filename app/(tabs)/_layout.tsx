@@ -1,11 +1,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
-import { useAppTheme } from '../../src/hooks/use-app-theme';
-import {
-  getTabBarStyle,
-  useNavigationMode,
-} from '../../src/hooks/use-navigation-mode';
+import { useAppTheme } from '@/hooks/use-app-theme';
+import { getTabBarStyle, useNavigationMode } from '@/hooks/use-navigation-mode';
 
 export default function TabLayout() {
   const theme = useAppTheme();

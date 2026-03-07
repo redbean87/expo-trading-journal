@@ -1,1 +1,1 @@
-export { default } from '../../../src/screens/analytics/psychology-route';
+export { default } from '@/screens/analytics/psychology-route';

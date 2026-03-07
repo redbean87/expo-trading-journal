@@ -1,1 +1,1 @@
-export { default } from '../../../src/screens/analytics/timing-route';
+export { default } from '@/screens/analytics/timing-route';
