@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform, View } from 'react-native';
 import {
   TextInput,
   Button,
   Text,
   HelperText,
+  Card,
   useTheme,
 } from 'react-native-paper';
 
+import { ResponsiveContainer } from '../../components/responsive-container';
 import { useAuth } from '../../hooks/use-auth';
 
 type LoginScreenProps = {
@@ -46,58 +48,63 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <Text variant="headlineMedium" style={styles.title}>
-        Trading Journal
-      </Text>
-      <Text variant="bodyMedium" style={styles.subtitle}>
-        Sign in to sync your trades
-      </Text>
+      <ResponsiveContainer>
+        <View style={styles.content}>
+          <Text variant="headlineMedium" style={styles.title}>
+            Trading Journal
+          </Text>
 
-      <TextInput
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        autoComplete="email"
-        style={styles.input}
-        disabled={loading}
-      />
+          <Card style={styles.card}>
+            <Card.Content>
+              <TextInput
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoComplete="email"
+                style={styles.input}
+                disabled={loading}
+              />
 
-      <TextInput
-        label="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        autoComplete="password"
-        style={styles.input}
-        disabled={loading}
-      />
+              <TextInput
+                label="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoComplete="password"
+                style={styles.input}
+                disabled={loading}
+              />
 
-      {error ? (
-        <HelperText type="error" visible={!!error}>
-          {error}
-        </HelperText>
-      ) : null}
+              {error ? (
+                <HelperText type="error" visible={!!error}>
+                  {error}
+                </HelperText>
+              ) : null}
 
-      <Button
-        mode="contained"
-        onPress={handleLogin}
-        loading={loading}
-        disabled={loading}
-        style={styles.button}
-      >
-        Sign In
-      </Button>
+              <Button
+                mode="contained"
+                onPress={handleLogin}
+                loading={loading}
+                disabled={loading}
+                style={styles.button}
+              >
+                Sign In
+              </Button>
+            </Card.Content>
+          </Card>
 
-      <Button
-        mode="text"
-        onPress={onSwitchToRegister}
-        disabled={loading}
-        style={styles.switchButton}
-      >
-        Don&apos;t have an account? Sign Up
-      </Button>
+          <Button
+            mode="text"
+            onPress={onSwitchToRegister}
+            disabled={loading}
+            style={styles.switchButton}
+          >
+            Don&apos;t have an account? Sign Up
+          </Button>
+        </View>
+      </ResponsiveContainer>
     </KeyboardAvoidingView>
   );
 }
@@ -105,17 +112,21 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  content: {
+    flex: 1,
     padding: 24,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 24,
   },
-  subtitle: {
-    textAlign: 'center',
-    marginBottom: 32,
-    opacity: 0.7,
+  card: {
+    maxWidth: 600,
+    width: '100%',
+    marginBottom: 8,
   },
   input: {
     marginBottom: 16,
@@ -124,6 +135,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   switchButton: {
-    marginTop: 16,
+    marginTop: 8,
   },
 });
