@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Card, customText } from 'react-native-paper';
+
+const Text = customText<'sectionTitle' | 'statValue'>();
 
 import { useAppTheme } from '../hooks/use-app-theme';
 import { borderRadius, elevation, spacing } from '../theme';

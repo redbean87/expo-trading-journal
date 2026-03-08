@@ -2,19 +2,10 @@ import 'react-native-paper';
 import type { TextStyle } from 'react-native';
 
 declare module 'react-native-paper' {
-  // Define custom variant names
-  type CustomVariantName =
-    | 'chartLabel'
-    | 'chartAxis'
-    | 'chartValue'
-    | 'profitLarge'
-    | 'lossLarge'
-    | 'statValue'
-    | 'statLabel'
-    | 'metaText'
-    | 'sectionTitle';
-
-  // Extend the MD3Typescale interface
+  // Extend MD3Typescale so the fonts object accepts custom variant keys.
+  // Use customText<T>() from react-native-paper to get a properly-typed
+  // Text component for custom variants — VariantProp<T> cannot be overridden
+  // via module augmentation since it is a type alias, not an interface.
   interface MD3Typescale {
     chartLabel: TextStyle;
     chartAxis: TextStyle;
@@ -26,11 +17,6 @@ declare module 'react-native-paper' {
     metaText: TextStyle;
     sectionTitle: TextStyle;
   }
-
-  // Override VariantProp to include custom variants
-  type VariantProp<_T> =
-    | import('react-native-paper').MD3TypescaleKey
-    | CustomVariantName;
 }
 
 export {};
