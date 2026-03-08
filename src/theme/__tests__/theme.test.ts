@@ -4,8 +4,9 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 jest.mock('react-native-paper', () => ({
-  MD3LightTheme: { colors: {} },
-  MD3DarkTheme: { colors: {} },
+  MD3LightTheme: { colors: {}, fonts: {} },
+  MD3DarkTheme: { colors: {}, fonts: {} },
+  configureFonts: ({ config }: { config: object }) => config,
 }));
 
 import { spacing, layout } from '../index';
