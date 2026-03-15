@@ -16,6 +16,7 @@ export const tradeSchema = z.object({
   entryTime: z.coerce.date(),
   exitTime: z.coerce.date(),
   side: tradeSideSchema,
+  fees: z.number().min(0).optional(),
   strategy: z.string().max(50).optional(),
   notes: z.string().max(500).optional(),
   psychology: z.string().max(50).optional(),
@@ -79,6 +80,16 @@ export const tradeFormSchema = z
       .string()
       .max(200, 'Rule violation must be 200 characters or less')
       .optional(),
+    fees: z
+      .string()
+      .refine(
+        (val) =>
+          val === '' ||
+          val === undefined ||
+          (!isNaN(parseFloat(val)) && parseFloat(val) >= 0),
+        { message: 'Fees must be a non-negative number' }
+      )
+      .optional(),
   })
   .refine((data) => data.exitTime >= data.entryTime, {
     message: 'Exit time must be after entry time',
@@ -100,17 +111,23 @@ export function calculatePnl(
   entryPrice: number,
   exitPrice: number,
   quantity: number,
-  side: TradeSide
+  side: TradeSide,
+  fees?: number
 ): { pnl: number; pnlPercent: number } {
   const entry = new Decimal(entryPrice);
   const exit = new Decimal(exitPrice);
   const qty = new Decimal(quantity);
+  const feeAmount = new Decimal(fees ?? 0);
 
   const priceDiff = side === 'long' ? exit.minus(entry) : entry.minus(exit);
 
-  const pnl = priceDiff.times(qty).toDecimalPlaces(3).toNumber();
-  const pnlPercent = priceDiff
-    .dividedBy(entry)
+  const pnl = priceDiff
+    .times(qty)
+    .minus(feeAmount)
+    .toDecimalPlaces(3)
+    .toNumber();
+  const pnlPercent = new Decimal(pnl)
+    .dividedBy(entry.times(qty))
     .times(100)
     .toDecimalPlaces(3)
     .toNumber();
@@ -122,11 +139,16 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
   const entryPrice = parseFloat(formData.entryPrice);
   const exitPrice = parseFloat(formData.exitPrice);
   const quantity = parseFloat(formData.quantity);
+  const fees =
+    formData.fees && formData.fees !== ''
+      ? parseFloat(formData.fees)
+      : undefined;
   const { pnl, pnlPercent } = calculatePnl(
     entryPrice,
     exitPrice,
     quantity,
-    formData.side
+    formData.side,
+    fees
   );
 
   return {
@@ -138,6 +160,7 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     entryTime: formData.entryTime,
     exitTime: formData.exitTime,
     side: formData.side,
+    fees,
     strategy: formData.strategy,
     notes: formData.notes,
     psychology: formData.psychology,

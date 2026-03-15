@@ -14,6 +14,7 @@ const FORM_FIELDS = [
   'entryPrice',
   'exitPrice',
   'quantity',
+  'fees',
   'strategy',
   'psychology',
   'ruleViolation',
@@ -102,6 +103,19 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         returnKeyType={getReturnKeyType('quantity')}
         blurOnSubmit={getBlurOnSubmit('quantity')}
         onSubmitEditing={() => handleSubmitEditing('quantity')}
+      />
+
+      <TextInput
+        ref={createRef('fees')}
+        label="Fees (Optional)"
+        value={formData.fees}
+        onChangeText={(text) => onUpdate({ fees: text })}
+        mode="outlined"
+        keyboardType="decimal-pad"
+        style={styles.input}
+        returnKeyType={getReturnKeyType('fees')}
+        blurOnSubmit={getBlurOnSubmit('fees')}
+        onSubmitEditing={() => handleSubmitEditing('fees')}
       />
 
       <DateTimeInput

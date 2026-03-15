@@ -195,6 +195,25 @@ describe('calculatePnl', () => {
     expect(pnl).toBe(333); // (1.567 - 1.234) * 1000 = 333
     expect(pnlPercent).toBe(26.985); // ((1.567 - 1.234) / 1.234) * 100
   });
+
+  it('should deduct fees from pnl', () => {
+    const { pnl, pnlPercent } = calculatePnl(100, 110, 10, 'long', 5);
+    expect(pnl).toBe(95); // (110 - 100) * 10 - 5 = 95
+    expect(pnlPercent).toBe(9.5); // 95 / (100 * 10) * 100
+  });
+
+  it('should produce same result as no-fees when fees is 0', () => {
+    const withoutFees = calculatePnl(100, 110, 10, 'long');
+    const withZeroFees = calculatePnl(100, 110, 10, 'long', 0);
+    expect(withZeroFees.pnl).toBe(withoutFees.pnl);
+    expect(withZeroFees.pnlPercent).toBe(withoutFees.pnlPercent);
+  });
+
+  it('should turn profit into loss when fees exceed gross gain', () => {
+    const { pnl, pnlPercent } = calculatePnl(100, 101, 10, 'long', 20);
+    expect(pnl).toBe(-10); // (101 - 100) * 10 - 20 = -10
+    expect(pnlPercent).toBe(-1); // -10 / (100 * 10) * 100
+  });
 });
 
 describe('formDataToTrade', () => {
@@ -222,5 +241,48 @@ describe('formDataToTrade', () => {
     expect(trade.pnl).toBe(100);
     expect(trade.pnlPercent).toBeCloseTo(6.67, 1);
     expect(trade.strategy).toBe('Momentum');
+  });
+
+  it('should deduct fees from pnl when fees are provided', () => {
+    const formData = {
+      symbol: 'AAPL',
+      entryPrice: '150',
+      exitPrice: '160',
+      quantity: '10',
+      entryTime: new Date('2024-01-01'),
+      exitTime: new Date('2024-01-02'),
+      side: 'long' as const,
+      fees: '0.25',
+    };
+
+    const trade = formDataToTrade(
+      formData,
+      '550e8400-e29b-41d4-a716-446655440000'
+    );
+
+    expect(trade.fees).toBe(0.25);
+    expect(trade.pnl).toBe(99.75); // 100 - 0.25
+    expect(trade.pnlPercent).toBeCloseTo(6.65, 1);
+  });
+
+  it('should not set fees when fees field is empty string', () => {
+    const formData = {
+      symbol: 'AAPL',
+      entryPrice: '150',
+      exitPrice: '160',
+      quantity: '10',
+      entryTime: new Date('2024-01-01'),
+      exitTime: new Date('2024-01-02'),
+      side: 'long' as const,
+      fees: '',
+    };
+
+    const trade = formDataToTrade(
+      formData,
+      '550e8400-e29b-41d4-a716-446655440000'
+    );
+
+    expect(trade.fees).toBeUndefined();
+    expect(trade.pnl).toBe(100);
   });
 });

@@ -45,12 +45,18 @@ export function TradeFormContent({
       return { pnl: 0, pnlPercent: 0 };
     }
 
-    return calculatePnl(entry, exit, qty, formData.side);
+    const fees =
+      formData.fees && formData.fees !== ''
+        ? parseFloat(formData.fees)
+        : undefined;
+
+    return calculatePnl(entry, exit, qty, formData.side, fees);
   }, [
     formData.entryPrice,
     formData.exitPrice,
     formData.quantity,
     formData.side,
+    formData.fees,
   ]);
 
   const handleSubmit = async () => {

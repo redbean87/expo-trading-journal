@@ -16,6 +16,7 @@ type BackendTrade = {
   side: string;
   pnl: number;
   pnlPercent: number;
+  fees?: number;
   notes?: string;
   strategy?: string;
   psychology?: string;
@@ -37,6 +38,7 @@ function mapToTrade(trade: BackendTrade): Trade {
     side: trade.side as 'long' | 'short',
     pnl: trade.pnl,
     pnlPercent: trade.pnlPercent,
+    fees: trade.fees,
     notes: trade.notes,
     strategy: trade.strategy,
     psychology: trade.psychology,
@@ -58,6 +60,7 @@ function mapFromTrade(trade: Trade) {
     side: trade.side,
     pnl: trade.pnl,
     pnlPercent: trade.pnlPercent,
+    fees: trade.fees,
     notes: trade.notes,
     strategy: trade.strategy,
     psychology: trade.psychology,
@@ -134,6 +137,7 @@ export function useUpdateTrade() {
       side: updates.side,
       pnl: updates.pnl,
       pnlPercent: updates.pnlPercent,
+      fees: updates.fees,
       notes: updates.notes,
       strategy: updates.strategy,
       psychology: updates.psychology,
