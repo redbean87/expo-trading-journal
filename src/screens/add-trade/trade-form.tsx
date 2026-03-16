@@ -15,6 +15,7 @@ const FORM_FIELDS = [
   'exitPrice',
   'quantity',
   'fees',
+  'commissions',
   'strategy',
   'psychology',
   'ruleViolation',
@@ -105,18 +106,32 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         onSubmitEditing={() => handleSubmitEditing('quantity')}
       />
 
-      <TextInput
-        ref={createRef('fees')}
-        label="Fees (Optional)"
-        value={formData.fees}
-        onChangeText={(text) => onUpdate({ fees: text })}
-        mode="outlined"
-        keyboardType="decimal-pad"
-        style={styles.input}
-        returnKeyType={getReturnKeyType('fees')}
-        blurOnSubmit={getBlurOnSubmit('fees')}
-        onSubmitEditing={() => handleSubmitEditing('fees')}
-      />
+      <View style={styles.row}>
+        <TextInput
+          ref={createRef('fees')}
+          label="Fees (Optional)"
+          value={formData.fees}
+          onChangeText={(text) => onUpdate({ fees: text })}
+          mode="outlined"
+          keyboardType="decimal-pad"
+          style={[styles.input, styles.halfInput]}
+          returnKeyType={getReturnKeyType('fees')}
+          blurOnSubmit={getBlurOnSubmit('fees')}
+          onSubmitEditing={() => handleSubmitEditing('fees')}
+        />
+        <TextInput
+          ref={createRef('commissions')}
+          label="Commissions (Optional)"
+          value={formData.commissions}
+          onChangeText={(text) => onUpdate({ commissions: text })}
+          mode="outlined"
+          keyboardType="decimal-pad"
+          style={[styles.input, styles.halfInput]}
+          returnKeyType={getReturnKeyType('commissions')}
+          blurOnSubmit={getBlurOnSubmit('commissions')}
+          onSubmitEditing={() => handleSubmitEditing('commissions')}
+        />
+      </View>
 
       <DateTimeInput
         label="Entry Time"

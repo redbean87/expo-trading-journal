@@ -106,6 +106,12 @@ export function TradeDetailContent({
             {trade.fees !== undefined && trade.fees > 0 && (
               <DetailRow label="Fees" value={`$${trade.fees.toFixed(2)}`} />
             )}
+            {trade.commissions !== undefined && trade.commissions > 0 && (
+              <DetailRow
+                label="Commissions"
+                value={`$${trade.commissions.toFixed(2)}`}
+              />
+            )}
           </SectionCard>
 
           <SectionCard title="Timing">

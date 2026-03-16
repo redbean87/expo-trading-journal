@@ -26,7 +26,8 @@ type ParsedFill = {
   symbol: string;
   quantity: number;
   price: number;
-  fees: number;
+  miscFees: number;
+  commissions: number;
   amount: number; // positive = proceeds (SOLD), negative = cost (BOT)
 };
 
@@ -35,13 +36,15 @@ type PositionAccum = {
   totalBuyQty: number;
   buySum: number; // sum(qty * price) for weighted avg entry display price
   totalBuyAmount: number; // sum(|AMOUNT|) for exact cost basis
-  totalBuyFees: number;
+  totalBuyMiscFees: number;
+  totalBuyCommissions: number;
   firstBuyDate: string;
   firstBuyTime: string;
   totalSellQty: number;
   sellSum: number; // sum(qty * price) for weighted avg exit display price
   totalSellAmount: number; // sum(AMOUNT) for exact proceeds
-  totalSellFees: number;
+  totalSellMiscFees: number;
+  totalSellCommissions: number;
   firstSellDate: string | null;
   firstSellTime: string | null;
 };
@@ -51,13 +54,15 @@ function newAccum(): PositionAccum {
     totalBuyQty: 0,
     buySum: 0,
     totalBuyAmount: 0,
-    totalBuyFees: 0,
+    totalBuyMiscFees: 0,
+    totalBuyCommissions: 0,
     firstBuyDate: '',
     firstBuyTime: '',
     totalSellQty: 0,
     sellSum: 0,
     totalSellAmount: 0,
-    totalSellFees: 0,
+    totalSellMiscFees: 0,
+    totalSellCommissions: 0,
     firstSellDate: null,
     firstSellTime: null,
   };
@@ -154,13 +159,17 @@ function emitTrade(symbol: string, accum: PositionAccum): Trade | null {
   );
 
   const fees = parseFloat(
-    (accum.totalBuyFees + accum.totalSellFees).toFixed(2)
+    (accum.totalBuyMiscFees + accum.totalSellMiscFees).toFixed(2)
+  );
+  const commissions = parseFloat(
+    (accum.totalBuyCommissions + accum.totalSellCommissions).toFixed(2)
   );
 
   // P&L: use exact AMOUNT column values to match Schwab's cost basis/proceeds
   const pnl = new Decimal(accum.totalSellAmount)
     .minus(accum.totalBuyAmount)
     .minus(fees)
+    .minus(commissions)
     .toDecimalPlaces(3)
     .toNumber();
 
@@ -180,6 +189,7 @@ function emitTrade(symbol: string, accum: PositionAccum): Trade | null {
     exitTime,
     side: 'long',
     fees: fees > 0 ? fees : undefined,
+    commissions: commissions > 0 ? commissions : undefined,
     pnl,
     pnlPercent,
   };
@@ -211,15 +221,16 @@ export function parseTosAccountStatement(content: string): ImportResult {
         const parsed = parseDescription(row.DESCRIPTION || '');
         if (!parsed) continue;
 
-        const fees =
-          parseFee(row['Misc Fees']) + parseFee(row['Commissions & Fees']);
+        const miscFees = parseFee(row['Misc Fees']);
+        const commissions = parseFee(row['Commissions & Fees']);
         const amount = parseAmount(row.AMOUNT || '');
 
         fills.push({
           date: row.DATE?.trim() || '',
           time: row.TIME?.trim() || '',
           ...parsed,
-          fees,
+          miscFees,
+          commissions,
           amount,
         });
       }
@@ -245,7 +256,8 @@ export function parseTosAccountStatement(content: string): ImportResult {
       accum.totalBuyQty += fill.quantity;
       accum.buySum += fill.price * fill.quantity;
       accum.totalBuyAmount += Math.abs(fill.amount);
-      accum.totalBuyFees += fill.fees;
+      accum.totalBuyMiscFees += fill.miscFees;
+      accum.totalBuyCommissions += fill.commissions;
     } else {
       // SOLD
       const accum = positions.get(fill.symbol);
@@ -262,7 +274,8 @@ export function parseTosAccountStatement(content: string): ImportResult {
       accum.totalSellQty += fill.quantity;
       accum.sellSum += fill.price * fill.quantity;
       accum.totalSellAmount += fill.amount;
-      accum.totalSellFees += fill.fees;
+      accum.totalSellMiscFees += fill.miscFees;
+      accum.totalSellCommissions += fill.commissions;
 
       // Position fully closed — emit one Trade and reset
       if (accum.totalSellQty >= accum.totalBuyQty) {

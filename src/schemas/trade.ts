@@ -17,6 +17,7 @@ export const tradeSchema = z.object({
   exitTime: z.coerce.date(),
   side: tradeSideSchema,
   fees: z.number().min(0).optional(),
+  commissions: z.number().min(0).optional(),
   strategy: z.string().max(50).optional(),
   notes: z.string().max(500).optional(),
   psychology: z.string().max(50).optional(),
@@ -90,6 +91,16 @@ export const tradeFormSchema = z
         { message: 'Fees must be a non-negative number' }
       )
       .optional(),
+    commissions: z
+      .string()
+      .refine(
+        (val) =>
+          val === '' ||
+          val === undefined ||
+          (!isNaN(parseFloat(val)) && parseFloat(val) >= 0),
+        { message: 'Commissions must be a non-negative number' }
+      )
+      .optional(),
   })
   .refine((data) => data.exitTime >= data.entryTime, {
     message: 'Exit time must be after entry time',
@@ -112,12 +123,13 @@ export function calculatePnl(
   exitPrice: number,
   quantity: number,
   side: TradeSide,
-  fees?: number
+  fees?: number,
+  commissions?: number
 ): { pnl: number; pnlPercent: number } {
   const entry = new Decimal(entryPrice);
   const exit = new Decimal(exitPrice);
   const qty = new Decimal(quantity);
-  const feeAmount = new Decimal(fees ?? 0);
+  const feeAmount = new Decimal(fees ?? 0).plus(commissions ?? 0);
 
   const priceDiff = side === 'long' ? exit.minus(entry) : entry.minus(exit);
 
@@ -143,12 +155,17 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     formData.fees && formData.fees !== ''
       ? parseFloat(formData.fees)
       : undefined;
+  const commissions =
+    formData.commissions && formData.commissions !== ''
+      ? parseFloat(formData.commissions)
+      : undefined;
   const { pnl, pnlPercent } = calculatePnl(
     entryPrice,
     exitPrice,
     quantity,
     formData.side,
-    fees
+    fees,
+    commissions
   );
 
   return {
@@ -161,6 +178,7 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     exitTime: formData.exitTime,
     side: formData.side,
     fees,
+    commissions,
     strategy: formData.strategy,
     notes: formData.notes,
     psychology: formData.psychology,

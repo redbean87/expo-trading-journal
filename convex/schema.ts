@@ -35,7 +35,8 @@ const schema = defineSchema({
     side: v.string(), // 'long' or 'short'
     pnl: v.number(), // Profit/loss in dollars
     pnlPercent: v.number(), // Profit/loss as percentage
-    fees: v.optional(v.number()), // Brokerage fees/commissions
+    fees: v.optional(v.number()), // Misc brokerage fees
+    commissions: v.optional(v.number()), // Brokerage commissions
     notes: v.optional(v.string()),
     strategy: v.optional(v.string()),
     psychology: v.optional(v.string()),

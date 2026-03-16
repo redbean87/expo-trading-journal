@@ -49,14 +49,19 @@ export function TradeFormContent({
       formData.fees && formData.fees !== ''
         ? parseFloat(formData.fees)
         : undefined;
+    const commissions =
+      formData.commissions && formData.commissions !== ''
+        ? parseFloat(formData.commissions)
+        : undefined;
 
-    return calculatePnl(entry, exit, qty, formData.side, fees);
+    return calculatePnl(entry, exit, qty, formData.side, fees, commissions);
   }, [
     formData.entryPrice,
     formData.exitPrice,
     formData.quantity,
     formData.side,
     formData.fees,
+    formData.commissions,
   ]);
 
   const handleSubmit = async () => {

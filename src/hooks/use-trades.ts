@@ -17,6 +17,7 @@ type BackendTrade = {
   pnl: number;
   pnlPercent: number;
   fees?: number;
+  commissions?: number;
   notes?: string;
   strategy?: string;
   psychology?: string;
@@ -39,6 +40,7 @@ function mapToTrade(trade: BackendTrade): Trade {
     pnl: trade.pnl,
     pnlPercent: trade.pnlPercent,
     fees: trade.fees,
+    commissions: trade.commissions,
     notes: trade.notes,
     strategy: trade.strategy,
     psychology: trade.psychology,
@@ -61,6 +63,7 @@ function mapFromTrade(trade: Trade) {
     pnl: trade.pnl,
     pnlPercent: trade.pnlPercent,
     fees: trade.fees,
+    commissions: trade.commissions,
     notes: trade.notes,
     strategy: trade.strategy,
     psychology: trade.psychology,
@@ -138,6 +141,7 @@ export function useUpdateTrade() {
       pnl: updates.pnl,
       pnlPercent: updates.pnlPercent,
       fees: updates.fees,
+      commissions: updates.commissions,
       notes: updates.notes,
       strategy: updates.strategy,
       psychology: updates.psychology,

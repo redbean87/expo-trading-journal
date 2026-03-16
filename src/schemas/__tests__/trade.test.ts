@@ -214,6 +214,17 @@ describe('calculatePnl', () => {
     expect(pnl).toBe(-10); // (101 - 100) * 10 - 20 = -10
     expect(pnlPercent).toBe(-1); // -10 / (100 * 10) * 100
   });
+
+  it('should deduct commissions from pnl', () => {
+    const { pnl, pnlPercent } = calculatePnl(100, 110, 10, 'long', 0, 3);
+    expect(pnl).toBe(97); // (110 - 100) * 10 - 3 = 97
+    expect(pnlPercent).toBe(9.7); // 97 / (100 * 10) * 100
+  });
+
+  it('should deduct both fees and commissions from pnl', () => {
+    const { pnl } = calculatePnl(100, 110, 10, 'long', 5, 3);
+    expect(pnl).toBe(92); // (110 - 100) * 10 - 5 - 3 = 92
+  });
 });
 
 describe('formDataToTrade', () => {

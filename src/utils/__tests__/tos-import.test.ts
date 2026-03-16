@@ -169,6 +169,21 @@ describe('parseTosAccountStatement', () => {
     expect(result.errors[0]).toContain('Cash Balance');
   });
 
+  it('splits Misc Fees and Commissions & Fees into separate fields', () => {
+    const content = makeSample(
+      `3/10/26,09:00:00,TRD,="1",BOT +100 AAPL @150.00,,,-15000.00,1000.00
+3/10/26,09:30:00,TRD,="2",SOLD -100 AAPL @151.00,-0.05,-1.50,15100.00,2000.00`
+    );
+
+    const result = parseTosAccountStatement(content);
+    expect(result.imported).toHaveLength(1);
+    const trade = result.imported[0];
+    expect(trade.fees).toBeCloseTo(0.05, 2); // Misc Fees
+    expect(trade.commissions).toBeCloseTo(1.5, 2); // Commissions & Fees
+    // pnl: 15100 - 15000 - 0.05 - 1.50 = 98.45
+    expect(trade.pnl).toBeCloseTo(98.45, 1);
+  });
+
   it('sets correct entry and exit times from first fills', () => {
     const content = makeSample(
       `3/9/26,08:44:52,TRD,="1",BOT +1000 LRHC @1.4181,,,-1418.10,1426.01
