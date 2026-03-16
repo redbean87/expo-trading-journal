@@ -13,6 +13,12 @@ export default function OverviewRoute() {
     losingTrades,
     breakEvenTrades,
     totalPnl,
+    avgDailyPnl,
+    pnlStdDev,
+    totalFees,
+    totalCommissions,
+    totalCosts,
+    avgCostPerTrade,
     avgWin,
     avgLoss,
     avgTradePnl,
@@ -45,6 +51,8 @@ export default function OverviewRoute() {
       totalTrades={totalTrades}
       winRate={winRate}
       totalPnl={totalPnl}
+      avgDailyPnl={avgDailyPnl}
+      pnlStdDev={pnlStdDev}
       avgTradePnl={avgTradePnl}
       profitFactor={profitFactor}
       winningTradesCount={winningTrades.length}
@@ -72,6 +80,10 @@ export default function OverviewRoute() {
       shortWinRate={shortWinRate}
       bestTrade={bestTrade}
       worstTrade={worstTrade}
+      totalFees={totalFees}
+      totalCommissions={totalCommissions}
+      totalCosts={totalCosts}
+      avgCostPerTrade={avgCostPerTrade}
     />
   );
 }

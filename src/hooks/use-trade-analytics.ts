@@ -8,6 +8,12 @@ export type TradeAnalytics = {
   losingTrades: Trade[];
   breakEvenTrades: Trade[];
   totalPnl: number;
+  avgDailyPnl: number;
+  pnlStdDev: number;
+  totalFees: number;
+  totalCommissions: number;
+  totalCosts: number;
+  avgCostPerTrade: number;
   avgWin: number;
   avgLoss: number;
   avgTradePnl: number;
@@ -82,6 +88,19 @@ export function calculateTradeAnalytics(trades: Trade[]): TradeAnalytics {
   const breakEvenTrades = trades.filter((t) => t.pnl === 0);
 
   const totalPnl = trades.reduce((sum, t) => sum + t.pnl, 0);
+
+  const uniqueTradingDays = new Set(
+    trades.map((t) => t.exitTime.toDateString())
+  ).size;
+  const avgDailyPnl = uniqueTradingDays > 0 ? totalPnl / uniqueTradingDays : 0;
+
+  const totalFees = trades.reduce((sum, t) => sum + (t.fees ?? 0), 0);
+  const totalCommissions = trades.reduce(
+    (sum, t) => sum + (t.commissions ?? 0),
+    0
+  );
+  const totalCosts = totalFees + totalCommissions;
+  const avgCostPerTrade = totalTrades > 0 ? totalCosts / totalTrades : 0;
   const winningPnlTotal = winningTrades.reduce((sum, t) => sum + t.pnl, 0);
   const losingPnlTotal = losingTrades.reduce((sum, t) => sum + t.pnl, 0);
 
@@ -93,6 +112,14 @@ export function calculateTradeAnalytics(trades: Trade[]): TradeAnalytics {
       : 0;
 
   const avgTradePnl = totalTrades > 0 ? totalPnl / totalTrades : 0;
+  const pnlStdDev =
+    totalTrades > 1
+      ? Math.sqrt(
+          trades.reduce((sum, t) => sum + Math.pow(t.pnl - avgTradePnl, 2), 0) /
+            totalTrades
+        )
+      : 0;
+
   const avgTradePnlPercent =
     totalTrades > 0
       ? trades.reduce((sum, t) => sum + t.pnlPercent, 0) / totalTrades
@@ -219,6 +246,12 @@ export function calculateTradeAnalytics(trades: Trade[]): TradeAnalytics {
     losingTrades,
     breakEvenTrades,
     totalPnl,
+    avgDailyPnl,
+    pnlStdDev,
+    totalFees,
+    totalCommissions,
+    totalCosts,
+    avgCostPerTrade,
     avgWin,
     avgLoss,
     avgTradePnl,

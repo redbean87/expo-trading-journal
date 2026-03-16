@@ -14,6 +14,8 @@ type OverviewSectionProps = {
   totalTrades: number;
   winRate: number;
   totalPnl: number;
+  avgDailyPnl: number;
+  pnlStdDev: number;
   avgTradePnl: number;
   profitFactor: number;
   winningTradesCount: number;
@@ -41,12 +43,18 @@ type OverviewSectionProps = {
   shortWinRate: number;
   bestTrade: Trade | null;
   worstTrade: Trade | null;
+  totalFees: number;
+  totalCommissions: number;
+  totalCosts: number;
+  avgCostPerTrade: number;
 };
 
 export function OverviewSection({
   totalTrades,
   winRate,
   totalPnl,
+  avgDailyPnl,
+  pnlStdDev,
   avgTradePnl,
   profitFactor,
   winningTradesCount,
@@ -74,6 +82,10 @@ export function OverviewSection({
   shortWinRate,
   bestTrade,
   worstTrade,
+  totalFees,
+  totalCommissions,
+  totalCosts,
+  avgCostPerTrade,
 }: OverviewSectionProps) {
   const theme = useAppTheme();
   const { isDesktop } = useBreakpoint();
@@ -89,6 +101,11 @@ export function OverviewSection({
         valueColor={totalPnl >= 0 ? theme.colors.profit : theme.colors.loss}
       />
       <StatRow
+        label="Avg Daily P&L:"
+        value={`$${avgDailyPnl.toFixed(2)}`}
+        valueColor={avgDailyPnl >= 0 ? theme.colors.profit : theme.colors.loss}
+      />
+      <StatRow
         label="Avg Trade P&L:"
         value={`$${avgTradePnl.toFixed(2)}`}
         valueColor={avgTradePnl >= 0 ? theme.colors.profit : theme.colors.loss}
@@ -98,6 +115,33 @@ export function OverviewSection({
         value={profitFactor === Infinity ? '∞' : profitFactor.toFixed(2)}
       />
     </SectionCard>,
+
+    ...(totalCosts > 0
+      ? [
+          <SectionCard key="costs" title="Cost Analysis">
+            <StatRow
+              label="Total Fees:"
+              value={`$${totalFees.toFixed(2)}`}
+              valueColor={theme.colors.loss}
+            />
+            <StatRow
+              label="Total Commissions:"
+              value={`$${totalCommissions.toFixed(2)}`}
+              valueColor={theme.colors.loss}
+            />
+            <StatRow
+              label="Total Costs:"
+              value={`$${totalCosts.toFixed(2)}`}
+              valueColor={theme.colors.loss}
+            />
+            <StatRow
+              label="Avg Cost/Trade:"
+              value={`$${avgCostPerTrade.toFixed(2)}`}
+              valueColor={theme.colors.loss}
+            />
+          </SectionCard>,
+        ]
+      : []),
 
     <SectionCard key="statistics" title="Trade Statistics">
       <StatRow
@@ -142,6 +186,7 @@ export function OverviewSection({
         valueColor={theme.colors.loss}
       />
       <StatRow label="Avg Hold Time:" value={formatDuration(avgHoldTimeMs)} />
+      <StatRow label="P&L Std Dev:" value={`$${pnlStdDev.toFixed(2)}`} />
     </SectionCard>,
 
     <RiskRewardCard
