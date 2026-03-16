@@ -37,6 +37,10 @@ import { formatDateKey } from '../utils/calendar-helpers';
 import { tradesToCsv, generateExportFilename } from '../utils/csv-export';
 import { parseCsvFile } from '../utils/csv-import';
 import { downloadFile } from '../utils/file-download';
+import {
+  isTosAccountStatement,
+  parseTosAccountStatement,
+} from '../utils/tos-import';
 import { TradeDetailPanel } from './trades/trade-detail-panel';
 import { TradeFilterModal } from './trades/trade-filter-modal';
 
@@ -237,7 +241,9 @@ export default function TradesScreen() {
         csvContent = await fsFile.text();
       }
 
-      const parseResult = await parseCsvFile(csvContent);
+      const parseResult = isTosAccountStatement(csvContent)
+        ? parseTosAccountStatement(csvContent)
+        : await parseCsvFile(csvContent);
 
       if (parseResult.errors.length > 0) {
         setSnackbarMessage(
@@ -248,9 +254,20 @@ export default function TradesScreen() {
 
       const { imported, skipped } = await importTrades(parseResult.imported);
 
-      setSnackbarMessage(
-        `Imported ${imported} trades. Skipped ${skipped + parseResult.skipped} (duplicates/invalid rows)`
-      );
+      const totalSkipped = skipped + parseResult.skipped;
+      const parts = [`Imported ${imported} trades`];
+      if (totalSkipped > 0) parts.push(`${totalSkipped} skipped`);
+      if (parseResult.unmatchedBuys) {
+        parts.push(
+          `${parseResult.unmatchedBuys} open position(s) not yet closed`
+        );
+      }
+      if (parseResult.unmatchedSells) {
+        parts.push(
+          `${parseResult.unmatchedSells} sell(s) with no prior buy in this file`
+        );
+      }
+      setSnackbarMessage(parts.join(' · '));
       setSnackbarVisible(true);
       setIsImporting(false);
     } catch (error) {

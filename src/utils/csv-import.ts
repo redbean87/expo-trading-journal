@@ -99,6 +99,8 @@ export type ImportResult = {
   imported: Trade[];
   skipped: number;
   errors: string[];
+  unmatchedBuys?: number;
+  unmatchedSells?: number;
 };
 
 export function generateTradeKey(trade: {
