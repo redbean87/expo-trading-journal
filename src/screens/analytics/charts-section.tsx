@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 
+import DailyPnlBarCard from './daily-pnl-bar-card';
 import DayOfWeekCard from './day-of-week-card';
 import EquityCurveCard from './equity-curve-card';
 import { PnlCalendarCard } from './pnl-calendar-card';
@@ -39,6 +40,7 @@ export function ChartsSection({
         onInteractionStart={onInteractionStart}
         onInteractionEnd={onInteractionEnd}
       />
+      <DailyPnlBarCard trades={trades} />
       <DayOfWeekCard trades={trades} />
       <TimeOfDayCard trades={trades} />
       <PnlCalendarCard trades={trades} onDayPress={handleDayPress} />
