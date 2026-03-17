@@ -3,6 +3,8 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { TextInput, Text } from 'react-native-paper';
 
 import { MistakeCategorySelector } from './mistake-category-selector';
+import { PsychologySelector } from './psychology-selector';
+import { StrategySelector } from './strategy-selector';
 import { Chip } from '../../components/chip';
 import { DateTimeInput } from '../../components/date-time-input';
 import { SegmentedButtons } from '../../components/segmented-buttons';
@@ -17,7 +19,6 @@ const FORM_FIELDS = [
   'fees',
   'commissions',
   'strategy',
-  'psychology',
   'ruleViolation',
   'whatWorked',
   'whatFailed',
@@ -145,6 +146,10 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         onChange={(date) => onUpdate({ exitTime: date })}
       />
 
+      <StrategySelector
+        value={formData.strategy}
+        onSelect={(text) => onUpdate({ strategy: text || undefined })}
+      />
       <TextInput
         ref={createRef('strategy')}
         label="Strategy (Optional)"
@@ -157,17 +162,9 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         onSubmitEditing={() => handleSubmitEditing('strategy')}
       />
 
-      <TextInput
-        ref={createRef('psychology')}
-        label="Psychology (Optional)"
+      <PsychologySelector
         value={formData.psychology}
-        onChangeText={(text) => onUpdate({ psychology: text })}
-        mode="outlined"
-        placeholder="anxious, calm, fomo, rushed, excited, impatient"
-        style={styles.input}
-        returnKeyType={getReturnKeyType('psychology')}
-        blurOnSubmit={getBlurOnSubmit('psychology')}
-        onSubmitEditing={() => handleSubmitEditing('psychology')}
+        onChange={(text) => onUpdate({ psychology: text || undefined })}
       />
 
       <View style={styles.confidenceContainer}>

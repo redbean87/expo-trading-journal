@@ -20,7 +20,7 @@ export const tradeSchema = z.object({
   commissions: z.number().min(0).optional(),
   strategy: z.string().max(50).optional(),
   notes: z.string().max(500).optional(),
-  psychology: z.string().max(50).optional(),
+  psychology: z.string().max(200).optional(),
   whatWorked: z.string().max(500).optional(),
   whatFailed: z.string().max(500).optional(),
   confidence: z.number().min(1).max(5).optional(),
@@ -66,7 +66,7 @@ export const tradeFormSchema = z
       .optional(),
     psychology: z
       .string()
-      .max(50, 'Psychology must be 50 characters or less')
+      .max(200, 'Psychology must be 200 characters or less')
       .optional(),
     whatWorked: z
       .string()
