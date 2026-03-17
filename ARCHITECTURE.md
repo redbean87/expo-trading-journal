@@ -141,6 +141,8 @@ Analytics are computed client-side from trade data:
 - [use-time-of-day-breakdown.ts](src/hooks/use-time-of-day-breakdown.ts) - Hourly analysis
 - [use-day-of-week-breakdown.ts](src/hooks/use-day-of-week-breakdown.ts) - Weekday analysis
 - [use-mistake-analytics.ts](src/hooks/use-mistake-analytics.ts) - Error pattern analysis
+- [use-period-breakdown.ts](src/hooks/use-period-breakdown.ts) - Monthly/weekly performance breakdown
+- [use-trades-summary.ts](src/hooks/use-trades-summary.ts) - Aggregated trades summary
 
 ## Development Workflow
 

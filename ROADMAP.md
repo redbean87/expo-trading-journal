@@ -1,15 +1,16 @@
 # Trading Journal App - Roadmap
 
-## Current State (as of January 2026)
+## Current State (as of March 2026)
 
 The app has a solid foundation with:
 
 - **4 main screens**: Home (dashboard), Trades (list), Add Trade (form), Analytics
 - **Authentication**: Email/password via Convex Auth
 - **Real-time sync**: Convex backend with live data updates
-- **CSV import/export**: With duplicate detection
+- **CSV import/export**: With duplicate detection, including Thinkorswim account statement import
 - **Equity curve chart**: Visual P&L progression with max drawdown tracking
 - **Dark/light theme**: Persisted with Zustand
+- **Fees & commissions**: Separate fields for fees and commissions on each trade
 
 ---
 
@@ -17,8 +18,7 @@ The app has a solid foundation with:
 
 ### High Priority
 
-- [x] **Performance by Day of Week** - Bar chart showing P&L and win rate by weekday
-- [x] **Performance by Time of Day** - Chart showing P&L by trading hour
+_None_
 
 ### Medium Priority
 
@@ -136,4 +136,10 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Mistakes Tracking - Categorize trading errors with analytics dashboard showing frequency and P&L impact
 - [x] P&L Calendar Heatmap - Color-coded calendar showing daily profit/loss at a glance
 - [x] Performance by Day of Week - Bar chart showing P&L and win rate by weekday
+- [x] Performance by Time of Day - Chart showing P&L by trading hour
 - [x] Desktop Layout - Responsive layout with sidebar navigation and master-detail view for trades
+- [x] Thinkorswim Import - Account statement CSV import from Thinkorswim platform
+- [x] Fees & Commissions Fields - Separate fees and commissions fields on trades with CSV import support
+- [x] Daily P&L Bar Chart - Bar chart showing P&L by day in the analytics charts tab
+- [x] Avg Daily P&L & P&L Std Dev - Statistical overview stats in analytics
+- [x] Hold Time Breakdown - Hold time analysis split by win/loss/scratch in analytics overview

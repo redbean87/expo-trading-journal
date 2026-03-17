@@ -18,33 +18,7 @@ _None_
 
 ## Medium Priority (Polish & Consistency)
 
-### 1. Typography System
-
-**Impact:** High effort, establishes design foundation
-**Files to modify:**
-
-- `src/theme/index.ts`
-- `src/components/stat-card.tsx`
-- `src/components/trade-card.tsx`
-- All analytics cards
-
-**Tasks:**
-
-- Extend MD3 theme with custom typography variants
-- Define value display typography (P&L, stats)
-- Standardize meta text styling
-- Create typography hierarchy (display, headline, title, body, caption)
-- Update all text components to use new variants
-
-**Success Criteria:**
-
-- Typography variants defined in theme
-- All P&L displays use consistent styling
-- No direct text style overrides (all via theme)
-
----
-
-### 2. Skeleton Loading States
+### 1. Skeleton Loading States
 
 **Impact:** Medium effort, improves perceived performance
 **Files to create:**
@@ -73,7 +47,7 @@ _None_
 
 ---
 
-### 3. Form Input Standardization
+### 2. Form Input Standardization
 
 **Impact:** Medium effort, improves form UX
 **Files to create:**
@@ -102,7 +76,7 @@ _None_
 
 ---
 
-### 4. Button Hierarchy & Patterns
+### 3. Button Hierarchy & Patterns
 
 **Impact:** Low effort, improves action clarity
 **Files to modify:**
@@ -128,7 +102,7 @@ _None_
 
 ---
 
-### 5. Standardize Theme Access Pattern
+### 4. Standardize Theme Access Pattern
 
 **Impact:** Medium effort, improves code consistency and maintainability
 **Files to modify:**
@@ -240,7 +214,19 @@ _None_
 
 ## Completed
 
-### 1. Standardize Spacing Tokens ✓
+### 1. Typography System ✓
+
+**Completed:** March 2026
+**Files modified:**
+
+- `src/theme/index.ts` - Extended MD3 theme with custom typography variants
+- Text components updated to use new variants
+
+**Summary:** Extended the MD3 theme with custom typography variants for value display (P&L, stats), meta text, and a full hierarchy (display, headline, title, body, caption). Resolved TypeScript errors for custom Text variants.
+
+---
+
+### 2. Standardize Spacing Tokens ✓
 
 **Completed:** February 2026
 **Files modified:**
@@ -256,7 +242,7 @@ _None_
 
 ---
 
-### 2. Enhance Card Visual Hierarchy ✓
+### 3. Enhance Card Visual Hierarchy ✓
 
 **Completed:** February 2026
 **Files modified:**
@@ -275,7 +261,7 @@ _None_
 
 ---
 
-### 3. Empty States Enhancement ✓
+### 4. Empty States Enhancement ✓
 
 **Completed:** February 2026
 **Files modified:**
@@ -341,5 +327,5 @@ export const elevation = {
 
 ---
 
-_Last updated: February 2026_
-_Next review: After completing item #1 or #5_
+_Last updated: March 2026_
+_Next review: After completing item #1 or #4_

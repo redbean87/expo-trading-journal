@@ -9,7 +9,8 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
 - **Equity curve chart** with max drawdown tracking
 - P&L calendar heatmap
 - Performance by time of day and day of week
-- Import/export trades via CSV
+- Import/export trades via CSV (including Thinkorswim account statements)
+- Track fees and commissions separately per trade
 - Cloud sync across devices with Convex
 - User authentication (email/password + Google Sign-In)
 - Responsive desktop layout with master-detail view
