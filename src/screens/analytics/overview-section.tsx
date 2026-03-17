@@ -28,6 +28,9 @@ type OverviewSectionProps = {
   largestGain: number;
   largestLoss: number;
   avgHoldTimeMs: number;
+  avgWinHoldTimeMs: number;
+  avgLossHoldTimeMs: number;
+  avgBreakEvenHoldTimeMs: number;
   maxConsecutiveWins: number;
   maxConsecutiveLosses: number;
   longTradesCount: number;
@@ -67,6 +70,9 @@ export function OverviewSection({
   largestGain,
   largestLoss,
   avgHoldTimeMs,
+  avgWinHoldTimeMs,
+  avgLossHoldTimeMs,
+  avgBreakEvenHoldTimeMs,
   maxConsecutiveWins,
   maxConsecutiveLosses,
   longTradesCount,
@@ -186,6 +192,20 @@ export function OverviewSection({
         valueColor={theme.colors.loss}
       />
       <StatRow label="Avg Hold Time:" value={formatDuration(avgHoldTimeMs)} />
+      <StatRow
+        label="Avg Win Hold Time:"
+        value={formatDuration(avgWinHoldTimeMs)}
+      />
+      <StatRow
+        label="Avg Loss Hold Time:"
+        value={formatDuration(avgLossHoldTimeMs)}
+      />
+      {avgBreakEvenHoldTimeMs > 0 && (
+        <StatRow
+          label="Avg Scratch Hold Time:"
+          value={formatDuration(avgBreakEvenHoldTimeMs)}
+        />
+      )}
       <StatRow label="P&L Std Dev:" value={`$${pnlStdDev.toFixed(2)}`} />
     </SectionCard>,
 

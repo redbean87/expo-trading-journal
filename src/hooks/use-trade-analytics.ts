@@ -25,6 +25,9 @@ export type TradeAnalytics = {
   maxConsecutiveWins: number;
   maxConsecutiveLosses: number;
   avgHoldTimeMs: number;
+  avgWinHoldTimeMs: number;
+  avgLossHoldTimeMs: number;
+  avgBreakEvenHoldTimeMs: number;
   winRate: number;
   profitFactor: number;
   bestTrade: Trade | null;
@@ -160,12 +163,29 @@ export function calculateTradeAnalytics(trades: Trade[]): TradeAnalytics {
   const { maxWins: maxConsecutiveWins, maxLosses: maxConsecutiveLosses } =
     calculateStreaks(trades);
 
+  const holdMs = (t: Trade) => t.exitTime.getTime() - t.entryTime.getTime();
+
   const avgHoldTimeMs =
     totalTrades > 0
-      ? trades.reduce(
-          (sum, t) => sum + (t.exitTime.getTime() - t.entryTime.getTime()),
-          0
-        ) / totalTrades
+      ? trades.reduce((sum, t) => sum + holdMs(t), 0) / totalTrades
+      : 0;
+
+  const avgWinHoldTimeMs =
+    winningTrades.length > 0
+      ? winningTrades.reduce((sum, t) => sum + holdMs(t), 0) /
+        winningTrades.length
+      : 0;
+
+  const avgLossHoldTimeMs =
+    losingTrades.length > 0
+      ? losingTrades.reduce((sum, t) => sum + holdMs(t), 0) /
+        losingTrades.length
+      : 0;
+
+  const avgBreakEvenHoldTimeMs =
+    breakEvenTrades.length > 0
+      ? breakEvenTrades.reduce((sum, t) => sum + holdMs(t), 0) /
+        breakEvenTrades.length
       : 0;
 
   const longTrades = trades.filter((t) => t.side === 'long');
@@ -263,6 +283,9 @@ export function calculateTradeAnalytics(trades: Trade[]): TradeAnalytics {
     maxConsecutiveWins,
     maxConsecutiveLosses,
     avgHoldTimeMs,
+    avgWinHoldTimeMs,
+    avgLossHoldTimeMs,
+    avgBreakEvenHoldTimeMs,
     winRate,
     profitFactor,
     bestTrade,
