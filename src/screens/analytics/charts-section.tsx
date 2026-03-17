@@ -4,6 +4,7 @@ import React from 'react';
 import DailyPnlBarCard from './daily-pnl-bar-card';
 import DayOfWeekCard from './day-of-week-card';
 import EquityCurveCard from './equity-curve-card';
+import HoldTimeHistogramCard from './hold-time-histogram-card';
 import { PnlCalendarCard } from './pnl-calendar-card';
 import TimeOfDayCard from './time-of-day-card';
 import { DailyPnl } from '../../hooks/use-daily-pnl';
@@ -41,6 +42,7 @@ export function ChartsSection({
         onInteractionEnd={onInteractionEnd}
       />
       <DailyPnlBarCard trades={trades} />
+      <HoldTimeHistogramCard trades={trades} />
       <DayOfWeekCard trades={trades} />
       <TimeOfDayCard trades={trades} />
       <PnlCalendarCard trades={trades} onDayPress={handleDayPress} />
