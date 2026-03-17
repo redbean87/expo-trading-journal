@@ -24,7 +24,6 @@ _None_
 
 - [ ] **Strategy Analytics** - Performance breakdown by strategy tag
 - [ ] **Screenshot Attachments** - Add images to trades for chart analysis
-- [ ] **Trade Duration Histogram** - Distribution chart of trade hold times
 - [ ] **Drawdown Chart** - Visual drawdown progression over time
 - [ ] **Win/Loss Distribution** - Histogram showing distribution of trade P&L
 
@@ -143,3 +142,4 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Daily P&L Bar Chart - Bar chart showing P&L by day in the analytics charts tab
 - [x] Avg Daily P&L & P&L Std Dev - Statistical overview stats in analytics
 - [x] Hold Time Breakdown - Hold time analysis split by win/loss/scratch in analytics overview
+- [x] Trade Duration Histogram - Distribution chart of hold times across 7 duration buckets, bars colored by avg P&L
