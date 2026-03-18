@@ -49,6 +49,41 @@ export type TradeAnalytics = {
   shortRR: number;
 };
 
+export type CurrentStreak = {
+  count: number;
+  type: 'win' | 'loss' | 'none';
+};
+
+export function calculateCurrentStreak(trades: Trade[]): CurrentStreak {
+  if (trades.length === 0) {
+    return { count: 0, type: 'none' };
+  }
+
+  const sorted = [...trades].sort(
+    (a, b) => a.exitTime.getTime() - b.exitTime.getTime()
+  );
+
+  let currentWins = 0;
+  let currentLosses = 0;
+
+  for (const trade of sorted) {
+    if (trade.pnl > 0) {
+      currentWins++;
+      currentLosses = 0;
+    } else if (trade.pnl < 0) {
+      currentLosses++;
+      currentWins = 0;
+    } else {
+      currentWins = 0;
+      currentLosses = 0;
+    }
+  }
+
+  if (currentWins > 0) return { count: currentWins, type: 'win' };
+  if (currentLosses > 0) return { count: currentLosses, type: 'loss' };
+  return { count: 0, type: 'none' };
+}
+
 export function calculateStreaks(trades: Trade[]): {
   maxWins: number;
   maxLosses: number;

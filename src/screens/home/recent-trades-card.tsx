@@ -3,6 +3,19 @@ import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { Text } from 'react-native-paper';
 
+function formatTradeTime(date: Date): string {
+  const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
+  const dateStr = date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+  const timeStr = date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+  return `${weekday}, ${dateStr} • ${timeStr}`;
+}
+
 import { CardEmptyState } from '../../components/card-empty-state';
 import { EmptyState } from '../../components/empty-state';
 import { SectionCard } from '../../components/section-card';
@@ -70,6 +83,9 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
               </View>
               <Text variant="bodySmall" style={styles.tradeDetails}>
                 {trade.side.toUpperCase()} • {trade.quantity} shares
+              </Text>
+              <Text variant="bodySmall" style={styles.tradeDetails}>
+                {formatTradeTime(trade.exitTime)}
               </Text>
             </Pressable>
           ))}

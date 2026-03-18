@@ -1,5 +1,6 @@
 import { Trade } from '../../types';
 import {
+  calculateCurrentStreak,
   calculateTradeAnalytics,
   calculateStreaks,
 } from '../use-trade-analytics';
@@ -68,6 +69,47 @@ describe('calculateStreaks', () => {
     ];
     const result = calculateStreaks(trades);
     expect(result.maxWins).toBe(1);
+  });
+});
+
+describe('calculateCurrentStreak', () => {
+  it('returns none for empty trades', () => {
+    expect(calculateCurrentStreak([])).toEqual({ count: 0, type: 'none' });
+  });
+
+  it('returns current win streak', () => {
+    const trades = [
+      createTrade({ pnl: -50, exitTime: new Date('2024-01-01') }),
+      createTrade({ pnl: 100, exitTime: new Date('2024-01-02') }),
+      createTrade({ pnl: 75, exitTime: new Date('2024-01-03') }),
+    ];
+    expect(calculateCurrentStreak(trades)).toEqual({ count: 2, type: 'win' });
+  });
+
+  it('returns current loss streak', () => {
+    const trades = [
+      createTrade({ pnl: 100, exitTime: new Date('2024-01-01') }),
+      createTrade({ pnl: -50, exitTime: new Date('2024-01-02') }),
+      createTrade({ pnl: -30, exitTime: new Date('2024-01-03') }),
+    ];
+    expect(calculateCurrentStreak(trades)).toEqual({ count: 2, type: 'loss' });
+  });
+
+  it('resets streak on break-even trade', () => {
+    const trades = [
+      createTrade({ pnl: 100, exitTime: new Date('2024-01-01') }),
+      createTrade({ pnl: 50, exitTime: new Date('2024-01-02') }),
+      createTrade({ pnl: 0, exitTime: new Date('2024-01-03') }),
+    ];
+    expect(calculateCurrentStreak(trades)).toEqual({ count: 0, type: 'none' });
+  });
+
+  it('returns single win streak', () => {
+    const trades = [
+      createTrade({ pnl: -50, exitTime: new Date('2024-01-01') }),
+      createTrade({ pnl: 100, exitTime: new Date('2024-01-02') }),
+    ];
+    expect(calculateCurrentStreak(trades)).toEqual({ count: 1, type: 'win' });
   });
 });
 

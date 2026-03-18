@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
 import { LoadingState } from '../components/loading-state';
@@ -6,24 +6,33 @@ import { ResponsiveContainer } from '../components/responsive-container';
 import { ResponsiveGrid } from '../components/responsive-grid';
 import { StatCard } from '../components/stat-card';
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useHomeSummary } from '../hooks/use-home-summary';
 import { useTrades } from '../hooks/use-trades';
-import { useTradesSummary } from '../hooks/use-trades-summary';
 import { spacing } from '../theme';
+import { HomePeriod } from '../types';
+import { HomeEdgeMetrics } from './home/home-edge-metrics';
 import { HomeHeader } from './home/home-header';
+import { HomePeriodSelector } from './home/home-period-selector';
+import { HomeStreakBadge } from './home/home-streak-badge';
 import { RecentTradesCard } from './home/recent-trades-card';
 
 export default function HomeScreen() {
   const { trades, isLoading } = useTrades();
+  const [period, setPeriod] = useState<HomePeriod>('all');
   const theme = useAppTheme();
 
   const {
     totalTrades,
-    winningTrades,
-    losingTrades,
     totalPnl,
     winRate,
+    winningCount,
+    losingCount,
+    avgWin,
+    avgLoss,
+    profitFactor,
     recentTrades,
-  } = useTradesSummary(trades);
+    currentStreak,
+  } = useHomeSummary(trades, period);
 
   const styles = createStyles(theme);
 
@@ -33,6 +42,8 @@ export default function HomeScreen() {
         <ResponsiveContainer>
           <View style={styles.content}>
             <HomeHeader />
+            <HomeStreakBadge streak={currentStreak} />
+            <HomePeriodSelector period={period} onChangePeriod={setPeriod} />
 
             <View style={styles.statsGrid}>
               <ResponsiveGrid columns={{ mobile: 2, tablet: 2, desktop: 4 }}>
@@ -47,10 +58,16 @@ export default function HomeScreen() {
                 <StatCard title="Win Rate" value={`${winRate.toFixed(1)}%`} />
                 <StatCard
                   title="W/L Ratio"
-                  value={`${winningTrades}/${losingTrades}`}
+                  value={`${winningCount}/${losingCount}`}
                 />
               </ResponsiveGrid>
             </View>
+
+            <HomeEdgeMetrics
+              avgWin={avgWin}
+              avgLoss={avgLoss}
+              profitFactor={profitFactor}
+            />
 
             <RecentTradesCard trades={recentTrades} />
           </View>
