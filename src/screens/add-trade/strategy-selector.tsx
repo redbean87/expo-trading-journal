@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 
 import { Chip } from '../../components/chip';
@@ -31,11 +31,7 @@ export function StrategySelector({ value, onSelect }: StrategySelectorProps) {
       <Text variant="bodySmall" style={styles.label}>
         Recent Strategies
       </Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipRow}
-      >
+      <View style={styles.chipGrid}>
         {strategies.map((strategy) => (
           <Chip
             key={strategy}
@@ -47,7 +43,7 @@ export function StrategySelector({ value, onSelect }: StrategySelectorProps) {
             {strategy}
           </Chip>
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -61,10 +57,10 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       marginBottom: 8,
       color: theme.colors.textSecondary,
     },
-    chipRow: {
+    chipGrid: {
       flexDirection: 'row',
+      flexWrap: 'wrap',
       gap: 8,
-      paddingRight: 16,
     },
     chip: {
       marginBottom: 4,
