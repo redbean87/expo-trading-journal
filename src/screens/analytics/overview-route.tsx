@@ -28,10 +28,6 @@ export default function OverviewRoute() {
     largestLoss,
     maxConsecutiveWins,
     maxConsecutiveLosses,
-    avgHoldTimeMs,
-    avgWinHoldTimeMs,
-    avgLossHoldTimeMs,
-    avgBreakEvenHoldTimeMs,
     winRate,
     profitFactor,
     bestTrade,
@@ -67,10 +63,6 @@ export default function OverviewRoute() {
       avgPerShareLoss={avgPerShareLoss}
       largestGain={largestGain}
       largestLoss={largestLoss}
-      avgHoldTimeMs={avgHoldTimeMs}
-      avgWinHoldTimeMs={avgWinHoldTimeMs}
-      avgLossHoldTimeMs={avgLossHoldTimeMs}
-      avgBreakEvenHoldTimeMs={avgBreakEvenHoldTimeMs}
       maxConsecutiveWins={maxConsecutiveWins}
       maxConsecutiveLosses={maxConsecutiveLosses}
       longTradesCount={longTrades.length}

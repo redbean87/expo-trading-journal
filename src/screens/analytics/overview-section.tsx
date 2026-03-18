@@ -8,7 +8,6 @@ import { StatRow } from '../../components/stat-row';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { Trade } from '../../types';
-import { formatDuration } from '../../utils/format-duration';
 
 type OverviewSectionProps = {
   totalTrades: number;
@@ -27,10 +26,6 @@ type OverviewSectionProps = {
   avgPerShareLoss: number;
   largestGain: number;
   largestLoss: number;
-  avgHoldTimeMs: number;
-  avgWinHoldTimeMs: number;
-  avgLossHoldTimeMs: number;
-  avgBreakEvenHoldTimeMs: number;
   maxConsecutiveWins: number;
   maxConsecutiveLosses: number;
   longTradesCount: number;
@@ -69,10 +64,6 @@ export function OverviewSection({
   avgPerShareLoss,
   largestGain,
   largestLoss,
-  avgHoldTimeMs,
-  avgWinHoldTimeMs,
-  avgLossHoldTimeMs,
-  avgBreakEvenHoldTimeMs,
   maxConsecutiveWins,
   maxConsecutiveLosses,
   longTradesCount,
@@ -97,7 +88,7 @@ export function OverviewSection({
   const { isDesktop } = useBreakpoint();
   const styles = createStyles();
 
-  const allCards = [
+  const performanceCard = (
     <SectionCard key="performance" title="Performance Overview">
       <StatRow label="Total Trades:" value={totalTrades} />
       <StatRow label="Win Rate:" value={`${winRate.toFixed(1)}%`} />
@@ -120,35 +111,36 @@ export function OverviewSection({
         label="Profit Factor:"
         value={profitFactor === Infinity ? '∞' : profitFactor.toFixed(2)}
       />
-    </SectionCard>,
+    </SectionCard>
+  );
 
-    ...(totalCosts > 0
-      ? [
-          <SectionCard key="costs" title="Cost Analysis">
-            <StatRow
-              label="Total Fees:"
-              value={`$${totalFees.toFixed(2)}`}
-              valueColor={theme.colors.loss}
-            />
-            <StatRow
-              label="Total Commissions:"
-              value={`$${totalCommissions.toFixed(2)}`}
-              valueColor={theme.colors.loss}
-            />
-            <StatRow
-              label="Total Costs:"
-              value={`$${totalCosts.toFixed(2)}`}
-              valueColor={theme.colors.loss}
-            />
-            <StatRow
-              label="Avg Cost/Trade:"
-              value={`$${avgCostPerTrade.toFixed(2)}`}
-              valueColor={theme.colors.loss}
-            />
-          </SectionCard>,
-        ]
-      : []),
+  const costCard =
+    totalCosts > 0 ? (
+      <SectionCard key="costs" title="Cost Analysis">
+        <StatRow
+          label="Total Fees:"
+          value={`$${totalFees.toFixed(2)}`}
+          valueColor={theme.colors.loss}
+        />
+        <StatRow
+          label="Total Commissions:"
+          value={`$${totalCommissions.toFixed(2)}`}
+          valueColor={theme.colors.loss}
+        />
+        <StatRow
+          label="Total Costs:"
+          value={`$${totalCosts.toFixed(2)}`}
+          valueColor={theme.colors.loss}
+        />
+        <StatRow
+          label="Avg Cost/Trade:"
+          value={`$${avgCostPerTrade.toFixed(2)}`}
+          valueColor={theme.colors.loss}
+        />
+      </SectionCard>
+    ) : null;
 
+  const tradeStatsCard = (
     <SectionCard key="statistics" title="Trade Statistics">
       <StatRow
         label="Winning Trades:"
@@ -191,24 +183,11 @@ export function OverviewSection({
         value={`$${largestLoss.toFixed(2)}`}
         valueColor={theme.colors.loss}
       />
-      <StatRow label="Avg Hold Time:" value={formatDuration(avgHoldTimeMs)} />
-      <StatRow
-        label="Avg Win Hold Time:"
-        value={formatDuration(avgWinHoldTimeMs)}
-      />
-      <StatRow
-        label="Avg Loss Hold Time:"
-        value={formatDuration(avgLossHoldTimeMs)}
-      />
-      {avgBreakEvenHoldTimeMs > 0 && (
-        <StatRow
-          label="Avg Scratch Hold Time:"
-          value={formatDuration(avgBreakEvenHoldTimeMs)}
-        />
-      )}
       <StatRow label="P&L Std Dev:" value={`$${pnlStdDev.toFixed(2)}`} />
-    </SectionCard>,
+    </SectionCard>
+  );
 
+  const riskRewardCard = (
     <RiskRewardCard
       key="risk-reward"
       realizedRR={realizedRR}
@@ -222,9 +201,11 @@ export function OverviewSection({
       hasLongTrades={longTradesCount > 0}
       hasShortTrades={shortTradesCount > 0}
       totalTrades={totalTrades}
-    />,
+    />
+  );
 
-    <SectionCard key="streak" title="Streak Analysis">
+  const streakCard = (
+    <SectionCard key="breakdown" title="Streak & Side">
       <StatRow
         label="Max Consecutive Wins:"
         value={maxConsecutiveWins}
@@ -235,9 +216,6 @@ export function OverviewSection({
         value={maxConsecutiveLosses}
         valueColor={theme.colors.loss}
       />
-    </SectionCard>,
-
-    <SectionCard key="side" title="Side Analysis">
       <StatRow
         label="Long Trades:"
         value={`${longTradesCount} (${longPnl >= 0 ? '+' : ''}$${longPnl.toFixed(2)})`}
@@ -246,8 +224,10 @@ export function OverviewSection({
         label="Short Trades:"
         value={`${shortTradesCount} (${shortPnl >= 0 ? '+' : ''}$${shortPnl.toFixed(2)})`}
       />
-    </SectionCard>,
+    </SectionCard>
+  );
 
+  const bestTradeCard = (
     <TradeHighlightCard
       key="best"
       title="Best Trade"
@@ -255,8 +235,10 @@ export function OverviewSection({
       valueColor={theme.colors.profit}
       emptyIcon="trophy-outline"
       emptySubtitle="Your best trade will appear here"
-    />,
+    />
+  );
 
+  const worstTradeCard = (
     <TradeHighlightCard
       key="worst"
       title="Worst Trade"
@@ -264,21 +246,43 @@ export function OverviewSection({
       valueColor={theme.colors.loss}
       emptyIcon="alert-circle-outline"
       emptySubtitle="Your worst trade will appear here"
-    />,
-  ];
+    />
+  );
 
-  if (!isDesktop) {
-    return <>{allCards}</>;
+  if (isDesktop) {
+    // Left: summary cards (performance overview, R/R, trade highlights)
+    // Right: breakdown cards (trade stats, costs, streak/side)
+    // Balances well whether or not Cost Analysis is present
+    const leftCards = [
+      performanceCard,
+      riskRewardCard,
+      bestTradeCard,
+      worstTradeCard,
+    ];
+    const rightCards = [
+      tradeStatsCard,
+      ...(costCard ? [costCard] : []),
+      streakCard,
+    ];
+
+    return (
+      <View style={styles.masonry}>
+        <View style={styles.column}>{leftCards}</View>
+        <View style={styles.column}>{rightCards}</View>
+      </View>
+    );
   }
 
-  const leftCards = allCards.filter((_, i) => i % 2 === 0);
-  const rightCards = allCards.filter((_, i) => i % 2 === 1);
-
   return (
-    <View style={styles.masonry}>
-      <View style={styles.column}>{leftCards}</View>
-      <View style={styles.column}>{rightCards}</View>
-    </View>
+    <>
+      {performanceCard}
+      {costCard}
+      {tradeStatsCard}
+      {riskRewardCard}
+      {streakCard}
+      {bestTradeCard}
+      {worstTradeCard}
+    </>
   );
 }
 
