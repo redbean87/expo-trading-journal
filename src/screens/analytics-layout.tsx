@@ -1,5 +1,11 @@
 import { Slot, usePathname, useRouter } from 'expo-router';
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+} from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
 import { LoadingState } from '../components/loading-state';
@@ -41,13 +47,27 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const { selectedRange, setSelectedRange } = useAnalyticsStore();
+  const {
+    selectedRange,
+    customRangeStart,
+    customRangeEnd,
+    setSelectedRange,
+    setCustomRange,
+  } = useAnalyticsStore();
 
-  const startTime = getDateRangeStart(selectedRange);
-  const { trades, isLoading } = useTradesInRange(startTime);
+  const startTime =
+    selectedRange === 'custom'
+      ? customRangeStart
+      : getDateRangeStart(selectedRange);
+  const { trades: rawTrades, isLoading } = useTradesInRange(startTime);
+
+  const trades = useMemo(() => {
+    if (selectedRange !== 'custom' || !customRangeEnd) return rawTrades;
+    return rawTrades.filter((t) => t.exitTime.getTime() <= customRangeEnd);
+  }, [rawTrades, selectedRange, customRangeEnd]);
 
   const getSegment = (): AnalyticsSegment => {
-    if (pathname.includes('/timing')) return 'timing';
+    if (pathname.includes('/patterns')) return 'patterns';
     if (pathname.includes('/charts')) return 'charts';
     if (pathname.includes('/psychology')) return 'psychology';
     return 'overview';
@@ -56,7 +76,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
   const handleSegmentChange = (value: string) => {
     const routes: Record<AnalyticsSegment, string> = {
       overview: '/analytics',
-      timing: '/analytics/timing',
+      patterns: '/analytics/patterns',
       charts: '/analytics/charts',
       psychology: '/analytics/psychology',
     };
@@ -74,7 +94,10 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
               <View style={styles.content}>
                 <DateRangeFilter
                   selectedRange={selectedRange}
+                  customRangeStart={customRangeStart}
+                  customRangeEnd={customRangeEnd}
                   onSelectRange={setSelectedRange}
+                  onSetCustomRange={setCustomRange}
                 />
 
                 <SegmentedButtons
@@ -82,7 +105,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
                   onValueChange={handleSegmentChange}
                   buttons={[
                     { value: 'overview', label: 'Overview' },
-                    { value: 'timing', label: 'Timing' },
+                    { value: 'patterns', label: 'Patterns' },
                     { value: 'charts', label: 'Charts' },
                     { value: 'psychology', label: 'Psych' },
                   ]}
