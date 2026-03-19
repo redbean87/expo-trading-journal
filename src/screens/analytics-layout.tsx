@@ -17,6 +17,7 @@ import { useAnalyticsStore } from '../store/analytics-store';
 import { AnalyticsSegment, Trade } from '../types';
 import { getDateRangeStart } from '../utils/date-range';
 import { DateRangeFilter } from './analytics/date-range-filter';
+import { StrategyFilter } from './analytics/strategy-filter';
 
 type AnalyticsLayoutContextValue = {
   setScrollEnabled: (enabled: boolean) => void;
@@ -51,8 +52,10 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
     selectedRange,
     customRangeStart,
     customRangeEnd,
+    selectedStrategy,
     setSelectedRange,
     setCustomRange,
+    setSelectedStrategy,
   } = useAnalyticsStore();
 
   const startTime =
@@ -61,10 +64,24 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
       : getDateRangeStart(selectedRange);
   const { trades: rawTrades, isLoading } = useTradesInRange(startTime);
 
+  const strategies = useMemo(
+    () =>
+      Array.from(
+        new Set(rawTrades.map((t) => t.strategy).filter(Boolean))
+      ).sort() as string[],
+    [rawTrades]
+  );
+
   const trades = useMemo(() => {
-    if (selectedRange !== 'custom' || !customRangeEnd) return rawTrades;
-    return rawTrades.filter((t) => t.exitTime.getTime() <= customRangeEnd);
-  }, [rawTrades, selectedRange, customRangeEnd]);
+    let filtered =
+      selectedRange !== 'custom' || !customRangeEnd
+        ? rawTrades
+        : rawTrades.filter((t) => t.exitTime.getTime() <= customRangeEnd);
+    if (selectedStrategy) {
+      filtered = filtered.filter((t) => t.strategy === selectedStrategy);
+    }
+    return filtered;
+  }, [rawTrades, selectedRange, customRangeEnd, selectedStrategy]);
 
   const getSegment = (): AnalyticsSegment => {
     if (pathname.includes('/patterns')) return 'patterns';
@@ -99,6 +116,14 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
                   onSelectRange={setSelectedRange}
                   onSetCustomRange={setCustomRange}
                 />
+
+                {strategies.length > 0 && (
+                  <StrategyFilter
+                    strategies={strategies}
+                    selectedStrategy={selectedStrategy}
+                    onSelectStrategy={setSelectedStrategy}
+                  />
+                )}
 
                 <SegmentedButtons
                   value={getSegment()}
