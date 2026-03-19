@@ -402,9 +402,22 @@ export const importTrades = mutation({
     for (const trade of args.trades) {
       // Primary dedup: by importId (reliable Schwab REF #-based key)
       if (trade.importId) {
-        const existing = importIdMatchMap.get(trade.importId);
-        if (existing) {
+        const existingById = importIdMatchMap.get(trade.importId);
+        if (existingById) {
           skipped++;
+          continue;
+        }
+        // Also check fallback key — handles existing trades that predate importId
+        // and upgrades them with the new fields instead of inserting a duplicate
+        const fallbackKey = `${trade.symbol}-${trade.entryTime}-${trade.quantity}`;
+        const existingByKey = existingTradeMap.get(fallbackKey);
+        if (existingByKey) {
+          await ctx.db.patch(existingByKey._id, {
+            importId: trade.importId,
+            orderType: trade.orderType,
+            accountBalanceAfter: trade.accountBalanceAfter,
+          });
+          updated++;
           continue;
         }
         await ctx.db.insert('trades', { userId, ...trade });
