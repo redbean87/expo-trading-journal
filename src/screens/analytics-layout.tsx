@@ -87,6 +87,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
     if (pathname.includes('/patterns')) return 'patterns';
     if (pathname.includes('/charts')) return 'charts';
     if (pathname.includes('/psychology')) return 'psychology';
+    if (pathname.includes('/strategy')) return 'strategy';
     return 'overview';
   };
 
@@ -96,6 +97,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
       patterns: '/analytics/patterns',
       charts: '/analytics/charts',
       psychology: '/analytics/psychology',
+      strategy: '/analytics/strategy',
     };
     router.replace(routes[value as AnalyticsSegment]);
   };
@@ -133,6 +135,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
                     { value: 'patterns', label: 'Patterns' },
                     { value: 'charts', label: 'Charts' },
                     { value: 'psychology', label: 'Psych' },
+                    { value: 'strategy', label: 'Strategy' },
                   ]}
                   style={styles.segmentToggle}
                 />

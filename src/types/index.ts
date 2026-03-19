@@ -6,7 +6,8 @@ export type AnalyticsSegment =
   | 'overview'
   | 'patterns'
   | 'charts'
-  | 'psychology';
+  | 'psychology'
+  | 'strategy';
 
 export type HomePeriod = 'today' | 'week' | 'month' | 'year' | 'all';
 
