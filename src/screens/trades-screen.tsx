@@ -252,10 +252,13 @@ export default function TradesScreen() {
         console.error('CSV Import Errors:', parseResult.errors);
       }
 
-      const { imported, skipped } = await importTrades(parseResult.imported);
+      const { imported, skipped, updated } = await importTrades(
+        parseResult.imported
+      );
 
       const totalSkipped = skipped + parseResult.skipped;
       const parts = [`Imported ${imported} trades`];
+      if (updated > 0) parts.push(`${updated} updated`);
       if (totalSkipped > 0) parts.push(`${totalSkipped} skipped`);
       if (parseResult.unmatchedBuys) {
         parts.push(

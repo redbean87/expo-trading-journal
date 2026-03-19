@@ -25,6 +25,7 @@ type BackendTrade = {
   whatFailed?: string;
   confidence?: number;
   ruleViolation?: string;
+  importedFrom?: string;
 };
 
 function mapToTrade(trade: BackendTrade): Trade {
@@ -48,6 +49,10 @@ function mapToTrade(trade: BackendTrade): Trade {
     whatFailed: trade.whatFailed,
     confidence: trade.confidence,
     ruleViolation: trade.ruleViolation,
+    importedFrom: trade.importedFrom as
+      | 'cash-balance'
+      | 'trade-history'
+      | undefined,
   };
 }
 
@@ -71,6 +76,7 @@ function mapFromTrade(trade: Trade) {
     whatFailed: trade.whatFailed,
     confidence: trade.confidence,
     ruleViolation: trade.ruleViolation,
+    importedFrom: trade.importedFrom,
   };
 }
 
@@ -176,7 +182,7 @@ export function useImportTrades() {
 
   return async (
     trades: Trade[]
-  ): Promise<{ imported: number; skipped: number }> => {
+  ): Promise<{ imported: number; skipped: number; updated: number }> => {
     return await mutate({ trades: trades.map(mapFromTrade) });
   };
 }

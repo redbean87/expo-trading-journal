@@ -44,6 +44,7 @@ const schema = defineSchema({
     whatFailed: v.optional(v.string()),
     confidence: v.optional(v.number()),
     ruleViolation: v.optional(v.string()),
+    importedFrom: v.optional(v.string()),
   })
     .index('by_user', ['userId']) // Index for efficient user queries
     .index('by_user_and_entry_time', ['userId', 'entryTime']) // Index for sorted queries

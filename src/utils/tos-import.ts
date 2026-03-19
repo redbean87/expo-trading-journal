@@ -19,6 +19,14 @@ type CashBalanceRow = {
   AMOUNT: string;
 };
 
+type TradeHistoryRow = {
+  'Exec Time': string;
+  Side: string;
+  Qty: string;
+  Symbol: string;
+  Price: string;
+};
+
 type ParsedFill = {
   date: string;
   time: string;
@@ -68,12 +76,12 @@ function newAccum(): PositionAccum {
   };
 }
 
-function extractCashBalanceSection(content: string): string | null {
+function extractSection(content: string, sectionName: string): string | null {
   const lines = content.replace(/\r\n/g, '\n').split('\n');
 
   let sectionStart = -1;
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i].trim() === 'Cash Balance') {
+    if (lines[i].trim() === sectionName) {
       sectionStart = i + 1;
       break;
     }
@@ -141,7 +149,96 @@ function parseTosDateTime(dateStr: string, timeStr: string): Date {
   return new Date(year, month, day, hours, minutes, seconds);
 }
 
-function emitTrade(symbol: string, accum: PositionAccum): Trade | null {
+function parseCashBalanceFills(
+  section: string,
+  errors: string[]
+): ParsedFill[] {
+  const fills: ParsedFill[] = [];
+
+  Papa.parse<CashBalanceRow>(section, {
+    header: true,
+    skipEmptyLines: true,
+    complete: (results) => {
+      for (const row of results.data) {
+        if (row.TYPE?.trim() !== 'TRD') continue;
+
+        const parsed = parseDescription(row.DESCRIPTION || '');
+        if (!parsed) continue;
+
+        fills.push({
+          date: row.DATE?.trim() || '',
+          time: row.TIME?.trim() || '',
+          ...parsed,
+          miscFees: parseFee(row['Misc Fees']),
+          commissions: parseFee(row['Commissions & Fees']),
+          amount: parseAmount(row.AMOUNT || ''),
+        });
+      }
+    },
+    error: (err: Error) => {
+      errors.push(`Parse error: ${err.message}`);
+    },
+  });
+
+  return fills;
+}
+
+function parseTradeHistoryFills(
+  section: string,
+  errors: string[]
+): ParsedFill[] {
+  const fills: ParsedFill[] = [];
+
+  Papa.parse<TradeHistoryRow>(section, {
+    header: true,
+    skipEmptyLines: true,
+    complete: (results) => {
+      for (const row of results.data) {
+        const execTime = row['Exec Time']?.trim();
+        const side = row['Side']?.trim();
+        const qtyStr = row['Qty']?.trim();
+        const symbol = row['Symbol']?.trim();
+        const priceStr = row['Price']?.trim();
+
+        if (!execTime || !side || !qtyStr || !symbol || !priceStr) continue;
+
+        const action = side === 'BUY' ? 'BOT' : side === 'SELL' ? 'SOLD' : null;
+        if (!action) continue;
+
+        const qty = parseInt(qtyStr.replace(/[+-]/, ''), 10);
+        const price = parseFloat(priceStr);
+        if (isNaN(qty) || qty === 0 || isNaN(price)) continue;
+
+        const spaceIdx = execTime.indexOf(' ');
+        const date = spaceIdx >= 0 ? execTime.slice(0, spaceIdx) : execTime;
+        const time = spaceIdx >= 0 ? execTime.slice(spaceIdx + 1) : '00:00:00';
+
+        fills.push({
+          date,
+          time,
+          action,
+          symbol,
+          quantity: qty,
+          price,
+          miscFees: 0,
+          commissions: 0,
+          amount: action === 'SOLD' ? qty * price : -(qty * price),
+        });
+      }
+    },
+    error: (err: Error) => {
+      errors.push(`Parse error: ${err.message}`);
+    },
+  });
+
+  return fills;
+}
+
+function emitTrade(
+  symbol: string,
+  accum: PositionAccum,
+  source: 'cash-balance' | 'trade-history'
+): Trade | null {
   const qty = Math.min(accum.totalBuyQty, accum.totalSellQty);
   if (qty === 0) return null;
 
@@ -192,6 +289,7 @@ function emitTrade(symbol: string, accum: PositionAccum): Trade | null {
     commissions: commissions > 0 ? commissions : undefined,
     pnl,
     pnlPercent,
+    importedFrom: source,
   };
 }
 
@@ -200,45 +298,35 @@ export function parseTosAccountStatement(content: string): ImportResult {
   const errors: string[] = [];
   let skipped = 0;
 
-  const section = extractCashBalanceSection(content);
-  if (!section) {
+  // Try Cash Balance section first (old TOS format with TRD rows)
+  let fills: ParsedFill[] = [];
+  let fillSource: 'cash-balance' | 'trade-history' = 'cash-balance';
+  const cashSection = extractSection(content, 'Cash Balance');
+  if (cashSection) {
+    fills = parseCashBalanceFills(cashSection, errors);
+  }
+
+  // Fall back to Account Trade History (newer Schwab format)
+  if (fills.length === 0) {
+    const tradeHistorySection = extractSection(
+      content,
+      'Account Trade History'
+    );
+    if (tradeHistorySection) {
+      fills = parseTradeHistoryFills(tradeHistorySection, errors);
+      fillSource = 'trade-history';
+    }
+  }
+
+  if (fills.length === 0 && errors.length === 0) {
     return {
       imported,
       skipped,
-      errors: ['Could not find Cash Balance section in file'],
+      errors: [
+        'Could not find trade fills in Cash Balance or Account Trade History sections',
+      ],
     };
   }
-
-  const fills: ParsedFill[] = [];
-
-  Papa.parse<CashBalanceRow>(section, {
-    header: true,
-    skipEmptyLines: true,
-    complete: (results) => {
-      for (const row of results.data) {
-        if (row.TYPE?.trim() !== 'TRD') continue;
-
-        const parsed = parseDescription(row.DESCRIPTION || '');
-        if (!parsed) continue;
-
-        const miscFees = parseFee(row['Misc Fees']);
-        const commissions = parseFee(row['Commissions & Fees']);
-        const amount = parseAmount(row.AMOUNT || '');
-
-        fills.push({
-          date: row.DATE?.trim() || '',
-          time: row.TIME?.trim() || '',
-          ...parsed,
-          miscFees,
-          commissions,
-          amount,
-        });
-      }
-    },
-    error: (err: Error) => {
-      errors.push(`Parse error: ${err.message}`);
-    },
-  });
 
   // Position lifecycle tracking: accumulate fills until position returns to 0, then emit one Trade
   const positions = new Map<string, PositionAccum>();
@@ -279,7 +367,7 @@ export function parseTosAccountStatement(content: string): ImportResult {
 
       // Position fully closed — emit one Trade and reset
       if (accum.totalSellQty >= accum.totalBuyQty) {
-        const trade = emitTrade(fill.symbol, accum);
+        const trade = emitTrade(fill.symbol, accum, fillSource);
         if (trade) {
           imported.push(trade);
         } else {

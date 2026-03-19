@@ -27,6 +27,7 @@ export const tradeSchema = z.object({
   ruleViolation: z.string().max(200).optional(),
   pnl: z.number(),
   pnlPercent: z.number(),
+  importedFrom: z.enum(['cash-balance', 'trade-history']).optional(),
 });
 
 export const tradeFormSchema = z

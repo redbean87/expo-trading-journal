@@ -14,7 +14,7 @@ interface TradeStore {
   clearAllTrades: () => Promise<void>;
   importTrades: (
     trades: Trade[]
-  ) => Promise<{ imported: number; skipped: number }>;
+  ) => Promise<{ imported: number; skipped: number; updated: number }>;
 }
 
 const STORAGE_KEY = '@trades';
@@ -87,48 +87,66 @@ export const useTradeStore = create<TradeStore>((set, get) => ({
   importTrades: async (trades: Trade[]) => {
     const existingTrades = get().trades;
 
-    // Create a Set of existing trade keys for duplicate detection
-    const existingKeys = new Set(
+    // Map from key → existing trade for duplicate/upgrade detection
+    const existingTradeMap = new Map(
       existingTrades.map((trade) => {
-        const entryTimeStr = trade.entryTime.toISOString();
-        return generateTradeKey({
+        const key = generateTradeKey({
           symbol: trade.symbol,
-          entryTime: entryTimeStr,
+          entryTime: trade.entryTime.toISOString(),
           quantity: trade.quantity,
         });
+        return [key, trade];
       })
     );
 
-    // Filter out duplicates
     const newTrades: Trade[] = [];
+    const upgradedTrades = new Map<string, Trade>(); // id → upgraded trade
     let skipped = 0;
+    let updated = 0;
 
     trades.forEach((trade) => {
-      const entryTimeStr = trade.entryTime.toISOString();
       const key = generateTradeKey({
         symbol: trade.symbol,
-        entryTime: entryTimeStr,
+        entryTime: trade.entryTime.toISOString(),
         quantity: trade.quantity,
       });
+      const existing = existingTradeMap.get(key);
 
-      if (!existingKeys.has(key)) {
+      if (!existing) {
         newTrades.push(trade);
-        existingKeys.add(key);
+        existingTradeMap.set(key, trade);
+      } else if (
+        existing.importedFrom === 'trade-history' &&
+        trade.importedFrom === 'cash-balance'
+      ) {
+        upgradedTrades.set(existing.id, {
+          ...existing,
+          fees: trade.fees,
+          commissions: trade.commissions,
+          entryPrice: trade.entryPrice,
+          exitPrice: trade.exitPrice,
+          pnl: trade.pnl,
+          pnlPercent: trade.pnlPercent,
+          importedFrom: 'cash-balance',
+        });
+        updated++;
       } else {
         skipped++;
       }
     });
 
-    // Add new trades to store
-    const updatedTrades = [...existingTrades, ...newTrades];
-    set({ trades: updatedTrades });
+    const finalTrades = [
+      ...existingTrades.map((t) => upgradedTrades.get(t.id) ?? t),
+      ...newTrades,
+    ];
+    set({ trades: finalTrades });
 
     try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTrades));
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(finalTrades));
     } catch (error) {
       console.error('Error saving imported trades:', error);
     }
 
-    return { imported: newTrades.length, skipped };
+    return { imported: newTrades.length, skipped, updated };
   },
 }));

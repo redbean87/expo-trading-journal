@@ -149,6 +149,16 @@ describe('parseTosAccountStatement', () => {
     expect(result.skipped).toBe(1);
   });
 
+  it('stamps importedFrom as cash-balance for Cash Balance TRD rows', () => {
+    const content = makeSample(
+      `3/9/26,08:44:52,TRD,="1",BOT +500 LRHC @1.4181,,,-709.05,716.96
+3/9/26,08:46:50,TRD,="2",SOLD -500 LRHC @1.4318,-0.10,,715.90,"1,432.86"`
+    );
+
+    const result = parseTosAccountStatement(content);
+    expect(result.imported[0].importedFrom).toBe('cash-balance');
+  });
+
   it('skips BAL rows', () => {
     const content = makeSample(
       `3/1/26,00:00:00,BAL,,Cash balance at the start of business day 01.03 CST,,,,"2,934.83"
@@ -160,7 +170,7 @@ describe('parseTosAccountStatement', () => {
     expect(result.imported).toHaveLength(1);
   });
 
-  it('returns error when Cash Balance section is missing', () => {
+  it('returns error when neither Cash Balance nor Account Trade History section is present', () => {
     const result = parseTosAccountStatement(
       'Account Statement for 12345\n\nSome other content'
     );
@@ -182,6 +192,101 @@ describe('parseTosAccountStatement', () => {
     expect(trade.commissions).toBeCloseTo(1.5, 2); // Commissions & Fees
     // pnl: 15100 - 15000 - 0.05 - 1.50 = 98.45
     expect(trade.pnl).toBeCloseTo(98.45, 1);
+  });
+
+  describe('Account Trade History format (new Schwab)', () => {
+    const TRADE_HISTORY_HEADER = `Account Statement for 54639299SCHW (Individual) since 3/18/26 through 3/18/26
+
+Cash Balance
+DATE,TIME,TYPE,REF #,DESCRIPTION,Misc Fees,Commissions & Fees,AMOUNT,BALANCE
+3/19/26,00:00:00,BAL,,Cash balance at the start of business day 19.03 CST,,,,"3,041.99"
+,,,,TOTAL,,,,"$3,041.99"
+
+Futures Statements
+
+Account Trade History`;
+
+    function makeTradeHistorySample(tradeLines: string) {
+      return `${TRADE_HISTORY_HEADER}
+${tradeLines}
+
+Profits and Losses`;
+    }
+
+    it('imports trades from Account Trade History when Cash Balance has no TRD rows', () => {
+      const content = makeTradeHistorySample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:37:25,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.1687,2.16872,LMT
+,3/19/26 08:37:28,STOCK,BUY,+8,TO OPEN,SER,,,STOCK,2.135,2.135,LMT
+,3/19/26 08:37:28,STOCK,BUY,+242,TO OPEN,SER,,,STOCK,2.1397,2.13971,LMT
+,3/19/26 08:37:32,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.136,2.136,LMT
+,3/19/26 08:37:34,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.125,2.125,LMT
+,3/19/26 08:37:37,STOCK,SELL,-1000,TO CLOSE,SER,,,STOCK,2.1306,2.1306,MKT
+,3/19/26 08:37:52,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.1499,2.14992,LMT
+,3/19/26 08:38:39,STOCK,SELL,-250,TO CLOSE,SER,,,STOCK,2.185,2.185,MKT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      expect(result.errors).toHaveLength(0);
+      // Two positions: 1000-share trade closes at 08:37:37, then 250-share trade closes at 08:38:39
+      expect(result.imported).toHaveLength(2);
+      expect(result.imported.every((t) => t.symbol === 'SER')).toBe(true);
+    });
+
+    it('correctly calculates weighted avg entry for partial fills', () => {
+      const content = makeTradeHistorySample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:37:25,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.1687,2.16872,LMT
+,3/19/26 08:37:28,STOCK,BUY,+8,TO OPEN,SER,,,STOCK,2.135,2.135,LMT
+,3/19/26 08:37:28,STOCK,BUY,+242,TO OPEN,SER,,,STOCK,2.1397,2.13971,LMT
+,3/19/26 08:37:32,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.136,2.136,LMT
+,3/19/26 08:37:34,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.125,2.125,LMT
+,3/19/26 08:37:37,STOCK,SELL,-1000,TO CLOSE,SER,,,STOCK,2.1306,2.1306,MKT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      expect(result.imported).toHaveLength(1);
+      const trade = result.imported[0];
+      expect(trade.symbol).toBe('SER');
+      expect(trade.quantity).toBe(1000);
+      // Weighted avg entry: (250*2.1687 + 8*2.135 + 242*2.1397 + 250*2.136 + 250*2.125) / 1000
+      const expectedEntry =
+        (250 * 2.1687 + 8 * 2.135 + 242 * 2.1397 + 250 * 2.136 + 250 * 2.125) /
+        1000;
+      expect(trade.entryPrice).toBeCloseTo(expectedEntry, 3);
+      expect(trade.exitPrice).toBe(2.1306);
+      expect(trade.side).toBe('long');
+    });
+
+    it('stamps importedFrom as trade-history', () => {
+      const content = makeTradeHistorySample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:37:25,STOCK,BUY,+500,TO OPEN,SER,,,STOCK,2.15,2.15,LMT
+,3/19/26 08:38:39,STOCK,SELL,-500,TO CLOSE,SER,,,STOCK,2.185,2.185,MKT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      expect(result.imported[0].importedFrom).toBe('trade-history');
+    });
+
+    it('sets correct entry and exit times from Account Trade History', () => {
+      const content = makeTradeHistorySample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:37:25,STOCK,BUY,+500,TO OPEN,SER,,,STOCK,2.15,2.15,LMT
+,3/19/26 08:38:39,STOCK,SELL,-500,TO CLOSE,SER,,,STOCK,2.185,2.185,MKT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      expect(result.imported).toHaveLength(1);
+      const trade = result.imported[0];
+      expect(trade.entryTime.getFullYear()).toBe(2026);
+      expect(trade.entryTime.getMonth()).toBe(2); // March = 2
+      expect(trade.entryTime.getDate()).toBe(19);
+      expect(trade.entryTime.getHours()).toBe(8);
+      expect(trade.entryTime.getMinutes()).toBe(37);
+      expect(trade.exitTime.getHours()).toBe(8);
+      expect(trade.exitTime.getMinutes()).toBe(38);
+    });
   });
 
   it('sets correct entry and exit times from first fills', () => {

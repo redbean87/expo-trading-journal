@@ -329,6 +329,7 @@ export const importTrades = mutation({
         whatFailed: v.optional(v.string()),
         confidence: v.optional(v.number()),
         ruleViolation: v.optional(v.string()),
+        importedFrom: v.optional(v.string()),
       })
     ),
   },
@@ -344,32 +345,45 @@ export const importTrades = mutation({
       .withIndex('by_user', (q) => q.eq('userId', userId))
       .collect();
 
-    // Create a set of existing trade keys
-    const existingKeys = new Set(
-      existingTrades.map((trade) => {
-        const key = `${trade.symbol}-${trade.entryTime}-${trade.quantity}`;
-        return key;
-      })
+    // Map from key → existing trade doc for upgrade detection
+    const existingTradeMap = new Map(
+      existingTrades.map((trade) => [
+        `${trade.symbol}-${trade.entryTime}-${trade.quantity}`,
+        trade,
+      ])
     );
 
     let imported = 0;
     let skipped = 0;
+    let updated = 0;
 
     for (const trade of args.trades) {
       const key = `${trade.symbol}-${trade.entryTime}-${trade.quantity}`;
+      const existing = existingTradeMap.get(key);
 
-      if (!existingKeys.has(key)) {
-        await ctx.db.insert('trades', {
-          userId,
-          ...trade,
-        });
-        existingKeys.add(key);
+      if (!existing) {
+        await ctx.db.insert('trades', { userId, ...trade });
+        existingTradeMap.set(key, { userId, ...trade } as never);
         imported++;
+      } else if (
+        existing.importedFrom === 'trade-history' &&
+        trade.importedFrom === 'cash-balance'
+      ) {
+        await ctx.db.patch(existing._id, {
+          fees: trade.fees,
+          commissions: trade.commissions,
+          entryPrice: trade.entryPrice,
+          exitPrice: trade.exitPrice,
+          pnl: trade.pnl,
+          pnlPercent: trade.pnlPercent,
+          importedFrom: 'cash-balance',
+        });
+        updated++;
       } else {
         skipped++;
       }
     }
 
-    return { imported, skipped };
+    return { imported, skipped, updated };
   },
 });
