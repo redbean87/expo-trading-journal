@@ -13,10 +13,12 @@ type CashBalanceRow = {
   DATE: string;
   TIME: string;
   TYPE: string;
+  'REF #': string;
   DESCRIPTION: string;
   'Misc Fees': string;
   'Commissions & Fees': string;
   AMOUNT: string;
+  BALANCE: string;
 };
 
 type TradeHistoryRow = {
@@ -25,6 +27,8 @@ type TradeHistoryRow = {
   Qty: string;
   Symbol: string;
   Price: string;
+  'Net Price': string;
+  'Order Type': string;
 };
 
 type ParsedFill = {
@@ -37,6 +41,9 @@ type ParsedFill = {
   miscFees: number;
   commissions: number;
   amount: number; // positive = proceeds (SOLD), negative = cost (BOT)
+  balance: number; // running account balance after this fill (Cash Balance source only)
+  refNum: string; // order reference number (Cash Balance source only)
+  orderType: string; // LMT | MKT (Trade History source only)
 };
 
 // Accumulates all fills for one complete position lifecycle (0 shares → N shares → 0 shares)
@@ -48,6 +55,7 @@ type PositionAccum = {
   totalBuyCommissions: number;
   firstBuyDate: string;
   firstBuyTime: string;
+  firstBuyRef: string; // REF # of first buy fill (Cash Balance source only)
   totalSellQty: number;
   sellSum: number; // sum(qty * price) for weighted avg exit display price
   totalSellAmount: number; // sum(AMOUNT) for exact proceeds
@@ -55,6 +63,8 @@ type PositionAccum = {
   totalSellCommissions: number;
   firstSellDate: string | null;
   firstSellTime: string | null;
+  lastBalance: number; // running balance after last sell fill (Cash Balance source only)
+  orderType: string; // LMT | MKT from first buy fill (Trade History source only)
 };
 
 function newAccum(): PositionAccum {
@@ -66,6 +76,7 @@ function newAccum(): PositionAccum {
     totalBuyCommissions: 0,
     firstBuyDate: '',
     firstBuyTime: '',
+    firstBuyRef: '',
     totalSellQty: 0,
     sellSum: 0,
     totalSellAmount: 0,
@@ -73,6 +84,8 @@ function newAccum(): PositionAccum {
     totalSellCommissions: 0,
     firstSellDate: null,
     firstSellTime: null,
+    lastBalance: 0,
+    orderType: '',
   };
 }
 
@@ -165,6 +178,8 @@ function parseCashBalanceFills(
         const parsed = parseDescription(row.DESCRIPTION || '');
         if (!parsed) continue;
 
+        const rawRef = row['REF #']?.trim() || '';
+        const refNum = rawRef.replace(/^="?|"?$/g, '');
         fills.push({
           date: row.DATE?.trim() || '',
           time: row.TIME?.trim() || '',
@@ -172,6 +187,9 @@ function parseCashBalanceFills(
           miscFees: parseFee(row['Misc Fees']),
           commissions: parseFee(row['Commissions & Fees']),
           amount: parseAmount(row.AMOUNT || ''),
+          balance: parseAmount(row.BALANCE || ''),
+          refNum,
+          orderType: '',
         });
       }
     },
@@ -198,6 +216,7 @@ function parseTradeHistoryFills(
         const side = row['Side']?.trim();
         const qtyStr = row['Qty']?.trim();
         const symbol = row['Symbol']?.trim();
+        const netPriceStr = row['Net Price']?.trim();
         const priceStr = row['Price']?.trim();
 
         if (!execTime || !side || !qtyStr || !symbol || !priceStr) continue;
@@ -206,12 +225,13 @@ function parseTradeHistoryFills(
         if (!action) continue;
 
         const qty = parseInt(qtyStr.replace(/[+-]/, ''), 10);
-        const price = parseFloat(priceStr);
+        const price = parseFloat(netPriceStr || priceStr);
         if (isNaN(qty) || qty === 0 || isNaN(price)) continue;
 
         const spaceIdx = execTime.indexOf(' ');
         const date = spaceIdx >= 0 ? execTime.slice(0, spaceIdx) : execTime;
         const time = spaceIdx >= 0 ? execTime.slice(spaceIdx + 1) : '00:00:00';
+        const orderType = row['Order Type']?.trim() || '';
 
         fills.push({
           date,
@@ -223,6 +243,9 @@ function parseTradeHistoryFills(
           miscFees: 0,
           commissions: 0,
           amount: action === 'SOLD' ? qty * price : -(qty * price),
+          balance: 0,
+          refNum: '',
+          orderType,
         });
       }
     },
@@ -276,6 +299,11 @@ function emitTrade(
     .toDecimalPlaces(3)
     .toNumber();
 
+  const importId =
+    source === 'cash-balance' && accum.firstBuyRef
+      ? `cb-${accum.firstBuyRef}`
+      : undefined;
+
   return {
     id: randomUUID(),
     symbol: symbol.toUpperCase(),
@@ -290,6 +318,9 @@ function emitTrade(
     pnl,
     pnlPercent,
     importedFrom: source,
+    importId,
+    orderType: accum.orderType || undefined,
+    accountBalanceAfter: accum.lastBalance > 0 ? accum.lastBalance : undefined,
   };
 }
 
@@ -318,6 +349,25 @@ export function parseTosAccountStatement(content: string): ImportResult {
     }
   }
 
+  // When using Cash Balance as primary, cross-reference Trade History for order types
+  // (Cash Balance has no Order Type column; Trade History has it for every fill)
+  const orderTypeMap = new Map<string, string>(); // key: `${symbol}-${date}`
+  if (fillSource === 'cash-balance') {
+    const tradeHistorySection = extractSection(
+      content,
+      'Account Trade History'
+    );
+    if (tradeHistorySection) {
+      const historyFills = parseTradeHistoryFills(tradeHistorySection, errors);
+      for (const fill of historyFills) {
+        if (fill.action === 'BOT' && fill.orderType) {
+          const key = `${fill.symbol}-${fill.date}`;
+          if (!orderTypeMap.has(key)) orderTypeMap.set(key, fill.orderType);
+        }
+      }
+    }
+  }
+
   if (fills.length === 0 && errors.length === 0) {
     return {
       imported,
@@ -340,6 +390,11 @@ export function parseTosAccountStatement(content: string): ImportResult {
       if (accum.firstBuyDate === '') {
         accum.firstBuyDate = fill.date;
         accum.firstBuyTime = fill.time;
+        accum.firstBuyRef = fill.refNum;
+        accum.orderType =
+          fill.orderType ||
+          orderTypeMap.get(`${fill.symbol}-${fill.date}`) ||
+          '';
       }
       accum.totalBuyQty += fill.quantity;
       accum.buySum += fill.price * fill.quantity;
@@ -364,6 +419,7 @@ export function parseTosAccountStatement(content: string): ImportResult {
       accum.totalSellAmount += fill.amount;
       accum.totalSellMiscFees += fill.miscFees;
       accum.totalSellCommissions += fill.commissions;
+      if (fill.balance > 0) accum.lastBalance = fill.balance;
 
       // Position fully closed — emit one Trade and reset
       if (accum.totalSellQty >= accum.totalBuyQty) {

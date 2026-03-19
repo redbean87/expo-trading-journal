@@ -38,6 +38,10 @@ export const getTrades = query({
       whatFailed: trade.whatFailed,
       confidence: trade.confidence,
       ruleViolation: trade.ruleViolation,
+      importedFrom: trade.importedFrom,
+      importId: trade.importId,
+      orderType: trade.orderType,
+      accountBalanceAfter: trade.accountBalanceAfter,
     }));
   },
 });
@@ -88,6 +92,10 @@ export const getTradesInRange = query({
       whatFailed: trade.whatFailed,
       confidence: trade.confidence,
       ruleViolation: trade.ruleViolation,
+      importedFrom: trade.importedFrom,
+      importId: trade.importId,
+      orderType: trade.orderType,
+      accountBalanceAfter: trade.accountBalanceAfter,
     }));
   },
 });
@@ -134,6 +142,10 @@ export const getTrade = query({
       whatFailed: trade.whatFailed,
       confidence: trade.confidence,
       ruleViolation: trade.ruleViolation,
+      importedFrom: trade.importedFrom,
+      importId: trade.importId,
+      orderType: trade.orderType,
+      accountBalanceAfter: trade.accountBalanceAfter,
     };
   },
 });
@@ -159,6 +171,9 @@ export const addTrade = mutation({
     whatFailed: v.optional(v.string()),
     confidence: v.optional(v.number()),
     ruleViolation: v.optional(v.string()),
+    importId: v.optional(v.string()),
+    orderType: v.optional(v.string()),
+    accountBalanceAfter: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -186,6 +201,9 @@ export const addTrade = mutation({
       whatFailed: args.whatFailed,
       confidence: args.confidence,
       ruleViolation: args.ruleViolation,
+      importId: args.importId,
+      orderType: args.orderType,
+      accountBalanceAfter: args.accountBalanceAfter,
     });
 
     return {
@@ -217,6 +235,8 @@ export const updateTrade = mutation({
     whatFailed: v.optional(v.string()),
     confidence: v.optional(v.number()),
     ruleViolation: v.optional(v.string()),
+    orderType: v.optional(v.string()),
+    accountBalanceAfter: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -258,6 +278,10 @@ export const updateTrade = mutation({
       whatFailed: updatedTrade!.whatFailed,
       confidence: updatedTrade!.confidence,
       ruleViolation: updatedTrade!.ruleViolation,
+      importedFrom: updatedTrade!.importedFrom,
+      importId: updatedTrade!.importId,
+      orderType: updatedTrade!.orderType,
+      accountBalanceAfter: updatedTrade!.accountBalanceAfter,
     };
   },
 });
@@ -330,6 +354,9 @@ export const importTrades = mutation({
         confidence: v.optional(v.number()),
         ruleViolation: v.optional(v.string()),
         importedFrom: v.optional(v.string()),
+        importId: v.optional(v.string()),
+        orderType: v.optional(v.string()),
+        accountBalanceAfter: v.optional(v.number()),
       })
     ),
   },
@@ -339,13 +366,28 @@ export const importTrades = mutation({
       throw new Error('Not authenticated');
     }
 
-    // Get existing trades to check for duplicates
+    // Build importId lookup for trades that have one
+    const importIds = args.trades
+      .map((t) => t.importId)
+      .filter((id): id is string => !!id);
+
+    const importIdMatchMap = new Map<string, (typeof existingByImportId)[0]>();
+    const existingByImportId =
+      importIds.length > 0
+        ? await ctx.db
+            .query('trades')
+            .withIndex('by_user_and_import_id', (q) => q.eq('userId', userId))
+            .collect()
+        : [];
+    for (const t of existingByImportId) {
+      if (t.importId) importIdMatchMap.set(t.importId, t);
+    }
+
+    // Fallback: symbol-entryTime-quantity map for trades without importId
     const existingTrades = await ctx.db
       .query('trades')
       .withIndex('by_user', (q) => q.eq('userId', userId))
       .collect();
-
-    // Map from key → existing trade doc for upgrade detection
     const existingTradeMap = new Map(
       existingTrades.map((trade) => [
         `${trade.symbol}-${trade.entryTime}-${trade.quantity}`,
@@ -358,6 +400,19 @@ export const importTrades = mutation({
     let updated = 0;
 
     for (const trade of args.trades) {
+      // Primary dedup: by importId (reliable Schwab REF #-based key)
+      if (trade.importId) {
+        const existing = importIdMatchMap.get(trade.importId);
+        if (existing) {
+          skipped++;
+          continue;
+        }
+        await ctx.db.insert('trades', { userId, ...trade });
+        imported++;
+        continue;
+      }
+
+      // Fallback dedup: by symbol-entryTime-quantity
       const key = `${trade.symbol}-${trade.entryTime}-${trade.quantity}`;
       const existing = existingTradeMap.get(key);
 
@@ -377,6 +432,8 @@ export const importTrades = mutation({
           pnl: trade.pnl,
           pnlPercent: trade.pnlPercent,
           importedFrom: 'cash-balance',
+          importId: trade.importId,
+          accountBalanceAfter: trade.accountBalanceAfter,
         });
         updated++;
       } else {

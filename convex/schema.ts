@@ -45,10 +45,14 @@ const schema = defineSchema({
     confidence: v.optional(v.number()),
     ruleViolation: v.optional(v.string()),
     importedFrom: v.optional(v.string()),
+    importId: v.optional(v.string()),
+    orderType: v.optional(v.string()),
+    accountBalanceAfter: v.optional(v.number()),
   })
     .index('by_user', ['userId']) // Index for efficient user queries
     .index('by_user_and_entry_time', ['userId', 'entryTime']) // Index for sorted queries
-    .index('by_user_and_exit_time', ['userId', 'exitTime']), // Index for date range filtering
+    .index('by_user_and_exit_time', ['userId', 'exitTime']) // Index for date range filtering
+    .index('by_user_and_import_id', ['userId', 'importId']), // Index for deduplication
 
   // Trade screenshot attachments stored in Cloudflare R2
   attachments: defineTable({

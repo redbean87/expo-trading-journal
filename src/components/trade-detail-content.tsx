@@ -112,6 +112,15 @@ export function TradeDetailContent({
                 value={`$${trade.commissions.toFixed(2)}`}
               />
             )}
+            {trade.orderType && (
+              <DetailRow label="Order Type" value={trade.orderType} />
+            )}
+            {trade.accountBalanceAfter !== undefined && (
+              <DetailRow
+                label="Balance After"
+                value={`$${trade.accountBalanceAfter.toFixed(2)}`}
+              />
+            )}
           </SectionCard>
 
           <SectionCard title="Timing">

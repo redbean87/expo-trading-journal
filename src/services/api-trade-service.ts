@@ -24,6 +24,8 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
         side: trade.side as 'long' | 'short',
         pnl: trade.pnl,
         pnlPercent: trade.pnlPercent,
+        fees: trade.fees,
+        commissions: trade.commissions,
         notes: trade.notes,
         strategy: trade.strategy,
         psychology: trade.psychology,
@@ -31,6 +33,10 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
         whatFailed: trade.whatFailed,
         confidence: trade.confidence,
         ruleViolation: trade.ruleViolation,
+        importedFrom: trade.importedFrom as Trade['importedFrom'],
+        importId: trade.importId,
+        orderType: trade.orderType,
+        accountBalanceAfter: trade.accountBalanceAfter,
       })) ?? []
     );
   },
@@ -46,6 +52,8 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       side: trade.side,
       pnl: trade.pnl,
       pnlPercent: trade.pnlPercent,
+      fees: trade.fees,
+      commissions: trade.commissions,
       notes: trade.notes,
       strategy: trade.strategy,
       psychology: trade.psychology,
@@ -53,6 +61,9 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       whatFailed: trade.whatFailed,
       confidence: trade.confidence,
       ruleViolation: trade.ruleViolation,
+      importId: trade.importId,
+      orderType: trade.orderType,
+      accountBalanceAfter: trade.accountBalanceAfter,
     });
 
     return {
@@ -73,6 +84,8 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       side: updates.side,
       pnl: updates.pnl,
       pnlPercent: updates.pnlPercent,
+      fees: updates.fees,
+      commissions: updates.commissions,
       notes: updates.notes,
       strategy: updates.strategy,
       psychology: updates.psychology,
@@ -80,6 +93,8 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       whatFailed: updates.whatFailed,
       confidence: updates.confidence,
       ruleViolation: updates.ruleViolation,
+      orderType: updates.orderType,
+      accountBalanceAfter: updates.accountBalanceAfter,
     });
 
     return {
@@ -93,6 +108,8 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       side: result.side as 'long' | 'short',
       pnl: result.pnl,
       pnlPercent: result.pnlPercent,
+      fees: result.fees,
+      commissions: result.commissions,
       notes: result.notes,
       strategy: result.strategy,
       psychology: result.psychology,
@@ -100,6 +117,9 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       whatFailed: result.whatFailed,
       confidence: result.confidence,
       ruleViolation: result.ruleViolation,
+      importId: result.importId,
+      orderType: result.orderType,
+      accountBalanceAfter: result.accountBalanceAfter,
     };
   },
 
@@ -127,6 +147,8 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
         side: trade.side,
         pnl: trade.pnl,
         pnlPercent: trade.pnlPercent,
+        fees: trade.fees,
+        commissions: trade.commissions,
         notes: trade.notes,
         strategy: trade.strategy,
         psychology: trade.psychology,
@@ -134,6 +156,10 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
         whatFailed: trade.whatFailed,
         confidence: trade.confidence,
         ruleViolation: trade.ruleViolation,
+        importedFrom: trade.importedFrom,
+        importId: trade.importId,
+        orderType: trade.orderType,
+        accountBalanceAfter: trade.accountBalanceAfter,
       })),
     });
 

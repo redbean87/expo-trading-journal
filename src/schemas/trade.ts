@@ -28,6 +28,9 @@ export const tradeSchema = z.object({
   pnl: z.number(),
   pnlPercent: z.number(),
   importedFrom: z.enum(['cash-balance', 'trade-history']).optional(),
+  importId: z.string().optional(),
+  orderType: z.string().optional(),
+  accountBalanceAfter: z.number().optional(),
 });
 
 export const tradeFormSchema = z
