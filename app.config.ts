@@ -38,6 +38,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: {
     output: 'static',
     favicon: './assets/favicon.png',
+    name: 'Trading Journal',
+    shortName: 'TradingJrnl',
+    description: 'Track, analyze, and improve your trading performance.',
+    themeColor: '#6200ee',
+    backgroundColor: '#6200ee',
+    display: 'standalone',
   },
   plugins: ['expo-router', 'expo-image-picker'],
   extra: {

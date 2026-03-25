@@ -5,6 +5,7 @@ import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
 import { enGB, registerTranslation } from 'react-native-paper-dates';
 
@@ -31,6 +32,17 @@ registerTranslation('en', enGB);
 
 function KeyboardShortcutsHandler() {
   useKeyboardShortcuts();
+  return null;
+}
+
+function ServiceWorkerRegistrar() {
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
+      .catch((err) => console.warn('Service worker registration failed:', err));
+  }, []);
   return null;
 }
 
@@ -63,6 +75,7 @@ export default function RootLayout() {
             <ThemeProvider value={navigationTheme}>
               <AuthGate>
                 <KeyboardShortcutsHandler />
+                <ServiceWorkerRegistrar />
                 <SidebarLayout>
                   <Stack>
                     <Stack.Screen
