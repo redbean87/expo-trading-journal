@@ -46,3 +46,6 @@ coverage/
 
 # Convex
 .convex/
+
+# Generated PWA icons
+public/icons/
