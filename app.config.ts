@@ -39,7 +39,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     output: 'static',
     favicon: './assets/favicon.png',
     name: 'Trading Journal',
-    shortName: 'TradingJrnl',
+    shortName: 'Trading Journal',
     description: 'Track, analyze, and improve your trading performance.',
     themeColor: '#6200ee',
     backgroundColor: '#6200ee',
