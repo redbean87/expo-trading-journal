@@ -18,7 +18,9 @@ _None_
 
 ## Medium Priority (Polish & Consistency)
 
-### 1. Skeleton Loading States
+### 1. Skeleton Loading States _(skipped — not wanted)_
+
+_All other medium priority and enhancement items completed April 2026. See Completed section._
 
 **Impact:** Medium effort, improves perceived performance
 **Files to create:**
@@ -327,5 +329,80 @@ export const elevation = {
 
 ---
 
-_Last updated: March 2026_
-_Next review: After completing item #1 or #4_
+---
+
+### 5. Standardize Theme Access Pattern ✓
+
+**Completed:** April 2026
+**Files modified:**
+
+- `src/theme/index.ts` - Added spacing/borderRadius/elevation/iconSizes to theme object via `designTokens`
+- 14 component and screen files - Removed direct token imports, use `theme.spacing`, `theme.borderRadius`, etc.
+- `CLAUDE.md` - Documented canonical pattern and button hierarchy
+
+**Summary:** Extended `lightTheme`/`darkTheme` with design token objects so `useAppTheme()` returns all tokens. Eliminated all direct `import { spacing } from '../theme'` patterns across the codebase. Single access pattern throughout.
+
+---
+
+### 6. Form Input Standardization ✓
+
+**Completed:** April 2026
+**Files created:**
+
+- `src/components/form-layout.tsx` - Section container with title, consistent spacing, and dividers
+
+**Files modified:**
+
+- `src/screens/add-trade/trade-form.tsx` - Grouped into 4 sections: Trade Details, Timing, Fees, Psychology & Notes
+- `src/screens/add-trade/trade-form-content.tsx` - Converted hardcoded spacing to theme tokens
+
+**Summary:** Created FormLayout component with optional section title and divider. Applied to add-trade form with logical field grouping. All inputs use `mode="outlined"` consistently.
+
+---
+
+### 7. Button Hierarchy & Patterns ✓
+
+**Completed:** April 2026
+
+**Summary:** Documented hierarchy in CLAUDE.md: `contained` = primary, `outlined` = secondary/destructive, `text` = cancel/tertiary. Verified existing screens already follow the pattern consistently.
+
+---
+
+### 8. Micro-interactions & Animations ✓
+
+**Completed:** April 2026
+**Files modified:**
+
+- `src/screens/trades-screen.tsx` - FAB menu animates in/out (opacity + translateY slide-up, 200ms). FAB icon rotates 45° when open.
+- `src/components/stat-card.tsx` - Added optional `onPress` with spring scale animation (0.97)
+
+**Summary:** FAB expansion now animates smoothly instead of abruptly appearing. StatCard supports tappable states with subtle press feedback.
+
+---
+
+### 9. Trade Card Improvements ✓
+
+**Completed:** April 2026
+**Files modified:**
+
+- `src/components/trade-card.tsx` - Strategy text → compact Chip tag; P&L upgraded from `titleLarge` to `headlineSmall`
+
+**Summary:** Strategy field now renders as a Chip tag for clearer visual hierarchy. P&L figure is more prominent with a larger type variant.
+
+---
+
+### 10. Responsive Design Polish ✓
+
+**Completed:** April 2026
+**Files modified:**
+
+- `src/screens/analytics/charts-section.tsx` - Daily P&L and Calendar charts render side-by-side on tablet and desktop
+- `src/components/responsive-container.tsx` - Max-width increased from 1200 to 1440
+- `src/hooks/use-content-width.ts` - Updated max-width constant to match
+- `src/theme/index.ts` - Updated `layout.container.maxWidth` to 1440
+
+**Summary:** Analytics charts tab shows 2-up layout on wider screens. Content areas use more space on wide monitors.
+
+---
+
+Last updated: April 2026
