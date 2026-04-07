@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Text, Card, IconButton } from 'react-native-paper';
 
+import { Chip } from './chip';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { Trade } from '../types';
 import { formatDate } from '../utils/date-format';
@@ -92,7 +93,7 @@ export function TradeCard({
                 </View>
                 <View style={styles.right}>
                   <Text
-                    variant="titleLarge"
+                    variant="headlineSmall"
                     style={[
                       styles.pnl,
                       {
@@ -120,9 +121,9 @@ export function TradeCard({
                   {formatDate(trade.entryTime)} - {formatDate(trade.exitTime)}
                 </Text>
                 {trade.strategy && (
-                  <Text variant="bodySmall" style={styles.strategy}>
-                    Strategy: {trade.strategy}
-                  </Text>
+                  <Chip compact style={styles.strategyChip}>
+                    {trade.strategy}
+                  </Chip>
                 )}
               </View>
             </Card.Content>
@@ -193,8 +194,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     date: {
       marginTop: theme.spacing.xs,
     },
-    strategy: {
-      marginTop: theme.spacing.xs,
-      fontStyle: 'italic',
+    strategyChip: {
+      marginTop: theme.spacing.sm,
+      alignSelf: 'flex-start',
     },
   });
