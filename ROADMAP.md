@@ -29,9 +29,9 @@ _None_
 
 ### Low Priority / Nice to Have
 
-- [ ] **R-Multiple Distribution** - Histogram of trades expressed in risk units (R)
+- [x] **R-Multiple Distribution** - Histogram of trades expressed in risk units (R)
 - [ ] **MFE/MAE Analysis** - Max favorable/adverse excursion charts (requires additional trade data)
-- [ ] **Position Sizing Calculator** - Calculate size based on risk %
+- [x] **Position Sizing Calculator** - Calculate size based on risk %
 - [ ] **Trade Goals** - Daily/weekly/monthly P&L targets
 - [ ] **Notifications** - Milestone alerts (reached $X profit, etc.)
 - [ ] **Onboarding Tutorial** - First-time user walkthrough
@@ -143,3 +143,5 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Avg Daily P&L & P&L Std Dev - Statistical overview stats in analytics
 - [x] Hold Time Breakdown - Hold time analysis split by win/loss/scratch in analytics overview
 - [x] Trade Duration Histogram - Distribution chart of hold times across 7 duration buckets, bars colored by avg P&L
+- [x] R-Multiple Distribution - Histogram showing trades in R units; risk amount entered per trade via flat $ or % of account toggle
+- [x] Position Sizing Calculator - Dialog on home screen; account size, risk %, entry/stop → position size and dollar risk

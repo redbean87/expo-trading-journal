@@ -13,11 +13,13 @@ import { HomeEdgeMetrics } from './home/home-edge-metrics';
 import { HomeHeader } from './home/home-header';
 import { HomePeriodSelector } from './home/home-period-selector';
 import { HomeStreakBadge } from './home/home-streak-badge';
+import { PositionSizingCalculatorDialog } from './home/position-sizing-calculator-dialog';
 import { RecentTradesCard } from './home/recent-trades-card';
 
 export default function HomeScreen() {
   const { trades, isLoading } = useTrades();
   const [period, setPeriod] = useState<HomePeriod>('all');
+  const [calcVisible, setCalcVisible] = useState(false);
   const theme = useAppTheme();
 
   const {
@@ -40,7 +42,7 @@ export default function HomeScreen() {
       <ScrollView style={styles.container}>
         <ResponsiveContainer>
           <View style={styles.content}>
-            <HomeHeader />
+            <HomeHeader onCalculatorPress={() => setCalcVisible(true)} />
             <HomeStreakBadge streak={currentStreak} />
             <HomePeriodSelector period={period} onChangePeriod={setPeriod} />
 
@@ -72,6 +74,11 @@ export default function HomeScreen() {
           </View>
         </ResponsiveContainer>
       </ScrollView>
+
+      <PositionSizingCalculatorDialog
+        visible={calcVisible}
+        onDismiss={() => setCalcVisible(false)}
+      />
     </LoadingState>
   );
 }

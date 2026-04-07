@@ -26,6 +26,7 @@ type BackendTrade = {
   confidence?: number;
   ruleViolation?: string;
   importedFrom?: string;
+  riskAmount?: number;
 };
 
 function mapToTrade(trade: BackendTrade): Trade {
@@ -53,6 +54,7 @@ function mapToTrade(trade: BackendTrade): Trade {
       | 'cash-balance'
       | 'trade-history'
       | undefined,
+    riskAmount: trade.riskAmount,
   };
 }
 
@@ -77,6 +79,7 @@ function mapFromTrade(trade: Trade) {
     confidence: trade.confidence,
     ruleViolation: trade.ruleViolation,
     importedFrom: trade.importedFrom,
+    riskAmount: trade.riskAmount,
   };
 }
 
@@ -155,6 +158,7 @@ export function useUpdateTrade() {
       whatFailed: updates.whatFailed,
       confidence: updates.confidence,
       ruleViolation: updates.ruleViolation,
+      riskAmount: updates.riskAmount,
     });
 
     return mapToTrade(result);

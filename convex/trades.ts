@@ -42,6 +42,7 @@ export const getTrades = query({
       importId: trade.importId,
       orderType: trade.orderType,
       accountBalanceAfter: trade.accountBalanceAfter,
+      riskAmount: trade.riskAmount,
     }));
   },
 });
@@ -96,6 +97,7 @@ export const getTradesInRange = query({
       importId: trade.importId,
       orderType: trade.orderType,
       accountBalanceAfter: trade.accountBalanceAfter,
+      riskAmount: trade.riskAmount,
     }));
   },
 });
@@ -146,6 +148,7 @@ export const getTrade = query({
       importId: trade.importId,
       orderType: trade.orderType,
       accountBalanceAfter: trade.accountBalanceAfter,
+      riskAmount: trade.riskAmount,
     };
   },
 });
@@ -174,6 +177,7 @@ export const addTrade = mutation({
     importId: v.optional(v.string()),
     orderType: v.optional(v.string()),
     accountBalanceAfter: v.optional(v.number()),
+    riskAmount: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -204,6 +208,7 @@ export const addTrade = mutation({
       importId: args.importId,
       orderType: args.orderType,
       accountBalanceAfter: args.accountBalanceAfter,
+      riskAmount: args.riskAmount,
     });
 
     return {
@@ -237,6 +242,7 @@ export const updateTrade = mutation({
     ruleViolation: v.optional(v.string()),
     orderType: v.optional(v.string()),
     accountBalanceAfter: v.optional(v.number()),
+    riskAmount: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -357,6 +363,7 @@ export const importTrades = mutation({
         importId: v.optional(v.string()),
         orderType: v.optional(v.string()),
         accountBalanceAfter: v.optional(v.number()),
+        riskAmount: v.optional(v.number()),
       })
     ),
   },

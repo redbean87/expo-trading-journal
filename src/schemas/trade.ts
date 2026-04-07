@@ -31,6 +31,7 @@ export const tradeSchema = z.object({
   importId: z.string().optional(),
   orderType: z.string().optional(),
   accountBalanceAfter: z.number().optional(),
+  riskAmount: z.number().positive().optional(),
 });
 
 export const tradeFormSchema = z
@@ -105,6 +106,16 @@ export const tradeFormSchema = z
         { message: 'Commissions must be a non-negative number' }
       )
       .optional(),
+    riskAmount: z
+      .string()
+      .refine(
+        (val) =>
+          val === '' ||
+          val === undefined ||
+          (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
+        { message: 'Risk amount must be a positive number' }
+      )
+      .optional(),
   })
   .refine((data) => data.exitTime >= data.entryTime, {
     message: 'Exit time must be after entry time',
@@ -163,6 +174,10 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     formData.commissions && formData.commissions !== ''
       ? parseFloat(formData.commissions)
       : undefined;
+  const riskAmount =
+    formData.riskAmount && formData.riskAmount !== ''
+      ? parseFloat(formData.riskAmount)
+      : undefined;
   const { pnl, pnlPercent } = calculatePnl(
     entryPrice,
     exitPrice,
@@ -190,6 +205,7 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     whatFailed: formData.whatFailed,
     confidence: formData.confidence,
     ruleViolation: formData.ruleViolation,
+    riskAmount,
     pnl,
     pnlPercent,
   };

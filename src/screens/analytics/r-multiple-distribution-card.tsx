@@ -9,7 +9,10 @@ import { SectionCard } from '../../components/section-card';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { useContentWidth } from '../../hooks/use-content-width';
-import { PnlBin, usePnlDistribution } from '../../hooks/use-pnl-distribution';
+import {
+  RMultipleBin,
+  useRMultipleDistribution,
+} from '../../hooks/use-r-multiple-distribution';
 import { Trade } from '../../types';
 import {
   getChartHeight,
@@ -17,7 +20,7 @@ import {
   Y_AXIS_LABEL_WIDTH,
 } from '../../utils/chart-dimensions';
 
-type PnlDistributionCardProps = {
+type RMultipleDistributionCardProps = {
   trades: Trade[];
 };
 
@@ -34,14 +37,14 @@ type CountLabelsProps = {
   bandwidth: number;
 };
 
-export default function PnlDistributionCard({
+export default function RMultipleDistributionCard({
   trades,
-}: PnlDistributionCardProps) {
+}: RMultipleDistributionCardProps) {
   const theme = useAppTheme();
   const { breakpoint } = useBreakpoint();
   const contentWidth = useContentWidth();
   const styles = createStyles(theme);
-  const bins = usePnlDistribution(trades);
+  const bins = useRMultipleDistribution(trades);
 
   const chartWidth = getChartWidth(contentWidth);
   const chartHeight = getChartHeight('bar', breakpoint);
@@ -60,7 +63,7 @@ export default function PnlDistributionCard({
     () =>
       ({ x, y, bandwidth, data: chartData }: CustomBarsProps) =>
         chartData.map((value: number, index: number) => {
-          const bin: PnlBin = bins[index];
+          const bin: RMultipleBin = bins[index];
           let barColor: string;
           if (value === 0) {
             barColor = theme.colors.surfaceVariant;
@@ -91,7 +94,7 @@ export default function PnlDistributionCard({
   const CountLabels = useMemo(
     () =>
       ({ x, y, bandwidth }: CountLabelsProps) =>
-        bins.map((bin: PnlBin, index: number) => {
+        bins.map((bin: RMultipleBin, index: number) => {
           if (bin.count === 0) return null;
 
           const labelY = y(bin.count) - 6;
@@ -115,12 +118,12 @@ export default function PnlDistributionCard({
   /* eslint-enable react-hooks/static-components */
 
   return (
-    <SectionCard title="Win/Loss Distribution">
+    <SectionCard title="R-Multiple Distribution">
       {!hasData ? (
         <CardEmptyState
           icon="chart-bar"
-          title="No distribution data yet"
-          subtitle="Add trades to see the distribution of your P&L"
+          title="No R-Multiple Data"
+          subtitle="Add a risk amount when logging trades to see R-multiple distribution"
         />
       ) : (
         <View style={styles.container}>

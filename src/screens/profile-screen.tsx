@@ -35,7 +35,8 @@ export default function ProfileScreen() {
   const { logout } = useAuth();
   const { settings } = useCloudSettings();
   const { themeMode } = useThemeStore();
-  const { displayName } = useProfileStore();
+  const { displayName, defaultRiskPercent, setDefaultRiskPercent } =
+    useProfileStore();
   const { preset, customColors } = useCustomThemeStore();
   const updateTheme = useUpdateTheme();
   const updateDisplayName = useUpdateDisplayName();
@@ -51,6 +52,8 @@ export default function ProfileScreen() {
   const [saveLoading, setSaveLoading] = useState(false);
   const [customColorsDialogVisible, setCustomColorsDialogVisible] =
     useState(false);
+  const [riskPctDialogVisible, setRiskPctDialogVisible] = useState(false);
+  const [tempRiskPct, setTempRiskPct] = useState('');
   const clearAllTrades = useClearAllTrades();
 
   const handleLogout = async () => {
@@ -108,6 +111,23 @@ export default function ProfileScreen() {
     setCustomColorsDialogVisible(false);
   };
 
+  const handleOpenRiskPctDialog = () => {
+    setTempRiskPct(
+      defaultRiskPercent != null ? String(defaultRiskPercent) : ''
+    );
+    setRiskPctDialogVisible(true);
+  };
+
+  const handleSaveRiskPct = async () => {
+    const pct = parseFloat(tempRiskPct);
+    await setDefaultRiskPercent(!isNaN(pct) && pct > 0 ? pct : null);
+    setRiskPctDialogVisible(false);
+  };
+
+  const handleCancelRiskPct = () => {
+    setRiskPctDialogVisible(false);
+  };
+
   const handleResetColors = async () => {
     await updateCustomTheme('default', null);
     // Keep dialog open so user can continue editing after reset
@@ -157,6 +177,24 @@ export default function ProfileScreen() {
               description={preset === 'custom' ? 'Customized' : 'Default'}
               left={(props) => <List.Icon {...props} icon="palette" />}
               onPress={() => setCustomColorsDialogVisible(true)}
+            />
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Content>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
+                Trading
+              </Text>
+            </Card.Content>
+            <List.Item
+              title="Default Risk %"
+              description={
+                defaultRiskPercent != null
+                  ? `${defaultRiskPercent}%`
+                  : 'Not set'
+              }
+              left={(props) => <List.Icon {...props} icon="percent" />}
+              onPress={handleOpenRiskPctDialog}
             />
           </Card>
 
@@ -263,6 +301,32 @@ export default function ProfileScreen() {
             >
               Save
             </Button>
+          </Dialog.Actions>
+        </Dialog>
+
+        <Dialog
+          visible={riskPctDialogVisible}
+          onDismiss={handleCancelRiskPct}
+          style={styles.dialog}
+        >
+          <Dialog.Title>Default Risk %</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              label="Risk % per trade"
+              value={tempRiskPct}
+              onChangeText={setTempRiskPct}
+              keyboardType="decimal-pad"
+              placeholder="e.g. 1"
+              mode="outlined"
+              autoFocus
+            />
+            <Text variant="bodySmall" style={styles.characterCount}>
+              Pre-fills the risk % field when logging trades
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={handleCancelRiskPct}>Cancel</Button>
+            <Button onPress={handleSaveRiskPct}>Save</Button>
           </Dialog.Actions>
         </Dialog>
 

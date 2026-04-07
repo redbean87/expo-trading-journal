@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { TextInput, Text } from 'react-native-paper';
+import { TextInput, Text, HelperText } from 'react-native-paper';
 
 import { MistakeCategorySelector } from './mistake-category-selector';
 import { PsychologySelector } from './psychology-selector';
@@ -11,6 +11,7 @@ import { FormLayout } from '../../components/form-layout';
 import { SegmentedButtons } from '../../components/segmented-buttons';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useFormNavigation } from '../../hooks/use-form-navigation';
+import { useProfileStore } from '../../store/profile-store';
 import { TradeFormData } from '../../types';
 
 const FORM_FIELDS = [
@@ -20,6 +21,7 @@ const FORM_FIELDS = [
   'quantity',
   'fees',
   'commissions',
+  'riskAmount',
   'strategy',
   'ruleViolation',
   'whatWorked',
@@ -34,11 +36,40 @@ type TradeFormProps = {
   onUpdate: (updates: Partial<TradeFormData>) => void;
 };
 
+type RiskMode = '$' | '%';
+
 export function TradeForm({ formData, onUpdate }: TradeFormProps) {
   const theme = useAppTheme();
   const styles = createStyles(theme);
   const { createRef, getReturnKeyType, getBlurOnSubmit, handleSubmitEditing } =
     useFormNavigation<FormField>({ fields: FORM_FIELDS });
+
+  const { defaultRiskPercent, setDefaultRiskPercent } = useProfileStore();
+  const [riskMode, setRiskMode] = useState<RiskMode>('$');
+  const [riskPctStr, setRiskPctStr] = useState(
+    defaultRiskPercent != null ? String(defaultRiskPercent) : ''
+  );
+
+  const handleRiskModeChange = (mode: RiskMode) => {
+    setRiskMode(mode);
+    onUpdate({ riskAmount: '' });
+  };
+
+  const handleRiskPctChange = (text: string) => {
+    setRiskPctStr(text);
+    const pct = parseFloat(text);
+    if (!isNaN(pct) && pct > 0) {
+      setDefaultRiskPercent(pct);
+    }
+    const entryPrice = parseFloat(formData.entryPrice);
+    const quantity = parseFloat(formData.quantity);
+    if (!isNaN(pct) && pct > 0 && !isNaN(entryPrice) && !isNaN(quantity)) {
+      const computed = (entryPrice * quantity * pct) / 100;
+      onUpdate({ riskAmount: computed.toFixed(2) });
+    } else {
+      onUpdate({ riskAmount: '' });
+    }
+  };
 
   // Helper to get web-specific props for multiline fields
   const getMultilineWebProps = (field: FormField) => {
@@ -156,6 +187,53 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
             onSubmitEditing={() => handleSubmitEditing('commissions')}
           />
         </View>
+      </FormLayout>
+
+      <FormLayout title="Risk">
+        <SegmentedButtons
+          value={riskMode}
+          onValueChange={(value) => handleRiskModeChange(value as RiskMode)}
+          buttons={[
+            { value: '$', label: 'Flat $' },
+            { value: '%', label: '% of Position' },
+          ]}
+          style={styles.segmentedButtons}
+        />
+
+        {riskMode === '$' ? (
+          <TextInput
+            ref={createRef('riskAmount')}
+            label="Risk Amount (Optional)"
+            value={formData.riskAmount}
+            onChangeText={(text) => onUpdate({ riskAmount: text })}
+            mode="outlined"
+            keyboardType="decimal-pad"
+            style={styles.input}
+            returnKeyType={getReturnKeyType('riskAmount')}
+            blurOnSubmit={getBlurOnSubmit('riskAmount')}
+            onSubmitEditing={() => handleSubmitEditing('riskAmount')}
+          />
+        ) : (
+          <TextInput
+            label="Risk %"
+            value={riskPctStr}
+            onChangeText={handleRiskPctChange}
+            mode="outlined"
+            keyboardType="decimal-pad"
+            style={styles.input}
+          />
+        )}
+
+        {riskMode === '%' && formData.riskAmount ? (
+          <HelperText type="info" style={styles.riskHelper}>
+            Risk amount: ${parseFloat(formData.riskAmount).toFixed(2)} (
+            {riskPctStr}% of position value)
+          </HelperText>
+        ) : null}
+
+        <HelperText type="info" style={styles.riskHelper}>
+          Optional — enables R-multiple analytics
+        </HelperText>
       </FormLayout>
 
       <FormLayout title="Psychology & Notes" last>
@@ -287,6 +365,10 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     segmentedButtons: {
       marginBottom: theme.spacing.lg,
+    },
+    riskHelper: {
+      marginTop: -theme.spacing.md,
+      marginBottom: theme.spacing.sm,
     },
     confidenceContainer: {
       marginBottom: theme.spacing.lg,

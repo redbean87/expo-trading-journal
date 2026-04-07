@@ -9,14 +9,14 @@ export type PnlBin = {
 };
 
 const BINS: { label: string; min: number; max: number }[] = [
-  { label: '<-$500', min: -Infinity, max: -500 },
-  { label: '-$500\n-$200', min: -500, max: -200 },
-  { label: '-$200\n-$100', min: -200, max: -100 },
-  { label: '-$100\n$0', min: -100, max: 0 },
-  { label: '$0\n+$100', min: 0, max: 100 },
-  { label: '+$100\n+$200', min: 100, max: 200 },
-  { label: '+$200\n+$500', min: 200, max: 500 },
-  { label: '>+$500', min: 500, max: Infinity },
+  { label: '< -500', min: -Infinity, max: -500 },
+  { label: '-500/-200', min: -500, max: -200 },
+  { label: '-200/-100', min: -200, max: -100 },
+  { label: '-100/0', min: -100, max: 0 },
+  { label: '0/+100', min: 0, max: 100 },
+  { label: '+100/+200', min: 100, max: 200 },
+  { label: '+200/+500', min: 200, max: 500 },
+  { label: '> +500', min: 500, max: Infinity },
 ];
 
 export function calculatePnlDistribution(trades: Trade[]): PnlBin[] {

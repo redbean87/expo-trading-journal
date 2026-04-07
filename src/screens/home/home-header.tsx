@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, IconButton } from 'react-native-paper';
 
 import { useProfileStore } from '../../store/profile-store';
 
@@ -10,7 +10,11 @@ function getGreeting(hour: number): string {
   return 'Good evening';
 }
 
-export function HomeHeader() {
+type HomeHeaderProps = {
+  onCalculatorPress?: () => void;
+};
+
+export function HomeHeader({ onCalculatorPress }: HomeHeaderProps) {
   const { displayName } = useProfileStore();
   const greeting = getGreeting(new Date().getHours());
   const name = displayName || 'Trader';
@@ -20,6 +24,12 @@ export function HomeHeader() {
       <Text variant="headlineMedium" style={styles.title}>
         {greeting}, {name}
       </Text>
+      <IconButton
+        icon="calculator"
+        size={24}
+        onPress={onCalculatorPress}
+        style={styles.iconButton}
+      />
     </View>
   );
 }
@@ -33,5 +43,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
+    flex: 1,
+  },
+  iconButton: {
+    margin: 0,
   },
 });

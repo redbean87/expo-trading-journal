@@ -39,6 +39,11 @@ export default function AddTradeScreen() {
 
     let savedTradeId: string;
 
+    const riskAmount =
+      formData.riskAmount && formData.riskAmount !== ''
+        ? parseFloat(formData.riskAmount)
+        : undefined;
+
     if (isEditMode && params.id) {
       await updateTrade(params.id, {
         symbol: formData.symbol.toUpperCase(),
@@ -55,6 +60,7 @@ export default function AddTradeScreen() {
         whatFailed: formData.whatFailed || undefined,
         confidence: formData.confidence,
         ruleViolation: formData.ruleViolation || undefined,
+        riskAmount,
         pnl,
         pnlPercent,
       });
@@ -76,6 +82,7 @@ export default function AddTradeScreen() {
         whatFailed: formData.whatFailed || undefined,
         confidence: formData.confidence,
         ruleViolation: formData.ruleViolation || undefined,
+        riskAmount,
         pnl,
         pnlPercent,
       };
@@ -140,6 +147,7 @@ export default function AddTradeScreen() {
           whatFailed: trade.whatFailed || '',
           confidence: trade.confidence,
           ruleViolation: trade.ruleViolation || '',
+          riskAmount: trade.riskAmount?.toString() || '',
         }
       : {
           symbol: '',
@@ -156,6 +164,7 @@ export default function AddTradeScreen() {
           whatFailed: '',
           confidence: undefined,
           ruleViolation: '',
+          riskAmount: '',
         };
 
   return (

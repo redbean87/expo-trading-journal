@@ -64,6 +64,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       importId: trade.importId,
       orderType: trade.orderType,
       accountBalanceAfter: trade.accountBalanceAfter,
+      riskAmount: trade.riskAmount,
     });
 
     return {
@@ -95,6 +96,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       ruleViolation: updates.ruleViolation,
       orderType: updates.orderType,
       accountBalanceAfter: updates.accountBalanceAfter,
+      riskAmount: updates.riskAmount,
     });
 
     return {

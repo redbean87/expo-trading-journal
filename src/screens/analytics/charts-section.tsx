@@ -6,6 +6,7 @@ import DrawdownChartCard from './drawdown-chart-card';
 import EquityCurveCard from './equity-curve-card';
 import { PnlCalendarCard } from './pnl-calendar-card';
 import PnlDistributionCard from './pnl-distribution-card';
+import RMultipleDistributionCard from './r-multiple-distribution-card';
 import { DailyPnl } from '../../hooks/use-daily-pnl';
 import { EquityCurveData } from '../../hooks/use-equity-curve';
 import { Trade } from '../../types';
@@ -48,6 +49,7 @@ export function ChartsSection({
       <DailyPnlBarCard trades={trades} />
       <PnlCalendarCard trades={trades} onDayPress={handleDayPress} />
       <PnlDistributionCard trades={trades} />
+      <RMultipleDistributionCard trades={trades} />
     </>
   );
 }

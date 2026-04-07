@@ -48,6 +48,7 @@ const schema = defineSchema({
     importId: v.optional(v.string()),
     orderType: v.optional(v.string()),
     accountBalanceAfter: v.optional(v.number()),
+    riskAmount: v.optional(v.number()),
   })
     .index('by_user', ['userId']) // Index for efficient user queries
     .index('by_user_and_entry_time', ['userId', 'entryTime']) // Index for sorted queries

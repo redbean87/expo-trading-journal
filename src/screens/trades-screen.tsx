@@ -12,7 +12,16 @@ import {
   RefreshControl,
   Animated,
 } from 'react-native';
-import { FAB, Snackbar, Portal, Text, IconButton } from 'react-native-paper';
+import {
+  FAB,
+  Snackbar,
+  Portal,
+  Text,
+  IconButton,
+  Dialog,
+  Button,
+  Checkbox,
+} from 'react-native-paper';
 
 import { EmptyState } from '../components/empty-state';
 import { LoadingState } from '../components/loading-state';
@@ -31,11 +40,12 @@ import {
   useDeleteTrade,
   useImportTrades,
 } from '../hooks/use-trades';
+import { useProfileStore } from '../store/profile-store';
 import { useTradesUIStore } from '../store/trades-ui-store';
 import { Trade, TradeSide } from '../types';
 import { formatDateKey } from '../utils/calendar-helpers';
 import { tradesToCsv, generateExportFilename } from '../utils/csv-export';
-import { parseCsvFile } from '../utils/csv-import';
+import { ImportResult, parseCsvFile } from '../utils/csv-import';
 import { downloadFile } from '../utils/file-download';
 import {
   isTosAccountStatement,
@@ -102,6 +112,7 @@ export default function TradesScreen() {
   const isFocused = useIsFocused();
   const { selectedTradeId, setSelectedTradeId, clearSelection } =
     useTradesUIStore();
+  const { defaultRiskPercent } = useProfileStore();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -110,6 +121,8 @@ export default function TradesScreen() {
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const fabAnimValue = useRef(new Animated.Value(0)).current;
+  const [pendingImport, setPendingImport] = useState<ImportResult | null>(null);
+  const [applyRiskOnImport, setApplyRiskOnImport] = useState(true);
 
   useEffect(() => {
     Animated.timing(fabAnimValue, {
@@ -255,29 +268,58 @@ export default function TradesScreen() {
         : await parseCsvFile(csvContent);
 
       if (parseResult.errors.length > 0) {
-        setSnackbarMessage(
-          `Import completed with errors. Check console for details.`
-        );
         console.error('CSV Import Errors:', parseResult.errors);
       }
 
-      const { imported, skipped, updated } = await importTrades(
-        parseResult.imported
-      );
+      setIsImporting(false);
+      setApplyRiskOnImport(true);
+      setPendingImport(parseResult);
+    } catch (error) {
+      console.error('Error importing CSV:', error);
+      setSnackbarMessage('Failed to import CSV');
+      setSnackbarVisible(true);
+      setIsImporting(false);
+    }
+  };
 
-      const totalSkipped = skipped + parseResult.skipped;
+  const handleConfirmImport = async () => {
+    if (!pendingImport) return;
+    try {
+      setIsImporting(true);
+      setPendingImport(null);
+
+      let tradesToImport = pendingImport.imported;
+      if (applyRiskOnImport && defaultRiskPercent != null) {
+        tradesToImport = tradesToImport.map((trade) => ({
+          ...trade,
+          riskAmount:
+            Math.round(
+              trade.entryPrice *
+                trade.quantity *
+                (defaultRiskPercent / 100) *
+                100
+            ) / 100,
+        }));
+      }
+
+      const { imported, skipped, updated } = await importTrades(tradesToImport);
+
+      const totalSkipped = skipped + pendingImport.skipped;
       const parts = [`Imported ${imported} trades`];
       if (updated > 0) parts.push(`${updated} updated`);
       if (totalSkipped > 0) parts.push(`${totalSkipped} skipped`);
-      if (parseResult.unmatchedBuys) {
+      if (pendingImport.unmatchedBuys) {
         parts.push(
-          `${parseResult.unmatchedBuys} open position(s) not yet closed`
+          `${pendingImport.unmatchedBuys} open position(s) not yet closed`
         );
       }
-      if (parseResult.unmatchedSells) {
+      if (pendingImport.unmatchedSells) {
         parts.push(
-          `${parseResult.unmatchedSells} sell(s) with no prior buy in this file`
+          `${pendingImport.unmatchedSells} sell(s) with no prior buy in this file`
         );
+      }
+      if (pendingImport.errors.length > 0) {
+        parts.push('some rows had errors');
       }
       setSnackbarMessage(parts.join(' · '));
       setSnackbarVisible(true);
@@ -519,6 +561,51 @@ export default function TradesScreen() {
           onApplyFilters={setFilters}
           onClearFilters={clearFilters}
         />
+        <Portal>
+          <Dialog
+            visible={pendingImport !== null}
+            onDismiss={() => setPendingImport(null)}
+            style={styles.importDialog}
+          >
+            <Dialog.Title>Import Trades</Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyMedium">
+                Found {pendingImport?.imported.length ?? 0} trade
+                {(pendingImport?.imported.length ?? 0) !== 1 ? 's' : ''} to
+                import
+                {(pendingImport?.skipped ?? 0) > 0
+                  ? ` (${pendingImport?.skipped} rows skipped)`
+                  : ''}
+                .
+              </Text>
+              {defaultRiskPercent != null && (
+                <TouchableOpacity
+                  style={styles.checkboxRow}
+                  onPress={() => setApplyRiskOnImport((v) => !v)}
+                  activeOpacity={0.7}
+                >
+                  <Checkbox
+                    status={applyRiskOnImport ? 'checked' : 'unchecked'}
+                    onPress={() => setApplyRiskOnImport((v) => !v)}
+                  />
+                  <Text variant="bodyMedium" style={styles.checkboxLabel}>
+                    Apply default risk ({defaultRiskPercent}% of position)
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setPendingImport(null)}>Cancel</Button>
+              <Button
+                mode="contained"
+                onPress={handleConfirmImport}
+                disabled={(pendingImport?.imported.length ?? 0) === 0}
+              >
+                Import
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </View>
     </LoadingState>
   );
@@ -594,5 +681,18 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     clearFiltersLink: {
       color: theme.colors.primary,
+    },
+    importDialog: {
+      maxWidth: 480,
+      alignSelf: 'center',
+    },
+    checkboxRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.spacing.md,
+    },
+    checkboxLabel: {
+      flex: 1,
+      marginLeft: theme.spacing.sm,
     },
   });
