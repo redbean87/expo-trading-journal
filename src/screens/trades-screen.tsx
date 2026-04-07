@@ -2,7 +2,7 @@ import { useIsFocused } from '@react-navigation/native';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import {
   View,
@@ -10,6 +10,7 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
+  Animated,
 } from 'react-native';
 import { FAB, Snackbar, Portal, Text, IconButton } from 'react-native-paper';
 
@@ -108,6 +109,15 @@ export default function TradesScreen() {
   const [fabOpen, setFabOpen] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const fabAnimValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fabAnimValue, {
+      toValue: fabOpen ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [fabOpen, fabAnimValue]);
 
   const params = useLocalSearchParams<TradeSearchParams>();
 
@@ -386,81 +396,105 @@ export default function TradesScreen() {
                 isDesktop && { bottom: theme.spacing.xl },
               ]}
             >
-              {fabOpen && (
-                <>
-                  <TouchableOpacity
-                    style={styles.pillButton}
-                    onPress={() => {
+              <Animated.View
+                style={{
+                  opacity: fabAnimValue,
+                  transform: [
+                    {
+                      translateY: fabAnimValue.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [16, 0],
+                      }),
+                    },
+                  ],
+                  pointerEvents: fabOpen ? 'auto' : 'none',
+                }}
+              >
+                <TouchableOpacity
+                  style={styles.pillButton}
+                  onPress={() => {
+                    setFabOpen(false);
+                    router.push('/add-trade');
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.pillContent}>
+                    <IconButton
+                      icon="pencil"
+                      size={20}
+                      iconColor={theme.colors.onSurface}
+                      style={styles.pillIcon}
+                    />
+                    <Text variant="labelLarge" style={styles.pillLabel}>
+                      Add Trade
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.pillButton, styles.pillButtonSecond]}
+                  onPress={() => {
+                    if (!isImporting) {
                       setFabOpen(false);
-                      router.push('/add-trade');
-                    }}
-                    activeOpacity={0.7}
-                  >
-                    <View style={styles.pillContent}>
-                      <IconButton
-                        icon="pencil"
-                        size={20}
-                        iconColor={theme.colors.onSurface}
-                        style={styles.pillIcon}
-                      />
-                      <Text variant="labelLarge" style={styles.pillLabel}>
-                        Add Trade
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.pillButton, styles.pillButtonSecond]}
-                    onPress={() => {
-                      if (!isImporting) {
-                        setFabOpen(false);
-                        handleImportCsv();
-                      }
-                    }}
-                    activeOpacity={0.7}
-                    disabled={isImporting}
-                  >
-                    <View style={styles.pillContent}>
-                      <IconButton
-                        icon="file-upload"
-                        size={20}
-                        iconColor={theme.colors.onSurface}
-                        style={styles.pillIcon}
-                      />
-                      <Text variant="labelLarge" style={styles.pillLabel}>
-                        Import CSV
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.pillButton, styles.pillButtonSecond]}
-                    onPress={() => {
-                      if (!isExporting) {
-                        setFabOpen(false);
-                        handleExportCsv();
-                      }
-                    }}
-                    activeOpacity={0.7}
-                    disabled={isExporting || filteredTrades.length === 0}
-                  >
-                    <View style={styles.pillContent}>
-                      <IconButton
-                        icon="file-download"
-                        size={20}
-                        iconColor={theme.colors.onSurface}
-                        style={styles.pillIcon}
-                      />
-                      <Text variant="labelLarge" style={styles.pillLabel}>
-                        Export CSV
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </>
-              )}
-              <FAB
-                icon="plus"
-                style={styles.fab}
-                onPress={() => setFabOpen(!fabOpen)}
-              />
+                      handleImportCsv();
+                    }
+                  }}
+                  activeOpacity={0.7}
+                  disabled={isImporting}
+                >
+                  <View style={styles.pillContent}>
+                    <IconButton
+                      icon="file-upload"
+                      size={20}
+                      iconColor={theme.colors.onSurface}
+                      style={styles.pillIcon}
+                    />
+                    <Text variant="labelLarge" style={styles.pillLabel}>
+                      Import CSV
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.pillButton, styles.pillButtonSecond]}
+                  onPress={() => {
+                    if (!isExporting) {
+                      setFabOpen(false);
+                      handleExportCsv();
+                    }
+                  }}
+                  activeOpacity={0.7}
+                  disabled={isExporting || filteredTrades.length === 0}
+                >
+                  <View style={styles.pillContent}>
+                    <IconButton
+                      icon="file-download"
+                      size={20}
+                      iconColor={theme.colors.onSurface}
+                      style={styles.pillIcon}
+                    />
+                    <Text variant="labelLarge" style={styles.pillLabel}>
+                      Export CSV
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </Animated.View>
+              <Animated.View
+                style={{
+                  transform: [
+                    {
+                      rotate: fabAnimValue.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['0deg', '45deg'],
+                      }),
+                    },
+                  ],
+                }}
+              >
+                <FAB
+                  icon="plus"
+                  style={styles.fab}
+                  onPress={() => setFabOpen(!fabOpen)}
+                />
+              </Animated.View>
             </View>
           </Portal>
         )}
