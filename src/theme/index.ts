@@ -201,8 +201,16 @@ const configureAppFonts = (baseFonts: typeof MD3LightTheme.fonts) => {
   });
 };
 
+const designTokens = {
+  spacing,
+  borderRadius,
+  elevation,
+  iconSizes,
+};
+
 export const lightTheme = {
   ...MD3LightTheme,
+  ...designTokens,
   colors: {
     ...MD3LightTheme.colors,
     ...lightColors,
@@ -212,6 +220,7 @@ export const lightTheme = {
 
 export const darkTheme = {
   ...MD3DarkTheme,
+  ...designTokens,
   colors: {
     ...MD3DarkTheme.colors,
     ...darkColors,

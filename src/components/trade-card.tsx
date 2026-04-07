@@ -10,7 +10,6 @@ import {
 import { Text, Card, IconButton } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
-import { borderRadius, elevation, spacing } from '../theme';
 import { Trade } from '../types';
 import { formatDate } from '../utils/date-format';
 
@@ -155,10 +154,10 @@ export function TradeCard({
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     card: {
-      marginBottom: spacing.md,
+      marginBottom: theme.spacing.md,
       backgroundColor: theme.colors.surface,
-      borderRadius: borderRadius.md,
-      ...elevation[2],
+      borderRadius: theme.borderRadius.md,
+      ...theme.elevation[2],
     },
     cardHovered: {
       backgroundColor: theme.colors.surfaceVariant,
@@ -167,16 +166,16 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       backgroundColor: theme.colors.primaryContainer,
       borderWidth: 2,
       borderColor: theme.colors.primary,
-      ...elevation[3],
+      ...theme.elevation[3],
     },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: spacing.sm,
+      marginBottom: theme.spacing.sm,
     },
     meta: {
       color: theme.colors.textSecondary,
-      marginTop: spacing.xs,
+      marginTop: theme.spacing.xs,
     },
     right: {
       alignItems: 'flex-end',
@@ -189,13 +188,13 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       marginTop: 2,
     },
     details: {
-      marginTop: spacing.sm,
+      marginTop: theme.spacing.sm,
     },
     date: {
-      marginTop: spacing.xs,
+      marginTop: theme.spacing.xs,
     },
     strategy: {
-      marginTop: spacing.xs,
+      marginTop: theme.spacing.xs,
       fontStyle: 'italic',
     },
   });

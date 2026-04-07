@@ -4,7 +4,7 @@ import { Text } from 'react-native-paper';
 
 import { CardEmptyState } from '../../components/card-empty-state';
 import { SectionCard } from '../../components/section-card';
-import { spacing } from '../../theme';
+import { useAppTheme } from '../../hooks/use-app-theme';
 import { Trade } from '../../types';
 
 type TradeHighlightCardProps = {
@@ -22,6 +22,9 @@ export function TradeHighlightCard({
   emptyIcon,
   emptySubtitle,
 }: TradeHighlightCardProps) {
+  const theme = useAppTheme();
+  const styles = createStyles(theme);
+
   return (
     <SectionCard title={title}>
       {!trade ? (
@@ -44,9 +47,10 @@ export function TradeHighlightCard({
   );
 }
 
-const styles = StyleSheet.create({
-  pnl: {
-    fontWeight: 'bold',
-    marginTop: spacing.sm,
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    pnl: {
+      fontWeight: 'bold',
+      marginTop: theme.spacing.sm,
+    },
+  });

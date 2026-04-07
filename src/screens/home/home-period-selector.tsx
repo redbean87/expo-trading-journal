@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { Chip } from '../../components/chip';
-import { spacing } from '../../theme';
+import { useAppTheme } from '../../hooks/use-app-theme';
 import { HomePeriod } from '../../types';
 
 type HomePeriodSelectorProps = {
@@ -22,6 +22,9 @@ export function HomePeriodSelector({
   period,
   onChangePeriod,
 }: HomePeriodSelectorProps) {
+  const theme = useAppTheme();
+  const styles = createStyles(theme);
+
   return (
     <View style={styles.chipRow}>
       {PERIOD_OPTIONS.map((option) => (
@@ -38,14 +41,15 @@ export function HomePeriodSelector({
   );
 }
 
-const styles = StyleSheet.create({
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  chip: {
-    marginBottom: 4,
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    chipRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: theme.spacing.sm,
+      marginBottom: theme.spacing.lg,
+    },
+    chip: {
+      marginBottom: 4,
+    },
+  });

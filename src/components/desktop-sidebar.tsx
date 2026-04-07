@@ -4,7 +4,6 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '../hooks/use-app-theme';
-import { spacing } from '../theme';
 
 type SidebarItem = {
   route: string;
@@ -53,6 +52,7 @@ export function DesktopSidebar() {
   const theme = useAppTheme();
   const pathname = usePathname();
   const router = useRouter();
+  const styles = createStyles(theme);
 
   const isActive = (item: SidebarItem) =>
     item.matchPaths.some(
@@ -114,28 +114,29 @@ export function DesktopSidebar() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    width: SIDEBAR_WIDTH,
-    borderRightWidth: 1,
-  },
-  nav: {
-    paddingTop: spacing.xl,
-    paddingHorizontal: spacing.sm,
-    gap: spacing.xs,
-  },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: spacing.sm,
-  },
-  label: {
-    marginLeft: spacing.md,
-    fontSize: 14,
-  },
-  activeLabel: {
-    fontWeight: '600',
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      width: SIDEBAR_WIDTH,
+      borderRightWidth: 1,
+    },
+    nav: {
+      paddingTop: theme.spacing.xl,
+      paddingHorizontal: theme.spacing.sm,
+      gap: theme.spacing.xs,
+    },
+    item: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.md,
+      borderRadius: theme.spacing.sm,
+    },
+    label: {
+      marginLeft: theme.spacing.md,
+      fontSize: 14,
+    },
+    activeLabel: {
+      fontWeight: '600',
+    },
+  });

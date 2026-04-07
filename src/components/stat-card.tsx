@@ -5,7 +5,6 @@ import { Card, customText } from 'react-native-paper';
 const Text = customText<'sectionTitle' | 'statValue'>();
 
 import { useAppTheme } from '../hooks/use-app-theme';
-import { borderRadius, elevation, spacing } from '../theme';
 
 type StatCardProps = {
   title: string;
@@ -39,10 +38,10 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     card: {
       flex: 1,
       backgroundColor: theme.colors.surface,
-      borderRadius: borderRadius.md,
-      ...elevation[1],
+      borderRadius: theme.borderRadius.md,
+      ...theme.elevation[1],
     },
     value: {
-      marginTop: spacing.sm,
+      marginTop: theme.spacing.sm,
     },
   });

@@ -3,7 +3,6 @@ import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
-import { borderRadius, elevation, spacing } from '../theme';
 
 type SectionCardProps = {
   title?: string;
@@ -46,19 +45,19 @@ export function SectionCard({
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     card: {
-      marginBottom: spacing.lg,
+      marginBottom: theme.spacing.lg,
       backgroundColor: theme.colors.surface,
-      borderRadius: borderRadius.md,
-      ...elevation[2],
+      borderRadius: theme.borderRadius.md,
+      ...theme.elevation[2],
     },
     titleRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: spacing.sm,
+      marginBottom: theme.spacing.sm,
     },
     title: {
-      marginBottom: spacing.sm,
+      marginBottom: theme.spacing.sm,
       color: theme.colors.primary,
     },
     titleInRow: {

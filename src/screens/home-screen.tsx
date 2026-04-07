@@ -8,7 +8,6 @@ import { StatCard } from '../components/stat-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useHomeSummary } from '../hooks/use-home-summary';
 import { useTrades } from '../hooks/use-trades';
-import { spacing } from '../theme';
 import { HomePeriod } from '../types';
 import { HomeEdgeMetrics } from './home/home-edge-metrics';
 import { HomeHeader } from './home/home-header';
@@ -84,9 +83,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       backgroundColor: theme.colors.background,
     },
     content: {
-      padding: spacing.lg,
+      padding: theme.spacing.lg,
     },
     statsGrid: {
-      marginBottom: spacing.lg,
+      marginBottom: theme.spacing.lg,
     },
   });

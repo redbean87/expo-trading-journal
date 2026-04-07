@@ -4,7 +4,6 @@ import { Text } from 'react-native-paper';
 
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { CurrentStreak } from '../../hooks/use-trade-analytics';
-import { spacing } from '../../theme';
 
 type HomeStreakBadgeProps = {
   streak: CurrentStreak;
@@ -20,6 +19,7 @@ export function HomeStreakBadge({ streak }: HomeStreakBadgeProps) {
     streak.type === 'win'
       ? `${streak.count} Win Streak`
       : `${streak.count} Loss Streak`;
+  const styles = createStyles(theme);
 
   return (
     <View style={[styles.container, { borderLeftColor: color }]}>
@@ -30,11 +30,12 @@ export function HomeStreakBadge({ streak }: HomeStreakBadgeProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    borderLeftWidth: 3,
-    paddingLeft: spacing.sm,
-    paddingVertical: spacing.xs,
-    marginBottom: spacing.md,
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      borderLeftWidth: 3,
+      paddingLeft: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      marginBottom: theme.spacing.md,
+    },
+  });

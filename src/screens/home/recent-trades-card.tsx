@@ -20,7 +20,6 @@ import { CardEmptyState } from '../../components/card-empty-state';
 import { EmptyState } from '../../components/empty-state';
 import { SectionCard } from '../../components/section-card';
 import { useAppTheme } from '../../hooks/use-app-theme';
-import { spacing } from '../../theme';
 import { Trade } from '../../types';
 
 type RecentTradesCardProps = {
@@ -98,7 +97,7 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     tradeItem: {
-      paddingVertical: spacing.md,
+      paddingVertical: theme.spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border,
     },
@@ -106,7 +105,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: spacing.xs,
+      marginBottom: theme.spacing.xs,
     },
     pnl: {
       fontWeight: 'bold',

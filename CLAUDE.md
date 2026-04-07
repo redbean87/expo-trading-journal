@@ -108,6 +108,25 @@ src/screens/
 </EmptyState>
 ```
 
+### Theme & Design Tokens
+
+All theme tokens (colors, spacing, borderRadius, elevation, iconSizes) are accessed via `useAppTheme()`. Never import design tokens directly from `'../theme'`.
+
+```typescript
+// ✅ Correct
+const theme = useAppTheme();
+// theme.colors.primary, theme.spacing.lg, theme.borderRadius.md, theme.elevation[2], theme.iconSizes.lg
+
+// ❌ Avoid
+import { spacing, borderRadius } from '../theme';
+```
+
+**Button hierarchy:**
+
+- `mode="contained"` — primary / affirmative action (one per screen)
+- `mode="outlined"` — secondary or destructive action (use error color for destructive)
+- `mode="text"` — cancel / dismiss / tertiary
+
 ### TypeScript
 
 - Define types in `src/types/index.ts`

@@ -27,7 +27,6 @@ import { useClearAllTrades } from '../hooks/use-trades';
 import { useCustomThemeStore } from '../store/custom-theme-store';
 import { useProfileStore } from '../store/profile-store';
 import { useThemeStore } from '../store/theme-store';
-import { spacing } from '../theme';
 import { rgbaToHex } from '../utils/color-intensity';
 
 import type { CustomColors } from '../types';
@@ -42,7 +41,7 @@ export default function ProfileScreen() {
   const updateDisplayName = useUpdateDisplayName();
   const updateCustomTheme = useUpdateCustomTheme();
   const theme = useAppTheme();
-  const themedStyles = createThemedStyles(theme);
+  const styles = createStyles(theme);
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [clearDialogVisible, setClearDialogVisible] = useState(false);
   const [clearLoading, setClearLoading] = useState(false);
@@ -131,7 +130,7 @@ export default function ProfileScreen() {
 
           <Card style={styles.card}>
             <Card.Content>
-              <Text variant="titleMedium" style={themedStyles.sectionTitle}>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
                 Appearance
               </Text>
             </Card.Content>
@@ -163,7 +162,7 @@ export default function ProfileScreen() {
 
           <Card style={styles.card}>
             <Card.Content>
-              <Text variant="titleMedium" style={themedStyles.sectionTitle}>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
                 Data Management
               </Text>
             </Card.Content>
@@ -185,7 +184,7 @@ export default function ProfileScreen() {
 
           <Card style={styles.card}>
             <Card.Content>
-              <Text variant="titleMedium" style={themedStyles.sectionTitle}>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
                 Account
               </Text>
             </Card.Content>
@@ -213,7 +212,7 @@ export default function ProfileScreen() {
         <Dialog
           visible={clearDialogVisible}
           onDismiss={() => setClearDialogVisible(false)}
-          style={themedStyles.dialog}
+          style={styles.dialog}
         >
           <Dialog.Title>Remove All Trades</Dialog.Title>
           <Dialog.Content>
@@ -238,7 +237,7 @@ export default function ProfileScreen() {
         <Dialog
           visible={displayNameDialogVisible}
           onDismiss={handleCancelDisplayName}
-          style={themedStyles.dialog}
+          style={styles.dialog}
         >
           <Dialog.Title>Journal Name</Dialog.Title>
           <Dialog.Content>
@@ -251,7 +250,7 @@ export default function ProfileScreen() {
               mode="outlined"
               autoFocus
             />
-            <Text variant="bodySmall" style={themedStyles.characterCount}>
+            <Text variant="bodySmall" style={styles.characterCount}>
               {tempDisplayName.length}/50 characters
             </Text>
           </Dialog.Content>
@@ -289,39 +288,36 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing.lg,
-    alignItems: 'center',
-  },
-  card: {
-    marginBottom: spacing.lg,
-    maxWidth: 600,
-    width: '100%',
-  },
-  userSection: {
-    alignItems: 'center',
-    paddingVertical: spacing.lg,
-  },
-  userText: {
-    marginTop: spacing.md,
-  },
-  cardActions: {
-    justifyContent: 'center',
-    paddingVertical: spacing.lg,
-  },
-  actionButton: {
-    minWidth: 150,
-  },
-});
-
-const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    content: {
+      padding: theme.spacing.lg,
+      alignItems: 'center',
+    },
+    card: {
+      marginBottom: theme.spacing.lg,
+      maxWidth: 600,
+      width: '100%',
+    },
+    userSection: {
+      alignItems: 'center',
+      paddingVertical: theme.spacing.lg,
+    },
+    userText: {
+      marginTop: theme.spacing.md,
+    },
+    cardActions: {
+      justifyContent: 'center',
+      paddingVertical: theme.spacing.lg,
+    },
+    actionButton: {
+      minWidth: 150,
+    },
     sectionTitle: {
-      marginBottom: spacing.sm,
+      marginBottom: theme.spacing.sm,
       color: theme.colors.primary,
     },
     dialog: {
@@ -329,7 +325,7 @@ const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
       alignSelf: 'center',
     },
     characterCount: {
-      marginTop: spacing.sm,
+      marginTop: theme.spacing.sm,
       color: theme.colors.outline,
     },
   });

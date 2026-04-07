@@ -11,7 +11,6 @@ import {
   useMistakeAnalytics,
   MistakeSummary,
 } from '../../hooks/use-mistake-analytics';
-import { spacing } from '../../theme';
 import { Trade } from '../../types';
 
 type MistakesCardProps = {
@@ -20,16 +19,20 @@ type MistakesCardProps = {
 
 type ViewMode = 'frequency' | 'impact';
 
+type MistakeRowStyles = ReturnType<typeof createStyles>;
+
 function MistakeRow({
   mistake,
   viewMode,
   profitColor,
   lossColor,
+  styles,
 }: {
   mistake: MistakeSummary;
   viewMode: ViewMode;
   profitColor: string;
   lossColor: string;
+  styles: MistakeRowStyles;
 }) {
   const isProfitable = mistake.totalPnl >= 0;
   const pnlColor = isProfitable ? profitColor : lossColor;
@@ -79,7 +82,7 @@ export function MistakesCard({ trades }: MistakesCardProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('frequency');
   const analytics = useMistakeAnalytics(trades);
 
-  const themedStyles = createThemedStyles(theme);
+  const styles = createStyles(theme);
 
   const hasData = analytics.totalTradesWithMistakes > 0;
 
@@ -111,7 +114,7 @@ export function MistakesCard({ trades }: MistakesCardProps) {
 
             return (
               <>
-                <View style={themedStyles.summarySection}>
+                <View style={styles.summarySection}>
                   <StatRow
                     label="Trades with Mistakes:"
                     value={`${analytics.totalTradesWithMistakes} (${mistakePercentage.toFixed(0)}%)`}
@@ -141,8 +144,8 @@ export function MistakesCard({ trades }: MistakesCardProps) {
                   />
                 </View>
 
-                <View style={themedStyles.breakdownSection}>
-                  <Text variant="titleSmall" style={themedStyles.sectionTitle}>
+                <View style={styles.breakdownSection}>
+                  <Text variant="titleSmall" style={styles.sectionTitle}>
                     Breakdown
                   </Text>
                   <SegmentedButtons
@@ -155,7 +158,7 @@ export function MistakesCard({ trades }: MistakesCardProps) {
                     style={styles.toggle}
                   />
                   {sortedMistakes.length === 0 ? (
-                    <Text style={themedStyles.emptyText}>
+                    <Text style={styles.emptyText}>
                       No categorized mistakes
                     </Text>
                   ) : (
@@ -167,6 +170,7 @@ export function MistakesCard({ trades }: MistakesCardProps) {
                           viewMode={viewMode}
                           profitColor={theme.colors.profit}
                           lossColor={theme.colors.loss}
+                          styles={styles}
                         />
                       ))}
                     </View>
@@ -181,46 +185,43 @@ export function MistakesCard({ trades }: MistakesCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  toggle: {
-    marginBottom: spacing.lg,
-  },
-  mistakesList: {
-    gap: spacing.md,
-  },
-  mistakeRow: {
-    paddingVertical: spacing.sm,
-  },
-  mistakeLabel: {
-    marginBottom: spacing.xs,
-  },
-  metricsRow: {
-    flexDirection: 'row',
-    gap: spacing.lg,
-  },
-  metric: {
-    minWidth: 70,
-  },
-});
-
-const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
+    toggle: {
+      marginBottom: theme.spacing.lg,
+    },
+    mistakesList: {
+      gap: theme.spacing.md,
+    },
+    mistakeRow: {
+      paddingVertical: theme.spacing.sm,
+    },
+    mistakeLabel: {
+      marginBottom: theme.spacing.xs,
+    },
+    metricsRow: {
+      flexDirection: 'row',
+      gap: theme.spacing.lg,
+    },
+    metric: {
+      minWidth: 70,
+    },
     summarySection: {
-      marginBottom: spacing.lg,
+      marginBottom: theme.spacing.lg,
     },
     breakdownSection: {
-      marginTop: spacing.md,
-      paddingTop: spacing.md,
+      marginTop: theme.spacing.md,
+      paddingTop: theme.spacing.md,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
     },
     sectionTitle: {
-      marginBottom: spacing.sm,
+      marginBottom: theme.spacing.sm,
       color: theme.colors.textSecondary,
     },
     emptyText: {
       color: theme.colors.textSecondary,
       textAlign: 'center',
-      marginTop: spacing.sm,
+      marginTop: theme.spacing.sm,
     },
   });

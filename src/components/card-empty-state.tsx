@@ -4,7 +4,6 @@ import { Button, Icon, Text } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useBreakpoint } from '../hooks/use-breakpoint';
-import { iconSizes, spacing } from '../theme';
 
 type CardEmptyStateAction = {
   label: string;
@@ -35,7 +34,7 @@ export function CardEmptyState({
         <View style={styles.iconContainer}>
           <Icon
             source={icon}
-            size={iconSizes.sm}
+            size={theme.iconSizes.sm}
             color={theme.colors.textTertiary}
           />
         </View>
@@ -72,24 +71,24 @@ const createStyles = (
       minHeight: 120,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingVertical: isDesktop ? spacing.xl : spacing.lg,
-      paddingHorizontal: spacing.lg,
+      paddingVertical: isDesktop ? theme.spacing.xl : theme.spacing.lg,
+      paddingHorizontal: theme.spacing.lg,
     },
     iconContainer: {
-      marginBottom: spacing.md,
+      marginBottom: theme.spacing.md,
     },
     title: {
       color: theme.colors.textSecondary,
       textAlign: 'center',
-      marginBottom: spacing.sm,
+      marginBottom: theme.spacing.sm,
     },
     subtitle: {
       color: theme.colors.textTertiary,
       textAlign: 'center',
       lineHeight: 20,
-      marginBottom: spacing.md,
+      marginBottom: theme.spacing.md,
     },
     actionButton: {
-      marginTop: spacing.xs,
+      marginTop: theme.spacing.xs,
     },
   });
