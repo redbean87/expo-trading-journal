@@ -5,6 +5,7 @@ import { Trade } from '../types';
 export type EquityDataPoint = {
   date: Date;
   cumulativePnl: number;
+  drawdown: number;
   tradeId: string;
 };
 
@@ -51,6 +52,7 @@ export function useEquityCurve(trades: Trade[]): EquityCurveData {
       return {
         date: trade.exitTime,
         cumulativePnl,
+        drawdown: currentDrawdown,
         tradeId: trade.id,
       };
     });

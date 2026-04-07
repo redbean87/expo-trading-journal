@@ -22,10 +22,10 @@ _None_
 
 ### Medium Priority
 
-- [ ] **Strategy Analytics** - Performance breakdown by strategy tag
-- [ ] **Screenshot Attachments** - Add images to trades for chart analysis
-- [ ] **Drawdown Chart** - Visual drawdown progression over time
-- [ ] **Win/Loss Distribution** - Histogram showing distribution of trade P&L
+- [x] **Strategy Analytics** - Performance breakdown by strategy tag
+- [x] **Screenshot Attachments** - Add images to trades for chart analysis
+- [x] **Drawdown Chart** - Visual drawdown progression over time
+- [x] **Win/Loss Distribution** - Histogram showing distribution of trade P&L
 
 ### Low Priority / Nice to Have
 
