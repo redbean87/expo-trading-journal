@@ -4,7 +4,7 @@ import { useWindowDimensions } from 'react-native';
 import { NavigationMode, useNavigationMode } from './use-navigation-mode';
 import { SIDEBAR_WIDTH } from '../components/desktop-sidebar';
 
-const RESPONSIVE_MAX_WIDTH = 1200;
+const RESPONSIVE_MAX_WIDTH = 1440;
 
 export function getContentWidth(
   windowWidth: number,

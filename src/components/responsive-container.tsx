@@ -3,7 +3,7 @@ import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 
 import { useBreakpoint } from '../hooks/use-breakpoint';
 
-const DEFAULT_MAX_WIDTH = 1200;
+const DEFAULT_MAX_WIDTH = 1440;
 
 type ResponsiveContainerProps = {
   children: ReactNode;

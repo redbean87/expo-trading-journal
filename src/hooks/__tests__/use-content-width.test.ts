@@ -32,13 +32,13 @@ describe('getContentWidth', () => {
   });
 
   it('should clamp to max width for very wide viewports', () => {
-    // 1920 - 240 = 1680, but clamped to 1200
-    expect(getContentWidth(1920, 'sidebar')).toBe(1200);
+    // 1920 - 240 = 1680, but clamped to 1440
+    expect(getContentWidth(1920, 'sidebar')).toBe(1440);
   });
 
   it('should clamp exactly at the boundary', () => {
-    // 1440 - 240 = 1200 (exactly at max)
-    expect(getContentWidth(1440, 'sidebar')).toBe(1200);
+    // 1680 - 240 = 1440 (exactly at max)
+    expect(getContentWidth(1680, 'sidebar')).toBe(1440);
   });
 
   it('should not clamp for tabs mode on wide viewport', () => {

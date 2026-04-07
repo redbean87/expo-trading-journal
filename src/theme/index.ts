@@ -28,7 +28,7 @@ export const layout = {
     desktop: 1024,
   },
   container: {
-    maxWidth: 1200,
+    maxWidth: 1440,
   },
   grid: {
     gap: 12,
