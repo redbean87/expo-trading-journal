@@ -139,15 +139,15 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flex: 1,
     },
     content: {
-      padding: 16,
+      padding: theme.spacing.lg,
       alignItems: 'center',
     },
     card: {
-      marginBottom: 16,
+      marginBottom: theme.spacing.lg,
       maxWidth: 600,
       width: '100%',
     },
     button: {
-      marginTop: 8,
+      marginTop: theme.spacing.sm,
     },
   });
