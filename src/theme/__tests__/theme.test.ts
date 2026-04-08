@@ -41,7 +41,7 @@ describe('layout', () => {
 
   it('should define container constraints', () => {
     expect(layout.container).toEqual({
-      maxWidth: 1200,
+      maxWidth: 1440,
     });
   });
 
