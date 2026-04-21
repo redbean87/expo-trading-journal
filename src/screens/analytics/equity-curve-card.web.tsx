@@ -129,13 +129,30 @@ export default function EquityCurveCard({
               </AreaChart>
             </ResponsiveContainer>
           </View>
-          {data.maxDrawdown > 0 && (
+          {data.dataPoints.length > 0 && (
             <View style={styles.stats}>
               <Text variant="bodySmall" style={styles.statLabel}>
-                Max Drawdown:{' '}
-                <Text style={styles.drawdownValue}>
-                  -${data.maxDrawdown.toFixed(2)} (
-                  {data.maxDrawdownPercent.toFixed(1)}%)
+                Final PnL:{' '}
+                <Text
+                  style={[
+                    styles.balanceValue,
+                    data.currentBalance >= 0
+                      ? styles.profitValue
+                      : styles.lossValue,
+                  ]}
+                >
+                  {data.currentBalance >= 0 ? '+' : '-'}$
+                  {Math.abs(data.currentBalance).toFixed(2)}
+                </Text>
+                {' | Days: '}
+                {data.tradingDays}
+                {' | Best: '}
+                <Text style={[styles.balanceValue, styles.profitValue]}>
+                  +${Math.abs(data.bestDay).toFixed(0)}
+                </Text>
+                {' | Worst: '}
+                <Text style={[styles.balanceValue, styles.lossValue]}>
+                  -${Math.abs(data.worstDay).toFixed(0)}
                 </Text>
               </Text>
             </View>
@@ -160,7 +177,13 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     statLabel: {
       color: theme.colors.textSecondary,
     },
-    drawdownValue: {
+    balanceValue: {
+      fontWeight: '600',
+    },
+    profitValue: {
+      color: theme.colors.profit,
+    },
+    lossValue: {
       color: theme.colors.loss,
     },
   });

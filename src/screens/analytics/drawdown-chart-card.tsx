@@ -194,14 +194,16 @@ export default function DrawdownChartCard({
               />
             </View>
           </View>
-          {data.maxDrawdown > 0 && (
+          {data.dataPoints.length > 0 && (
             <View style={styles.stats}>
               <Text variant="bodySmall" style={styles.statLabel}>
-                Max Drawdown:{' '}
+                Max:{' '}
                 <Text style={styles.drawdownValue}>
-                  -${data.maxDrawdown.toFixed(2)} (
-                  {data.maxDrawdownPercent.toFixed(1)}%)
+                  -${data.maxDrawdown.toFixed(0)}
                 </Text>
+                {' | Longest Recovery: '}
+                {data.longestRecovery} days | Avg: {data.avgRecovery.toFixed(1)}{' '}
+                days | Total Days: {data.totalDaysInDrawdown}
               </Text>
             </View>
           )}
