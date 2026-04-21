@@ -20,6 +20,11 @@ export const dateRangeOptions: DateRangeOption[] = [
   { label: 'Date Range', value: 'custom' },
 ];
 
+export function getDateRangeLabel(preset: DateRangePreset): string {
+  const option = dateRangeOptions.find((opt) => opt.value === preset);
+  return option?.label || preset;
+}
+
 export function getDateRangeStart(preset: DateRangePreset): number | null {
   if (preset === 'all' || preset === 'custom') return null;
 

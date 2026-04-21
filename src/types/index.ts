@@ -1,13 +1,15 @@
 export type { Trade, TradeFormData, TradeSide } from '../schemas/trade';
 export type { DailyPnl } from '../hooks/use-daily-pnl';
 export type { NavigationMode } from '../hooks/use-navigation-mode';
+export type { AIReportData } from './ai-report';
 
 export type AnalyticsSegment =
   | 'overview'
   | 'patterns'
   | 'charts'
   | 'psychology'
-  | 'strategy';
+  | 'strategy'
+  | 'ai-insights';
 
 export type HomePeriod = 'today' | 'week' | 'month' | 'year' | 'all';
 

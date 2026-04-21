@@ -88,6 +88,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
     if (pathname.includes('/charts')) return 'charts';
     if (pathname.includes('/psychology')) return 'psychology';
     if (pathname.includes('/strategy')) return 'strategy';
+    if (pathname.includes('/ai-insights')) return 'ai-insights';
     return 'overview';
   };
 
@@ -98,6 +99,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
       charts: '/analytics/charts',
       psychology: '/analytics/psychology',
       strategy: '/analytics/strategy',
+      'ai-insights': '/analytics/ai-insights',
     };
     router.replace(routes[value as AnalyticsSegment]);
   };
@@ -136,6 +138,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
                     { value: 'charts', label: 'Charts' },
                     { value: 'psychology', label: 'Psych' },
                     { value: 'strategy', label: 'Strategy' },
+                    { value: 'ai-insights', label: 'AI' },
                   ]}
                   style={styles.segmentToggle}
                 />
