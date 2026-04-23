@@ -1,5 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { Button, Dialog, Portal, Text, TextInput } from 'react-native-paper';
 
 import { useAppTheme } from '../../hooks/use-app-theme';
@@ -15,8 +20,11 @@ export function PositionSizingCalculatorDialog({
   onDismiss,
 }: PositionSizingCalculatorDialogProps) {
   const theme = useAppTheme();
+  const { width } = useWindowDimensions();
   const styles = createStyles(theme);
   const { defaultRiskPercent } = useProfileStore();
+
+  const isNarrow = width < 480;
 
   const [accountSizeStr, setAccountSizeStr] = useState('');
   const [riskPctStr, setRiskPctStr] = useState(
@@ -65,81 +73,85 @@ export function PositionSizingCalculatorDialog({
     <Portal>
       <Dialog visible={true} onDismiss={onDismiss} style={styles.dialog}>
         <Dialog.Title>Position Size Calculator</Dialog.Title>
-        <Dialog.Content>
-          <View style={styles.row}>
-            <TextInput
-              label="Account Size ($)"
-              value={accountSizeStr}
-              onChangeText={setAccountSizeStr}
-              keyboardType="decimal-pad"
-              mode="outlined"
-              style={[styles.input, styles.halfInput]}
-            />
-            <TextInput
-              label="Risk %"
-              value={riskPctStr}
-              onChangeText={setRiskPctStr}
-              keyboardType="decimal-pad"
-              mode="outlined"
-              style={[styles.input, styles.halfInput]}
-            />
-          </View>
+        <Dialog.ScrollArea style={styles.scrollArea}>
+          <ScrollView>
+            <View style={styles.scrollContent}>
+              <View style={[styles.row, isNarrow && styles.rowColumn]}>
+                <TextInput
+                  label="Account Size ($)"
+                  value={accountSizeStr}
+                  onChangeText={setAccountSizeStr}
+                  keyboardType="decimal-pad"
+                  mode="outlined"
+                  style={[styles.input, !isNarrow && styles.halfInput]}
+                />
+                <TextInput
+                  label="Risk %"
+                  value={riskPctStr}
+                  onChangeText={setRiskPctStr}
+                  keyboardType="decimal-pad"
+                  mode="outlined"
+                  style={[styles.input, !isNarrow && styles.halfInput]}
+                />
+              </View>
 
-          <View style={styles.row}>
-            <TextInput
-              label="Entry Price"
-              value={entryPriceStr}
-              onChangeText={setEntryPriceStr}
-              keyboardType="decimal-pad"
-              mode="outlined"
-              style={[styles.input, styles.halfInput]}
-            />
-            <TextInput
-              label="Stop Price"
-              value={stopPriceStr}
-              onChangeText={setStopPriceStr}
-              keyboardType="decimal-pad"
-              mode="outlined"
-              style={[styles.input, styles.halfInput]}
-            />
-          </View>
+              <View style={[styles.row, isNarrow && styles.rowColumn]}>
+                <TextInput
+                  label="Entry Price"
+                  value={entryPriceStr}
+                  onChangeText={setEntryPriceStr}
+                  keyboardType="decimal-pad"
+                  mode="outlined"
+                  style={[styles.input, !isNarrow && styles.halfInput]}
+                />
+                <TextInput
+                  label="Stop Price"
+                  value={stopPriceStr}
+                  onChangeText={setStopPriceStr}
+                  keyboardType="decimal-pad"
+                  mode="outlined"
+                  style={[styles.input, !isNarrow && styles.halfInput]}
+                />
+              </View>
 
-          {results ? (
-            <View style={styles.results}>
-              <ResultRow
-                label="Dollar Risk"
-                value={`$${formatCurrency(results.dollarRisk)}`}
-                theme={theme}
-              />
-              <ResultRow
-                label="Risk Per Share"
-                value={`$${formatCurrency(results.riskPerShare)}`}
-                theme={theme}
-              />
-              <ResultRow
-                label="Position Size"
-                value={`${results.positionSize.toLocaleString()} shares`}
-                highlight
-                theme={theme}
-              />
-              <ResultRow
-                label="Position Value"
-                value={`$${formatCurrency(results.positionValue)}`}
-                theme={theme}
-              />
-              <Text variant="bodySmall" style={styles.hint}>
-                Use ${formatCurrency(results.dollarRisk)} as the risk amount
-                when logging this trade
-              </Text>
+              {results ? (
+                <View style={styles.results}>
+                  <ResultRow
+                    label="Dollar Risk"
+                    value={`$${formatCurrency(results.dollarRisk)}`}
+                    theme={theme}
+                  />
+                  <ResultRow
+                    label="Risk Per Share"
+                    value={`$${formatCurrency(results.riskPerShare)}`}
+                    theme={theme}
+                  />
+                  <ResultRow
+                    label="Position Size"
+                    value={`${results.positionSize.toLocaleString()} shares`}
+                    highlight
+                    theme={theme}
+                  />
+                  <ResultRow
+                    label="Position Value"
+                    value={`$${formatCurrency(results.positionValue)}`}
+                    theme={theme}
+                  />
+                  <Text variant="bodySmall" style={styles.hint}>
+                    Use ${formatCurrency(results.dollarRisk)} as the risk amount
+                    when logging this trade
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.placeholder}>
+                  <Text variant="bodySmall" style={styles.placeholderText}>
+                    Fill in all fields to calculate position size
+                  </Text>
+                </View>
+              )}
             </View>
-          ) : (
-            <View style={styles.placeholder}>
-              <Text variant="bodySmall" style={styles.placeholderText}>
-                Fill in all fields to calculate position size
-              </Text>
-            </View>
-          )}
-        </Dialog.Content>
+          </ScrollView>
+        </Dialog.ScrollArea>
         <Dialog.Actions>
           <Button onPress={onDismiss}>Close</Button>
         </Dialog.Actions>
@@ -209,6 +221,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flexDirection: 'row',
       gap: theme.spacing.md,
     },
+    rowColumn: {
+      flexDirection: 'column',
+    },
     input: {
       marginBottom: theme.spacing.md,
     },
@@ -230,5 +245,12 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     placeholderText: {
       color: theme.colors.textSecondary,
+    },
+    scrollArea: {
+      maxHeight: 400,
+    },
+    scrollContent: {
+      paddingHorizontal: 24,
+      paddingBottom: theme.spacing.sm,
     },
   });
