@@ -1,15 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, Clipboard } from 'react-native';
-import {
-  Button,
-  Text,
-  Switch,
-  Card,
-  SegmentedButtons,
-} from 'react-native-paper';
+import { Button, Text, Switch, Card } from 'react-native-paper';
 
 import { CardEmptyState } from '../../components/card-empty-state';
 import { SectionCard } from '../../components/section-card';
+import { SegmentedButtons } from '../../components/segmented-buttons';
 import { useAIReport } from '../../hooks/use-ai-report';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useAnalyticsStore } from '../../store/analytics-store';
