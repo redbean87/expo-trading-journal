@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Dialog, Divider, Portal, Text } from 'react-native-paper';
+import { Dialog, Divider, Portal, Text } from 'react-native-paper';
 
+import { Button } from '../../components/button';
 import { Chip } from '../../components/chip';
 import { DatePickerDialog } from '../../components/date-picker-dialog';
 import { useAppTheme } from '../../hooks/use-app-theme';

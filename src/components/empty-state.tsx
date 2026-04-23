@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Icon, Text } from 'react-native-paper';
+import { Icon, Text } from 'react-native-paper';
 
+import { Button } from './button';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useBreakpoint } from '../hooks/use-breakpoint';
 

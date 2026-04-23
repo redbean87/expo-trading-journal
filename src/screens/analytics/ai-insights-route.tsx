@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, Clipboard } from 'react-native';
-import { Button, Text, Switch, Card } from 'react-native-paper';
+import { Text, Switch, Card } from 'react-native-paper';
 
+import { Button } from '../../components/button';
 import { CardEmptyState } from '../../components/card-empty-state';
 import { SectionCard } from '../../components/section-card';
 import { SegmentedButtons } from '../../components/segmented-buttons';

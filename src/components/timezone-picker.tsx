@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { Dialog, Portal, RadioButton, Button, List } from 'react-native-paper';
+import { Dialog, Portal, RadioButton, List } from 'react-native-paper';
 
+import { Button } from './button';
 import { useUpdateTimezone } from '../hooks/use-settings';
 import { TIMEZONE_OPTIONS, useTimezoneStore } from '../store/timezone-store';
 

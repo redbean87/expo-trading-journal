@@ -6,11 +6,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Button, Card } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 
 import { PnlPreviewCard } from './pnl-preview-card';
 import { ScreenshotPicker } from './screenshot-picker';
 import { TradeForm } from './trade-form';
+import { Button } from '../../components/button';
 import { ResponsiveContainer } from '../../components/responsive-container';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { calculatePnl } from '../../schemas/trade';

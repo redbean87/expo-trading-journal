@@ -1,7 +1,8 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
+import { Button } from './button';
 import { logError } from '../utils/errors';
 
 type Props = {

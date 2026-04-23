@@ -3,7 +3,6 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import {
   Text,
   Card,
-  Button,
   Avatar,
   List,
   Switch,
@@ -12,6 +11,7 @@ import {
   TextInput,
 } from 'react-native-paper';
 
+import { Button } from '../components/button';
 import { ResponsiveContainer } from '../components/responsive-container';
 import { TimezonePicker } from '../components/timezone-picker';
 import { CustomColorsDialog } from './profile/custom-colors-dialog';

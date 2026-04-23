@@ -19,10 +19,10 @@ import {
   Text,
   IconButton,
   Dialog,
-  Button,
   Checkbox,
 } from 'react-native-paper';
 
+import { Button } from '../components/button';
 import { EmptyState } from '../components/empty-state';
 import { LoadingState } from '../components/loading-state';
 import { ResponsiveContainer } from '../components/responsive-container';

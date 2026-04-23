@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Button, Portal, Dialog } from 'react-native-paper';
+import { Text, Portal, Dialog } from 'react-native-paper';
 
 import { AttachmentGallery } from './attachment-gallery';
+import { Button } from './button';
 import { Chip } from './chip';
 import { LinkedText } from './linked-text';
 import { SectionCard } from './section-card';

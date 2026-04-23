@@ -1,8 +1,9 @@
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { Text, Button } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
+import { Button } from '../components/button';
 import { TradeDetailContent } from '../components/trade-detail-content';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTrade, useDeleteTrade } from '../hooks/use-trades';

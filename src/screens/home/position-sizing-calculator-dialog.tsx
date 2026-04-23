@@ -5,8 +5,9 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { Button, Dialog, Portal, Text, TextInput } from 'react-native-paper';
+import { Dialog, Portal, Text, TextInput } from 'react-native-paper';
 
+import { Button } from '../../components/button';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useProfileStore } from '../../store/profile-store';
 

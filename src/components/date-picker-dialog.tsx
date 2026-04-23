@@ -5,8 +5,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Button, Dialog, IconButton, Portal, Text } from 'react-native-paper';
+import { Dialog, IconButton, Portal, Text } from 'react-native-paper';
 
+import { Button } from './button';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { AppTheme } from '../theme';
 import {

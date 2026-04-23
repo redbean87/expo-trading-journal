@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, View } from 'react-native';
 import {
   TextInput,
-  Button,
   Text,
   HelperText,
   Card,
   useTheme,
 } from 'react-native-paper';
 
+import { Button } from '../../components/button';
 import { ResponsiveContainer } from '../../components/responsive-container';
 import { useAuth } from '../../hooks/use-auth';
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Dialog, Portal, Text } from 'react-native-paper';
+import { Dialog, Portal, Text } from 'react-native-paper';
 
+import { Button } from '../../components/button';
 import { DatePickerDialog } from '../../components/date-picker-dialog';
 import { useAppTheme } from '../../hooks/use-app-theme';
 

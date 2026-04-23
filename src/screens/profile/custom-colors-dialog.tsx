@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { Dialog, Text, Button } from 'react-native-paper';
+import { Dialog, Text } from 'react-native-paper';
 
+import { Button } from '../../components/button';
 import { ColorPicker } from '../../components/color-picker';
 
 import type { CustomColors } from '../../types';

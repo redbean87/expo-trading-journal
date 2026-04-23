@@ -1,9 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { v4 as uuidv4 } from 'uuid';
 
+import { Button } from '../components/button';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useImageUpload } from '../hooks/use-image-upload';
 import { useAddTrade, useUpdateTrade, useTrade } from '../hooks/use-trades';

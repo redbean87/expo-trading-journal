@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import {
-  TextInput,
-  Button,
-  Text,
-  HelperText,
-  useTheme,
-} from 'react-native-paper';
+import { TextInput, Text, HelperText, useTheme } from 'react-native-paper';
 
+import { Button } from '../../components/button';
 import { useAuth } from '../../hooks/use-auth';
 
 type RegisterScreenProps = {

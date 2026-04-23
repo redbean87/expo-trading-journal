@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StyleSheet } from 'react-native';
-import { Button } from 'react-native-paper';
+
+import { Button } from './button';
 
 type GoogleSignInButtonProps = {
   onPress: () => void;
