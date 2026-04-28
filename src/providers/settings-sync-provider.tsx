@@ -51,10 +51,14 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
   // Track if we've done the initial migration check (one-time per auth session)
   const hasMigratedRef = useRef(false);
 
+  // Track if we've done the initial real-time sync (prevents overwriting local with null on first load)
+  const hasSyncedRef = useRef(false);
+
   // One-time migration: upload local settings to cloud if cloud is empty
   useEffect(() => {
     if (!isAuthenticated) {
       hasMigratedRef.current = false;
+      hasSyncedRef.current = false;
       return;
     }
 
@@ -133,6 +137,9 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
       return;
     }
 
+    const isFirstSync = !hasSyncedRef.current;
+    hasSyncedRef.current = true;
+
     // Apply theme from cloud if it's valid
     if (
       cloudSettings.themeMode === 'light' ||
@@ -147,17 +154,26 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     }
 
     // Apply display name from cloud if it exists
-    if (cloudSettings.displayName !== undefined) {
+    if (
+      cloudSettings.displayName !== undefined &&
+      !(isFirstSync && cloudSettings.displayName === null)
+    ) {
       setDisplayNameFromCloud(cloudSettings.displayName);
     }
 
     // Apply default risk percent from cloud if it exists
-    if (cloudSettings.defaultRiskPercent !== undefined) {
+    if (
+      cloudSettings.defaultRiskPercent !== undefined &&
+      !(isFirstSync && cloudSettings.defaultRiskPercent === null)
+    ) {
       setDefaultRiskPercentFromCloud(cloudSettings.defaultRiskPercent);
     }
 
     // Apply custom theme from cloud
-    if (cloudSettings.customThemePreset === 'custom') {
+    if (
+      cloudSettings.customThemePreset === 'custom' ||
+      (cloudSettings.customThemePreset === 'default' && !isFirstSync)
+    ) {
       let parsedColors: CustomColors | null = null;
 
       if (cloudSettings.customColors) {
@@ -174,9 +190,10 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
         }
       }
 
-      setCustomThemeFromCloud('custom', parsedColors);
-    } else if (cloudSettings.customThemePreset === 'default') {
-      setCustomThemeFromCloud('default', null);
+      setCustomThemeFromCloud(
+        cloudSettings.customThemePreset as 'custom' | 'default',
+        parsedColors
+      );
     }
   }, [
     isAuthenticated,
