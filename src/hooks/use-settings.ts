@@ -13,6 +13,7 @@ export type CloudSettings = {
   themeMode: string | null;
   timezone: string | null;
   displayName: string | null;
+  defaultRiskPercent: number | null;
   customThemePreset: string | null;
   customColors: string | null; // JSON string
   settingsUpdatedAt: number | null;
@@ -158,6 +159,37 @@ export function useUpdateCustomTheme() {
         });
       } catch (error) {
         console.error('Failed to sync custom theme to cloud:', error);
+        // Local state is already correct, just log the error
+      }
+    }
+  };
+}
+
+/**
+ * Hook to update default risk percent both locally and in cloud
+ */
+export function useUpdateDefaultRiskPercent() {
+  const { isAuthenticated } = useAuth();
+  const { setDefaultRiskPercent } = useProfileStore();
+  const updateCloudSettings = useUpdateCloudSettings();
+
+  return async (pct: number | null) => {
+    // Validate
+    if (pct !== null && (pct <= 0 || pct > 100)) {
+      throw new Error('Default risk percent must be between 0 and 100');
+    }
+
+    // Always update local (optimistic + offline support)
+    await setDefaultRiskPercent(pct);
+
+    // Sync to cloud if authenticated
+    if (isAuthenticated) {
+      try {
+        await updateCloudSettings({
+          defaultRiskPercent: pct ?? undefined,
+        });
+      } catch (error) {
+        console.error('Failed to sync default risk percent to cloud:', error);
         // Local state is already correct, just log the error
       }
     }

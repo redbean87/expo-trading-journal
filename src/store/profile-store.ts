@@ -9,6 +9,7 @@ type ProfileStore = {
   setDefaultRiskPercent: (pct: number | null) => Promise<void>;
   loadProfile: () => Promise<void>;
   setFromCloud: (name: string | null) => void;
+  setDefaultRiskPercentFromCloud: (pct: number | null) => void;
 };
 
 const PROFILE_STORAGE_KEY = '@user_profile';
@@ -70,5 +71,9 @@ export const useProfileStore = create<ProfileStore>((set) => ({
 
   setFromCloud: (name: string | null) => {
     set({ displayName: name });
+  },
+
+  setDefaultRiskPercentFromCloud: (pct: number | null) => {
+    set({ defaultRiskPercent: pct });
   },
 }));

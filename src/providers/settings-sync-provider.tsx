@@ -36,8 +36,12 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
 
   const { themeMode, setFromCloud: setThemeFromCloud } = useThemeStore();
   const { timezone, setFromCloud: setTimezoneFromCloud } = useTimezoneStore();
-  const { displayName, setFromCloud: setDisplayNameFromCloud } =
-    useProfileStore();
+  const {
+    displayName,
+    defaultRiskPercent,
+    setFromCloud: setDisplayNameFromCloud,
+    setDefaultRiskPercentFromCloud,
+  } = useProfileStore();
   const {
     preset,
     customColors,
@@ -66,6 +70,7 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
       (cloudSettings.themeMode !== null ||
         cloudSettings.timezone !== null ||
         cloudSettings.displayName !== null ||
+        cloudSettings.defaultRiskPercent !== null ||
         cloudSettings.customThemePreset !== null);
 
     if (!hasCloudSettings) {
@@ -74,6 +79,7 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
         themeMode: themeMode,
         timezone: timezone,
         displayName: displayName ?? undefined,
+        defaultRiskPercent: defaultRiskPercent ?? undefined,
         customThemePreset: preset,
         customColors: customColors ? JSON.stringify(customColors) : undefined,
       }).catch((error) => {
@@ -87,6 +93,7 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     themeMode,
     timezone,
     displayName,
+    defaultRiskPercent,
     preset,
     customColors,
     updateCloudSettings,
@@ -121,6 +128,11 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
       setDisplayNameFromCloud(cloudSettings.displayName);
     }
 
+    // Apply default risk percent from cloud if it exists
+    if (cloudSettings.defaultRiskPercent !== undefined) {
+      setDefaultRiskPercentFromCloud(cloudSettings.defaultRiskPercent);
+    }
+
     // Apply custom theme from cloud
     if (cloudSettings.customThemePreset === 'custom') {
       let parsedColors: CustomColors | null = null;
@@ -150,6 +162,7 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     setThemeFromCloud,
     setTimezoneFromCloud,
     setDisplayNameFromCloud,
+    setDefaultRiskPercentFromCloud,
     setCustomThemeFromCloud,
   ]);
 

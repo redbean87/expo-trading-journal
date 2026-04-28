@@ -18,6 +18,7 @@ const schema = defineSchema({
     themeMode: v.optional(v.string()), // 'light' | 'dark'
     timezone: v.optional(v.string()), // IANA timezone string
     displayName: v.optional(v.string()), // Custom journal name (max 50 chars)
+    defaultRiskPercent: v.optional(v.number()), // Default risk % per trade
     customThemePreset: v.optional(v.string()), // 'default' | 'custom'
     customColors: v.optional(v.string()), // JSON stringified CustomColors
     settingsUpdatedAt: v.optional(v.number()), // Timestamp for conflict resolution

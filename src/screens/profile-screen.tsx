@@ -22,6 +22,7 @@ import {
   useUpdateTheme,
   useUpdateDisplayName,
   useUpdateCustomTheme,
+  useUpdateDefaultRiskPercent,
 } from '../hooks/use-settings';
 import { useClearAllTrades } from '../hooks/use-trades';
 import { useCustomThemeStore } from '../store/custom-theme-store';
@@ -35,12 +36,12 @@ export default function ProfileScreen() {
   const { logout } = useAuth();
   const { settings } = useCloudSettings();
   const { themeMode } = useThemeStore();
-  const { displayName, defaultRiskPercent, setDefaultRiskPercent } =
-    useProfileStore();
+  const { displayName, defaultRiskPercent } = useProfileStore();
   const { preset, customColors } = useCustomThemeStore();
   const updateTheme = useUpdateTheme();
   const updateDisplayName = useUpdateDisplayName();
   const updateCustomTheme = useUpdateCustomTheme();
+  const updateDefaultRiskPercent = useUpdateDefaultRiskPercent();
   const theme = useAppTheme();
   const styles = createStyles(theme);
   const [logoutLoading, setLogoutLoading] = useState(false);
@@ -120,7 +121,7 @@ export default function ProfileScreen() {
 
   const handleSaveRiskPct = async () => {
     const pct = parseFloat(tempRiskPct);
-    await setDefaultRiskPercent(!isNaN(pct) && pct > 0 ? pct : null);
+    await updateDefaultRiskPercent(!isNaN(pct) && pct > 0 ? pct : null);
     setRiskPctDialogVisible(false);
   };
 

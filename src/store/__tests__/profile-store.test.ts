@@ -5,7 +5,11 @@ import { useProfileStore } from '../profile-store';
 describe('useProfileStore', () => {
   beforeEach(async () => {
     // Reset store state between tests
-    useProfileStore.setState({ displayName: null, isLoading: false });
+    useProfileStore.setState({
+      displayName: null,
+      defaultRiskPercent: null,
+      isLoading: false,
+    });
     await AsyncStorage.clear();
   });
 
@@ -66,6 +70,42 @@ describe('useProfileStore', () => {
     });
   });
 
+  describe('setDefaultRiskPercent', () => {
+    it('should set default risk percent in store', async () => {
+      await useProfileStore.getState().setDefaultRiskPercent(1.5);
+
+      const { defaultRiskPercent } = useProfileStore.getState();
+      expect(defaultRiskPercent).toBe(1.5);
+    });
+
+    it('should persist default risk percent to AsyncStorage', async () => {
+      await useProfileStore.getState().setDefaultRiskPercent(2);
+
+      const stored = await AsyncStorage.getItem('@user_profile');
+      expect(stored).toBeTruthy();
+      const profile = JSON.parse(stored!);
+      expect(profile.defaultRiskPercent).toBe(2);
+    });
+
+    it('should handle null value', async () => {
+      await useProfileStore.getState().setDefaultRiskPercent(1);
+      await useProfileStore.getState().setDefaultRiskPercent(null);
+
+      const { defaultRiskPercent } = useProfileStore.getState();
+      expect(defaultRiskPercent).toBeNull();
+    });
+
+    it('should persist null to AsyncStorage', async () => {
+      await useProfileStore.getState().setDefaultRiskPercent(1);
+      await useProfileStore.getState().setDefaultRiskPercent(null);
+
+      const stored = await AsyncStorage.getItem('@user_profile');
+      expect(stored).toBeTruthy();
+      const profile = JSON.parse(stored!);
+      expect(profile.defaultRiskPercent).toBeNull();
+    });
+  });
+
   describe('loadProfile', () => {
     it('should load display name from AsyncStorage', async () => {
       await AsyncStorage.setItem(
@@ -79,6 +119,18 @@ describe('useProfileStore', () => {
       expect(displayName).toBe('My Journal');
     });
 
+    it('should load default risk percent from AsyncStorage', async () => {
+      await AsyncStorage.setItem(
+        '@user_profile',
+        JSON.stringify({ defaultRiskPercent: 1.5 })
+      );
+
+      await useProfileStore.getState().loadProfile();
+
+      const { defaultRiskPercent } = useProfileStore.getState();
+      expect(defaultRiskPercent).toBe(1.5);
+    });
+
     it('should set isLoading to false after loading', async () => {
       await useProfileStore.getState().loadProfile();
 
@@ -89,8 +141,10 @@ describe('useProfileStore', () => {
     it('should handle empty storage', async () => {
       await useProfileStore.getState().loadProfile();
 
-      const { displayName, isLoading } = useProfileStore.getState();
+      const { displayName, defaultRiskPercent, isLoading } =
+        useProfileStore.getState();
       expect(displayName).toBeNull();
+      expect(defaultRiskPercent).toBeNull();
       expect(isLoading).toBe(false);
     });
 
@@ -111,8 +165,10 @@ describe('useProfileStore', () => {
 
       await useProfileStore.getState().loadProfile();
 
-      const { displayName, isLoading } = useProfileStore.getState();
+      const { displayName, defaultRiskPercent, isLoading } =
+        useProfileStore.getState();
       expect(displayName).toBeNull();
+      expect(defaultRiskPercent).toBeNull();
       expect(isLoading).toBe(false);
     });
   });
@@ -135,6 +191,27 @@ describe('useProfileStore', () => {
 
       const { displayName } = useProfileStore.getState();
       expect(displayName).toBeNull();
+    });
+  });
+
+  describe('setDefaultRiskPercentFromCloud', () => {
+    it('should update state without persisting to AsyncStorage', async () => {
+      useProfileStore.getState().setDefaultRiskPercentFromCloud(2.5);
+
+      const { defaultRiskPercent } = useProfileStore.getState();
+      expect(defaultRiskPercent).toBe(2.5);
+
+      // Should NOT persist to AsyncStorage
+      const stored = await AsyncStorage.getItem('@user_profile');
+      expect(stored).toBeNull();
+    });
+
+    it('should handle null value', () => {
+      useProfileStore.setState({ defaultRiskPercent: 1 });
+      useProfileStore.getState().setDefaultRiskPercentFromCloud(null);
+
+      const { defaultRiskPercent } = useProfileStore.getState();
+      expect(defaultRiskPercent).toBeNull();
     });
   });
 

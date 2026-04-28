@@ -22,6 +22,7 @@ export const getSettings = query({
       themeMode: user.themeMode ?? null,
       timezone: user.timezone ?? null,
       displayName: user.displayName ?? null,
+      defaultRiskPercent: user.defaultRiskPercent ?? null,
       customThemePreset: user.customThemePreset ?? null,
       customColors: user.customColors ?? null,
       settingsUpdatedAt: user.settingsUpdatedAt ?? null,
@@ -35,6 +36,7 @@ export const updateSettings = mutation({
     themeMode: v.optional(v.string()),
     timezone: v.optional(v.string()),
     displayName: v.optional(v.string()),
+    defaultRiskPercent: v.optional(v.number()),
     customThemePreset: v.optional(v.string()),
     customColors: v.optional(v.string()),
   },
@@ -63,6 +65,15 @@ export const updateSettings = mutation({
       // Normalize empty string to null
       const trimmed = args.displayName.trim();
       updates.displayName = trimmed === '' ? null : trimmed;
+    }
+    if (args.defaultRiskPercent !== undefined) {
+      if (
+        args.defaultRiskPercent !== null &&
+        (args.defaultRiskPercent <= 0 || args.defaultRiskPercent > 100)
+      ) {
+        throw new Error('Default risk percent must be between 0 and 100');
+      }
+      updates.defaultRiskPercent = args.defaultRiskPercent;
     }
     if (args.customThemePreset !== undefined) {
       if (
@@ -111,6 +122,7 @@ export const updateSettings = mutation({
       themeMode: user?.themeMode ?? null,
       timezone: user?.timezone ?? null,
       displayName: user?.displayName ?? null,
+      defaultRiskPercent: user?.defaultRiskPercent ?? null,
       customThemePreset: user?.customThemePreset ?? null,
       customColors: user?.customColors ?? null,
       settingsUpdatedAt: user?.settingsUpdatedAt ?? null,
