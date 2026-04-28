@@ -52,7 +52,30 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
 
   const handleRiskModeChange = (mode: RiskMode) => {
     setRiskMode(mode);
-    onUpdate({ riskAmount: '' });
+
+    if (mode === '%') {
+      const entryPrice = parseFloat(formData.entryPrice);
+      const quantity = parseFloat(formData.quantity);
+      const riskAmount =
+        formData.riskAmount && formData.riskAmount !== ''
+          ? parseFloat(formData.riskAmount)
+          : NaN;
+      if (
+        !isNaN(riskAmount) &&
+        riskAmount > 0 &&
+        !isNaN(entryPrice) &&
+        entryPrice > 0 &&
+        !isNaN(quantity) &&
+        quantity > 0
+      ) {
+        const pct = (riskAmount / (entryPrice * quantity)) * 100;
+        setRiskPctStr(pct.toFixed(2));
+      } else {
+        setRiskPctStr(
+          defaultRiskPercent != null ? String(defaultRiskPercent) : ''
+        );
+      }
+    }
   };
 
   const handleRiskPctChange = (text: string) => {
@@ -203,7 +226,7 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         {riskMode === '$' ? (
           <TextInput
             ref={createRef('riskAmount')}
-            label="Risk Amount (Optional)"
+            label="Risk $ (Optional)"
             value={formData.riskAmount}
             onChangeText={(text) => onUpdate({ riskAmount: text })}
             mode="outlined"
@@ -215,7 +238,7 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           />
         ) : (
           <TextInput
-            label="Risk %"
+            label="Risk % (Optional)"
             value={riskPctStr}
             onChangeText={handleRiskPctChange}
             mode="outlined"
@@ -224,10 +247,16 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           />
         )}
 
-        {riskMode === '%' && formData.riskAmount ? (
+        {formData.riskAmount ? (
           <HelperText type="info" style={styles.riskHelper}>
             Risk amount: ${parseFloat(formData.riskAmount).toFixed(2)} (
-            {riskPctStr}% of position value)
+            {(
+              (parseFloat(formData.riskAmount) /
+                (parseFloat(formData.entryPrice) *
+                  parseFloat(formData.quantity))) *
+              100
+            ).toFixed(2)}
+            % of position value)
           </HelperText>
         ) : null}
 

@@ -31,11 +31,22 @@ export default function AddTradeScreen() {
     const exitPrice = parseFloat(formData.exitPrice);
     const quantity = parseFloat(formData.quantity);
 
+    const fees =
+      formData.fees && formData.fees !== ''
+        ? parseFloat(formData.fees)
+        : undefined;
+    const commissions =
+      formData.commissions && formData.commissions !== ''
+        ? parseFloat(formData.commissions)
+        : undefined;
+
     const { pnl, pnlPercent } = calculatePnl(
       entryPrice,
       exitPrice,
       quantity,
-      formData.side
+      formData.side,
+      fees,
+      commissions
     );
 
     let savedTradeId: string;
@@ -64,6 +75,8 @@ export default function AddTradeScreen() {
         riskAmount,
         pnl,
         pnlPercent,
+        fees,
+        commissions,
       });
       savedTradeId = params.id;
     } else {
@@ -86,6 +99,8 @@ export default function AddTradeScreen() {
         riskAmount,
         pnl,
         pnlPercent,
+        fees,
+        commissions,
       };
 
       const savedTrade = await addTrade(newTrade);
@@ -149,6 +164,8 @@ export default function AddTradeScreen() {
           confidence: trade.confidence,
           ruleViolation: trade.ruleViolation || '',
           riskAmount: trade.riskAmount?.toString() || '',
+          fees: trade.fees?.toString() || '',
+          commissions: trade.commissions?.toString() || '',
         }
       : {
           symbol: '',
