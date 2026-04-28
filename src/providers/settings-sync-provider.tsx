@@ -64,17 +64,8 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
 
     hasMigratedRef.current = true;
 
-    // Check if cloud has any settings
-    const hasCloudSettings =
-      cloudSettings !== null &&
-      (cloudSettings.themeMode !== null ||
-        cloudSettings.timezone !== null ||
-        cloudSettings.displayName !== null ||
-        cloudSettings.defaultRiskPercent !== null ||
-        cloudSettings.customThemePreset !== null);
-
-    if (!hasCloudSettings) {
-      // Cloud is empty - upload local settings (migration)
+    if (cloudSettings === null) {
+      // Full migration: cloud has no settings at all
       updateCloudSettings({
         themeMode: themeMode,
         timezone: timezone,
@@ -84,6 +75,38 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
         customColors: customColors ? JSON.stringify(customColors) : undefined,
       }).catch((error) => {
         console.error('Failed to migrate settings to cloud:', error);
+      });
+      return;
+    }
+
+    // Granular backfill: upload local settings that are missing from cloud
+    const updates: Parameters<typeof updateCloudSettings>[0] = {};
+
+    if (cloudSettings.themeMode === null && themeMode !== null) {
+      updates.themeMode = themeMode;
+    }
+    if (cloudSettings.timezone === null && timezone !== null) {
+      updates.timezone = timezone;
+    }
+    if (cloudSettings.displayName === null && displayName !== null) {
+      updates.displayName = displayName;
+    }
+    if (
+      cloudSettings.defaultRiskPercent === null &&
+      defaultRiskPercent !== null
+    ) {
+      updates.defaultRiskPercent = defaultRiskPercent;
+    }
+    if (cloudSettings.customThemePreset === null && preset !== null) {
+      updates.customThemePreset = preset;
+      if (customColors) {
+        updates.customColors = JSON.stringify(customColors);
+      }
+    }
+
+    if (Object.keys(updates).length > 0) {
+      updateCloudSettings(updates).catch((error) => {
+        console.error('Failed to backfill missing cloud settings:', error);
       });
     }
   }, [
