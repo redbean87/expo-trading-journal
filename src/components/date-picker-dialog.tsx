@@ -8,8 +8,7 @@ import {
 import { Dialog, IconButton, Portal, Text } from 'react-native-paper';
 
 import { Button } from './button';
-import { useAppTheme } from '../hooks/use-app-theme';
-import { AppTheme } from '../theme';
+import { useAppTheme, type AppTheme } from '../hooks/use-app-theme';
 import {
   addMonths,
   formatMonthYear,
@@ -216,10 +215,10 @@ const createStyles = (theme: AppTheme, cellSize: number) =>
       color: theme.colors.onSurface,
     },
     selectedDay: {
-      backgroundColor: theme.colors.primary,
+      backgroundColor: theme.colors.primaryContainer,
     },
     selectedDayText: {
-      color: theme.colors.onPrimary,
+      color: theme.colors.onPrimaryContainer,
       fontWeight: '600',
     },
     todayDay: {

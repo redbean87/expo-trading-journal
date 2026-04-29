@@ -366,6 +366,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       marginBottom: theme.spacing.lg,
       maxWidth: 600,
       width: '100%',
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.borderRadius.md,
+      ...theme.elevation[2],
     },
     userSection: {
       alignItems: 'center',

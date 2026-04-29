@@ -303,6 +303,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     warningCard: {
       marginBottom: 16,
+      borderRadius: theme.borderRadius.md,
+      ...theme.elevation[2],
     },
     warningTitle: {
       fontWeight: '600',
@@ -315,6 +317,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     privacyCard: {
       marginBottom: 16,
+      borderRadius: theme.borderRadius.md,
+      ...theme.elevation[2],
     },
     privacyTitle: {
       fontWeight: '600',
@@ -332,6 +336,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       marginBottom: 16,
       maxHeight: 400,
       backgroundColor: theme.colors.surface,
+      borderRadius: theme.borderRadius.md,
+      ...theme.elevation[2],
     },
     previewScroll: {
       maxHeight: 360,

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, HelperText } from 'react-native-paper';
 
+import { useAppTheme } from '../hooks/use-app-theme';
+
 type ColorPickerProps = {
   label: string;
   value: string;
@@ -17,6 +19,8 @@ export function ColorPicker({
   onChange,
   error,
 }: ColorPickerProps) {
+  const theme = useAppTheme();
+  const styles = createStyles(theme);
   const [localValue, setLocalValue] = useState(value);
   const [localError, setLocalError] = useState<string | undefined>(error);
 
@@ -53,7 +57,7 @@ export function ColorPicker({
   };
 
   const isValid = HEX_PATTERN.test(localValue);
-  const previewColor = isValid ? localValue : '#808080';
+  const previewColor = isValid ? localValue : theme.colors.outline;
 
   return (
     <View style={styles.container}>
@@ -81,23 +85,24 @@ export function ColorPicker({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  inputWrapper: {
-    flex: 1,
-  },
-  swatch: {
-    width: 56,
-    height: 56,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: 16,
+    },
+    inputRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    inputWrapper: {
+      flex: 1,
+    },
+    swatch: {
+      width: 56,
+      height: 56,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+    },
+  });

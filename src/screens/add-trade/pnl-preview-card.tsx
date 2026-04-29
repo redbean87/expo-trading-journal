@@ -45,6 +45,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     card: {
       marginBottom: 16,
       backgroundColor: theme.colors.surfaceVariant,
+      borderRadius: theme.borderRadius.md,
+      ...theme.elevation[2],
     },
     pnlText: {
       marginTop: 8,

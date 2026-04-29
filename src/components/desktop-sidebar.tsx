@@ -84,7 +84,9 @@ export function DesktopSidebar() {
                 name={item.icon}
                 size={ICON_SIZE}
                 color={
-                  active ? theme.colors.primary : theme.colors.textSecondary
+                  active
+                    ? theme.colors.onPrimaryContainer
+                    : theme.colors.textSecondary
                 }
               />
               <Text
@@ -92,7 +94,7 @@ export function DesktopSidebar() {
                   styles.label,
                   {
                     color: active
-                      ? theme.colors.primary
+                      ? theme.colors.onPrimaryContainer
                       : theme.colors.textSecondary,
                   },
                   active && styles.activeLabel,

@@ -1,15 +1,10 @@
 import { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, View } from 'react-native';
-import {
-  TextInput,
-  Text,
-  HelperText,
-  Card,
-  useTheme,
-} from 'react-native-paper';
+import { TextInput, Text, HelperText, Card } from 'react-native-paper';
 
 import { Button } from '../../components/button';
 import { ResponsiveContainer } from '../../components/responsive-container';
+import { useAppTheme } from '../../hooks/use-app-theme';
 import { useAuth } from '../../hooks/use-auth';
 
 type LoginScreenProps = {
@@ -23,7 +18,8 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
-  const theme = useTheme();
+  const theme = useAppTheme();
+  const styles = createStyles(theme);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -109,32 +105,37 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  card: {
-    maxWidth: 600,
-    width: '100%',
-    marginBottom: 8,
-  },
-  input: {
-    marginBottom: 16,
-  },
-  button: {
-    marginTop: 8,
-  },
-  switchButton: {
-    marginTop: 8,
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    content: {
+      flex: 1,
+      padding: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    title: {
+      textAlign: 'center',
+      marginBottom: 24,
+    },
+    card: {
+      maxWidth: 600,
+      width: '100%',
+      marginBottom: 8,
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.borderRadius.md,
+      ...theme.elevation[2],
+    },
+    input: {
+      marginBottom: 16,
+      backgroundColor: theme.colors.surface,
+    },
+    button: {
+      marginTop: 8,
+    },
+    switchButton: {
+      marginTop: 8,
+    },
+  });

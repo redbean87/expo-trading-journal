@@ -2,9 +2,8 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-paper';
 
-import { useAppTheme } from '../../../hooks/use-app-theme';
+import { useAppTheme, type AppTheme } from '../../../hooks/use-app-theme';
 import { DailyPnl } from '../../../hooks/use-daily-pnl';
-import { AppTheme } from '../../../theme';
 import {
   calculatePnlColor,
   ColorIntensityResult,
@@ -73,8 +72,26 @@ export function CalendarDay({
       </Text>
       {hasTrades && (
         <>
-          <Text style={styles.pnlText}>{formatCompactPnl(pnl)}</Text>
-          <Text style={styles.winLossText}>
+          <Text
+            style={[
+              styles.pnlText,
+              {
+                color:
+                  textColor === 'inherit' ? theme.colors.onSurface : textColor,
+              },
+            ]}
+          >
+            {formatCompactPnl(pnl)}
+          </Text>
+          <Text
+            style={[
+              styles.winLossText,
+              {
+                color:
+                  textColor === 'inherit' ? theme.colors.onSurface : textColor,
+              },
+            ]}
+          >
             {dayData.winCount}W · {dayData.lossCount}L
           </Text>
         </>
@@ -105,7 +122,6 @@ const createStyles = (theme: AppTheme, size: number) =>
     pnlText: {
       fontSize: size > 50 ? 12 : 10,
       fontWeight: '700',
-      color: '#ffffff',
       marginTop: 4,
     },
     winLossText: {
@@ -113,7 +129,6 @@ const createStyles = (theme: AppTheme, size: number) =>
       bottom: 2,
       fontSize: size > 50 ? 10 : 8,
       fontWeight: '500',
-      color: '#ffffff',
       opacity: 0.9,
     },
   });

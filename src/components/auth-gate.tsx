@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { ActivityIndicator, useTheme } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 
+import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
 import LoginScreen from '../screens/auth/login-screen';
 import RegisterScreen from '../screens/auth/register-screen';
@@ -13,7 +14,7 @@ type AuthGateProps = {
 export default function AuthGate({ children }: AuthGateProps) {
   const { isLoading, isAuthenticated } = useAuth();
   const [showRegister, setShowRegister] = useState(false);
-  const theme = useTheme();
+  const theme = useAppTheme();
 
   if (isLoading) {
     return (

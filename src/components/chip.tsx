@@ -33,8 +33,8 @@ export function Chip({
       mode={isSelectable ? (selected ? 'flat' : 'outlined') : mode}
       theme={{
         colors: {
-          secondaryContainer: theme.colors.chipSelectedBackground,
-          onSecondaryContainer: theme.colors.chipSelectedText,
+          secondaryContainer: theme.colors.primaryContainer,
+          onSecondaryContainer: theme.colors.onPrimaryContainer,
         },
       }}
     />

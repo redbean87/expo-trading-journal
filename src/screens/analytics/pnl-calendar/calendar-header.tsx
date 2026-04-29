@@ -2,9 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
 
-import { useAppTheme } from '../../../hooks/use-app-theme';
+import { useAppTheme, type AppTheme } from '../../../hooks/use-app-theme';
 import { useContentWidth } from '../../../hooks/use-content-width';
-import { AppTheme } from '../../../theme';
 import {
   formatMonthYear,
   getWeekdayLabels,

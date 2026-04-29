@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
 
+import { useAppTheme } from '../hooks/use-app-theme';
 import { useGenerateDownloadUrl } from '../hooks/use-attachments';
 import { Attachment } from '../types';
 
@@ -17,6 +18,8 @@ type AttachmentGalleryProps = {
 };
 
 export function AttachmentGallery({ attachments }: AttachmentGalleryProps) {
+  const theme = useAppTheme();
+  const styles = createStyles(theme);
   const [downloadUrls, setDownloadUrls] = useState<Record<string, string>>({});
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const generateDownloadUrl = useGenerateDownloadUrl();
@@ -70,7 +73,7 @@ export function AttachmentGallery({ attachments }: AttachmentGalleryProps) {
             icon="close"
             onPress={() => setSelectedIndex(null)}
             style={styles.closeButton}
-            iconColor="#ffffff"
+            iconColor={theme.colors.onSurface}
             size={28}
           />
           {selectedIndex !== null && (
@@ -120,59 +123,60 @@ export function AttachmentGallery({ attachments }: AttachmentGalleryProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  thumbnailRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 8,
-  },
-  thumbnailWrapper: {
-    width: 72,
-    height: 72,
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.92)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 48,
-    right: 16,
-    zIndex: 1,
-  },
-  modalContent: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  fullImage: {
-    flex: 1,
-    height: '80%',
-  },
-  navButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 24,
-  },
-  navText: {
-    color: '#ffffff',
-    fontSize: 36,
-  },
-  counter: {
-    position: 'absolute',
-    bottom: 40,
-    color: '#ffffff',
-    fontSize: 14,
-    opacity: 0.8,
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    thumbnailRow: {
+      flexDirection: 'row',
+      gap: 8,
+      marginTop: 8,
+    },
+    thumbnailWrapper: {
+      width: 72,
+      height: 72,
+      borderRadius: 8,
+      overflow: 'hidden',
+    },
+    thumbnail: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: theme.colors.backdrop,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    closeButton: {
+      position: 'absolute',
+      top: 48,
+      right: 16,
+      zIndex: 1,
+    },
+    modalContent: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+    },
+    fullImage: {
+      flex: 1,
+      height: '80%',
+    },
+    navButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 24,
+    },
+    navText: {
+      color: theme.colors.onSurface,
+      fontSize: 36,
+    },
+    counter: {
+      position: 'absolute',
+      bottom: 40,
+      color: theme.colors.onSurface,
+      fontSize: 14,
+      opacity: 0.8,
+    },
+  });

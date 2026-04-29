@@ -18,6 +18,7 @@ export function AttachmentThumbnail({
   uploading = false,
 }: AttachmentThumbnailProps) {
   const theme = useAppTheme();
+  const styles = createStyles(theme);
 
   return (
     <View style={styles.container}>
@@ -47,39 +48,40 @@ export function AttachmentThumbnail({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    width: 80,
-    height: 80,
-  },
-  imageWrapper: {
-    flex: 1,
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  overlay: {
-    position: 'absolute',
-    inset: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-  },
-  uploadingText: {
-    color: '#ffffff',
-    fontSize: 11,
-    fontWeight: 'bold',
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: -6,
-    right: -6,
-    margin: 0,
-  },
-});
+const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      position: 'relative',
+      width: 80,
+      height: 80,
+    },
+    imageWrapper: {
+      flex: 1,
+      borderRadius: 8,
+      overflow: 'hidden',
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+    },
+    overlay: {
+      position: 'absolute',
+      inset: 0,
+      backgroundColor: theme.colors.backdrop,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 8,
+    },
+    uploadingText: {
+      color: theme.colors.onSurface,
+      fontSize: 11,
+      fontWeight: 'bold',
+    },
+    deleteButton: {
+      position: 'absolute',
+      top: -6,
+      right: -6,
+      margin: 0,
+    },
+  });

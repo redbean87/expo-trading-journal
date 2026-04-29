@@ -20,8 +20,8 @@ export function SegmentedButtons(props: SegmentedButtonsProps) {
       {...props}
       theme={{
         colors: {
-          secondaryContainer: theme.colors.tabSelectedBackground,
-          onSecondaryContainer: theme.colors.tabSelectedText,
+          secondaryContainer: theme.colors.primaryContainer,
+          onSecondaryContainer: theme.colors.onPrimaryContainer,
         },
       }}
     />
