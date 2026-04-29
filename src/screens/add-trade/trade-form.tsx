@@ -384,6 +384,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     input: {
       marginBottom: theme.spacing.lg,
+      backgroundColor: theme.colors.surface,
     },
     row: {
       flexDirection: 'row',

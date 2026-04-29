@@ -87,7 +87,10 @@ export function TradeCard({
               <View style={styles.header}>
                 <View>
                   <Text variant="titleLarge">{trade.symbol}</Text>
-                  <Text variant="bodyMedium" style={styles.meta}>
+                  <Text
+                    variant="bodyMedium"
+                    style={[styles.meta, isSelected && styles.metaSelected]}
+                  >
                     {trade.side.toUpperCase()} • {trade.quantity} shares
                   </Text>
                 </View>
@@ -106,7 +109,13 @@ export function TradeCard({
                   >
                     {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
                   </Text>
-                  <Text variant="bodySmall" style={styles.pnlPercent}>
+                  <Text
+                    variant="bodySmall"
+                    style={[
+                      styles.pnlPercent,
+                      isSelected && styles.pnlPercentSelected,
+                    ]}
+                  >
                     {trade.pnlPercent >= 0 ? '+' : ''}
                     {trade.pnlPercent.toFixed(2)}%
                   </Text>
@@ -121,19 +130,29 @@ export function TradeCard({
                   {formatDate(trade.entryTime)} - {formatDate(trade.exitTime)}
                 </Text>
                 {trade.strategy && (
-                  <Chip compact style={styles.strategyChip}>
+                  <Chip
+                    compact
+                    style={[
+                      styles.strategyChip,
+                      isSelected && styles.strategyChipSelected,
+                    ]}
+                    textStyle={
+                      isSelected ? styles.strategyChipTextSelected : undefined
+                    }
+                  >
                     {trade.strategy}
                   </Chip>
                 )}
               </View>
             </Card.Content>
             {(onDelete || onEdit) && (
-              <Card.Actions>
+              <View style={styles.actions}>
                 {onEdit && (
                   <IconButton
                     icon="pencil"
                     iconColor={theme.colors.primary}
                     onPress={() => onEdit(trade.id)}
+                    containerColor={theme.colors.surfaceVariant}
                   />
                 )}
                 {onDelete && (
@@ -141,9 +160,10 @@ export function TradeCard({
                     icon="delete"
                     iconColor={theme.colors.loss}
                     onPress={() => onDelete(trade.id)}
+                    containerColor={theme.colors.surfaceVariant}
                   />
                 )}
-              </Card.Actions>
+              </View>
             )}
           </Card>
         </Animated.View>
@@ -178,6 +198,10 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       color: theme.colors.textSecondary,
       marginTop: theme.spacing.xs,
     },
+    metaSelected: {
+      color: theme.colors.onPrimaryContainer,
+      opacity: 0.7,
+    },
     right: {
       alignItems: 'flex-end',
     },
@@ -188,6 +212,10 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       color: theme.colors.textSecondary,
       marginTop: 2,
     },
+    pnlPercentSelected: {
+      color: theme.colors.onPrimaryContainer,
+      opacity: 0.7,
+    },
     details: {
       marginTop: theme.spacing.sm,
     },
@@ -197,5 +225,17 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     strategyChip: {
       marginTop: theme.spacing.sm,
       alignSelf: 'flex-start',
+    },
+    strategyChipSelected: {
+      borderWidth: 2,
+      borderColor: theme.colors.primary,
+    },
+    strategyChipTextSelected: {
+      color: theme.colors.onPrimaryContainer,
+    },
+    actions: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      padding: 8,
     },
   });

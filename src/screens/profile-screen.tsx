@@ -205,7 +205,7 @@ export default function ProfileScreen() {
                 Data Management
               </Text>
             </Card.Content>
-            <Card.Actions style={styles.cardActions}>
+            <View style={styles.cardActions}>
               <Button
                 mode="outlined"
                 onPress={() => setClearDialogVisible(true)}
@@ -218,7 +218,7 @@ export default function ProfileScreen() {
               >
                 Remove All Trades
               </Button>
-            </Card.Actions>
+            </View>
           </Card>
 
           <Card style={styles.card}>
@@ -227,7 +227,7 @@ export default function ProfileScreen() {
                 Account
               </Text>
             </Card.Content>
-            <Card.Actions style={styles.cardActions}>
+            <View style={styles.cardActions}>
               <Button
                 mode="outlined"
                 onPress={handleLogout}
@@ -242,7 +242,7 @@ export default function ProfileScreen() {
               >
                 Sign Out
               </Button>
-            </Card.Actions>
+            </View>
           </Card>
         </View>
       </ResponsiveContainer>
