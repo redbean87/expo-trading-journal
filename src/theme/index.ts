@@ -166,7 +166,6 @@ const lightColors = {
   background: '#f5f5f5',
   surface: '#ffffff',
   surfaceVariant: '#f5f5f5',
-  surfaceContainerHigh: '#ffffff',
   textSecondary: '#757575',
   textTertiary: '#9e9e9e',
   border: '#e0e0e0',
@@ -182,7 +181,6 @@ const darkColors = {
   background: '#121212',
   surface: '#1e1e1e',
   surfaceVariant: '#2c2c2c',
-  surfaceContainerHigh: '#1e1e1e',
   textSecondary: '#a0a0a0',
   textTertiary: '#707070',
   border: '#3c3c3c',
@@ -216,6 +214,14 @@ export const lightTheme = {
   colors: {
     ...MD3LightTheme.colors,
     ...lightColors,
+    elevation: {
+      ...MD3LightTheme.colors.elevation,
+      level1: lightColors.surface,
+      level2: lightColors.surface,
+      level3: lightColors.surfaceVariant,
+      level4: lightColors.surfaceVariant,
+      level5: lightColors.surfaceVariant,
+    },
   },
   fonts: configureAppFonts(MD3LightTheme.fonts),
 };
@@ -226,6 +232,14 @@ export const darkTheme = {
   colors: {
     ...MD3DarkTheme.colors,
     ...darkColors,
+    elevation: {
+      ...MD3DarkTheme.colors.elevation,
+      level1: darkColors.surface,
+      level2: darkColors.surface,
+      level3: darkColors.surfaceVariant,
+      level4: darkColors.surfaceVariant,
+      level5: darkColors.surfaceVariant,
+    },
   },
   fonts: configureAppFonts(MD3DarkTheme.fonts),
 };
