@@ -23,13 +23,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     route: '/(tabs)/trades',
     label: 'Trades',
     icon: 'format-list-bulleted',
-    matchPaths: [
-      '/(tabs)/trades',
-      '/trades',
-      '/trade',
-      '/add-trade',
-      '/edit-trade',
-    ],
+    matchPaths: ['/(tabs)/trades', '/trades', '/add-trade'],
   },
   {
     route: '/(tabs)/analytics',

@@ -25,6 +25,7 @@ type TradeFormContentProps = {
     data: TradeFormData,
     pendingImages: PendingImage[]
   ) => Promise<void>;
+  onCancel?: () => void;
 };
 
 export function TradeFormContent({
@@ -32,6 +33,7 @@ export function TradeFormContent({
   isEditMode,
   tradeId,
   onSubmit,
+  onCancel,
 }: TradeFormContentProps) {
   const [formData, setFormData] = useState<TradeFormData>(initialData);
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
@@ -121,6 +123,15 @@ export function TradeFormContent({
                 >
                   {isEditMode ? 'Update Trade' : 'Add Trade'}
                 </Button>
+                {onCancel && (
+                  <Button
+                    mode="outlined"
+                    onPress={onCancel}
+                    style={styles.button}
+                  >
+                    Cancel
+                  </Button>
+                )}
               </Card.Content>
             </Card>
           </View>

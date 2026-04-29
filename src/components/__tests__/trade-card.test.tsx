@@ -54,7 +54,7 @@ describe('TradeCard', () => {
       const symbolText = getByText('AAPL');
       fireEvent.press(symbolText);
 
-      expect(mockPush).toHaveBeenCalledWith('/trade/test-trade-123');
+      expect(mockPush).toHaveBeenCalledWith('/trades/test-trade-123');
     });
 
     it('should not navigate when disableNavigation is true', () => {
@@ -75,7 +75,7 @@ describe('TradeCard', () => {
       const symbolText = getByText('AAPL');
       fireEvent.press(symbolText);
 
-      expect(mockPush).toHaveBeenCalledWith('/trade/different-id-456');
+      expect(mockPush).toHaveBeenCalledWith('/trades/different-id-456');
     });
   });
 });

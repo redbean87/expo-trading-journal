@@ -74,7 +74,7 @@ describe('DesktopSidebar', () => {
   });
 
   it('should mark Trades as active for trade detail pathname', () => {
-    mockPathname = '/trade/abc123';
+    mockPathname = '/trades/abc123';
     const { getByLabelText } = render(<DesktopSidebar />);
 
     const tradesItem = getByLabelText('Trades');
@@ -93,7 +93,7 @@ describe('DesktopSidebar', () => {
   });
 
   it('should mark Trades as active for edit-trade pathname', () => {
-    mockPathname = '/edit-trade/abc123';
+    mockPathname = '/trades/abc123?edit=true';
     const { getByLabelText } = render(<DesktopSidebar />);
 
     const tradesItem = getByLabelText('Trades');

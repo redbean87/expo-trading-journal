@@ -42,7 +42,7 @@ export function TradeCard({
     if (onSelect) {
       onSelect(trade.id);
     } else if (!disableNavigation) {
-      router.push(`/trade/${trade.id}`);
+      router.push(`/trades/${trade.id}`);
     }
   };
 

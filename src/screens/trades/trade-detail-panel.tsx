@@ -1,31 +1,33 @@
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text, IconButton } from 'react-native-paper';
 
 import { Button } from '../../components/button';
 import { TradeDetailContent } from '../../components/trade-detail-content';
+import { TradeEditForm } from '../../components/trade-edit-form';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useTrade, useDeleteTrade } from '../../hooks/use-trades';
 
 type TradeDetailPanelProps = {
   tradeId: string | null;
   onClose: () => void;
+  isEditing: boolean;
+  onEditStart: () => void;
+  onEditComplete: () => void;
 };
 
-export function TradeDetailPanel({ tradeId, onClose }: TradeDetailPanelProps) {
-  const router = useRouter();
+export function TradeDetailPanel({
+  tradeId,
+  onClose,
+  isEditing,
+  onEditStart,
+  onEditComplete,
+}: TradeDetailPanelProps) {
   const theme = useAppTheme();
   const { trade, isLoading, notFound } = useTrade(tradeId);
   const deleteTrade = useDeleteTrade();
 
   const styles = createStyles(theme);
-
-  const handleEdit = () => {
-    if (tradeId) {
-      router.push(`/edit-trade/${tradeId}`);
-    }
-  };
 
   const handleDelete = async () => {
     if (tradeId) {
@@ -76,6 +78,21 @@ export function TradeDetailPanel({ tradeId, onClose }: TradeDetailPanelProps) {
     );
   }
 
+  if (isEditing) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <IconButton icon="close" onPress={onClose} />
+        </View>
+        <TradeEditForm
+          trade={trade}
+          tradeId={tradeId}
+          onComplete={onEditComplete}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -83,7 +100,7 @@ export function TradeDetailPanel({ tradeId, onClose }: TradeDetailPanelProps) {
       </View>
       <TradeDetailContent
         trade={trade}
-        onEdit={handleEdit}
+        onEdit={onEditStart}
         onDelete={handleDelete}
         onDeleteComplete={onClose}
       />

@@ -5,20 +5,27 @@ import { Text } from 'react-native-paper';
 
 import { Button } from '../components/button';
 import { TradeDetailContent } from '../components/trade-detail-content';
+import { TradeEditForm } from '../components/trade-edit-form';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTrade, useDeleteTrade } from '../hooks/use-trades';
 
 export default function TradeDetailScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id: string; edit?: string }>();
   const { trade, isLoading, notFound } = useTrade(params.id || null);
   const deleteTrade = useDeleteTrade();
   const theme = useAppTheme();
 
+  const isEditing = params.edit === 'true';
+
   const styles = createStyles(theme);
 
   const handleEdit = () => {
-    router.push(`/edit-trade/${params.id}`);
+    router.setParams({ edit: 'true' });
+  };
+
+  const handleCancelEdit = () => {
+    router.setParams({ edit: undefined });
   };
 
   const handleDelete = async () => {
@@ -58,6 +65,19 @@ export default function TradeDetailScreen() {
             Go Back
           </Button>
         </View>
+      </>
+    );
+  }
+
+  if (isEditing) {
+    return (
+      <>
+        <Stack.Screen options={{ title: `Edit ${trade.symbol}` }} />
+        <TradeEditForm
+          trade={trade}
+          tradeId={params.id}
+          onComplete={handleCancelEdit}
+        />
       </>
     );
   }

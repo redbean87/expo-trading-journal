@@ -32,7 +32,7 @@ export function RecentTradesCard({ trades }: RecentTradesCardProps) {
   const styles = createStyles(theme);
 
   const handleTradePress = (id: string) => {
-    router.push(`/trade/${id}`);
+    router.push(`/trades/${id}`);
   };
 
   const handleAddTrade = () => {

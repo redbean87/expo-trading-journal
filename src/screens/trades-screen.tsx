@@ -55,6 +55,8 @@ import { TradeDetailPanel } from './trades/trade-detail-panel';
 import { TradeFilterModal } from './trades/trade-filter-modal';
 
 type TradeSearchParams = {
+  id?: string;
+  edit?: string;
   dateFrom?: string;
   dateTo?: string;
   side?: string;
@@ -110,8 +112,13 @@ export default function TradesScreen() {
   const theme = useAppTheme();
   const { isDesktop } = useBreakpoint();
   const isFocused = useIsFocused();
-  const { selectedTradeId, setSelectedTradeId, clearSelection } =
-    useTradesUIStore();
+  const {
+    selectedTradeId,
+    setSelectedTradeId,
+    clearSelection,
+    editingTradeId,
+    setEditingTradeId,
+  } = useTradesUIStore();
   const { defaultRiskPercent } = useProfileStore();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -154,6 +161,17 @@ export default function TradesScreen() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Sync selected trade from URL on desktop (deep-linking support)
+  useEffect(() => {
+    if (isDesktop && params.id) {
+      setSelectedTradeId(params.id);
+      if (params.edit === 'true') {
+        setEditingTradeId(params.id);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDesktop, params.id, params.edit]);
 
   // Sync non-search filter changes to URL
   useEffect(() => {
@@ -337,10 +355,32 @@ export default function TradesScreen() {
     if (selectedTradeId === id) {
       clearSelection();
     }
+    if (editingTradeId === id) {
+      setEditingTradeId(null);
+    }
+  };
+
+  const handleSelectTrade = (id: string) => {
+    setSelectedTradeId(id);
+    if (isDesktop) {
+      router.push(`/trades/${id}`);
+    }
+  };
+
+  const handleClearSelection = () => {
+    clearSelection();
+    if (isDesktop) {
+      router.push('/trades');
+    }
   };
 
   const handleEditTrade = (id: string) => {
-    router.push(`/edit-trade/${id}`);
+    if (isDesktop) {
+      setSelectedTradeId(id);
+      setEditingTradeId(id);
+    } else {
+      router.push(`/trades/${id}?edit=true`);
+    }
   };
 
   const onRefresh = async () => {
@@ -357,7 +397,7 @@ export default function TradesScreen() {
       trade={item}
       onDelete={handleDeleteTrade}
       onEdit={handleEditTrade}
-      onSelect={isDesktop ? setSelectedTradeId : undefined}
+      onSelect={isDesktop ? handleSelectTrade : undefined}
       isSelected={isDesktop && selectedTradeId === item.id}
     />
   );
@@ -423,7 +463,18 @@ export default function TradesScreen() {
             <View style={styles.detailPane}>
               <TradeDetailPanel
                 tradeId={selectedTradeId}
-                onClose={clearSelection}
+                onClose={handleClearSelection}
+                isEditing={editingTradeId === selectedTradeId}
+                onEditStart={() => {
+                  if (selectedTradeId) {
+                    setEditingTradeId(selectedTradeId);
+                    router.setParams({ edit: 'true' });
+                  }
+                }}
+                onEditComplete={() => {
+                  setEditingTradeId(null);
+                  router.setParams({ edit: undefined });
+                }}
               />
             </View>
           </View>
