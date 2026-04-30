@@ -88,6 +88,7 @@ type CsvRow = {
   whatFailed?: string;
   confidence?: string;
   ruleViolation?: string;
+  marketCondition?: string;
   link?: string;
   side?: string;
   direction?: string;
@@ -226,6 +227,7 @@ function parseCsvRowToTrade(row: CsvRow, timezone?: string): Trade | null {
       whatFailed: row.whatFailed?.substring(0, 500),
       confidence,
       ruleViolation,
+      marketCondition: row.marketCondition?.substring(0, 50),
       pnl,
       pnlPercent,
     };

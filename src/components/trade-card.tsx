@@ -129,20 +129,38 @@ export function TradeCard({
                 <Text variant="bodySmall" style={styles.date}>
                   {formatDate(trade.entryTime)} - {formatDate(trade.exitTime)}
                 </Text>
-                {trade.strategy && (
-                  <Chip
-                    compact
-                    style={[
-                      styles.strategyChip,
-                      isSelected && styles.strategyChipSelected,
-                    ]}
-                    textStyle={
-                      isSelected ? styles.strategyChipTextSelected : undefined
-                    }
-                  >
-                    {trade.strategy}
-                  </Chip>
-                )}
+                <View style={styles.chipRow}>
+                  {trade.strategy && (
+                    <Chip
+                      compact
+                      style={[
+                        styles.strategyChip,
+                        isSelected && styles.strategyChipSelected,
+                      ]}
+                      textStyle={
+                        isSelected ? styles.strategyChipTextSelected : undefined
+                      }
+                    >
+                      {trade.strategy}
+                    </Chip>
+                  )}
+                  {trade.marketCondition && (
+                    <Chip
+                      compact
+                      style={[
+                        styles.marketConditionChip,
+                        isSelected && styles.marketConditionChipSelected,
+                      ]}
+                      textStyle={
+                        isSelected
+                          ? styles.marketConditionChipTextSelected
+                          : undefined
+                      }
+                    >
+                      {trade.marketCondition}
+                    </Chip>
+                  )}
+                </View>
               </View>
             </Card.Content>
             {(onDelete || onEdit) && (
@@ -222,8 +240,13 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     date: {
       marginTop: theme.spacing.xs,
     },
-    strategyChip: {
+    chipRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: theme.spacing.sm,
       marginTop: theme.spacing.sm,
+    },
+    strategyChip: {
       alignSelf: 'flex-start',
     },
     strategyChipSelected: {
@@ -231,6 +254,16 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       borderColor: theme.colors.primary,
     },
     strategyChipTextSelected: {
+      color: theme.colors.onPrimaryContainer,
+    },
+    marketConditionChip: {
+      alignSelf: 'flex-start',
+    },
+    marketConditionChipSelected: {
+      borderWidth: 2,
+      borderColor: theme.colors.primary,
+    },
+    marketConditionChipTextSelected: {
       color: theme.colors.onPrimaryContainer,
     },
     actions: {

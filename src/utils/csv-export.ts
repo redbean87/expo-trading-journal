@@ -30,6 +30,7 @@ type CsvExportRow = {
   exitTime: string;
   side: string;
   setup: string;
+  marketCondition: string;
   notes: string;
   pnl: number;
   pnlPercent: number;
@@ -45,6 +46,7 @@ function tradeToExportRow(trade: Trade): CsvExportRow {
     exitTime: formatDateForCsv(trade.exitTime),
     side: trade.side,
     setup: trade.strategy ?? '',
+    marketCondition: trade.marketCondition ?? '',
     notes: trade.notes ?? '',
     pnl: trade.pnl,
     pnlPercent: trade.pnlPercent,
@@ -64,6 +66,7 @@ export function tradesToCsv(trades: Trade[]): string {
       'exitTime',
       'side',
       'setup',
+      'marketCondition',
       'notes',
       'pnl',
       'pnlPercent',

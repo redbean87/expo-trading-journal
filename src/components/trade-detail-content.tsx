@@ -135,6 +135,14 @@ export function TradeDetailContent({
             </SectionCard>
           )}
 
+          {trade.marketCondition && (
+            <SectionCard title="Market Condition">
+              <Chip style={styles.marketConditionChip}>
+                {trade.marketCondition}
+              </Chip>
+            </SectionCard>
+          )}
+
           {trade.psychology && (
             <SectionCard title="Psychology">
               <Chip style={styles.psychologyChip}>{trade.psychology}</Chip>
@@ -304,6 +312,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       lineHeight: 24,
     },
     psychologyChip: {
+      alignSelf: 'flex-start',
+    },
+    marketConditionChip: {
       alignSelf: 'flex-start',
     },
     ruleViolationContent: {

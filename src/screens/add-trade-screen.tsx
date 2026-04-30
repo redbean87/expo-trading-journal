@@ -72,6 +72,7 @@ export default function AddTradeScreen() {
         whatFailed: formData.whatFailed || undefined,
         confidence: formData.confidence,
         ruleViolation: formData.ruleViolation || undefined,
+        marketCondition: formData.marketCondition || undefined,
         riskAmount,
         pnl,
         pnlPercent,
@@ -96,6 +97,7 @@ export default function AddTradeScreen() {
         whatFailed: formData.whatFailed || undefined,
         confidence: formData.confidence,
         ruleViolation: formData.ruleViolation || undefined,
+        marketCondition: formData.marketCondition || undefined,
         riskAmount,
         pnl,
         pnlPercent,
@@ -163,6 +165,7 @@ export default function AddTradeScreen() {
           whatFailed: trade.whatFailed || '',
           confidence: trade.confidence,
           ruleViolation: trade.ruleViolation || '',
+          marketCondition: trade.marketCondition || '',
           riskAmount: trade.riskAmount?.toString() || '',
           fees: trade.fees?.toString() || '',
           commissions: trade.commissions?.toString() || '',
@@ -182,6 +185,7 @@ export default function AddTradeScreen() {
           whatFailed: '',
           confidence: undefined,
           ruleViolation: '',
+          marketCondition: '',
           riskAmount: '',
         };
 

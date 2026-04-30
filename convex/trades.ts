@@ -43,6 +43,7 @@ export const getTrades = query({
       orderType: trade.orderType,
       accountBalanceAfter: trade.accountBalanceAfter,
       riskAmount: trade.riskAmount,
+      marketCondition: trade.marketCondition,
     }));
   },
 });
@@ -98,6 +99,7 @@ export const getTradesInRange = query({
       orderType: trade.orderType,
       accountBalanceAfter: trade.accountBalanceAfter,
       riskAmount: trade.riskAmount,
+      marketCondition: trade.marketCondition,
     }));
   },
 });
@@ -149,6 +151,7 @@ export const getTrade = query({
       orderType: trade.orderType,
       accountBalanceAfter: trade.accountBalanceAfter,
       riskAmount: trade.riskAmount,
+      marketCondition: trade.marketCondition,
     };
   },
 });
@@ -178,6 +181,7 @@ export const addTrade = mutation({
     orderType: v.optional(v.string()),
     accountBalanceAfter: v.optional(v.number()),
     riskAmount: v.optional(v.number()),
+    marketCondition: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -209,6 +213,7 @@ export const addTrade = mutation({
       orderType: args.orderType,
       accountBalanceAfter: args.accountBalanceAfter,
       riskAmount: args.riskAmount,
+      marketCondition: args.marketCondition,
     });
 
     return {
@@ -243,6 +248,7 @@ export const updateTrade = mutation({
     orderType: v.optional(v.string()),
     accountBalanceAfter: v.optional(v.number()),
     riskAmount: v.optional(v.number()),
+    marketCondition: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -288,6 +294,8 @@ export const updateTrade = mutation({
       importId: updatedTrade!.importId,
       orderType: updatedTrade!.orderType,
       accountBalanceAfter: updatedTrade!.accountBalanceAfter,
+      riskAmount: updatedTrade!.riskAmount,
+      marketCondition: updatedTrade!.marketCondition,
     };
   },
 });
@@ -364,6 +372,7 @@ export const importTrades = mutation({
         orderType: v.optional(v.string()),
         accountBalanceAfter: v.optional(v.number()),
         riskAmount: v.optional(v.number()),
+        marketCondition: v.optional(v.string()),
       })
     ),
   },

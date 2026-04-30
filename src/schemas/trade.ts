@@ -32,6 +32,7 @@ export const tradeSchema = z.object({
   orderType: z.string().optional(),
   accountBalanceAfter: z.number().optional(),
   riskAmount: z.number().positive().optional(),
+  marketCondition: z.string().max(50).optional(),
 });
 
 export const tradeFormSchema = z
@@ -115,6 +116,10 @@ export const tradeFormSchema = z
           (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
         { message: 'Risk amount must be a positive number' }
       )
+      .optional(),
+    marketCondition: z
+      .string()
+      .max(50, 'Market condition must be 50 characters or less')
       .optional(),
   })
   .refine((data) => data.exitTime >= data.entryTime, {
@@ -208,5 +213,6 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     riskAmount,
     pnl,
     pnlPercent,
+    marketCondition: formData.marketCondition,
   };
 }

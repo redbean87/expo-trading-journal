@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { TextInput, Text, HelperText } from 'react-native-paper';
 
+import { MarketConditionSelector } from './market-condition-selector';
 import { MistakeCategorySelector } from './mistake-category-selector';
 import { PsychologySelector } from './psychology-selector';
 import { StrategySelector } from './strategy-selector';
@@ -23,6 +24,7 @@ const FORM_FIELDS = [
   'commissions',
   'riskAmount',
   'strategy',
+  'marketCondition',
   'ruleViolation',
   'whatWorked',
   'whatFailed',
@@ -280,6 +282,13 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           returnKeyType={getReturnKeyType('strategy')}
           blurOnSubmit={getBlurOnSubmit('strategy')}
           onSubmitEditing={() => handleSubmitEditing('strategy')}
+        />
+
+        <MarketConditionSelector
+          value={formData.marketCondition}
+          onSelect={(condition) =>
+            onUpdate({ marketCondition: condition || undefined })
+          }
         />
 
         <PsychologySelector

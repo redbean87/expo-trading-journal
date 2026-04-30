@@ -27,6 +27,7 @@ type BackendTrade = {
   ruleViolation?: string;
   importedFrom?: string;
   riskAmount?: number;
+  marketCondition?: string;
 };
 
 function mapToTrade(trade: BackendTrade): Trade {
@@ -55,6 +56,7 @@ function mapToTrade(trade: BackendTrade): Trade {
       | 'trade-history'
       | undefined,
     riskAmount: trade.riskAmount,
+    marketCondition: trade.marketCondition,
   };
 }
 
@@ -80,6 +82,7 @@ function mapFromTrade(trade: Trade) {
     ruleViolation: trade.ruleViolation,
     importedFrom: trade.importedFrom,
     riskAmount: trade.riskAmount,
+    marketCondition: trade.marketCondition,
   };
 }
 
@@ -159,6 +162,7 @@ export function useUpdateTrade() {
       confidence: updates.confidence,
       ruleViolation: updates.ruleViolation,
       riskAmount: updates.riskAmount,
+      marketCondition: updates.marketCondition,
     });
 
     return mapToTrade(result);

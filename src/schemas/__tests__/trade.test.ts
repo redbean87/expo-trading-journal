@@ -81,11 +81,12 @@ describe('tradeFormSchema', () => {
     }
   });
 
-  it('should accept optional strategy and notes', () => {
+  it('should accept optional strategy, notes, and marketCondition', () => {
     const result = tradeFormSchema.safeParse({
       ...validFormData,
       strategy: 'Momentum',
       notes: 'Good setup',
+      marketCondition: 'Trend',
     });
     expect(result.success).toBe(true);
   });
@@ -111,6 +112,7 @@ describe('tradeSchema', () => {
     side: 'long' as const,
     pnl: 100,
     pnlPercent: 6.67,
+    marketCondition: 'Trend',
   };
 
   it('should validate correct trade', () => {
@@ -238,6 +240,7 @@ describe('formDataToTrade', () => {
       exitTime: new Date('2024-01-02'),
       side: 'long' as const,
       strategy: 'Momentum',
+      marketCondition: 'High Momentum',
     };
 
     const trade = formDataToTrade(
@@ -252,6 +255,7 @@ describe('formDataToTrade', () => {
     expect(trade.pnl).toBe(100);
     expect(trade.pnlPercent).toBeCloseTo(6.67, 1);
     expect(trade.strategy).toBe('Momentum');
+    expect(trade.marketCondition).toBe('High Momentum');
   });
 
   it('should deduct fees from pnl when fees are provided', () => {
