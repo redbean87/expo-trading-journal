@@ -9,6 +9,7 @@ export type AnalyticsSegment =
   | 'charts'
   | 'psychology'
   | 'strategy'
+  | 'market-condition'
   | 'ai-insights';
 
 export type HomePeriod = 'today' | 'week' | 'month' | 'year' | 'all';

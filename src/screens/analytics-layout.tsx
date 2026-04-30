@@ -8,9 +8,9 @@ import React, {
 } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
+import { Chip } from '../components/chip';
 import { LoadingState } from '../components/loading-state';
 import { ResponsiveContainer } from '../components/responsive-container';
-import { SegmentedButtons } from '../components/segmented-buttons';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTradesInRange } from '../hooks/use-trades';
 import { useAnalyticsStore } from '../store/analytics-store';
@@ -88,20 +88,33 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
     if (pathname.includes('/charts')) return 'charts';
     if (pathname.includes('/psychology')) return 'psychology';
     if (pathname.includes('/strategy')) return 'strategy';
+    if (pathname.includes('/market-condition')) return 'market-condition';
     if (pathname.includes('/ai-insights')) return 'ai-insights';
     return 'overview';
   };
 
-  const handleSegmentChange = (value: string) => {
-    const routes: Record<AnalyticsSegment, string> = {
-      overview: '/analytics',
-      patterns: '/analytics/patterns',
-      charts: '/analytics/charts',
-      psychology: '/analytics/psychology',
-      strategy: '/analytics/strategy',
-      'ai-insights': '/analytics/ai-insights',
-    };
-    router.replace(routes[value as AnalyticsSegment]);
+  const segments: { value: AnalyticsSegment; label: string }[] = [
+    { value: 'overview', label: 'Overview' },
+    { value: 'patterns', label: 'Patterns' },
+    { value: 'charts', label: 'Charts' },
+    { value: 'psychology', label: 'Psych' },
+    { value: 'strategy', label: 'Strategy' },
+    { value: 'market-condition', label: 'Market' },
+    { value: 'ai-insights', label: 'AI' },
+  ];
+
+  const routes: Record<AnalyticsSegment, string> = {
+    overview: '/analytics',
+    patterns: '/analytics/patterns',
+    charts: '/analytics/charts',
+    psychology: '/analytics/psychology',
+    strategy: '/analytics/strategy',
+    'market-condition': '/analytics/market-condition',
+    'ai-insights': '/analytics/ai-insights',
+  };
+
+  const handleSegmentChange = (value: AnalyticsSegment) => {
+    router.replace(routes[value]);
   };
 
   const styles = createStyles(theme);
@@ -129,19 +142,24 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
                   />
                 )}
 
-                <SegmentedButtons
-                  value={getSegment()}
-                  onValueChange={handleSegmentChange}
-                  buttons={[
-                    { value: 'overview', label: 'Overview' },
-                    { value: 'patterns', label: 'Patterns' },
-                    { value: 'charts', label: 'Charts' },
-                    { value: 'psychology', label: 'Psych' },
-                    { value: 'strategy', label: 'Strategy' },
-                    { value: 'ai-insights', label: 'AI' },
-                  ]}
-                  style={styles.segmentToggle}
-                />
+                <View style={styles.segmentContainer}>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.segmentContent}
+                  >
+                    {segments.map((segment) => (
+                      <Chip
+                        key={segment.value}
+                        selected={getSegment() === segment.value}
+                        onPress={() => handleSegmentChange(segment.value)}
+                        style={styles.segmentChip}
+                      >
+                        {segment.label}
+                      </Chip>
+                    ))}
+                  </ScrollView>
+                </View>
 
                 {children ?? <Slot />}
               </View>
@@ -162,8 +180,16 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     content: {
       padding: 16,
     },
-    segmentToggle: {
+    segmentContainer: {
       marginBottom: 16,
+    },
+    segmentContent: {
+      flexDirection: 'row',
+      gap: 8,
+      paddingVertical: 4,
+    },
+    segmentChip: {
+      marginRight: 4,
     },
   });
 
