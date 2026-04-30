@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
-import { Chip } from '../components/chip';
+import { AnalyticsTabs } from '../components/analytics-tabs';
 import { LoadingState } from '../components/loading-state';
 import { ResponsiveContainer } from '../components/responsive-container';
 import { useAppTheme } from '../hooks/use-app-theme';
@@ -142,24 +142,13 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
                   />
                 )}
 
-                <View style={styles.segmentContainer}>
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.segmentContent}
-                  >
-                    {segments.map((segment) => (
-                      <Chip
-                        key={segment.value}
-                        selected={getSegment() === segment.value}
-                        onPress={() => handleSegmentChange(segment.value)}
-                        style={styles.segmentChip}
-                      >
-                        {segment.label}
-                      </Chip>
-                    ))}
-                  </ScrollView>
-                </View>
+                <AnalyticsTabs
+                  tabs={segments}
+                  activeValue={getSegment()}
+                  onChange={(value) =>
+                    handleSegmentChange(value as AnalyticsSegment)
+                  }
+                />
 
                 {children ?? <Slot />}
               </View>
@@ -179,17 +168,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     content: {
       padding: 16,
-    },
-    segmentContainer: {
-      marginBottom: 16,
-    },
-    segmentContent: {
-      flexDirection: 'row',
-      gap: 8,
-      paddingVertical: 4,
-    },
-    segmentChip: {
-      marginRight: 4,
     },
   });
 
