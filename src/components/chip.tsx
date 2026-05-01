@@ -9,7 +9,7 @@ export type ChipProps = ComponentProps<typeof PaperChip>;
 /**
  * Custom Chip component that applies custom theme colors.
  * Selectable chips (selected prop passed) switch between flat/outlined modes
- * to match segmented button styling. Tag chips (no selected prop) keep flat mode.
+ * to match segmented button styling. Tag chips (no selected prop) use outlined mode.
  */
 export function Chip({
   selected,
@@ -31,7 +31,9 @@ export function Chip({
       ]}
       selected={selected}
       showSelectedCheck={isSelectable ? false : showSelectedCheck}
-      mode={isSelectable ? (isSelected ? 'flat' : 'outlined') : mode}
+      mode={
+        isSelectable ? (isSelected ? 'flat' : 'outlined') : (mode ?? 'outlined')
+      }
       theme={
         isSelected
           ? {
