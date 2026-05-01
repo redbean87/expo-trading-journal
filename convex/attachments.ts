@@ -22,18 +22,48 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png'];
 
 function getR2Client() {
+  const endpoint = process.env.R2_ENDPOINT;
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+
+  if (!endpoint) {
+    throw new Error(
+      'R2_ENDPOINT is not configured. Please set it in your Convex environment variables.'
+    );
+  }
+  if (!accessKeyId) {
+    throw new Error(
+      'R2_ACCESS_KEY_ID is not configured. Please set it in your Convex environment variables.'
+    );
+  }
+  if (!secretAccessKey) {
+    throw new Error(
+      'R2_SECRET_ACCESS_KEY is not configured. Please set it in your Convex environment variables.'
+    );
+  }
+
   return new S3Client({
     region: 'auto',
-    endpoint: process.env.R2_ENDPOINT!,
+    endpoint,
     credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+      accessKeyId,
+      secretAccessKey,
     },
     // Disable automatic CRC32 checksums — they add query params that trigger
     // CORS preflight and aren't supported by Cloudflare R2 presigned URLs.
     requestChecksumCalculation: 'WHEN_REQUIRED',
     responseChecksumValidation: 'WHEN_REQUIRED',
   });
+}
+
+function getR2BucketName(): string {
+  const bucketName = process.env.R2_BUCKET_NAME;
+  if (!bucketName) {
+    throw new Error(
+      'R2_BUCKET_NAME is not configured. Please set it in your Convex environment variables.'
+    );
+  }
+  return bucketName;
 }
 
 export const getAttachmentsByTrade = query({
@@ -92,7 +122,7 @@ export const generateUploadUrl = action({
 
     const client = getR2Client();
     const command = new PutObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME!,
+      Bucket: getR2BucketName(),
       Key: storageKey,
       ContentType: args.contentType,
     });
@@ -142,7 +172,7 @@ export const generateDownloadUrl = action({
 
     const client = getR2Client();
     const command = new GetObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME!,
+      Bucket: getR2BucketName(),
       Key: args.storageKey,
     });
 
@@ -180,7 +210,7 @@ export const deleteAttachment = action({
     const client = getR2Client();
     await client.send(
       new DeleteObjectCommand({
-        Bucket: process.env.R2_BUCKET_NAME!,
+        Bucket: getR2BucketName(),
         Key: attachment.storageKey,
       })
     );
