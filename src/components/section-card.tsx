@@ -58,9 +58,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     title: {
       marginBottom: theme.spacing.sm,
-      color: theme.colors.primary,
+      color: theme.colors.onSurface,
     },
     titleInRow: {
-      color: theme.colors.primary,
+      color: theme.colors.onSurface,
     },
   });
