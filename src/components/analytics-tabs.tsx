@@ -33,7 +33,7 @@ export function AnalyticsTabs({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={styles.tabBar}
       >
         {tabs.map((tab) => {
           const isActive = tab.value === activeValue;
@@ -42,7 +42,7 @@ export function AnalyticsTabs({
               key={tab.value}
               onPress={() => onChange(tab.value)}
               activeOpacity={0.7}
-              style={[styles.tab, isActive && styles.tabActive]}
+              style={styles.tab}
             >
               <Text
                 style={[styles.tabText, isActive && styles.tabTextActive]}
@@ -50,53 +50,58 @@ export function AnalyticsTabs({
               >
                 {tab.label}
               </Text>
+              <View
+                style={[styles.indicator, !isActive && styles.indicatorHidden]}
+              />
             </TouchableOpacity>
           );
         })}
       </ScrollView>
-      <View style={styles.bottomBorder} />
+      <View style={styles.divider} />
     </View>
   );
 }
 
+const INDICATOR_HEIGHT = 2;
+
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     container: {
-      marginBottom: 16,
+      marginBottom: theme.spacing.lg,
     },
-    content: {
+    tabBar: {
       flexDirection: 'row',
-      gap: 8,
-      paddingVertical: 4,
     },
     tab: {
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: theme.borderRadius.md,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      backgroundColor: 'transparent',
-      minWidth: 64,
+      paddingHorizontal: theme.spacing.md,
+      paddingTop: theme.spacing.sm,
+      paddingBottom: 0,
       alignItems: 'center',
       justifyContent: 'center',
-    },
-    tabActive: {
-      backgroundColor: theme.colors.primary,
-      borderColor: theme.colors.primary,
+      minWidth: 56,
     },
     tabText: {
       fontSize: 13,
       fontWeight: '500',
-      color: theme.colors.onSurface,
+      color: theme.colors.textSecondary,
+      paddingBottom: theme.spacing.sm,
     },
     tabTextActive: {
-      color: theme.colors.onPrimary,
+      color: theme.colors.primary,
       fontWeight: '600',
     },
-    bottomBorder: {
-      height: 1,
+    indicator: {
+      height: INDICATOR_HEIGHT,
+      backgroundColor: theme.colors.primary,
+      alignSelf: 'stretch',
+      borderTopLeftRadius: INDICATOR_HEIGHT / 2,
+      borderTopRightRadius: INDICATOR_HEIGHT / 2,
+    },
+    indicatorHidden: {
+      backgroundColor: 'transparent',
+    },
+    divider: {
+      height: StyleSheet.hairlineWidth,
       backgroundColor: theme.colors.border,
-      marginTop: 8,
-      opacity: 0.5,
     },
   });
