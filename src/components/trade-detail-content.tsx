@@ -132,7 +132,7 @@ export function TradeDetailContent({
 
           {trade.strategy && (
             <SectionCard title="Strategy">
-              <Text variant="bodyLarge">{trade.strategy}</Text>
+              <Chip style={styles.strategyChip}>{trade.strategy}</Chip>
             </SectionCard>
           )}
 
@@ -316,6 +316,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       alignSelf: 'flex-start',
     },
     marketConditionChip: {
+      alignSelf: 'flex-start',
+    },
+    strategyChip: {
       alignSelf: 'flex-start',
     },
     ruleViolationContent: {

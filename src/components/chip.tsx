@@ -20,23 +20,28 @@ export function Chip({
 }: ChipProps) {
   const theme = useAppTheme();
   const isSelectable = selected !== undefined;
+  const isSelected = selected === true;
 
   return (
     <PaperChip
       {...props}
       style={[
-        isSelectable && !selected && { backgroundColor: 'transparent' },
+        isSelectable && !isSelected && { backgroundColor: 'transparent' },
         style,
       ]}
       selected={selected}
       showSelectedCheck={isSelectable ? false : showSelectedCheck}
-      mode={isSelectable ? (selected ? 'flat' : 'outlined') : mode}
-      theme={{
-        colors: {
-          secondaryContainer: theme.colors.primaryContainer,
-          onSecondaryContainer: theme.colors.onPrimaryContainer,
-        },
-      }}
+      mode={isSelectable ? (isSelected ? 'flat' : 'outlined') : mode}
+      theme={
+        isSelected
+          ? {
+              colors: {
+                secondaryContainer: theme.colors.primaryContainer,
+                onSecondaryContainer: theme.colors.onPrimaryContainer,
+              },
+            }
+          : undefined
+      }
     />
   );
 }
