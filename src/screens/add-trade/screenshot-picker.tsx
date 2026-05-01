@@ -138,7 +138,7 @@ export function ScreenshotPicker({
       </View>
 
       {error && (
-        <Text variant="bodySmall" style={{ color: theme.colors.loss }}>
+        <Text variant="bodySmall" style={{ color: theme.colors.error }}>
           {error}
         </Text>
       )}
@@ -172,7 +172,7 @@ export function ScreenshotPicker({
 const createThemedStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     sectionTitle: {
-      color: theme.colors.primary,
+      color: theme.colors.onSurface,
     },
   });
 

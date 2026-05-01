@@ -207,7 +207,7 @@ const resultRowStyles = (
       color: theme.colors.textSecondary,
     },
     value: {
-      color: highlight ? theme.colors.primary : theme.colors.onSurface,
+      color: theme.colors.onSurface,
       fontWeight: highlight ? 'bold' : 'normal',
     },
   });
@@ -237,7 +237,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     hint: {
       marginTop: theme.spacing.md,
-      color: theme.colors.primary,
+      color: theme.colors.textSecondary,
       fontStyle: 'italic',
     },
     placeholder: {

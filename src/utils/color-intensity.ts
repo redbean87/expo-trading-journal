@@ -4,6 +4,48 @@ export type ColorIntensityResult = {
 };
 
 /**
+ * Adds an alpha channel to a color string.
+ * Supports hex (#RRGGBB or #RGB) and rgba()/rgb() formats.
+ * Returns the color with the specified alpha (0-1).
+ *
+ * @param color - Color string in hex or rgba/rgb format
+ * @param alpha - Alpha value between 0 and 1
+ * @returns Color string with alpha applied
+ *
+ * @example
+ * withAlpha("#4CAF50", 0.12) // "#4CAF501F"
+ * withAlpha("rgba(76, 175, 80, 1)", 0.12) // "rgba(76, 175, 80, 0.12)"
+ */
+export function withAlpha(color: string, alpha: number): string {
+  const clampedAlpha = Math.max(0, Math.min(1, alpha));
+
+  // Hex format (#RRGGBB or #RGB)
+  if (color.startsWith('#')) {
+    let hex = color.slice(1);
+    // Expand shorthand (#RGB -> #RRGGBB)
+    if (hex.length === 3) {
+      hex = hex
+        .split('')
+        .map((c) => c + c)
+        .join('');
+    }
+    const a = Math.round(clampedAlpha * 255)
+      .toString(16)
+      .padStart(2, '0');
+    return `#${hex}${a}`;
+  }
+
+  // rgba() or rgb() format
+  const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (match) {
+    return `rgba(${match[1]}, ${match[2]}, ${match[3]}, ${clampedAlpha})`;
+  }
+
+  // Fallback: return original color
+  return color;
+}
+
+/**
  * Converts an RGBA or RGB color string to hex format (#RRGGBB).
  * If the input is already in hex format, returns it as-is.
  *

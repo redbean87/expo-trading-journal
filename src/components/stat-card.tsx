@@ -50,7 +50,7 @@ export function StatCard({ title, value, valueColor, onPress }: StatCardProps) {
           <Card.Content>
             <Text
               variant="sectionTitle"
-              style={{ color: theme.colors.primary }}
+              style={{ color: theme.colors.onSurface }}
             >
               {title}
             </Text>

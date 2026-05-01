@@ -386,7 +386,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     sectionTitle: {
       marginBottom: theme.spacing.sm,
-      color: theme.colors.primary,
+      color: theme.colors.onSurface,
     },
     dialog: {
       maxWidth: 600,

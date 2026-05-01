@@ -100,12 +100,14 @@ src/screens/
 
 ```tsx
 // ❌ Avoid
-{data.length === 0 ? <EmptyView /> : <ListView data={data} />}
+{
+  data.length === 0 ? <EmptyView /> : <ListView data={data} />;
+}
 
 // ✅ Prefer
 <EmptyState data={data} title="No data" subtitle="Add some data">
   <ListView data={data} />
-</EmptyState>
+</EmptyState>;
 ```
 
 ### Theme & Design Tokens
@@ -126,6 +128,31 @@ import { spacing, borderRadius } from '../theme';
 - `mode="contained"` — primary / affirmative action (one per screen)
 - `mode="outlined"` — secondary or destructive action (use error color for destructive)
 - `mode="text"` — cancel / dismiss / tertiary
+
+**Color usage hierarchy:**
+
+| Token                | Use For                                                    | Never Use For                                 |
+| -------------------- | ---------------------------------------------------------- | --------------------------------------------- |
+| `primary`            | Active tabs, buttons, links, indicators, selection states  | Static titles, body text, decorative elements |
+| `onPrimary`          | Text _on_ primary-colored buttons                          | Anywhere else                                 |
+| `primaryContainer`   | Selected card bg, active sidebar item bg, selected chip bg | General card backgrounds                      |
+| `onPrimaryContainer` | Text on selected/active surfaces, selected chip borders    | Body text on default surfaces                 |
+| `onSurface`          | Headings, body text, card titles, section titles           | Selected/active states                        |
+| `textSecondary`      | Labels, metadata, inactive tabs, hints, axis labels        | Primary headings                              |
+| `textTertiary`       | Empty state descriptions, subtle hints                     | Anything that needs to be readable            |
+| `profit`             | Positive P&L numbers, profit bars, win streaks             | Non-trading positive indicators               |
+| `loss`               | Negative P&L numbers, loss bars, drawdown                  | Error messages, validation text               |
+| `error`              | Validation errors, destructive button text, delete actions | Trading losses                                |
+| `background`         | Screen backgrounds                                         | Card backgrounds                              |
+| `surface`            | Card backgrounds, modals, input fields                     | Screen backgrounds                            |
+| `surfaceVariant`     | Hover states, neutral chart bars, subtle fills             | Primary content areas                         |
+| `border`             | Dividers, chart axis lines, card borders                   | Text or interactive elements                  |
+
+**Rules:**
+
+- `primary` is exclusively for interactive/active states. If it's not clickable or selected, don't use `primary`.
+- Use `withAlpha(color, alpha)` from `src/utils/color-intensity` for translucent backgrounds. Never concatenate strings like `theme.colors.profit + '20'`.
+- `profit` and `loss` are trading semantics only. Use `error` for validation and destructive actions.
 
 ### TypeScript
 

@@ -11,6 +11,7 @@ import { getMistakeCategoryLabel } from '../constants/mistake-categories';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAttachments } from '../hooks/use-attachments';
 import { Trade } from '../types';
+import { withAlpha } from '../utils/color-intensity';
 import { formatDateTime } from '../utils/date-format';
 import { categorizeMistake } from '../utils/mistake-categorization';
 
@@ -56,8 +57,8 @@ export function TradeDetailContent({
                   {
                     backgroundColor:
                       trade.side === 'long'
-                        ? theme.colors.profit + '20'
-                        : theme.colors.loss + '20',
+                        ? withAlpha(theme.colors.profit, 0.12)
+                        : withAlpha(theme.colors.loss, 0.12),
                   },
                 ]}
                 textStyle={{
@@ -322,7 +323,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     mistakeChip: {
       alignSelf: 'flex-start',
-      backgroundColor: theme.colors.loss + '20',
+      backgroundColor: withAlpha(theme.colors.loss, 0.12),
     },
     actions: {
       marginTop: 8,

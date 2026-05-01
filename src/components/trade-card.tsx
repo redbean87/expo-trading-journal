@@ -251,7 +251,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     strategyChipSelected: {
       borderWidth: 2,
-      borderColor: theme.colors.primary,
+      borderColor: theme.colors.onPrimaryContainer,
     },
     strategyChipTextSelected: {
       color: theme.colors.onPrimaryContainer,
@@ -261,7 +261,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     marketConditionChipSelected: {
       borderWidth: 2,
-      borderColor: theme.colors.primary,
+      borderColor: theme.colors.onPrimaryContainer,
     },
     marketConditionChipTextSelected: {
       color: theme.colors.onPrimaryContainer,
