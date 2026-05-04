@@ -5,12 +5,12 @@ import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
 import { enGB, registerTranslation } from 'react-native-paper-dates';
 
 import AuthGate from '@/components/auth-gate';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { PwaUpdatePrompt } from '@/components/pwa-update-prompt';
 import { SidebarLayout } from '@/components/sidebar-layout';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { ConvexProvider } from '@/providers/convex-provider';
@@ -32,17 +32,6 @@ registerTranslation('en', enGB);
 
 function KeyboardShortcutsHandler() {
   useKeyboardShortcuts();
-  return null;
-}
-
-function ServiceWorkerRegistrar() {
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
-    if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker
-      .register('/sw.js', { scope: '/' })
-      .catch((err) => console.warn('Service worker registration failed:', err));
-  }, []);
   return null;
 }
 
@@ -75,7 +64,7 @@ export default function RootLayout() {
             <ThemeProvider value={navigationTheme}>
               <AuthGate>
                 <KeyboardShortcutsHandler />
-                <ServiceWorkerRegistrar />
+                <PwaUpdatePrompt />
                 <SidebarLayout>
                   <Stack>
                     <Stack.Screen
