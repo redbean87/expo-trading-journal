@@ -1,63 +1,47 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
+type WorkboxInstance = InstanceType<typeof import('workbox-window').Workbox>;
+
 export function usePwaUpdate() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
-  const waitingWorkerRef = useRef<ServiceWorker | null>(null);
+  const wbRef = useRef<WorkboxInstance | null>(null);
 
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     if (!('serviceWorker' in navigator)) return;
 
-    let refreshing = false;
+    let mounted = true;
 
-    const handleControllerChange = () => {
-      if (refreshing) return;
-      refreshing = true;
-      window.location.reload();
-    };
+    import('workbox-window').then(({ Workbox }) => {
+      if (!mounted) return;
 
-    navigator.serviceWorker.addEventListener(
-      'controllerchange',
-      handleControllerChange
-    );
+      const wb = new Workbox('/sw.js');
 
-    navigator.serviceWorker
-      .register('/sw.js', { scope: '/' })
-      .then((registration) => {
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (!newWorker) return;
+      wb.addEventListener('waiting', () => {
+        if (mounted) setUpdateAvailable(true);
+      });
 
-          const handleStateChange = () => {
-            if (
-              newWorker.state === 'installed' &&
-              navigator.serviceWorker.controller
-            ) {
-              waitingWorkerRef.current = newWorker;
-              setUpdateAvailable(true);
-            }
-          };
+      wb.addEventListener('controlling', () => {
+        window.location.reload();
+      });
 
-          newWorker.addEventListener('statechange', handleStateChange);
-        });
-      })
-      .catch((err) => {
+      wb.register().catch((err: Error) => {
         console.warn('Service worker registration failed:', err);
       });
 
+      wbRef.current = wb;
+    });
+
     return () => {
-      navigator.serviceWorker.removeEventListener(
-        'controllerchange',
-        handleControllerChange
-      );
+      mounted = false;
     };
   }, []);
 
   const activateUpdate = useCallback(() => {
     setUpdateAvailable(false);
-    if (waitingWorkerRef.current) {
-      waitingWorkerRef.current.postMessage('SKIP_WAITING');
+    if (wbRef.current) {
+      wbRef.current.messageSkipWaiting();
     }
   }, []);
 
