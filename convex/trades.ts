@@ -44,6 +44,7 @@ export const getTrades = query({
       accountBalanceAfter: trade.accountBalanceAfter,
       riskAmount: trade.riskAmount,
       marketCondition: trade.marketCondition,
+      htfContext: trade.htfContext,
     }));
   },
 });
@@ -100,6 +101,7 @@ export const getTradesInRange = query({
       accountBalanceAfter: trade.accountBalanceAfter,
       riskAmount: trade.riskAmount,
       marketCondition: trade.marketCondition,
+      htfContext: trade.htfContext,
     }));
   },
 });
@@ -152,6 +154,7 @@ export const getTrade = query({
       accountBalanceAfter: trade.accountBalanceAfter,
       riskAmount: trade.riskAmount,
       marketCondition: trade.marketCondition,
+      htfContext: trade.htfContext,
     };
   },
 });
@@ -182,6 +185,7 @@ export const addTrade = mutation({
     accountBalanceAfter: v.optional(v.number()),
     riskAmount: v.optional(v.number()),
     marketCondition: v.optional(v.string()),
+    htfContext: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -214,6 +218,7 @@ export const addTrade = mutation({
       accountBalanceAfter: args.accountBalanceAfter,
       riskAmount: args.riskAmount,
       marketCondition: args.marketCondition,
+      htfContext: args.htfContext,
     });
 
     return {
@@ -249,6 +254,7 @@ export const updateTrade = mutation({
     accountBalanceAfter: v.optional(v.number()),
     riskAmount: v.optional(v.number()),
     marketCondition: v.optional(v.string()),
+    htfContext: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -296,6 +302,7 @@ export const updateTrade = mutation({
       accountBalanceAfter: updatedTrade!.accountBalanceAfter,
       riskAmount: updatedTrade!.riskAmount,
       marketCondition: updatedTrade!.marketCondition,
+      htfContext: updatedTrade!.htfContext,
     };
   },
 });
@@ -373,6 +380,7 @@ export const importTrades = mutation({
         accountBalanceAfter: v.optional(v.number()),
         riskAmount: v.optional(v.number()),
         marketCondition: v.optional(v.string()),
+        htfContext: v.optional(v.string()),
       })
     ),
   },

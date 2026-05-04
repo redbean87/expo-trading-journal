@@ -26,63 +26,30 @@ type BackendTrade = {
   confidence?: number;
   ruleViolation?: string;
   importedFrom?: string;
+  importId?: string;
+  orderType?: string;
+  accountBalanceAfter?: number;
   riskAmount?: number;
   marketCondition?: string;
+  htfContext?: string;
 };
 
 function mapToTrade(trade: BackendTrade): Trade {
   return {
-    id: trade.id,
-    symbol: trade.symbol,
-    entryPrice: trade.entryPrice,
-    exitPrice: trade.exitPrice,
-    quantity: trade.quantity,
+    ...trade,
+    id: trade.id as string,
     entryTime: new Date(trade.entryTime),
     exitTime: new Date(trade.exitTime),
-    side: trade.side as 'long' | 'short',
-    pnl: trade.pnl,
-    pnlPercent: trade.pnlPercent,
-    fees: trade.fees,
-    commissions: trade.commissions,
-    notes: trade.notes,
-    strategy: trade.strategy,
-    psychology: trade.psychology,
-    whatWorked: trade.whatWorked,
-    whatFailed: trade.whatFailed,
-    confidence: trade.confidence,
-    ruleViolation: trade.ruleViolation,
-    importedFrom: trade.importedFrom as
-      | 'cash-balance'
-      | 'trade-history'
-      | undefined,
-    riskAmount: trade.riskAmount,
-    marketCondition: trade.marketCondition,
+    side: trade.side as Trade['side'],
+    importedFrom: trade.importedFrom as Trade['importedFrom'],
   };
 }
 
 function mapFromTrade(trade: Trade) {
   return {
-    symbol: trade.symbol,
-    entryPrice: trade.entryPrice,
-    exitPrice: trade.exitPrice,
-    quantity: trade.quantity,
+    ...trade,
     entryTime: trade.entryTime.getTime(),
     exitTime: trade.exitTime.getTime(),
-    side: trade.side,
-    pnl: trade.pnl,
-    pnlPercent: trade.pnlPercent,
-    fees: trade.fees,
-    commissions: trade.commissions,
-    notes: trade.notes,
-    strategy: trade.strategy,
-    psychology: trade.psychology,
-    whatWorked: trade.whatWorked,
-    whatFailed: trade.whatFailed,
-    confidence: trade.confidence,
-    ruleViolation: trade.ruleViolation,
-    importedFrom: trade.importedFrom,
-    riskAmount: trade.riskAmount,
-    marketCondition: trade.marketCondition,
   };
 }
 
@@ -133,7 +100,7 @@ export function useAddTrade() {
 
   return async (trade: Trade): Promise<Trade> => {
     const result = await mutate(mapFromTrade(trade));
-    return { ...trade, id: result.id };
+    return { ...trade, id: result.id as string };
   };
 }
 
@@ -142,27 +109,10 @@ export function useUpdateTrade() {
 
   return async (id: string, updates: Partial<Trade>): Promise<Trade> => {
     const result = await mutate({
+      ...updates,
       id: id as Id<'trades'>,
-      symbol: updates.symbol,
-      entryPrice: updates.entryPrice,
-      exitPrice: updates.exitPrice,
-      quantity: updates.quantity,
       entryTime: updates.entryTime?.getTime(),
       exitTime: updates.exitTime?.getTime(),
-      side: updates.side,
-      pnl: updates.pnl,
-      pnlPercent: updates.pnlPercent,
-      fees: updates.fees,
-      commissions: updates.commissions,
-      notes: updates.notes,
-      strategy: updates.strategy,
-      psychology: updates.psychology,
-      whatWorked: updates.whatWorked,
-      whatFailed: updates.whatFailed,
-      confidence: updates.confidence,
-      ruleViolation: updates.ruleViolation,
-      riskAmount: updates.riskAmount,
-      marketCondition: updates.marketCondition,
     });
 
     return mapToTrade(result);

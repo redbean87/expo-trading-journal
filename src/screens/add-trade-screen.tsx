@@ -73,6 +73,7 @@ export default function AddTradeScreen() {
         confidence: formData.confidence,
         ruleViolation: formData.ruleViolation || undefined,
         marketCondition: formData.marketCondition || undefined,
+        htfContext: formData.htfContext || undefined,
         riskAmount,
         pnl,
         pnlPercent,
@@ -98,6 +99,7 @@ export default function AddTradeScreen() {
         confidence: formData.confidence,
         ruleViolation: formData.ruleViolation || undefined,
         marketCondition: formData.marketCondition || undefined,
+        htfContext: formData.htfContext || undefined,
         riskAmount,
         pnl,
         pnlPercent,
@@ -166,6 +168,7 @@ export default function AddTradeScreen() {
           confidence: trade.confidence,
           ruleViolation: trade.ruleViolation || '',
           marketCondition: trade.marketCondition || '',
+          htfContext: trade.htfContext || '',
           riskAmount: trade.riskAmount?.toString() || '',
           fees: trade.fees?.toString() || '',
           commissions: trade.commissions?.toString() || '',
@@ -186,6 +189,7 @@ export default function AddTradeScreen() {
           confidence: undefined,
           ruleViolation: '',
           marketCondition: '',
+          htfContext: '',
           riskAmount: '',
         };
 

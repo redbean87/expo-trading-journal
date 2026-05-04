@@ -33,6 +33,7 @@ export const tradeSchema = z.object({
   accountBalanceAfter: z.number().optional(),
   riskAmount: z.number().positive().optional(),
   marketCondition: z.string().max(50).optional(),
+  htfContext: z.string().max(50).optional(),
 });
 
 export const tradeFormSchema = z
@@ -120,6 +121,10 @@ export const tradeFormSchema = z
     marketCondition: z
       .string()
       .max(50, 'Market condition must be 50 characters or less')
+      .optional(),
+    htfContext: z
+      .string()
+      .max(50, 'HTF context must be 50 characters or less')
       .optional(),
   })
   .refine((data) => data.exitTime >= data.entryTime, {
@@ -214,5 +219,6 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     pnl,
     pnlPercent,
     marketCondition: formData.marketCondition,
+    htfContext: formData.htfContext,
   };
 }

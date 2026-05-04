@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { TextInput, Text, HelperText } from 'react-native-paper';
 
+import { HtfContextSelector } from './htf-context-selector';
 import { MarketConditionSelector } from './market-condition-selector';
 import { MistakeCategorySelector } from './mistake-category-selector';
 import { PsychologySelector } from './psychology-selector';
@@ -289,6 +290,11 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           onSelect={(condition) =>
             onUpdate({ marketCondition: condition || undefined })
           }
+        />
+
+        <HtfContextSelector
+          value={formData.htfContext}
+          onSelect={(context) => onUpdate({ htfContext: context || undefined })}
         />
 
         <PsychologySelector

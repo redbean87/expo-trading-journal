@@ -160,6 +160,22 @@ export function TradeCard({
                       {trade.marketCondition}
                     </Chip>
                   )}
+                  {trade.htfContext && (
+                    <Chip
+                      compact
+                      style={[
+                        styles.htfContextChip,
+                        isSelected && styles.htfContextChipSelected,
+                      ]}
+                      textStyle={
+                        isSelected
+                          ? styles.htfContextChipTextSelected
+                          : undefined
+                      }
+                    >
+                      {trade.htfContext}
+                    </Chip>
+                  )}
                 </View>
               </View>
             </Card.Content>
@@ -264,6 +280,16 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       borderColor: theme.colors.onPrimaryContainer,
     },
     marketConditionChipTextSelected: {
+      color: theme.colors.onPrimaryContainer,
+    },
+    htfContextChip: {
+      alignSelf: 'flex-start',
+    },
+    htfContextChipSelected: {
+      borderWidth: 2,
+      borderColor: theme.colors.onPrimaryContainer,
+    },
+    htfContextChipTextSelected: {
       color: theme.colors.onPrimaryContainer,
     },
     actions: {

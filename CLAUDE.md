@@ -201,6 +201,24 @@ npm run ios     # Run on iOS
 npm run web     # Run on web
 ```
 
+## Adding a New Trade Field
+
+When adding a new field to the `Trade` model, update the following files to prevent silent data loss:
+
+1. `src/schemas/trade.ts` — Add to `tradeSchema`, `tradeFormSchema`, and `formDataToTrade`
+2. `convex/schema.ts` — Add to the `trades` table definition
+3. `convex/trades.ts` — Add to query/mutation args, return mappings, and handlers
+4. `src/hooks/use-trades.ts` — Add to `BackendTrade`, `mapToTrade`, and `mapFromTrade`
+5. `src/services/api-trade-service.ts` — Wire through all API methods
+6. `src/screens/add-trade/trade-form.tsx` — Add to the form UI
+7. `src/screens/add-trade-screen.tsx` — Include in `initialData` and submit payload
+8. `src/components/trade-edit-form.tsx` — Include in edit mode payload
+9. Display components — `trade-card.tsx`, `trade-detail-content.tsx`
+10. CSV export/import — `csv-export.ts`, `csv-import.ts`
+11. Tests — `src/schemas/__tests__/trade.test.ts`
+
+> **Why `use-trades.ts` matters:** The `mapToTrade` and `mapFromTrade` functions are the bridge between the app's `Trade` type and Convex's backend types. If a field is added to the schema but not mapped here, it gets silently dropped on save/load. Prefer spreading the source object (`...trade`) and only explicitly overriding fields that need type transformation (e.g., `entryTime: new Date(...)`). This ensures new fields flow through automatically.
+
 ## Feature Completion Checklist
 
 Before marking a feature complete:

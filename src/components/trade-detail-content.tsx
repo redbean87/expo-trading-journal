@@ -144,6 +144,12 @@ export function TradeDetailContent({
             </SectionCard>
           )}
 
+          {trade.htfContext && (
+            <SectionCard title="HTF Context">
+              <Chip style={styles.htfContextChip}>{trade.htfContext}</Chip>
+            </SectionCard>
+          )}
+
           {trade.psychology && (
             <SectionCard title="Psychology">
               <Chip style={styles.psychologyChip}>{trade.psychology}</Chip>
@@ -319,6 +325,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       alignSelf: 'flex-start',
     },
     strategyChip: {
+      alignSelf: 'flex-start',
+    },
+    htfContextChip: {
       alignSelf: 'flex-start',
     },
     ruleViolationContent: {
