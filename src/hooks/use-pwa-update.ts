@@ -6,6 +6,7 @@ type WorkboxInstance = InstanceType<typeof import('workbox-window').Workbox>;
 export function usePwaUpdate() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const wbRef = useRef<WorkboxInstance | null>(null);
+  const lastCheckRef = useRef<number>(0);
 
   useEffect(() => {
     if (Platform.OS !== 'web') return;
@@ -31,6 +32,25 @@ export function usePwaUpdate() {
       });
 
       wbRef.current = wb;
+
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible' && wbRef.current) {
+          const now = Date.now();
+          if (now - lastCheckRef.current > 60_000) {
+            lastCheckRef.current = now;
+            wbRef.current.update();
+          }
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        document.removeEventListener(
+          'visibilitychange',
+          handleVisibilityChange
+        );
+      };
     });
 
     return () => {
