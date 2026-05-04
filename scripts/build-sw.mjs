@@ -32,8 +32,6 @@ async function buildSW() {
     skipWaiting: false,
     clientsClaim: true,
     cleanupOutdatedCaches: true,
-    navigateFallback: '/offline.html',
-    navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
     maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MB
     sourcemap: false,
   });
