@@ -27,13 +27,36 @@ async function buildSW() {
 
   const { count, size, warnings } = await generateSW({
     globDirectory: 'dist',
-    globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,woff,woff2,ico,json}'],
+    globPatterns: ['offline.html', 'index.html'],
     swDest: 'dist/sw.js',
     skipWaiting: false,
     clientsClaim: true,
     cleanupOutdatedCaches: true,
-    maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MB
     sourcemap: false,
+    runtimeCaching: [
+      {
+        urlPattern: /\.(?:js|css)$/,
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'assets',
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+          },
+        },
+      },
+      {
+        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|woff|woff2|ico)$/,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'media',
+          expiration: {
+            maxEntries: 200,
+            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+          },
+        },
+      },
+    ],
   });
 
   // Inject custom SKIP_WAITING message handler
