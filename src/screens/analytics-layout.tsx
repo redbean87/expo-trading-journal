@@ -89,6 +89,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
     if (pathname.includes('/psychology')) return 'psychology';
     if (pathname.includes('/strategy')) return 'strategy';
     if (pathname.includes('/market-condition')) return 'market-condition';
+    if (pathname.includes('/htf-context')) return 'htf-context';
     if (pathname.includes('/ai-insights')) return 'ai-insights';
     return 'overview';
   };
@@ -100,6 +101,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
     { value: 'psychology', label: 'Psych' },
     { value: 'strategy', label: 'Strategy' },
     { value: 'market-condition', label: 'Market' },
+    { value: 'htf-context', label: 'HTF' },
     { value: 'ai-insights', label: 'AI' },
   ];
 
@@ -110,6 +112,7 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
     psychology: '/analytics/psychology',
     strategy: '/analytics/strategy',
     'market-condition': '/analytics/market-condition',
+    'htf-context': '/analytics/htf-context',
     'ai-insights': '/analytics/ai-insights',
   };
 

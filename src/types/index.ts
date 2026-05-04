@@ -10,6 +10,7 @@ export type AnalyticsSegment =
   | 'psychology'
   | 'strategy'
   | 'market-condition'
+  | 'htf-context'
   | 'ai-insights';
 
 export type HomePeriod = 'today' | 'week' | 'month' | 'year' | 'all';
