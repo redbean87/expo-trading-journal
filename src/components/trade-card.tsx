@@ -7,9 +7,8 @@ import {
   PressableStateCallbackType,
   Animated,
 } from 'react-native';
-import { Text, Card, IconButton } from 'react-native-paper';
+import { Text, Card } from 'react-native-paper';
 
-import { Chip } from './chip';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { Trade } from '../types';
 import { formatDate } from '../utils/date-format';
@@ -18,8 +17,6 @@ type PressableState = PressableStateCallbackType & { hovered?: boolean };
 
 type TradeCardProps = {
   trade: Trade;
-  onDelete?: (id: string) => void;
-  onEdit?: (id: string) => void;
   disableNavigation?: boolean;
   onSelect?: (id: string) => void;
   isSelected?: boolean;
@@ -27,8 +24,6 @@ type TradeCardProps = {
 
 export function TradeCard({
   trade,
-  onDelete,
-  onEdit,
   disableNavigation,
   onSelect,
   isSelected,
@@ -64,6 +59,8 @@ export function TradeCard({
     }).start();
   };
 
+  const isProfit = trade.pnl >= 0;
+
   return (
     <Pressable
       onPress={handlePress}
@@ -85,29 +82,33 @@ export function TradeCard({
           >
             <Card.Content>
               <View style={styles.header}>
-                <View>
-                  <Text variant="titleLarge">{trade.symbol}</Text>
+                <View style={styles.headerLeft}>
                   <Text
-                    variant="bodyMedium"
+                    variant="titleLarge"
+                    style={[styles.symbol, isSelected && styles.symbolSelected]}
+                  >
+                    {trade.symbol}
+                  </Text>
+                  <Text
+                    variant="bodySmall"
                     style={[styles.meta, isSelected && styles.metaSelected]}
                   >
                     {trade.side.toUpperCase()} • {trade.quantity} shares
                   </Text>
                 </View>
-                <View style={styles.right}>
+                <View style={styles.headerRight}>
                   <Text
                     variant="headlineSmall"
                     style={[
                       styles.pnl,
                       {
-                        color:
-                          trade.pnl >= 0
-                            ? theme.colors.profit
-                            : theme.colors.loss,
+                        color: isProfit
+                          ? theme.colors.profit
+                          : theme.colors.loss,
                       },
                     ]}
                   >
-                    {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}
+                    {isProfit ? '+' : ''}${trade.pnl.toFixed(2)}
                   </Text>
                   <Text
                     variant="bodySmall"
@@ -121,102 +122,28 @@ export function TradeCard({
                   </Text>
                 </View>
               </View>
-              <View style={styles.details}>
-                <Text variant="bodySmall">
-                  Entry: ${trade.entryPrice.toFixed(2)} • Exit: $
-                  {trade.exitPrice.toFixed(2)}
-                </Text>
-                <Text variant="bodySmall" style={styles.date}>
-                  {formatDate(trade.entryTime)} - {formatDate(trade.exitTime)}
-                </Text>
-                <View style={styles.chipRow}>
-                  {trade.strategy && (
-                    <Chip
-                      compact
-                      style={[
-                        styles.strategyChip,
-                        isSelected && styles.strategyChipSelected,
-                      ]}
-                      textStyle={
-                        isSelected ? styles.strategyChipTextSelected : undefined
-                      }
-                    >
-                      {trade.strategy}
-                    </Chip>
-                  )}
-                  {trade.marketCondition && (
-                    <Chip
-                      compact
-                      style={[
-                        styles.marketConditionChip,
-                        isSelected && styles.marketConditionChipSelected,
-                      ]}
-                      textStyle={
-                        isSelected
-                          ? styles.marketConditionChipTextSelected
-                          : undefined
-                      }
-                    >
-                      {trade.marketCondition}
-                    </Chip>
-                  )}
-                  {trade.htfContext && (
-                    <Chip
-                      compact
-                      style={[
-                        styles.htfContextChip,
-                        isSelected && styles.htfContextChipSelected,
-                      ]}
-                      textStyle={
-                        isSelected
-                          ? styles.htfContextChipTextSelected
-                          : undefined
-                      }
-                    >
-                      {trade.htfContext}
-                    </Chip>
-                  )}
-                  {trade.psychology &&
-                    trade.psychology.split(',').map((tag) => (
-                      <Chip key={tag.trim()} compact style={styles.tagChip}>
-                        {tag.trim()}
-                      </Chip>
-                    ))}
-                  {trade.whatWorked &&
-                    trade.whatWorked.split(',').map((tag) => (
-                      <Chip key={tag.trim()} compact style={styles.tagChip}>
-                        {tag.trim()}
-                      </Chip>
-                    ))}
-                  {trade.whatFailed &&
-                    trade.whatFailed.split(',').map((tag) => (
-                      <Chip key={tag.trim()} compact style={styles.tagChip}>
-                        {tag.trim()}
-                      </Chip>
-                    ))}
+
+              {trade.strategy && (
+                <View style={styles.strategyRow}>
+                  <Text
+                    variant="bodySmall"
+                    style={[
+                      styles.strategyLabel,
+                      isSelected && styles.metaSelected,
+                    ]}
+                  >
+                    Strategy: {trade.strategy}
+                  </Text>
                 </View>
-              </View>
+              )}
+
+              <Text
+                variant="bodySmall"
+                style={[styles.date, isSelected && styles.metaSelected]}
+              >
+                {formatDate(trade.entryTime)}
+              </Text>
             </Card.Content>
-            {(onDelete || onEdit) && (
-              <View style={styles.actions}>
-                {onEdit && (
-                  <IconButton
-                    icon="pencil"
-                    iconColor={theme.colors.primary}
-                    onPress={() => onEdit(trade.id)}
-                    containerColor={theme.colors.surfaceVariant}
-                  />
-                )}
-                {onDelete && (
-                  <IconButton
-                    icon="delete"
-                    iconColor={theme.colors.loss}
-                    onPress={() => onDelete(trade.id)}
-                    containerColor={theme.colors.surfaceVariant}
-                  />
-                )}
-              </View>
-            )}
           </Card>
         </Animated.View>
       )}
@@ -244,7 +171,19 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: theme.spacing.sm,
+      alignItems: 'flex-start',
+    },
+    headerLeft: {
+      flex: 1,
+    },
+    headerRight: {
+      alignItems: 'flex-end',
+    },
+    symbol: {
+      fontWeight: 'bold',
+    },
+    symbolSelected: {
+      color: theme.colors.onPrimaryContainer,
     },
     meta: {
       color: theme.colors.textSecondary,
@@ -254,68 +193,25 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       color: theme.colors.onPrimaryContainer,
       opacity: 0.7,
     },
-    right: {
-      alignItems: 'flex-end',
-    },
     pnl: {
       fontWeight: 'bold',
     },
     pnlPercent: {
       color: theme.colors.textSecondary,
-      marginTop: 2,
+      marginTop: theme.spacing.xs,
     },
     pnlPercentSelected: {
       color: theme.colors.onPrimaryContainer,
       opacity: 0.7,
     },
-    details: {
+    strategyRow: {
       marginTop: theme.spacing.sm,
+    },
+    strategyLabel: {
+      color: theme.colors.textSecondary,
     },
     date: {
+      color: theme.colors.textTertiary,
       marginTop: theme.spacing.xs,
-    },
-    chipRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.sm,
-      marginTop: theme.spacing.sm,
-    },
-    strategyChip: {
-      alignSelf: 'flex-start',
-    },
-    strategyChipSelected: {
-      borderWidth: 2,
-      borderColor: theme.colors.onPrimaryContainer,
-    },
-    strategyChipTextSelected: {
-      color: theme.colors.onPrimaryContainer,
-    },
-    marketConditionChip: {
-      alignSelf: 'flex-start',
-    },
-    marketConditionChipSelected: {
-      borderWidth: 2,
-      borderColor: theme.colors.onPrimaryContainer,
-    },
-    marketConditionChipTextSelected: {
-      color: theme.colors.onPrimaryContainer,
-    },
-    htfContextChip: {
-      alignSelf: 'flex-start',
-    },
-    htfContextChipSelected: {
-      borderWidth: 2,
-      borderColor: theme.colors.onPrimaryContainer,
-    },
-    htfContextChipTextSelected: {
-      color: theme.colors.onPrimaryContainer,
-    },
-    tagChip: {
-      alignSelf: 'flex-start',
-    },
-    actions: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      padding: 8,
     },
   });

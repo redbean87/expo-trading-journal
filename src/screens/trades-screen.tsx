@@ -35,11 +35,7 @@ import {
   TradeFilters,
   useTradeFilters,
 } from '../hooks/use-trade-filters';
-import {
-  useTrades,
-  useDeleteTrade,
-  useImportTrades,
-} from '../hooks/use-trades';
+import { useTrades, useImportTrades } from '../hooks/use-trades';
 import { useProfileStore } from '../store/profile-store';
 import { Trade, TradeSide } from '../types';
 import { formatDateKey } from '../utils/calendar-helpers';
@@ -105,7 +101,6 @@ function parseFiltersFromParams(
 
 export default function TradesScreen() {
   const { trades, isLoading } = useTrades();
-  const deleteTrade = useDeleteTrade();
   const importTrades = useImportTrades();
   const router = useRouter();
   const theme = useAppTheme();
@@ -336,13 +331,6 @@ export default function TradesScreen() {
     }
   };
 
-  const handleDeleteTrade = async (id: string) => {
-    await deleteTrade(id);
-    if (selectedTradeId === id) {
-      router.replace('/trades');
-    }
-  };
-
   const handleSelectTrade = (id: string) => {
     if (isDesktop) {
       router.replace(`/trades/${id}`);
@@ -351,14 +339,6 @@ export default function TradesScreen() {
 
   const handleClearSelection = () => {
     router.replace('/trades');
-  };
-
-  const handleEditTrade = (id: string) => {
-    if (isDesktop) {
-      router.replace(`/trades/${id}?edit=true`);
-    } else {
-      router.push(`/trades/${id}?edit=true`);
-    }
   };
 
   const onRefresh = async () => {
@@ -373,8 +353,6 @@ export default function TradesScreen() {
   const renderTrade = ({ item }: { item: Trade }) => (
     <TradeCard
       trade={item}
-      onDelete={handleDeleteTrade}
-      onEdit={handleEditTrade}
       onSelect={isDesktop ? handleSelectTrade : undefined}
       isSelected={isDesktop && selectedTradeId === item.id}
     />
