@@ -127,13 +127,13 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     thumbnailRow: {
       flexDirection: 'row',
-      gap: 8,
-      marginTop: 8,
+      gap: theme.spacing.sm,
+      marginTop: theme.spacing.sm,
     },
     thumbnailWrapper: {
-      width: 72,
-      height: 72,
-      borderRadius: 8,
+      width: 160,
+      height: 160,
+      borderRadius: theme.borderRadius.md,
       overflow: 'hidden',
     },
     thumbnail: {
@@ -149,8 +149,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     closeButton: {
       position: 'absolute',
-      top: 48,
-      right: 16,
+      top: theme.spacing.xxl,
+      right: theme.spacing.lg,
       zIndex: 1,
     },
     modalContent: {
@@ -169,8 +169,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       bottom: 0,
     },
     navButton: {
-      paddingHorizontal: 16,
-      paddingVertical: 32,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.xl,
       zIndex: 1,
     },
     navText: {

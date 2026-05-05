@@ -83,7 +83,7 @@ export function TradeDetailContent({
               <View
                 style={[
                   styles.sideBadge,
-                  { backgroundColor: withAlpha(sideColor, 0.12) },
+                  { backgroundColor: withAlpha(sideColor, 0.2) },
                 ]}
               >
                 <Text
@@ -301,8 +301,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingHorizontal: 4,
-      paddingTop: 8,
+      paddingHorizontal: theme.spacing.xs,
+      paddingTop: theme.spacing.sm,
       backgroundColor: theme.colors.background,
     },
     topBarActions: {
@@ -314,7 +314,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       backgroundColor: theme.colors.background,
     },
     content: {
-      padding: 16,
+      padding: theme.spacing.lg,
       maxWidth: 600,
       width: '100%',
       alignSelf: 'center',
@@ -323,12 +323,12 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
-      marginBottom: 24,
+      marginBottom: theme.spacing.xl,
     },
     headerLeft: {
       flexDirection: 'row',
-      alignItems: 'center',
-      gap: 12,
+      alignItems: 'flex-start',
+      gap: theme.spacing.md,
     },
     headerRight: {
       alignItems: 'flex-end',
@@ -337,9 +337,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       fontWeight: 'bold',
     },
     sideBadge: {
-      paddingHorizontal: 8,
-      paddingVertical: 2,
-      borderRadius: 4,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs / 2,
+      borderRadius: theme.borderRadius.sm,
       alignSelf: 'flex-start',
     },
     sideBadgeText: {
@@ -349,7 +349,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       fontWeight: 'bold',
     },
     notes: {
-      lineHeight: 24,
+      lineHeight: theme.spacing.lg + theme.spacing.sm,
     },
     mistakeChip: {
       alignSelf: 'flex-start',
@@ -359,7 +359,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingVertical: 8,
+      paddingVertical: theme.spacing.sm,
     },
     dialog: {
       maxWidth: 600,
