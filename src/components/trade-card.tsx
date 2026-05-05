@@ -83,16 +83,10 @@ export function TradeCard({
             <Card.Content>
               <View style={styles.header}>
                 <View style={styles.headerLeft}>
-                  <Text
-                    variant="titleLarge"
-                    style={[styles.symbol, isSelected && styles.symbolSelected]}
-                  >
+                  <Text variant="bodySmall" style={styles.date}>
                     {trade.symbol}
                   </Text>
-                  <Text
-                    variant="bodySmall"
-                    style={[styles.meta, isSelected && styles.metaSelected]}
-                  >
+                  <Text variant="bodySmall" style={styles.pnlPercent}>
                     {trade.side.toUpperCase()} • {trade.quantity} shares
                   </Text>
                 </View>
@@ -110,13 +104,7 @@ export function TradeCard({
                   >
                     {isProfit ? '+' : ''}${trade.pnl.toFixed(2)}
                   </Text>
-                  <Text
-                    variant="bodySmall"
-                    style={[
-                      styles.pnlPercent,
-                      isSelected && styles.pnlPercentSelected,
-                    ]}
-                  >
+                  <Text variant="bodySmall" style={styles.meta}>
                     {trade.pnlPercent >= 0 ? '+' : ''}
                     {trade.pnlPercent.toFixed(2)}%
                   </Text>
@@ -125,22 +113,13 @@ export function TradeCard({
 
               {trade.strategy && (
                 <View style={styles.strategyRow}>
-                  <Text
-                    variant="bodySmall"
-                    style={[
-                      styles.strategyLabel,
-                      isSelected && styles.metaSelected,
-                    ]}
-                  >
+                  <Text variant="titleLarge" style={styles.symbol}>
                     Strategy: {trade.strategy}
                   </Text>
                 </View>
               )}
 
-              <Text
-                variant="bodySmall"
-                style={[styles.date, isSelected && styles.metaSelected]}
-              >
+              <Text variant="bodySmall" style={styles.strategyLabel}>
                 {formatDate(trade.entryTime)}
               </Text>
             </Card.Content>
@@ -163,9 +142,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       backgroundColor: theme.colors.surfaceVariant,
     },
     cardSelected: {
-      backgroundColor: theme.colors.primaryContainer,
-      borderWidth: 2,
-      borderColor: theme.colors.primary,
+      borderLeftWidth: 4,
+      borderLeftColor: theme.colors.primary,
       ...theme.elevation[3],
     },
     header: {
@@ -182,16 +160,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     symbol: {
       fontWeight: 'bold',
     },
-    symbolSelected: {
-      color: theme.colors.onPrimaryContainer,
-    },
     meta: {
       color: theme.colors.textSecondary,
       marginTop: theme.spacing.xs,
-    },
-    metaSelected: {
-      color: theme.colors.onPrimaryContainer,
-      opacity: 0.7,
     },
     pnl: {
       fontWeight: 'bold',
@@ -199,10 +170,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     pnlPercent: {
       color: theme.colors.textSecondary,
       marginTop: theme.spacing.xs,
-    },
-    pnlPercentSelected: {
-      color: theme.colors.onPrimaryContainer,
-      opacity: 0.7,
     },
     strategyRow: {
       marginTop: theme.spacing.sm,
