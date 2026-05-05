@@ -83,10 +83,10 @@ export function TradeCard({
             <Card.Content>
               <View style={styles.header}>
                 <View style={styles.headerLeft}>
-                  <Text variant="bodySmall" style={styles.date}>
+                  <Text variant="titleLarge" style={styles.symbol}>
                     {trade.symbol}
                   </Text>
-                  <Text variant="bodySmall" style={styles.pnlPercent}>
+                  <Text variant="bodySmall" style={styles.meta}>
                     {trade.side.toUpperCase()} • {trade.quantity} shares
                   </Text>
                 </View>
@@ -113,13 +113,13 @@ export function TradeCard({
 
               {trade.strategy && (
                 <View style={styles.strategyRow}>
-                  <Text variant="titleLarge" style={styles.symbol}>
+                  <Text variant="bodySmall" style={styles.strategyLabel}>
                     Strategy: {trade.strategy}
                   </Text>
                 </View>
               )}
 
-              <Text variant="bodySmall" style={styles.strategyLabel}>
+              <Text variant="bodySmall" style={styles.date}>
                 {formatDate(trade.entryTime)}
               </Text>
             </Card.Content>
