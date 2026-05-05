@@ -12,6 +12,7 @@ import AuthGate from '@/components/auth-gate';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { PwaUpdatePrompt } from '@/components/pwa-update-prompt';
 import { SidebarLayout } from '@/components/sidebar-layout';
+import { TagLibraryInitializer } from '@/components/tag-library-initializer';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { ConvexProvider } from '@/providers/convex-provider';
 import { SettingsSyncProvider } from '@/providers/settings-sync-provider';
@@ -63,6 +64,7 @@ export default function RootLayout() {
           <PaperProvider theme={paperTheme}>
             <ThemeProvider value={navigationTheme}>
               <AuthGate>
+                <TagLibraryInitializer />
                 <KeyboardShortcutsHandler />
                 <PwaUpdatePrompt />
                 <SidebarLayout>

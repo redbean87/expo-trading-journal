@@ -7,6 +7,8 @@ import { MarketConditionSelector } from './market-condition-selector';
 import { MistakeCategorySelector } from './mistake-category-selector';
 import { PsychologySelector } from './psychology-selector';
 import { StrategySelector } from './strategy-selector';
+import { WhatFailedSelector } from './what-failed-selector';
+import { WhatWorkedSelector } from './what-worked-selector';
 import { Chip } from '../../components/chip';
 import { DateTimeInput } from '../../components/date-time-input';
 import { FormLayout } from '../../components/form-layout';
@@ -24,7 +26,6 @@ const FORM_FIELDS = [
   'fees',
   'commissions',
   'riskAmount',
-  'strategy',
   'marketCondition',
   'ruleViolation',
   'whatWorked',
@@ -273,17 +274,6 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           value={formData.strategy}
           onSelect={(text) => onUpdate({ strategy: text || undefined })}
         />
-        <TextInput
-          ref={createRef('strategy')}
-          label="Strategy (Optional)"
-          value={formData.strategy}
-          onChangeText={(text) => onUpdate({ strategy: text })}
-          mode="outlined"
-          style={styles.input}
-          returnKeyType={getReturnKeyType('strategy')}
-          blurOnSubmit={getBlurOnSubmit('strategy')}
-          onSubmitEditing={() => handleSubmitEditing('strategy')}
-        />
 
         <MarketConditionSelector
           value={formData.marketCondition}
@@ -346,34 +336,14 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           onSubmitEditing={() => handleSubmitEditing('ruleViolation')}
         />
 
-        <TextInput
-          ref={createRef('whatWorked')}
-          label="What Worked (Optional)"
+        <WhatWorkedSelector
           value={formData.whatWorked}
-          onChangeText={(text) => onUpdate({ whatWorked: text })}
-          mode="outlined"
-          multiline
-          numberOfLines={3}
-          style={styles.input}
-          returnKeyType={getReturnKeyType('whatWorked')}
-          blurOnSubmit={getBlurOnSubmit('whatWorked')}
-          onSubmitEditing={() => handleSubmitEditing('whatWorked')}
-          {...getMultilineWebProps('whatWorked')}
+          onChange={(text) => onUpdate({ whatWorked: text || undefined })}
         />
 
-        <TextInput
-          ref={createRef('whatFailed')}
-          label="What Didn't Work (Optional)"
+        <WhatFailedSelector
           value={formData.whatFailed}
-          onChangeText={(text) => onUpdate({ whatFailed: text })}
-          mode="outlined"
-          multiline
-          numberOfLines={3}
-          style={styles.input}
-          returnKeyType={getReturnKeyType('whatFailed')}
-          blurOnSubmit={getBlurOnSubmit('whatFailed')}
-          onSubmitEditing={() => handleSubmitEditing('whatFailed')}
-          {...getMultilineWebProps('whatFailed')}
+          onChange={(text) => onUpdate({ whatFailed: text || undefined })}
         />
 
         <TextInput

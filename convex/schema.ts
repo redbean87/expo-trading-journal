@@ -70,6 +70,22 @@ const schema = defineSchema({
   })
     .index('by_trade', ['tradeId'])
     .index('by_user', ['userId']),
+
+  // User-defined and system tag library
+  tags: defineTable({
+    userId: v.optional(v.string()), // null = system tag
+    field: v.string(), // 'strategy' | 'psychology' | 'whatWorked' | 'whatFailed' | 'marketCondition' | 'htfContext' | 'ruleViolation'
+    label: v.string(),
+    isSystem: v.boolean(),
+    isActive: v.boolean(),
+    sortOrder: v.number(),
+    createdAt: v.number(), // Unix timestamp
+  })
+    .index('by_field_system', ['field', 'isSystem'])
+    .index('by_user_field', ['userId', 'field'])
+    .index('by_field_label', ['field', 'label'])
+    .index('by_field_active', ['field', 'isActive'])
+    .index('by_system', ['isSystem']),
 });
 
 export default schema;

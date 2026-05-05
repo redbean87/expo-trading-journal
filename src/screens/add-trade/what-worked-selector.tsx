@@ -2,18 +2,18 @@ import React from 'react';
 
 import { TagSelector } from '../../components/tag-selector';
 
-type PsychologySelectorProps = {
+type WhatWorkedSelectorProps = {
   value: string | undefined;
   onChange: (value: string) => void;
 };
 
-export function PsychologySelector({
+export function WhatWorkedSelector({
   value,
   onChange,
-}: PsychologySelectorProps) {
+}: WhatWorkedSelectorProps) {
   return (
     <TagSelector
-      field="psychology"
+      field="whatWorked"
       value={value}
       onChange={onChange}
       mode="multi"

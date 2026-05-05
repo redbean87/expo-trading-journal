@@ -165,7 +165,7 @@ export function MistakesCard({ trades }: MistakesCardProps) {
                     <View style={styles.mistakesList}>
                       {sortedMistakes.map((mistake) => (
                         <MistakeRow
-                          key={mistake.categoryId}
+                          key={mistake.label}
                           mistake={mistake}
                           viewMode={viewMode}
                           profitColor={theme.colors.profit}

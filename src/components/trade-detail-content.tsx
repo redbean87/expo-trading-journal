@@ -7,13 +7,11 @@ import { Button } from './button';
 import { Chip } from './chip';
 import { LinkedText } from './linked-text';
 import { SectionCard } from './section-card';
-import { getMistakeCategoryLabel } from '../constants/mistake-categories';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAttachments } from '../hooks/use-attachments';
 import { Trade } from '../types';
 import { withAlpha } from '../utils/color-intensity';
 import { formatDateTime } from '../utils/date-format';
-import { categorizeMistake } from '../utils/mistake-categorization';
 
 type TradeDetailContentProps = {
   trade: Trade;
@@ -152,23 +150,37 @@ export function TradeDetailContent({
 
           {trade.psychology && (
             <SectionCard title="Psychology">
-              <Chip style={styles.psychologyChip}>{trade.psychology}</Chip>
+              <View style={styles.tagChipRow}>
+                {trade.psychology.split(',').map((tag) => (
+                  <Chip key={tag.trim()} style={styles.tagChip} compact>
+                    {tag.trim()}
+                  </Chip>
+                ))}
+              </View>
             </SectionCard>
           )}
 
           {trade.whatWorked && (
             <SectionCard title="What Worked">
-              <LinkedText variant="bodyLarge" style={styles.notes}>
-                {trade.whatWorked}
-              </LinkedText>
+              <View style={styles.tagChipRow}>
+                {trade.whatWorked.split(',').map((tag) => (
+                  <Chip key={tag.trim()} style={styles.tagChip} compact>
+                    {tag.trim()}
+                  </Chip>
+                ))}
+              </View>
             </SectionCard>
           )}
 
           {trade.whatFailed && (
             <SectionCard title="What Didn't Work">
-              <LinkedText variant="bodyLarge" style={styles.notes}>
-                {trade.whatFailed}
-              </LinkedText>
+              <View style={styles.tagChipRow}>
+                {trade.whatFailed.split(',').map((tag) => (
+                  <Chip key={tag.trim()} style={styles.tagChip} compact>
+                    {tag.trim()}
+                  </Chip>
+                ))}
+              </View>
             </SectionCard>
           )}
 
@@ -180,13 +192,8 @@ export function TradeDetailContent({
                   icon="alert-circle"
                   textStyle={{ color: theme.colors.loss }}
                 >
-                  {getMistakeCategoryLabel(
-                    categorizeMistake(trade.ruleViolation) ?? 'other'
-                  )}
-                </Chip>
-                <LinkedText variant="bodyLarge" style={styles.notes}>
                   {trade.ruleViolation}
-                </LinkedText>
+                </Chip>
               </View>
             </SectionCard>
           )}
@@ -336,6 +343,14 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     mistakeChip: {
       alignSelf: 'flex-start',
       backgroundColor: withAlpha(theme.colors.loss, 0.12),
+    },
+    tagChipRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    tagChip: {
+      alignSelf: 'flex-start',
     },
     actions: {
       marginTop: 8,

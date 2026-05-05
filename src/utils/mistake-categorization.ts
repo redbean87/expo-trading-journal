@@ -1,12 +1,6 @@
-import {
-  MISTAKE_CATEGORIES,
-  MistakeCategoryId,
-  getMistakeCategoryLabel,
-} from '../constants/mistake-categories';
 import { Trade } from '../types';
 
 export type MistakeSummary = {
-  categoryId: MistakeCategoryId;
   label: string;
   count: number;
   trades: Trade[];
@@ -27,43 +21,19 @@ export type MistakeAnalytics = {
   costliestMistake: MistakeSummary | null;
 };
 
-export function categorizeMistake(
-  ruleViolation: string | undefined
-): MistakeCategoryId | null {
-  if (!ruleViolation || ruleViolation.trim() === '') {
-    return null;
-  }
-
-  const normalized = ruleViolation.toLowerCase().trim();
-
-  for (const category of MISTAKE_CATEGORIES) {
-    if (category.id === 'other') continue;
-
-    for (const keyword of category.keywords) {
-      if (normalized.includes(keyword)) {
-        return category.id;
-      }
-    }
-  }
-
-  return 'other';
-}
-
 export function calculateMistakeAnalytics(trades: Trade[]): MistakeAnalytics {
   const tradesWithMistakes: Trade[] = [];
   const tradesWithoutMistakes: Trade[] = [];
-  const mistakeMap = new Map<MistakeCategoryId, Trade[]>();
+  const mistakeMap = new Map<string, Trade[]>();
 
   for (const trade of trades) {
-    const categoryId = categorizeMistake(trade.ruleViolation);
-
-    if (categoryId === null) {
+    if (!trade.ruleViolation || trade.ruleViolation.trim() === '') {
       tradesWithoutMistakes.push(trade);
     } else {
       tradesWithMistakes.push(trade);
-      const existing = mistakeMap.get(categoryId) ?? [];
+      const existing = mistakeMap.get(trade.ruleViolation) ?? [];
       existing.push(trade);
-      mistakeMap.set(categoryId, existing);
+      mistakeMap.set(trade.ruleViolation, existing);
     }
   }
 
@@ -84,7 +54,7 @@ export function calculateMistakeAnalytics(trades: Trade[]): MistakeAnalytics {
 
   const mistakesByCategory: MistakeSummary[] = [];
 
-  for (const [categoryId, categoryTrades] of mistakeMap.entries()) {
+  for (const [label, categoryTrades] of mistakeMap.entries()) {
     const totalPnl = categoryTrades.reduce((sum, t) => sum + t.pnl, 0);
     const winningTrades = categoryTrades.filter((t) => t.pnl > 0);
     const winRate =
@@ -93,8 +63,7 @@ export function calculateMistakeAnalytics(trades: Trade[]): MistakeAnalytics {
         : 0;
 
     mistakesByCategory.push({
-      categoryId,
-      label: getMistakeCategoryLabel(categoryId),
+      label,
       count: categoryTrades.length,
       trades: categoryTrades,
       totalPnl,

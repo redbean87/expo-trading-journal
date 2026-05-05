@@ -176,6 +176,24 @@ export function TradeCard({
                       {trade.htfContext}
                     </Chip>
                   )}
+                  {trade.psychology &&
+                    trade.psychology.split(',').map((tag) => (
+                      <Chip key={tag.trim()} compact style={styles.tagChip}>
+                        {tag.trim()}
+                      </Chip>
+                    ))}
+                  {trade.whatWorked &&
+                    trade.whatWorked.split(',').map((tag) => (
+                      <Chip key={tag.trim()} compact style={styles.tagChip}>
+                        {tag.trim()}
+                      </Chip>
+                    ))}
+                  {trade.whatFailed &&
+                    trade.whatFailed.split(',').map((tag) => (
+                      <Chip key={tag.trim()} compact style={styles.tagChip}>
+                        {tag.trim()}
+                      </Chip>
+                    ))}
                 </View>
               </View>
             </Card.Content>
@@ -291,6 +309,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     htfContextChipTextSelected: {
       color: theme.colors.onPrimaryContainer,
+    },
+    tagChip: {
+      alignSelf: 'flex-start',
     },
     actions: {
       flexDirection: 'row',
