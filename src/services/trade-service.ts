@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Trade } from '../types';
 
@@ -44,12 +45,12 @@ const localStorageService = {
 
 type ApiService = {
   getTrades: () => Promise<Trade[]>;
-  addTrade: (trade: Trade) => Promise<Trade>;
+  addTrade: (trade: Trade | Omit<Trade, 'id'>) => Promise<Trade>;
   updateTrade: (id: string, updates: Partial<Trade>) => Promise<Trade>;
   deleteTrade: (id: string) => Promise<void>;
   clearAllTrades: () => Promise<void>;
   importTrades: (
-    trades: Trade[]
+    trades: (Trade | Omit<Trade, 'id'>)[]
   ) => Promise<{ imported: number; skipped: number }>;
 };
 
@@ -77,12 +78,14 @@ export const tradeService = {
     }
   },
 
-  async addTrade(trade: Trade): Promise<Trade> {
+  async addTrade(trade: Trade | Omit<Trade, 'id'>): Promise<Trade> {
     if (!apiService) {
       const trades = await localStorageService.getTrades();
-      const newTrades = [...trades, trade];
+      const tradeWithId: Trade =
+        'id' in trade ? trade : { ...trade, id: uuidv4() };
+      const newTrades = [...trades, tradeWithId];
       await localStorageService.saveTrades(newTrades);
-      return trade;
+      return tradeWithId;
     }
 
     try {
@@ -153,14 +156,27 @@ export const tradeService = {
   },
 
   async importTrades(
-    trades: Trade[]
+    trades: (Trade | Omit<Trade, 'id'>)[]
   ): Promise<{ imported: number; skipped: number }> {
     if (!apiService) {
       const existingTrades = await localStorageService.getTrades();
-      const existingIds = new Set(existingTrades.map((t) => t.id));
+      const existingKeys = new Set(
+        existingTrades.map(
+          (t) => `${t.symbol}-${t.entryTime.getTime()}-${t.quantity}`
+        )
+      );
 
-      const uniqueTrades = trades.filter((t) => !existingIds.has(t.id));
-      const skipped = trades.length - uniqueTrades.length;
+      const uniqueTrades: Trade[] = [];
+      let skipped = 0;
+      for (const trade of trades) {
+        const key = `${trade.symbol}-${trade.entryTime.getTime()}-${trade.quantity}`;
+        if (!existingKeys.has(key)) {
+          uniqueTrades.push('id' in trade ? trade : { ...trade, id: uuidv4() });
+          existingKeys.add(key);
+        } else {
+          skipped++;
+        }
+      }
 
       const newTrades = [...existingTrades, ...uniqueTrades];
       await localStorageService.saveTrades(newTrades);

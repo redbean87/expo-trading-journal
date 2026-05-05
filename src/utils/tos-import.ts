@@ -1,5 +1,4 @@
 import Decimal from 'decimal.js';
-import { randomUUID } from 'expo-crypto';
 import Papa from 'papaparse';
 
 import type { Trade } from '../types';
@@ -261,7 +260,7 @@ function emitTrade(
   symbol: string,
   accum: PositionAccum,
   source: 'cash-balance' | 'trade-history'
-): Trade | null {
+): Omit<Trade, 'id'> | null {
   const qty = Math.min(accum.totalBuyQty, accum.totalSellQty);
   if (qty === 0) return null;
 
@@ -305,7 +304,6 @@ function emitTrade(
       : undefined;
 
   return {
-    id: randomUUID(),
     symbol: symbol.toUpperCase(),
     entryPrice: roundedEntry,
     exitPrice: roundedExit,
@@ -325,7 +323,7 @@ function emitTrade(
 }
 
 export function parseTosAccountStatement(content: string): ImportResult {
-  const imported: Trade[] = [];
+  const imported: Omit<Trade, 'id'>[] = [];
   const errors: string[] = [];
   let skipped = 0;
 

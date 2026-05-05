@@ -1,4 +1,3 @@
-import { randomUUID } from 'expo-crypto';
 import Papa from 'papaparse';
 
 import { calculatePnl } from '../schemas/trade';
@@ -98,7 +97,7 @@ type CsvRow = {
 };
 
 export type ImportResult = {
-  imported: Trade[];
+  imported: Omit<Trade, 'id'>[];
   skipped: number;
   errors: string[];
   unmatchedBuys?: number;
@@ -150,7 +149,10 @@ function detectTradeSide(row: CsvRow, quantity: number): TradeSide {
   return 'long';
 }
 
-function parseCsvRowToTrade(row: CsvRow, timezone?: string): Trade | null {
+function parseCsvRowToTrade(
+  row: CsvRow,
+  timezone?: string
+): Omit<Trade, 'id'> | null {
   if (
     !row.symbol ||
     !row.shares ||
@@ -213,7 +215,6 @@ function parseCsvRowToTrade(row: CsvRow, timezone?: string): Trade | null {
     }
 
     return {
-      id: randomUUID(),
       symbol: row.symbol.toUpperCase(),
       entryPrice,
       exitPrice,
@@ -244,7 +245,7 @@ export async function parseCsvFile(csvContent: string): Promise<ImportResult> {
   const timezone = useTimezoneStore.getState().timezone;
 
   return new Promise((resolve) => {
-    const imported: Trade[] = [];
+    const imported: Omit<Trade, 'id'>[] = [];
     const errors: string[] = [];
     let skipped = 0;
 

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
 
 import { Trade } from '../types';
@@ -7,13 +8,13 @@ import { generateTradeKey } from '../utils/csv-import';
 interface TradeStore {
   trades: Trade[];
   isLoading: boolean;
-  addTrade: (trade: Trade) => Promise<void>;
+  addTrade: (trade: Trade | Omit<Trade, 'id'>) => Promise<void>;
   updateTrade: (id: string, trade: Partial<Trade>) => Promise<void>;
   deleteTrade: (id: string) => Promise<void>;
   loadTrades: () => Promise<void>;
   clearAllTrades: () => Promise<void>;
   importTrades: (
-    trades: Trade[]
+    trades: (Trade | Omit<Trade, 'id'>)[]
   ) => Promise<{ imported: number; skipped: number; updated: number }>;
 }
 
@@ -43,8 +44,10 @@ export const useTradeStore = create<TradeStore>((set, get) => ({
     }
   },
 
-  addTrade: async (trade: Trade) => {
-    const newTrades = [...get().trades, trade];
+  addTrade: async (trade: Trade | Omit<Trade, 'id'>) => {
+    const tradeWithId: Trade =
+      'id' in trade ? trade : { ...trade, id: uuidv4() };
+    const newTrades = [...get().trades, tradeWithId];
     set({ trades: newTrades });
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newTrades));
@@ -84,7 +87,7 @@ export const useTradeStore = create<TradeStore>((set, get) => ({
     }
   },
 
-  importTrades: async (trades: Trade[]) => {
+  importTrades: async (trades: (Trade | Omit<Trade, 'id'>)[]) => {
     const existingTrades = get().trades;
 
     // Map from key → existing trade for duplicate/upgrade detection
@@ -113,8 +116,10 @@ export const useTradeStore = create<TradeStore>((set, get) => ({
       const existing = existingTradeMap.get(key);
 
       if (!existing) {
-        newTrades.push(trade);
-        existingTradeMap.set(key, trade);
+        const tradeWithId: Trade =
+          'id' in trade ? trade : { ...trade, id: uuidv4() };
+        newTrades.push(tradeWithId);
+        existingTradeMap.set(key, tradeWithId);
       } else if (
         existing.importedFrom === 'trade-history' &&
         trade.importedFrom === 'cash-balance'

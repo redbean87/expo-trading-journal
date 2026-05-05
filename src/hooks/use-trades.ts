@@ -45,12 +45,14 @@ function mapToTrade(trade: BackendTrade): Trade {
   };
 }
 
-function mapFromTrade(trade: Trade) {
-  return {
+function mapFromTrade(trade: Trade | Omit<Trade, 'id'>) {
+  const mapped: Record<string, unknown> = {
     ...trade,
     entryTime: trade.entryTime.getTime(),
     exitTime: trade.exitTime.getTime(),
   };
+  delete mapped.id;
+  return mapped as Omit<Trade, 'id'> & { entryTime: number; exitTime: number };
 }
 
 export function useTrades() {
@@ -98,7 +100,7 @@ export function useTrade(id: string | null) {
 export function useAddTrade() {
   const mutate = useMutation(api.trades.addTrade);
 
-  return async (trade: Trade): Promise<Trade> => {
+  return async (trade: Omit<Trade, 'id'>): Promise<Trade> => {
     const result = await mutate(mapFromTrade(trade));
     return { ...trade, id: result.id as string };
   };
@@ -139,7 +141,7 @@ export function useImportTrades() {
   const mutate = useMutation(api.trades.importTrades);
 
   return async (
-    trades: Trade[]
+    trades: Omit<Trade, 'id'>[]
   ): Promise<{ imported: number; skipped: number; updated: number }> => {
     return await mutate({ trades: trades.map(mapFromTrade) });
   };

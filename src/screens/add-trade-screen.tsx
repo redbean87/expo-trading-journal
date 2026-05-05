@@ -2,14 +2,13 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text } from 'react-native-paper';
-import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '../components/button';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useImageUpload } from '../hooks/use-image-upload';
 import { useAddTrade, useUpdateTrade, useTrade } from '../hooks/use-trades';
 import { calculatePnl } from '../schemas/trade';
-import { PendingImage, TradeFormData } from '../types';
+import { PendingImage, Trade, TradeFormData } from '../types';
 import { TradeFormContent } from './add-trade/trade-form-content';
 
 export default function AddTradeScreen() {
@@ -82,8 +81,7 @@ export default function AddTradeScreen() {
       });
       savedTradeId = params.id;
     } else {
-      const newTrade = {
-        id: uuidv4(),
+      const newTrade: Omit<Trade, 'id'> = {
         symbol: formData.symbol.toUpperCase(),
         entryPrice,
         exitPrice,

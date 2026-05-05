@@ -42,7 +42,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
     );
   },
 
-  async addTrade(trade: Trade): Promise<Trade> {
+  async addTrade(trade: Omit<Trade, 'id'>): Promise<Trade> {
     const result = await client.mutation(api.trades.addTrade, {
       symbol: trade.symbol,
       entryPrice: trade.entryPrice,
@@ -140,7 +140,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
   },
 
   async importTrades(
-    trades: Trade[]
+    trades: Omit<Trade, 'id'>[]
   ): Promise<{ imported: number; skipped: number }> {
     const result = await client.mutation(api.trades.importTrades, {
       trades: trades.map((trade) => ({
