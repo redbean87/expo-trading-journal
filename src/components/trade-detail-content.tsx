@@ -335,6 +335,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     symbol: {
       fontWeight: 'bold',
+      lineHeight: theme.fonts.displaySmall.fontSize,
     },
     sideBadge: {
       paddingHorizontal: theme.spacing.sm,
