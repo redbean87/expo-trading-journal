@@ -87,6 +87,7 @@ export default function TradeDetailScreen() {
       <Stack.Screen options={{ title: trade.symbol }} />
       <TradeDetailContent
         trade={trade}
+        onClose={() => router.back()}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onDeleteComplete={handleDeleteComplete}

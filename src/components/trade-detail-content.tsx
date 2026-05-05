@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Portal, Dialog } from 'react-native-paper';
+import { Text, Portal, Dialog, Menu, IconButton } from 'react-native-paper';
 
 import { AttachmentGallery } from './attachment-gallery';
 import { Button } from './button';
@@ -15,6 +15,7 @@ import { formatDateTime } from '../utils/date-format';
 
 type TradeDetailContentProps = {
   trade: Trade;
+  onClose: () => void;
   onEdit: () => void;
   onDelete: () => Promise<void>;
   onDeleteComplete?: () => void;
@@ -22,12 +23,14 @@ type TradeDetailContentProps = {
 
 export function TradeDetailContent({
   trade,
+  onClose,
   onEdit,
   onDelete,
   onDeleteComplete,
 }: TradeDetailContentProps) {
   const theme = useAppTheme();
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
   const { attachments } = useAttachments(trade.id);
 
   const styles = createStyles(theme);
@@ -39,9 +42,37 @@ export function TradeDetailContent({
   };
 
   const isProfit = trade.pnl >= 0;
+  const sideColor = isProfit ? theme.colors.profit : theme.colors.loss;
 
   return (
     <>
+      <View style={styles.topBar}>
+        <IconButton icon="close" onPress={onClose} />
+        <View style={styles.topBarActions}>
+          <IconButton icon="pencil" onPress={onEdit} />
+          <Menu
+            visible={menuVisible}
+            onDismiss={() => setMenuVisible(false)}
+            anchor={
+              <IconButton
+                icon="dots-vertical"
+                onPress={() => setMenuVisible(true)}
+              />
+            }
+          >
+            <Menu.Item
+              onPress={() => {
+                setMenuVisible(false);
+                setDeleteDialogVisible(true);
+              }}
+              title="Delete Trade"
+              leadingIcon="delete"
+              titleStyle={{ color: theme.colors.error }}
+            />
+          </Menu>
+        </View>
+      </View>
+
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.content}>
           <View style={styles.header}>
@@ -49,34 +80,26 @@ export function TradeDetailContent({
               <Text variant="displaySmall" style={styles.symbol}>
                 {trade.symbol}
               </Text>
-              <Chip
+              <View
                 style={[
-                  styles.sideChip,
-                  {
-                    backgroundColor:
-                      trade.side === 'long'
-                        ? withAlpha(theme.colors.profit, 0.12)
-                        : withAlpha(theme.colors.loss, 0.12),
-                  },
+                  styles.sideBadge,
+                  { backgroundColor: withAlpha(sideColor, 0.12) },
                 ]}
-                textStyle={{
-                  color:
-                    trade.side === 'long'
-                      ? theme.colors.profit
-                      : theme.colors.loss,
-                }}
               >
-                {trade.side.toUpperCase()}
-              </Chip>
+                <Text
+                  variant="labelSmall"
+                  style={[styles.sideBadgeText, { color: sideColor }]}
+                >
+                  {trade.side.toUpperCase()}
+                </Text>
+              </View>
             </View>
             <View style={styles.headerRight}>
               <Text
                 variant="headlineMedium"
                 style={[
                   styles.pnl,
-                  {
-                    color: isProfit ? theme.colors.profit : theme.colors.loss,
-                  },
+                  { color: isProfit ? theme.colors.profit : theme.colors.loss },
                 ]}
               >
                 {isProfit ? '+' : ''}${trade.pnl.toFixed(2)}
@@ -216,26 +239,6 @@ export function TradeDetailContent({
               <AttachmentGallery attachments={attachments} />
             </SectionCard>
           )}
-
-          <View style={styles.actions}>
-            <Button
-              mode="contained"
-              onPress={onEdit}
-              style={styles.actionButton}
-              icon="pencil"
-            >
-              Edit Trade
-            </Button>
-            <Button
-              mode="outlined"
-              onPress={() => setDeleteDialogVisible(true)}
-              style={styles.actionButton}
-              textColor={theme.colors.error}
-              icon="delete"
-            >
-              Delete Trade
-            </Button>
-          </View>
         </View>
       </ScrollView>
 
@@ -294,6 +297,18 @@ const detailRowStyles = StyleSheet.create({
 
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
+    topBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 4,
+      paddingTop: 8,
+      backgroundColor: theme.colors.background,
+    },
+    topBarActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
     scrollContainer: {
       flex: 1,
       backgroundColor: theme.colors.background,
@@ -321,8 +336,14 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     symbol: {
       fontWeight: 'bold',
     },
-    sideChip: {
-      height: 28,
+    sideBadge: {
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 4,
+      alignSelf: 'flex-start',
+    },
+    sideBadgeText: {
+      fontWeight: '600',
     },
     pnl: {
       fontWeight: 'bold',
@@ -339,13 +360,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingVertical: 8,
-    },
-    actions: {
-      marginTop: 8,
-      gap: 12,
-    },
-    actionButton: {
-      paddingVertical: 4,
     },
     dialog: {
       maxWidth: 600,

@@ -95,11 +95,9 @@ export function TradeDetailPanel({
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <IconButton icon="close" onPress={onClose} />
-      </View>
       <TradeDetailContent
         trade={trade}
+        onClose={onClose}
         onEdit={onEditStart}
         onDelete={handleDelete}
         onDeleteComplete={onClose}
