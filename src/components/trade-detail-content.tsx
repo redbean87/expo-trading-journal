@@ -128,72 +128,112 @@ export function TradeDetailContent({
             <DetailRow label="Exit" value={formatDateTime(trade.exitTime)} />
           </SectionCard>
 
-          {trade.strategy && (
-            <SectionCard title="Strategy">
-              <Chip style={styles.strategyChip}>{trade.strategy}</Chip>
-            </SectionCard>
-          )}
-
-          {trade.marketCondition && (
-            <SectionCard title="Market Condition">
-              <Chip style={styles.marketConditionChip}>
-                {trade.marketCondition}
-              </Chip>
-            </SectionCard>
-          )}
-
-          {trade.htfContext && (
-            <SectionCard title="HTF Context">
-              <Chip style={styles.htfContextChip}>{trade.htfContext}</Chip>
-            </SectionCard>
-          )}
-
-          {trade.psychology && (
-            <SectionCard title="Psychology">
-              <View style={styles.tagChipRow}>
-                {trade.psychology.split(',').map((tag) => (
-                  <Chip key={tag.trim()} style={styles.tagChip} compact>
-                    {tag.trim()}
-                  </Chip>
-                ))}
+          {(trade.strategy || trade.marketCondition || trade.htfContext) && (
+            <SectionCard title="Trade Setup">
+              <View style={styles.consolidatedContent}>
+                {trade.strategy && (
+                  <View style={styles.consolidatedRow}>
+                    <Text variant="bodySmall" style={styles.consolidatedLabel}>
+                      Strategy
+                    </Text>
+                    <Chip compact>{trade.strategy}</Chip>
+                  </View>
+                )}
+                {trade.marketCondition && (
+                  <View style={styles.consolidatedRow}>
+                    <Text variant="bodySmall" style={styles.consolidatedLabel}>
+                      Market Condition
+                    </Text>
+                    <Chip compact>{trade.marketCondition}</Chip>
+                  </View>
+                )}
+                {trade.htfContext && (
+                  <View style={styles.consolidatedRow}>
+                    <Text variant="bodySmall" style={styles.consolidatedLabel}>
+                      HTF Context
+                    </Text>
+                    <Chip compact>{trade.htfContext}</Chip>
+                  </View>
+                )}
               </View>
             </SectionCard>
           )}
 
-          {trade.whatWorked && (
-            <SectionCard title="What Worked">
-              <View style={styles.tagChipRow}>
-                {trade.whatWorked.split(',').map((tag) => (
-                  <Chip key={tag.trim()} style={styles.tagChip} compact>
-                    {tag.trim()}
-                  </Chip>
-                ))}
+          {(trade.confidence !== undefined || trade.psychology) && (
+            <SectionCard title="Performance">
+              <View style={styles.consolidatedContent}>
+                {trade.confidence !== undefined && (
+                  <View style={styles.consolidatedRow}>
+                    <Text variant="bodySmall" style={styles.consolidatedLabel}>
+                      Confidence
+                    </Text>
+                    <Text variant="bodyLarge">{trade.confidence}/5</Text>
+                  </View>
+                )}
+                {trade.psychology && (
+                  <View style={styles.consolidatedTagGroup}>
+                    <Text variant="bodySmall" style={styles.consolidatedLabel}>
+                      Psychology
+                    </Text>
+                    <View style={styles.tagChipRow}>
+                      {trade.psychology.split(',').map((tag) => (
+                        <Chip key={tag.trim()} style={styles.tagChip} compact>
+                          {tag.trim()}
+                        </Chip>
+                      ))}
+                    </View>
+                  </View>
+                )}
               </View>
             </SectionCard>
           )}
 
-          {trade.whatFailed && (
-            <SectionCard title="What Didn't Work">
-              <View style={styles.tagChipRow}>
-                {trade.whatFailed.split(',').map((tag) => (
-                  <Chip key={tag.trim()} style={styles.tagChip} compact>
-                    {tag.trim()}
-                  </Chip>
-                ))}
-              </View>
-            </SectionCard>
-          )}
-
-          {trade.ruleViolation && (
-            <SectionCard title="Mistake / Rule Violation">
-              <View style={styles.ruleViolationContent}>
-                <Chip
-                  style={styles.mistakeChip}
-                  icon="alert-circle"
-                  textStyle={{ color: theme.colors.loss }}
-                >
-                  {trade.ruleViolation}
-                </Chip>
+          {(trade.whatWorked || trade.whatFailed || trade.ruleViolation) && (
+            <SectionCard title="Review">
+              <View style={styles.consolidatedContent}>
+                {trade.whatWorked && (
+                  <View style={styles.consolidatedTagGroup}>
+                    <Text variant="bodySmall" style={styles.consolidatedLabel}>
+                      What Worked
+                    </Text>
+                    <View style={styles.tagChipRow}>
+                      {trade.whatWorked.split(',').map((tag) => (
+                        <Chip key={tag.trim()} style={styles.tagChip} compact>
+                          {tag.trim()}
+                        </Chip>
+                      ))}
+                    </View>
+                  </View>
+                )}
+                {trade.whatFailed && (
+                  <View style={styles.consolidatedTagGroup}>
+                    <Text variant="bodySmall" style={styles.consolidatedLabel}>
+                      What Didn&apos;t Work
+                    </Text>
+                    <View style={styles.tagChipRow}>
+                      {trade.whatFailed.split(',').map((tag) => (
+                        <Chip key={tag.trim()} style={styles.tagChip} compact>
+                          {tag.trim()}
+                        </Chip>
+                      ))}
+                    </View>
+                  </View>
+                )}
+                {trade.ruleViolation && (
+                  <View style={styles.consolidatedRow}>
+                    <Text variant="bodySmall" style={styles.consolidatedLabel}>
+                      Mistake
+                    </Text>
+                    <Chip
+                      style={styles.mistakeChip}
+                      icon="alert-circle"
+                      textStyle={{ color: theme.colors.loss }}
+                      compact
+                    >
+                      {trade.ruleViolation}
+                    </Chip>
+                  </View>
+                )}
               </View>
             </SectionCard>
           )}
@@ -325,21 +365,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     notes: {
       lineHeight: 24,
     },
-    psychologyChip: {
-      alignSelf: 'flex-start',
-    },
-    marketConditionChip: {
-      alignSelf: 'flex-start',
-    },
-    strategyChip: {
-      alignSelf: 'flex-start',
-    },
-    htfContextChip: {
-      alignSelf: 'flex-start',
-    },
-    ruleViolationContent: {
-      gap: 12,
-    },
     mistakeChip: {
       alignSelf: 'flex-start',
       backgroundColor: withAlpha(theme.colors.loss, 0.12),
@@ -351,6 +376,20 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     tagChip: {
       alignSelf: 'flex-start',
+    },
+    consolidatedContent: {
+      gap: 12,
+    },
+    consolidatedRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    consolidatedTagGroup: {
+      gap: 6,
+    },
+    consolidatedLabel: {
+      color: theme.colors.textSecondary,
     },
     actions: {
       marginTop: 8,
