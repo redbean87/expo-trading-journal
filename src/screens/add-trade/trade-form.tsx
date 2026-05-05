@@ -27,7 +27,6 @@ const FORM_FIELDS = [
   'commissions',
   'riskAmount',
   'marketCondition',
-  'ruleViolation',
   'whatWorked',
   'whatFailed',
   'notes',
@@ -320,20 +319,6 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         <MistakeCategorySelector
           value={formData.ruleViolation}
           onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
-        />
-        <TextInput
-          ref={createRef('ruleViolation')}
-          label="Rule Violation (Optional)"
-          value={formData.ruleViolation}
-          onChangeText={(text) =>
-            onUpdate({ ruleViolation: text || undefined })
-          }
-          mode="outlined"
-          placeholder="Select above or describe what went wrong"
-          style={styles.input}
-          returnKeyType={getReturnKeyType('ruleViolation')}
-          blurOnSubmit={getBlurOnSubmit('ruleViolation')}
-          onSubmitEditing={() => handleSubmitEditing('ruleViolation')}
         />
 
         <WhatWorkedSelector
