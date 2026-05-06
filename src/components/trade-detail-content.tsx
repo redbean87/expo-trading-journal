@@ -209,18 +209,23 @@ export function TradeDetailContent({
                 <View style={styles.mistakeRow}>
                   <Text
                     variant="bodySmall"
-                    style={{ color: theme.colors.textSecondary }}
+                    style={[
+                      styles.detailLabel,
+                      { color: theme.colors.textSecondary },
+                    ]}
                   >
                     Mistake
                   </Text>
-                  <Chip
-                    style={styles.mistakeChip}
-                    icon="alert-circle"
-                    textStyle={{ color: theme.colors.loss }}
-                    compact
-                  >
-                    {trade.ruleViolation}
-                  </Chip>
+                  <View style={styles.mistakeValue}>
+                    <Chip
+                      style={styles.mistakeChip}
+                      icon="alert-circle"
+                      textStyle={{ color: theme.colors.loss }}
+                      compact
+                    >
+                      {trade.ruleViolation}
+                    </Chip>
+                  </View>
                 </View>
               )}
             </SectionCard>
@@ -278,10 +283,15 @@ function DetailRow({ label, value }: DetailRowProps) {
   const theme = useAppTheme();
   return (
     <View style={detailRowStyles.row}>
-      <Text variant="bodyMedium" style={{ color: theme.colors.textSecondary }}>
+      <Text
+        variant="bodyMedium"
+        style={[detailRowStyles.label, { color: theme.colors.textSecondary }]}
+      >
         {label}
       </Text>
-      <Text variant="bodyLarge">{value}</Text>
+      <Text variant="bodyLarge" style={detailRowStyles.value}>
+        {value}
+      </Text>
     </View>
   );
 }
@@ -289,9 +299,17 @@ function DetailRow({ label, value }: DetailRowProps) {
 const detailRowStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: 8,
+    gap: 12,
+  },
+  label: {
+    width: 140,
+    flexShrink: 0,
+  },
+  value: {
+    flex: 1,
+    textAlign: 'right',
   },
 });
 
@@ -358,9 +376,17 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     mistakeRow: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       paddingVertical: theme.spacing.sm,
+      gap: theme.spacing.md,
+    },
+    detailLabel: {
+      width: 140,
+      flexShrink: 0,
+    },
+    mistakeValue: {
+      flex: 1,
+      alignItems: 'flex-end',
     },
     dialog: {
       maxWidth: 600,
