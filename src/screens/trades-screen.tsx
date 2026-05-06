@@ -628,6 +628,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     masterPane: {
       flex: 4,
+      maxWidth: 520,
       borderRightWidth: 1,
       borderRightColor: theme.colors.outline,
     },

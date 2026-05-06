@@ -6,9 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Card } from 'react-native-paper';
 
-import { PnlPreviewCard } from './pnl-preview-card';
 import { ScreenshotPicker } from './screenshot-picker';
 import { TradeForm } from './trade-form';
 import { Button } from '../../components/button';
@@ -89,51 +87,37 @@ export function TradeFormContent({
       <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
         <ResponsiveContainer>
           <View style={styles.content}>
-            <Card style={styles.card}>
-              <Card.Content>
-                <TradeForm
-                  formData={formData}
-                  onUpdate={(updates) =>
-                    setFormData({ ...formData, ...updates })
-                  }
-                />
+            <TradeForm
+              formData={formData}
+              pnl={pnl}
+              pnlPercent={pnlPercent}
+              onUpdate={(updates) => setFormData({ ...formData, ...updates })}
+            />
 
-                {formData.entryPrice &&
-                  formData.exitPrice &&
-                  formData.quantity && (
-                    <PnlPreviewCard pnl={pnl} pnlPercent={pnlPercent} />
-                  )}
+            <ScreenshotPicker
+              tradeId={tradeId}
+              pendingImages={pendingImages}
+              onPendingImagesChange={setPendingImages}
+            />
 
-                <ScreenshotPicker
-                  tradeId={tradeId}
-                  pendingImages={pendingImages}
-                  onPendingImagesChange={setPendingImages}
-                />
-
-                <Button
-                  mode="contained"
-                  onPress={handleSubmit}
-                  style={styles.button}
-                  disabled={
-                    !formData.symbol ||
-                    !formData.entryPrice ||
-                    !formData.exitPrice ||
-                    !formData.quantity
-                  }
-                >
-                  {isEditMode ? 'Update Trade' : 'Add Trade'}
-                </Button>
-                {onCancel && (
-                  <Button
-                    mode="outlined"
-                    onPress={onCancel}
-                    style={styles.button}
-                  >
-                    Cancel
-                  </Button>
-                )}
-              </Card.Content>
-            </Card>
+            <Button
+              mode="contained"
+              onPress={handleSubmit}
+              style={styles.button}
+              disabled={
+                !formData.symbol ||
+                !formData.entryPrice ||
+                !formData.exitPrice ||
+                !formData.quantity
+              }
+            >
+              {isEditMode ? 'Update Trade' : 'Add Trade'}
+            </Button>
+            {onCancel && (
+              <Button mode="outlined" onPress={onCancel} style={styles.button}>
+                Cancel
+              </Button>
+            )}
           </View>
         </ResponsiveContainer>
       </ScrollView>
@@ -152,17 +136,13 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     content: {
       padding: theme.spacing.lg,
-      alignItems: 'center',
-    },
-    card: {
-      marginBottom: theme.spacing.lg,
       maxWidth: 600,
       width: '100%',
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.borderRadius.md,
-      ...theme.elevation[2],
+      alignSelf: 'center',
     },
     button: {
       marginTop: theme.spacing.sm,
+      width: '100%',
+      maxWidth: 600,
     },
   });

@@ -5,13 +5,14 @@ import { TextInput, Text, HelperText } from 'react-native-paper';
 import { HtfContextSelector } from './htf-context-selector';
 import { MarketConditionSelector } from './market-condition-selector';
 import { MistakeCategorySelector } from './mistake-category-selector';
+import { PnlPreviewCard } from './pnl-preview-card';
 import { PsychologySelector } from './psychology-selector';
 import { StrategySelector } from './strategy-selector';
 import { WhatFailedSelector } from './what-failed-selector';
 import { WhatWorkedSelector } from './what-worked-selector';
 import { Chip } from '../../components/chip';
 import { DateTimeInput } from '../../components/date-time-input';
-import { FormLayout } from '../../components/form-layout';
+import { SectionCard } from '../../components/section-card';
 import { SegmentedButtons } from '../../components/segmented-buttons';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useFormNavigation } from '../../hooks/use-form-navigation';
@@ -36,12 +37,19 @@ type FormField = (typeof FORM_FIELDS)[number];
 
 type TradeFormProps = {
   formData: TradeFormData;
+  pnl: number;
+  pnlPercent: number;
   onUpdate: (updates: Partial<TradeFormData>) => void;
 };
 
 type RiskMode = '$' | '%';
 
-export function TradeForm({ formData, onUpdate }: TradeFormProps) {
+export function TradeForm({
+  formData,
+  pnl,
+  pnlPercent,
+  onUpdate,
+}: TradeFormProps) {
   const theme = useAppTheme();
   const styles = createStyles(theme);
   const { createRef, getReturnKeyType, getBlurOnSubmit, handleSubmitEditing } =
@@ -105,7 +113,7 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
 
   return (
     <>
-      <FormLayout title="Trade Details">
+      <SectionCard title="Position Details">
         <TextInput
           ref={createRef('symbol')}
           label="Symbol"
@@ -170,23 +178,7 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           blurOnSubmit={getBlurOnSubmit('quantity')}
           onSubmitEditing={() => handleSubmitEditing('quantity')}
         />
-      </FormLayout>
 
-      <FormLayout title="Timing">
-        <DateTimeInput
-          label="Entry Time"
-          value={formData.entryTime}
-          onChange={(date) => onUpdate({ entryTime: date })}
-        />
-
-        <DateTimeInput
-          label="Exit Time"
-          value={formData.exitTime}
-          onChange={(date) => onUpdate({ exitTime: date })}
-        />
-      </FormLayout>
-
-      <FormLayout title="Fees">
         <View style={styles.row}>
           <TextInput
             ref={createRef('fees')}
@@ -213,9 +205,27 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
             onSubmitEditing={() => handleSubmitEditing('commissions')}
           />
         </View>
-      </FormLayout>
+      </SectionCard>
 
-      <FormLayout title="Risk">
+      {formData.entryPrice && formData.exitPrice && formData.quantity && (
+        <PnlPreviewCard pnl={pnl} pnlPercent={pnlPercent} />
+      )}
+
+      <SectionCard title="Timing">
+        <DateTimeInput
+          label="Entry Time"
+          value={formData.entryTime}
+          onChange={(date) => onUpdate({ entryTime: date })}
+        />
+
+        <DateTimeInput
+          label="Exit Time"
+          value={formData.exitTime}
+          onChange={(date) => onUpdate({ exitTime: date })}
+        />
+      </SectionCard>
+
+      <SectionCard title="Risk">
         <SegmentedButtons
           value={riskMode}
           onValueChange={(value) => handleRiskModeChange(value as RiskMode)}
@@ -266,9 +276,9 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
         <HelperText type="info" style={styles.riskHelper}>
           Optional — enables R-multiple analytics
         </HelperText>
-      </FormLayout>
+      </SectionCard>
 
-      <FormLayout title="Psychology & Notes" last>
+      <SectionCard title="Trade Setup">
         <StrategySelector
           value={formData.strategy}
           onSelect={(text) => onUpdate({ strategy: text || undefined })}
@@ -285,12 +295,9 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           value={formData.htfContext}
           onSelect={(context) => onUpdate({ htfContext: context || undefined })}
         />
+      </SectionCard>
 
-        <PsychologySelector
-          value={formData.psychology}
-          onChange={(text) => onUpdate({ psychology: text || undefined })}
-        />
-
+      <SectionCard title="Performance">
         <View style={styles.confidenceContainer}>
           <Text variant="bodyMedium" style={styles.confidenceLabel}>
             Confidence (Optional)
@@ -316,11 +323,13 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           </View>
         </View>
 
-        <MistakeCategorySelector
-          value={formData.ruleViolation}
-          onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
+        <PsychologySelector
+          value={formData.psychology}
+          onChange={(text) => onUpdate({ psychology: text || undefined })}
         />
+      </SectionCard>
 
+      <SectionCard title="Review">
         <WhatWorkedSelector
           value={formData.whatWorked}
           onChange={(text) => onUpdate({ whatWorked: text || undefined })}
@@ -331,6 +340,13 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           onChange={(text) => onUpdate({ whatFailed: text || undefined })}
         />
 
+        <MistakeCategorySelector
+          value={formData.ruleViolation}
+          onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
+        />
+      </SectionCard>
+
+      <SectionCard title="Notes">
         <TextInput
           ref={createRef('notes')}
           label="Notes (Optional)"
@@ -345,7 +361,7 @@ export function TradeForm({ formData, onUpdate }: TradeFormProps) {
           onSubmitEditing={() => handleSubmitEditing('notes')}
           {...getMultilineWebProps('notes')}
         />
-      </FormLayout>
+      </SectionCard>
     </>
   );
 }

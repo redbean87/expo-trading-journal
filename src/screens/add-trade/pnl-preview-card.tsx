@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
+import { SectionCard } from '../../components/section-card';
 import { useAppTheme } from '../../hooks/use-app-theme';
 
 type PnlPreviewCardProps = {
@@ -11,45 +12,33 @@ type PnlPreviewCardProps = {
 
 export function PnlPreviewCard({ pnl, pnlPercent }: PnlPreviewCardProps) {
   const theme = useAppTheme();
-  const styles = createStyles(theme);
-
   return (
-    <Card style={styles.card}>
-      <Card.Content>
-        <Text variant="titleMedium">Projected P&L</Text>
-        <Text
-          variant="headlineMedium"
-          style={[
-            styles.pnlText,
-            { color: pnl >= 0 ? theme.colors.profit : theme.colors.loss },
-          ]}
-        >
-          {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
-        </Text>
-        <Text
-          variant="bodyMedium"
-          style={{
-            color: pnl >= 0 ? theme.colors.profit : theme.colors.loss,
-          }}
-        >
-          {pnlPercent >= 0 ? '+' : ''}
-          {pnlPercent.toFixed(2)}%
-        </Text>
-      </Card.Content>
-    </Card>
+    <SectionCard title="Projected P&L">
+      <Text
+        variant="headlineMedium"
+        style={[
+          styles.pnlText,
+          { color: pnl >= 0 ? theme.colors.profit : theme.colors.loss },
+        ]}
+      >
+        {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
+      </Text>
+      <Text
+        variant="bodyMedium"
+        style={{
+          color: pnl >= 0 ? theme.colors.profit : theme.colors.loss,
+        }}
+      >
+        {pnlPercent >= 0 ? '+' : ''}
+        {pnlPercent.toFixed(2)}%
+      </Text>
+    </SectionCard>
   );
 }
 
-const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
-  StyleSheet.create({
-    card: {
-      marginBottom: 16,
-      backgroundColor: theme.colors.surfaceVariant,
-      borderRadius: theme.borderRadius.md,
-      ...theme.elevation[2],
-    },
-    pnlText: {
-      marginTop: 8,
-      fontWeight: 'bold',
-    },
-  });
+const styles = StyleSheet.create({
+  pnlText: {
+    marginTop: 8,
+    fontWeight: 'bold',
+  },
+});
