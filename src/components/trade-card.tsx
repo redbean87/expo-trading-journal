@@ -143,7 +143,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     cardSelected: {
       borderLeftWidth: 4,
-      borderLeftColor: theme.colors.primary,
+      borderLeftColor: theme.colors.primaryContainer,
       ...theme.elevation[3],
     },
     header: {
