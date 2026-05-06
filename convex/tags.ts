@@ -54,11 +54,15 @@ export const SYSTEM_TAG_DEFINITIONS = {
     "Didn't Follow Plan",
   ],
   whatWorked: [
-    'Waited for pullback',
-    'Entered on confirmation',
-    'Followed plan',
-    'Good patience',
-    'Strong momentum setup',
+    'Waited for Confirmation',
+    'Entered on Pullback',
+    'Followed Plan',
+    'Good Patience',
+    'Strong Momentum Setup',
+    'Respected Key Level',
+    'VWAP Entry',
+    'Trend Alignment',
+    'Scaled Out Properly',
   ],
 } as const;
 
