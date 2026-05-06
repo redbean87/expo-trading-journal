@@ -87,12 +87,12 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       paddingBottom: theme.spacing.sm,
     },
     tabTextActive: {
-      color: theme.colors.primary,
+      color: theme.colors.primaryContainer,
       fontWeight: '600',
     },
     indicator: {
       height: INDICATOR_HEIGHT,
-      backgroundColor: theme.colors.primary,
+      backgroundColor: theme.colors.primaryContainer,
       alignSelf: 'stretch',
       borderTopLeftRadius: INDICATOR_HEIGHT / 2,
       borderTopRightRadius: INDICATOR_HEIGHT / 2,
