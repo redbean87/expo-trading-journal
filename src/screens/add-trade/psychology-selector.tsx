@@ -17,6 +17,7 @@ export function PsychologySelector({
       value={value}
       onChange={onChange}
       mode="multi"
+      maxSelections={2}
       allowCustom
     />
   );

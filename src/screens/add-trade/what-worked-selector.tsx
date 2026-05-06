@@ -17,6 +17,7 @@ export function WhatWorkedSelector({
       value={value}
       onChange={onChange}
       mode="multi"
+      maxSelections={3}
       allowCustom
     />
   );

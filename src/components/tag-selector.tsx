@@ -102,9 +102,6 @@ export function TagSelector({
     setTagToDisable(null);
   };
 
-  const showWarning =
-    maxSelections !== undefined && selected.size > maxSelections;
-
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -119,10 +116,10 @@ export function TagSelector({
     <>
       <View style={styles.container}>
         <Text variant="bodySmall" style={styles.label}>
-          {label} (Optional)
-          {mode === 'multi' && selected.size > 0 && (
-            <Text style={styles.count}> ({selected.size})</Text>
-          )}
+          {label}{' '}
+          {maxSelections !== undefined
+            ? `(Select up to ${maxSelections})`
+            : '(Optional)'}
         </Text>
 
         <View style={styles.chipGrid}>
@@ -154,12 +151,6 @@ export function TagSelector({
             </Chip>
           )}
         </View>
-
-        {showWarning && (
-          <Text variant="bodySmall" style={styles.warning}>
-            Consider limiting to {maxSelections} selections for clearer analysis
-          </Text>
-        )}
       </View>
 
       <Portal>
