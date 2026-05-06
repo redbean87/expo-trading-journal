@@ -159,6 +159,85 @@ export const ensureSystemTags = mutation({
   },
 });
 
+// Mutation to sync system tags with current definitions
+// Deletes outdated system tags and re-seeds if definitions changed
+export const syncSystemTags = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const existingSystemTags = await ctx.db
+      .query('tags')
+      .withIndex('by_system', (q) => q.eq('isSystem', true))
+      .collect();
+
+    // Group existing tags by field
+    const existingByField = new Map<string, string[]>();
+    for (const tag of existingSystemTags) {
+      const labels = existingByField.get(tag.field) ?? [];
+      labels.push(tag.label);
+      existingByField.set(tag.field, labels);
+    }
+
+    const changedFields: string[] = [];
+    const now = Date.now();
+    let totalAdded = 0;
+    let totalDeleted = 0;
+
+    for (const [field, expectedLabels] of Object.entries(
+      SYSTEM_TAG_DEFINITIONS
+    )) {
+      const existingLabels = existingByField.get(field) ?? [];
+
+      // Check if labels match (same count and same labels)
+      const isMatch =
+        existingLabels.length === expectedLabels.length &&
+        expectedLabels.every((label) => existingLabels.includes(label));
+
+      if (!isMatch) {
+        changedFields.push(field);
+
+        // Delete old system tags for this field
+        const oldTags = await ctx.db
+          .query('tags')
+          .withIndex('by_field_system', (q) =>
+            q.eq('field', field).eq('isSystem', true)
+          )
+          .collect();
+
+        for (const tag of oldTags) {
+          await ctx.db.delete(tag._id);
+          totalDeleted++;
+        }
+
+        // Insert new tags
+        const maxSortOrder =
+          existingSystemTags.reduce(
+            (max, tag) => Math.max(max, tag.sortOrder),
+            -1
+          ) + 1;
+
+        for (let i = 0; i < expectedLabels.length; i++) {
+          await ctx.db.insert('tags', {
+            field,
+            label: expectedLabels[i],
+            isSystem: true,
+            isActive: true,
+            sortOrder: maxSortOrder + i,
+            createdAt: now,
+          });
+          totalAdded++;
+        }
+      }
+    }
+
+    return {
+      synced: changedFields.length > 0,
+      changedFields,
+      deleted: totalDeleted,
+      added: totalAdded,
+    };
+  },
+});
+
 // Mutation to add a custom user tag
 export const addTag = mutation({
   args: {

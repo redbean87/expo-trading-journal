@@ -37,6 +37,14 @@ export function useEnsureSystemTags() {
   };
 }
 
+export function useSyncSystemTags() {
+  const mutate = useMutation(api.tags.syncSystemTags);
+
+  return async () => {
+    return await mutate({});
+  };
+}
+
 export function useAddTag() {
   const mutate = useMutation(api.tags.addTag);
 

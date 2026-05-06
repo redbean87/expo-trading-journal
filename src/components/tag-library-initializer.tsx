@@ -1,18 +1,15 @@
 import { useEffect } from 'react';
 
-import { useEnsureSystemTags, useHasSystemTags } from '../hooks/use-tags';
+import { useSyncSystemTags } from '../hooks/use-tags';
 
 export function TagLibraryInitializer() {
-  const { hasSystemTags, isLoading } = useHasSystemTags();
-  const ensureSystemTags = useEnsureSystemTags();
+  const syncSystemTags = useSyncSystemTags();
 
   useEffect(() => {
-    if (!isLoading && !hasSystemTags) {
-      ensureSystemTags().catch((error) => {
-        console.error('Failed to seed system tags:', error);
-      });
-    }
-  }, [isLoading, hasSystemTags, ensureSystemTags]);
+    syncSystemTags().catch((error) => {
+      console.error('Failed to sync system tags:', error);
+    });
+  }, [syncSystemTags]);
 
   return null;
 }
