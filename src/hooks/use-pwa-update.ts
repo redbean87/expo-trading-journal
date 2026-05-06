@@ -11,6 +11,7 @@ export function usePwaUpdate() {
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     if (!('serviceWorker' in navigator)) return;
+    if (process.env.NODE_ENV !== 'production') return;
 
     let mounted = true;
 
