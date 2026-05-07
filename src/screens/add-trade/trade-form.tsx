@@ -290,27 +290,36 @@ export function TradeForm({
         />
 
         <View style={styles.confidenceContainer}>
-          <Text variant="bodyMedium" style={styles.confidenceLabel}>
+          <Text variant="bodySmall" style={styles.confidenceLabel}>
             Confidence (Optional)
           </Text>
           <View style={styles.confidenceChips}>
-            {[1, 2, 3, 4, 5].map((value) => (
-              <Chip
-                key={value}
-                selected={formData.confidence === value}
-                onPress={() =>
-                  onUpdate({
-                    confidence:
-                      formData.confidence === value ? undefined : value,
-                  })
-                }
-                style={styles.confidenceChip}
-                textStyle={styles.confidenceChipText}
-                compact
-              >
-                {value}
-              </Chip>
-            ))}
+            {[1, 2, 3, 4, 5].map((value) => {
+              const isSelected = formData.confidence === value;
+              return (
+                <Chip
+                  key={value}
+                  selected={isSelected}
+                  onPress={() =>
+                    onUpdate({
+                      confidence:
+                        formData.confidence === value ? undefined : value,
+                    })
+                  }
+                  style={[
+                    styles.confidenceChip,
+                    isSelected && styles.confidenceChipSelected,
+                  ]}
+                  textStyle={[
+                    styles.confidenceChipText,
+                    isSelected && styles.confidenceChipTextSelected,
+                  ]}
+                  compact
+                >
+                  {value}
+                </Chip>
+              );
+            })}
           </View>
         </View>
       </SectionCard>
@@ -397,5 +406,15 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     confidenceChipText: {
       textAlign: 'center',
       flexGrow: 1,
+      color: theme.colors.textSecondary,
+      fontSize: 13,
+    },
+    confidenceChipSelected: {
+      backgroundColor: theme.colors.surfaceVariant,
+      borderColor: theme.colors.outline,
+    },
+    confidenceChipTextSelected: {
+      color: theme.colors.onSurface,
+      fontWeight: '500',
     },
   });

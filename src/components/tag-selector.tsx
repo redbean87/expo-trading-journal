@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Text, Portal, Dialog, TextInput } from 'react-native-paper';
 
 import { Button } from './button';
@@ -79,7 +79,6 @@ export function TagSelector({
     setNewTagLabel('');
     setDialogVisible(false);
 
-    // Auto-select the newly created tag
     if (mode === 'single') {
       onChange(trimmed);
     } else {
@@ -123,27 +122,33 @@ export function TagSelector({
         </Text>
 
         <View style={styles.chipGrid}>
-          {tags.map((tag) => (
-            <Pressable
-              key={tag.id}
-              onLongPress={() => handleLongPress(tag.id)}
-              delayLongPress={500}
-            >
-              <Chip
-                selected={selected.has(tag.label)}
-                onPress={() => handleToggle(tag.label)}
-                style={styles.chip}
-                compact
-              >
-                {tag.label}
-              </Chip>
-            </Pressable>
-          ))}
+          {tags.map((tag) => {
+            const isSelected = selected.has(tag.label);
+            return (
+              <View key={tag.id} style={styles.chipWrapper}>
+                <Chip
+                  selected={isSelected}
+                  onPress={() => handleToggle(tag.label)}
+                  onLongPress={() => handleLongPress(tag.id)}
+                  delayLongPress={500}
+                  style={[styles.chip, isSelected && styles.chipSelected]}
+                  textStyle={[
+                    styles.chipText,
+                    isSelected && styles.chipTextSelected,
+                  ]}
+                  compact
+                >
+                  {tag.label}
+                </Chip>
+              </View>
+            );
+          })}
 
           {allowCustom && (
             <Chip
               onPress={() => setDialogVisible(true)}
               style={[styles.chip, styles.addChip]}
+              textStyle={styles.chipText}
               compact
               icon="plus"
             >
@@ -237,24 +242,37 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       marginBottom: theme.spacing.sm,
       opacity: 0.7,
     },
-    count: {
-      opacity: 0.5,
-    },
     chipGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
       gap: theme.spacing.sm,
     },
+    chipWrapper: {
+      // Ensures consistent spacing
+    },
     chip: {
       marginBottom: theme.spacing.xs,
+      borderRadius: theme.borderRadius.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      backgroundColor: theme.colors.surface,
+    },
+    chipSelected: {
+      backgroundColor: theme.colors.surfaceVariant,
+      borderColor: theme.colors.outline,
+    },
+    chipText: {
+      fontSize: 13,
+      lineHeight: 18,
+      color: theme.colors.textSecondary,
+    },
+    chipTextSelected: {
+      color: theme.colors.onSurface,
+      fontWeight: '500',
     },
     addChip: {
       borderStyle: 'dashed',
-    },
-    warning: {
-      marginTop: theme.spacing.sm,
-      color: theme.colors.primary,
-      fontStyle: 'italic',
+      borderColor: theme.colors.textSecondary,
     },
     dialog: {
       maxWidth: 400,
