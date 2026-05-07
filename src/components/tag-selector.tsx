@@ -259,7 +259,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     chipSelected: {
       backgroundColor: theme.colors.surfaceVariant,
-      borderColor: theme.colors.outline,
+      borderColor: theme.colors.primaryContainer,
     },
     chipText: {
       fontSize: 13,

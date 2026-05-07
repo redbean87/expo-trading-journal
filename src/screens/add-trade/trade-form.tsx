@@ -13,7 +13,7 @@ import { WhatWorkedSelector } from './what-worked-selector';
 import { Chip } from '../../components/chip';
 import { DateTimeInput } from '../../components/date-time-input';
 import { SectionCard } from '../../components/section-card';
-import { SegmentedButtons } from '../../components/segmented-buttons';
+import { ToggleButtons } from '../../components/toggle-buttons';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useFormNavigation } from '../../hooks/use-form-navigation';
 import { useProfileStore } from '../../store/profile-store';
@@ -124,7 +124,7 @@ export function TradeForm({
           onSubmitEditing={() => handleSubmitEditing('symbol')}
         />
 
-        <SegmentedButtons
+        <ToggleButtons
           value={formData.side}
           onValueChange={(value) =>
             onUpdate({ side: value as 'long' | 'short' })
@@ -133,7 +133,6 @@ export function TradeForm({
             { value: 'long', label: 'Long' },
             { value: 'short', label: 'Short' },
           ]}
-          style={styles.segmentedButtons}
         />
 
         <View style={styles.row}>
@@ -215,14 +214,13 @@ export function TradeForm({
           onChange={(date) => onUpdate({ exitTime: date })}
         />
 
-        <SegmentedButtons
+        <ToggleButtons
           value={riskMode}
           onValueChange={(value) => handleRiskModeChange(value as RiskMode)}
           buttons={[
             { value: '$', label: 'Flat $' },
             { value: '%', label: '% of Position' },
           ]}
-          style={styles.segmentedButtons}
         />
 
         {riskMode === '$' ? (
@@ -381,9 +379,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     halfInput: {
       flex: 1,
     },
-    segmentedButtons: {
-      marginBottom: theme.spacing.lg,
-    },
+
     riskHelper: {
       marginTop: -theme.spacing.md,
       marginBottom: theme.spacing.sm,
@@ -411,7 +407,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     confidenceChipSelected: {
       backgroundColor: theme.colors.surfaceVariant,
-      borderColor: theme.colors.outline,
+      borderColor: theme.colors.primaryContainer,
     },
     confidenceChipTextSelected: {
       color: theme.colors.onSurface,
