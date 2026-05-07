@@ -27,9 +27,6 @@ const FORM_FIELDS = [
   'fees',
   'commissions',
   'riskAmount',
-  'marketCondition',
-  'whatWorked',
-  'whatFailed',
   'notes',
 ] as const;
 
@@ -113,7 +110,7 @@ export function TradeForm({
 
   return (
     <>
-      <SectionCard title="Position Details">
+      <SectionCard title="Trade Basics">
         <TextInput
           ref={createRef('symbol')}
           label="Symbol"
@@ -205,13 +202,7 @@ export function TradeForm({
             onSubmitEditing={() => handleSubmitEditing('commissions')}
           />
         </View>
-      </SectionCard>
 
-      {formData.entryPrice && formData.exitPrice && formData.quantity && (
-        <PnlPreviewCard pnl={pnl} pnlPercent={pnlPercent} />
-      )}
-
-      <SectionCard title="Timing">
         <DateTimeInput
           label="Entry Time"
           value={formData.entryTime}
@@ -223,9 +214,7 @@ export function TradeForm({
           value={formData.exitTime}
           onChange={(date) => onUpdate({ exitTime: date })}
         />
-      </SectionCard>
 
-      <SectionCard title="Risk">
         <SegmentedButtons
           value={riskMode}
           onValueChange={(value) => handleRiskModeChange(value as RiskMode)}
@@ -278,7 +267,11 @@ export function TradeForm({
         </HelperText>
       </SectionCard>
 
-      <SectionCard title="Trade Setup">
+      {formData.entryPrice && formData.exitPrice && formData.quantity && (
+        <PnlPreviewCard pnl={pnl} pnlPercent={pnlPercent} />
+      )}
+
+      <SectionCard title="Setup Context">
         <StrategySelector
           value={formData.strategy}
           onSelect={(text) => onUpdate({ strategy: text || undefined })}
@@ -295,9 +288,7 @@ export function TradeForm({
           value={formData.htfContext}
           onSelect={(context) => onUpdate({ htfContext: context || undefined })}
         />
-      </SectionCard>
 
-      <SectionCard title="Performance">
         <View style={styles.confidenceContainer}>
           <Text variant="bodyMedium" style={styles.confidenceLabel}>
             Confidence (Optional)
@@ -322,14 +313,14 @@ export function TradeForm({
             ))}
           </View>
         </View>
-
-        <PsychologySelector
-          value={formData.psychology}
-          onChange={(text) => onUpdate({ psychology: text || undefined })}
-        />
       </SectionCard>
 
-      <SectionCard title="Review">
+      <SectionCard title="Trade Management">
+        <MistakeCategorySelector
+          value={formData.ruleViolation}
+          onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
+        />
+
         <WhatWorkedSelector
           value={formData.whatWorked}
           onChange={(text) => onUpdate({ whatWorked: text || undefined })}
@@ -339,14 +330,16 @@ export function TradeForm({
           value={formData.whatFailed}
           onChange={(text) => onUpdate({ whatFailed: text || undefined })}
         />
+      </SectionCard>
 
-        <MistakeCategorySelector
-          value={formData.ruleViolation}
-          onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
+      <SectionCard title="Psychology">
+        <PsychologySelector
+          value={formData.psychology}
+          onChange={(text) => onUpdate({ psychology: text || undefined })}
         />
       </SectionCard>
 
-      <SectionCard title="Notes">
+      <SectionCard title="Reflection">
         <TextInput
           ref={createRef('notes')}
           label="Notes (Optional)"

@@ -18,22 +18,22 @@ export const tradeSchema = z.object({
   side: tradeSideSchema,
   fees: z.number().min(0).optional(),
   commissions: z.number().min(0).optional(),
+  riskAmount: z.number().positive().optional(),
   strategy: z.string().max(50).optional(),
-  notes: z.string().max(500).optional(),
-  psychology: z.string().max(200).optional(),
-  whatWorked: z.string().max(500).optional(),
-  whatFailed: z.string().max(500).optional(),
+  marketCondition: z.string().max(50).optional(),
+  htfContext: z.string().max(50).optional(),
   confidence: z.number().min(1).max(5).optional(),
   ruleViolation: z.string().max(200).optional(),
+  whatWorked: z.string().max(500).optional(),
+  whatFailed: z.string().max(500).optional(),
+  psychology: z.string().max(200).optional(),
+  notes: z.string().max(500).optional(),
   pnl: z.number(),
   pnlPercent: z.number(),
   importedFrom: z.enum(['cash-balance', 'trade-history']).optional(),
   importId: z.string().optional(),
   orderType: z.string().optional(),
   accountBalanceAfter: z.number().optional(),
-  riskAmount: z.number().positive().optional(),
-  marketCondition: z.string().max(50).optional(),
-  htfContext: z.string().max(50).optional(),
 });
 
 export const tradeFormSchema = z
@@ -63,31 +63,6 @@ export const tradeFormSchema = z
     entryTime: z.coerce.date(),
     exitTime: z.coerce.date(),
     side: tradeSideSchema,
-    strategy: z
-      .string()
-      .max(50, 'Strategy must be 50 characters or less')
-      .optional(),
-    notes: z
-      .string()
-      .max(500, 'Notes must be 500 characters or less')
-      .optional(),
-    psychology: z
-      .string()
-      .max(200, 'Psychology must be 200 characters or less')
-      .optional(),
-    whatWorked: z
-      .string()
-      .max(500, 'What worked must be 500 characters or less')
-      .optional(),
-    whatFailed: z
-      .string()
-      .max(500, 'What failed must be 500 characters or less')
-      .optional(),
-    confidence: z.number().min(1).max(5).optional(),
-    ruleViolation: z
-      .string()
-      .max(200, 'Rule violation must be 200 characters or less')
-      .optional(),
     fees: z
       .string()
       .refine(
@@ -118,6 +93,10 @@ export const tradeFormSchema = z
         { message: 'Risk amount must be a positive number' }
       )
       .optional(),
+    strategy: z
+      .string()
+      .max(50, 'Strategy must be 50 characters or less')
+      .optional(),
     marketCondition: z
       .string()
       .max(50, 'Market condition must be 50 characters or less')
@@ -125,6 +104,27 @@ export const tradeFormSchema = z
     htfContext: z
       .string()
       .max(50, 'HTF context must be 50 characters or less')
+      .optional(),
+    confidence: z.number().min(1).max(5).optional(),
+    ruleViolation: z
+      .string()
+      .max(200, 'Rule violation must be 200 characters or less')
+      .optional(),
+    whatWorked: z
+      .string()
+      .max(500, 'What worked must be 500 characters or less')
+      .optional(),
+    whatFailed: z
+      .string()
+      .max(500, 'What failed must be 500 characters or less')
+      .optional(),
+    psychology: z
+      .string()
+      .max(200, 'Psychology must be 200 characters or less')
+      .optional(),
+    notes: z
+      .string()
+      .max(500, 'Notes must be 500 characters or less')
       .optional(),
   })
   .refine((data) => data.exitTime >= data.entryTime, {
@@ -208,17 +208,17 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     side: formData.side,
     fees,
     commissions,
-    strategy: formData.strategy,
-    notes: formData.notes,
-    psychology: formData.psychology,
-    whatWorked: formData.whatWorked,
-    whatFailed: formData.whatFailed,
-    confidence: formData.confidence,
-    ruleViolation: formData.ruleViolation,
     riskAmount,
-    pnl,
-    pnlPercent,
+    strategy: formData.strategy,
     marketCondition: formData.marketCondition,
     htfContext: formData.htfContext,
+    confidence: formData.confidence,
+    ruleViolation: formData.ruleViolation,
+    whatWorked: formData.whatWorked,
+    whatFailed: formData.whatFailed,
+    psychology: formData.psychology,
+    notes: formData.notes,
+    pnl,
+    pnlPercent,
   };
 }

@@ -116,7 +116,7 @@ export function TradeDetailContent({
             </View>
           </View>
 
-          <SectionCard title="Position Details">
+          <SectionCard title="Trade Basics">
             <DetailRow label="Quantity" value={`${trade.quantity} shares`} />
             <DetailRow
               label="Entry Price"
@@ -135,6 +135,14 @@ export function TradeDetailContent({
                 value={`$${trade.commissions.toFixed(2)}`}
               />
             )}
+            <DetailRow label="Entry" value={formatDateTime(trade.entryTime)} />
+            <DetailRow label="Exit" value={formatDateTime(trade.exitTime)} />
+            {trade.riskAmount !== undefined && trade.riskAmount > 0 && (
+              <DetailRow
+                label="Risk Amount"
+                value={`$${trade.riskAmount.toFixed(2)}`}
+              />
+            )}
             {trade.orderType && (
               <DetailRow label="Order Type" value={trade.orderType} />
             )}
@@ -146,13 +154,11 @@ export function TradeDetailContent({
             )}
           </SectionCard>
 
-          <SectionCard title="Timing">
-            <DetailRow label="Entry" value={formatDateTime(trade.entryTime)} />
-            <DetailRow label="Exit" value={formatDateTime(trade.exitTime)} />
-          </SectionCard>
-
-          {(trade.strategy || trade.marketCondition || trade.htfContext) && (
-            <SectionCard title="Trade Setup">
+          {(trade.strategy ||
+            trade.marketCondition ||
+            trade.htfContext ||
+            trade.confidence !== undefined) && (
+            <SectionCard title="Setup Context">
               {trade.strategy && (
                 <DetailRow label="Strategy" value={trade.strategy} />
               )}
@@ -165,46 +171,14 @@ export function TradeDetailContent({
               {trade.htfContext && (
                 <DetailRow label="HTF Context" value={trade.htfContext} />
               )}
-            </SectionCard>
-          )}
-
-          {(trade.confidence !== undefined || trade.psychology) && (
-            <SectionCard title="Performance">
               {trade.confidence !== undefined && (
                 <DetailRow label="Confidence" value={`${trade.confidence}/5`} />
               )}
-              {trade.psychology && (
-                <DetailRow
-                  label="Psychology"
-                  value={trade.psychology
-                    .split(',')
-                    .map((t) => t.trim())
-                    .join(', ')}
-                />
-              )}
             </SectionCard>
           )}
 
-          {(trade.whatWorked || trade.whatFailed || trade.ruleViolation) && (
-            <SectionCard title="Review">
-              {trade.whatWorked && (
-                <DetailRow
-                  label="What Worked"
-                  value={trade.whatWorked
-                    .split(',')
-                    .map((t) => t.trim())
-                    .join(', ')}
-                />
-              )}
-              {trade.whatFailed && (
-                <DetailRow
-                  label="What Didn't Work"
-                  value={trade.whatFailed
-                    .split(',')
-                    .map((t) => t.trim())
-                    .join(', ')}
-                />
-              )}
+          {(trade.ruleViolation || trade.whatWorked || trade.whatFailed) && (
+            <SectionCard title="Trade Management">
               {trade.ruleViolation && (
                 <View style={styles.mistakeRow}>
                   <Text
@@ -228,11 +202,40 @@ export function TradeDetailContent({
                   </View>
                 </View>
               )}
+              {trade.whatWorked && (
+                <DetailRow
+                  label="What Worked"
+                  value={trade.whatWorked
+                    .split(',')
+                    .map((t) => t.trim())
+                    .join(', ')}
+                />
+              )}
+              {trade.whatFailed && (
+                <DetailRow
+                  label="What Didn't Work"
+                  value={trade.whatFailed
+                    .split(',')
+                    .map((t) => t.trim())
+                    .join(', ')}
+                />
+              )}
+            </SectionCard>
+          )}
+
+          {trade.psychology && (
+            <SectionCard title="Psychology">
+              <LinkedText variant="bodyLarge" style={styles.notes}>
+                {trade.psychology
+                  .split(',')
+                  .map((t) => t.trim())
+                  .join(', ')}
+              </LinkedText>
             </SectionCard>
           )}
 
           {trade.notes && (
-            <SectionCard title="Notes">
+            <SectionCard title="Reflection">
               <LinkedText variant="bodyLarge" style={styles.notes}>
                 {trade.notes}
               </LinkedText>
@@ -371,7 +374,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       lineHeight: theme.spacing.lg + theme.spacing.sm,
     },
     mistakeChip: {
-      alignSelf: 'flex-start',
       backgroundColor: withAlpha(theme.colors.loss, 0.12),
     },
     mistakeRow: {
