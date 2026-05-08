@@ -425,7 +425,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.sm,
-      marginTop: -theme.spacing.md,
+      marginTop: theme.spacing.xs,
       marginBottom: theme.spacing.sm,
     },
     modeSwitchText: {
