@@ -10,6 +10,7 @@ import { PsychologySelector } from './psychology-selector';
 import { StrategySelector } from './strategy-selector';
 import { WhatFailedSelector } from './what-failed-selector';
 import { WhatWorkedSelector } from './what-worked-selector';
+import { Button } from '../../components/button';
 import { Chip } from '../../components/chip';
 import { DateTimeInput } from '../../components/date-time-input';
 import { SectionCard } from '../../components/section-card';
@@ -214,38 +215,50 @@ export function TradeForm({
           onChange={(date) => onUpdate({ exitTime: date })}
         />
 
-        <ToggleButtons
-          value={riskMode}
-          onValueChange={(value) => handleRiskModeChange(value as RiskMode)}
-          buttons={[
-            { value: '$', label: 'Flat $' },
-            { value: '%', label: '% of Position' },
-          ]}
-        />
+        <View style={styles.row}>
+          {riskMode === '$' ? (
+            <TextInput
+              ref={createRef('riskAmount')}
+              label="Risk $ (Optional)"
+              value={formData.riskAmount}
+              onChangeText={(text) => onUpdate({ riskAmount: text })}
+              mode="outlined"
+              keyboardType="decimal-pad"
+              style={[styles.input, styles.flexInput]}
+              returnKeyType={getReturnKeyType('riskAmount')}
+              blurOnSubmit={getBlurOnSubmit('riskAmount')}
+              onSubmitEditing={() => handleSubmitEditing('riskAmount')}
+            />
+          ) : (
+            <TextInput
+              label="Risk % (Optional)"
+              value={riskPctStr}
+              onChangeText={handleRiskPctChange}
+              mode="outlined"
+              keyboardType="decimal-pad"
+              style={[styles.input, styles.flexInput]}
+            />
+          )}
 
-        {riskMode === '$' ? (
-          <TextInput
-            ref={createRef('riskAmount')}
-            label="Risk $ (Optional)"
-            value={formData.riskAmount}
-            onChangeText={(text) => onUpdate({ riskAmount: text })}
-            mode="outlined"
-            keyboardType="decimal-pad"
-            style={styles.input}
-            returnKeyType={getReturnKeyType('riskAmount')}
-            blurOnSubmit={getBlurOnSubmit('riskAmount')}
-            onSubmitEditing={() => handleSubmitEditing('riskAmount')}
-          />
-        ) : (
-          <TextInput
-            label="Risk % (Optional)"
-            value={riskPctStr}
-            onChangeText={handleRiskPctChange}
-            mode="outlined"
-            keyboardType="decimal-pad"
-            style={styles.input}
-          />
-        )}
+          <View style={styles.miniToggle}>
+            <Button
+              mode={riskMode === '$' ? 'contained' : 'outlined'}
+              onPress={() => handleRiskModeChange('$')}
+              style={styles.miniToggleButton}
+              labelStyle={styles.miniToggleText}
+            >
+              $
+            </Button>
+            <Button
+              mode={riskMode === '%' ? 'contained' : 'outlined'}
+              onPress={() => handleRiskModeChange('%')}
+              style={styles.miniToggleButton}
+              labelStyle={styles.miniToggleText}
+            >
+              %
+            </Button>
+          </View>
+        </View>
 
         {formData.riskAmount ? (
           <HelperText type="info" style={styles.riskHelper}>
@@ -412,5 +425,23 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     confidenceChipTextSelected: {
       color: theme.colors.onSurface,
       fontWeight: '500',
+    },
+    flexInput: {
+      flex: 1,
+    },
+    miniToggle: {
+      flexDirection: 'row',
+      gap: theme.spacing.xs,
+      alignItems: 'flex-start',
+      paddingTop: theme.spacing.sm,
+    },
+    miniToggleButton: {
+      minWidth: 44,
+      paddingHorizontal: 4,
+      borderRadius: theme.spacing.sm,
+    },
+    miniToggleText: {
+      fontSize: 14,
+      fontWeight: '600',
     },
   });
