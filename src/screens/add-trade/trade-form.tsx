@@ -447,15 +447,17 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       alignItems: 'center',
     },
     miniToggleButton: {
-      minWidth: 44,
-      paddingHorizontal: 4,
+      minWidth: 56,
+      height: 56,
+      justifyContent: 'center',
+      paddingHorizontal: theme.spacing.sm,
       borderRadius: theme.spacing.sm,
     },
     miniToggleButtonActive: {
       backgroundColor: theme.colors.primaryContainer,
     },
     miniToggleText: {
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: '600',
     },
     miniToggleTextActive: {
