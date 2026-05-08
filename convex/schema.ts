@@ -53,6 +53,7 @@ const schema = defineSchema({
     riskAmount: v.optional(v.number()),
     marketCondition: v.optional(v.string()),
     htfContext: v.optional(v.string()),
+    structureBreakBeforeExit: v.optional(v.boolean()),
   })
     .index('by_user', ['userId']) // Index for efficient user queries
     .index('by_user_and_entry_time', ['userId', 'entryTime']) // Index for sorted queries

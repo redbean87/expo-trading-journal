@@ -46,6 +46,7 @@ export const getTrades = query({
       riskAmount: trade.riskAmount,
       marketCondition: trade.marketCondition,
       htfContext: trade.htfContext,
+      structureBreakBeforeExit: trade.structureBreakBeforeExit,
     }));
   },
 });
@@ -104,6 +105,7 @@ export const getTradesInRange = query({
       riskAmount: trade.riskAmount,
       marketCondition: trade.marketCondition,
       htfContext: trade.htfContext,
+      structureBreakBeforeExit: trade.structureBreakBeforeExit,
     }));
   },
 });
@@ -158,6 +160,7 @@ export const getTrade = query({
       riskAmount: trade.riskAmount,
       marketCondition: trade.marketCondition,
       htfContext: trade.htfContext,
+      structureBreakBeforeExit: trade.structureBreakBeforeExit,
     };
   },
 });
@@ -191,6 +194,7 @@ export const addTrade = mutation({
     riskAmount: v.optional(v.number()),
     marketCondition: v.optional(v.string()),
     htfContext: v.optional(v.string()),
+    structureBreakBeforeExit: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -225,6 +229,7 @@ export const addTrade = mutation({
       riskAmount: args.riskAmount,
       marketCondition: args.marketCondition,
       htfContext: args.htfContext,
+      structureBreakBeforeExit: args.structureBreakBeforeExit,
     });
 
     return {
@@ -262,6 +267,7 @@ export const updateTrade = mutation({
     riskAmount: v.optional(v.number()),
     marketCondition: v.optional(v.string()),
     htfContext: v.optional(v.string()),
+    structureBreakBeforeExit: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -311,6 +317,7 @@ export const updateTrade = mutation({
       riskAmount: updatedTrade!.riskAmount,
       marketCondition: updatedTrade!.marketCondition,
       htfContext: updatedTrade!.htfContext,
+      structureBreakBeforeExit: updatedTrade!.structureBreakBeforeExit,
     };
   },
 });
@@ -418,6 +425,7 @@ export const importTrades = mutation({
         riskAmount: v.optional(v.number()),
         marketCondition: v.optional(v.string()),
         htfContext: v.optional(v.string()),
+        structureBreakBeforeExit: v.optional(v.boolean()),
       })
     ),
   },

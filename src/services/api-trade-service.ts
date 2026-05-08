@@ -38,6 +38,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
         orderType: trade.orderType,
         accountBalanceAfter: trade.accountBalanceAfter,
         htfContext: trade.htfContext,
+        structureBreakBeforeExit: trade.structureBreakBeforeExit,
       })) ?? []
     );
   },
@@ -68,6 +69,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       accountBalanceAfter: trade.accountBalanceAfter,
       riskAmount: trade.riskAmount,
       htfContext: trade.htfContext,
+      structureBreakBeforeExit: trade.structureBreakBeforeExit,
     });
 
     return {
@@ -101,6 +103,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       accountBalanceAfter: updates.accountBalanceAfter,
       riskAmount: updates.riskAmount,
       htfContext: updates.htfContext,
+      structureBreakBeforeExit: updates.structureBreakBeforeExit,
     });
 
     return {
@@ -127,6 +130,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       orderType: result.orderType,
       accountBalanceAfter: result.accountBalanceAfter,
       htfContext: result.htfContext,
+      structureBreakBeforeExit: result.structureBreakBeforeExit,
     };
   },
 
@@ -168,6 +172,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
         orderType: trade.orderType,
         accountBalanceAfter: trade.accountBalanceAfter,
         htfContext: trade.htfContext,
+        structureBreakBeforeExit: trade.structureBreakBeforeExit,
       })),
     });
 

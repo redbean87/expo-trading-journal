@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { TextInput, Text, HelperText } from 'react-native-paper';
+import { TextInput, Text, HelperText, Switch } from 'react-native-paper';
 
 import { HtfContextSelector } from './htf-context-selector';
 import { MarketConditionSelector } from './market-condition-selector';
@@ -302,6 +302,18 @@ export function TradeForm({
           onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
         />
 
+        <View style={styles.structureBreakRow}>
+          <Text variant="bodySmall" style={styles.structureBreakLabel}>
+            Structure broke before exit
+          </Text>
+          <Switch
+            value={formData.structureBreakBeforeExit ?? false}
+            onValueChange={(value) =>
+              onUpdate({ structureBreakBeforeExit: value })
+            }
+          />
+        </View>
+
         <WhatWorkedSelector
           value={formData.whatWorked}
           onChange={(text) => onUpdate({ whatWorked: text || undefined })}
@@ -436,5 +448,15 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     modeSwitchLink: {
       color: theme.colors.primary,
+    },
+    structureBreakRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: theme.spacing.md,
+      marginBottom: theme.spacing.lg,
+    },
+    structureBreakLabel: {
+      opacity: 0.7,
     },
   });

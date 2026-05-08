@@ -18,16 +18,21 @@ The app has a solid foundation with:
 
 ### High Priority
 
-- [ ] **Pre-Trade Checklist** - 4 binary questions before trade entry
-  - Setup from approved strategy list?
-  - Clear confirmation for entry?
-  - Risk clearly defined?
-  - HTF context supports the trade?
-  - Stored per-trade, displayed in form and detail view
-
 - [ ] **Structure Break Before Exit** - Boolean field to track if price structure broke before trade exit
   - Helps distinguish emotional exits vs technically justified exits
   - Display in Trade Management section
+
+### Needs Design Review
+
+- [ ] **Pre-Trade Checklist** - ON HOLD pending workflow analysis
+  - 4 binary questions: approved strategy, clear confirmation, risk defined, HTF supports
+  - **Blocker**: Current workflow is post-trade logging (import/manual entry after trade)
+  - Pre-trade questions can't be answered honestly for imported/historical trades
+  - **Options to consider:**
+    1. Retrospective assessment ("Did I have clear confirmation?") — works with any workflow
+    2. Separate pre-trade planning flow — requires new trade planning screen before entry
+    3. Only show checklist for manually entered trades with entry time in future
+  - **Decision needed**: How does this fit with import workflow?
 
 ### Medium Priority
 

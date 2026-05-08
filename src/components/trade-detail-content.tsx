@@ -196,6 +196,12 @@ export function TradeDetailContent({
                   </View>
                 </View>
               )}
+              {trade.structureBreakBeforeExit !== undefined && (
+                <DetailRow
+                  label="Structure Break"
+                  value={trade.structureBreakBeforeExit ? 'Yes' : 'No'}
+                />
+              )}
               {trade.whatWorked && (
                 <DetailRow
                   label="What Worked"

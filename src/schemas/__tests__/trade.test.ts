@@ -99,6 +99,14 @@ describe('tradeFormSchema', () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it('should accept optional structureBreakBeforeExit boolean', () => {
+    const result = tradeFormSchema.safeParse({
+      ...validFormData,
+      structureBreakBeforeExit: true,
+    });
+    expect(result.success).toBe(true);
+  });
 });
 
 describe('tradeSchema', () => {

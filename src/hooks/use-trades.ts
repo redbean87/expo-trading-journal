@@ -33,6 +33,7 @@ type BackendTrade = {
   riskAmount?: number;
   marketCondition?: string;
   htfContext?: string;
+  structureBreakBeforeExit?: boolean;
 };
 
 function mapToTrade(trade: BackendTrade): Trade {
