@@ -244,16 +244,28 @@ export function TradeForm({
             <Button
               mode={riskMode === '$' ? 'contained' : 'outlined'}
               onPress={() => handleRiskModeChange('$')}
-              style={styles.miniToggleButton}
-              labelStyle={styles.miniToggleText}
+              style={[
+                styles.miniToggleButton,
+                riskMode === '$' && styles.miniToggleButtonActive,
+              ]}
+              labelStyle={[
+                styles.miniToggleText,
+                riskMode === '$' && styles.miniToggleTextActive,
+              ]}
             >
               $
             </Button>
             <Button
               mode={riskMode === '%' ? 'contained' : 'outlined'}
               onPress={() => handleRiskModeChange('%')}
-              style={styles.miniToggleButton}
-              labelStyle={styles.miniToggleText}
+              style={[
+                styles.miniToggleButton,
+                riskMode === '%' && styles.miniToggleButtonActive,
+              ]}
+              labelStyle={[
+                styles.miniToggleText,
+                riskMode === '%' && styles.miniToggleTextActive,
+              ]}
             >
               %
             </Button>
@@ -432,16 +444,21 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     miniToggle: {
       flexDirection: 'row',
       gap: theme.spacing.xs,
-      alignItems: 'flex-start',
-      paddingTop: theme.spacing.sm,
+      alignItems: 'center',
     },
     miniToggleButton: {
       minWidth: 44,
       paddingHorizontal: 4,
       borderRadius: theme.spacing.sm,
     },
+    miniToggleButtonActive: {
+      backgroundColor: theme.colors.primaryContainer,
+    },
     miniToggleText: {
       fontSize: 14,
       fontWeight: '600',
+    },
+    miniToggleTextActive: {
+      color: theme.colors.onPrimaryContainer,
     },
   });
