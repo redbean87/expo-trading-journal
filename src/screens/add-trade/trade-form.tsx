@@ -214,12 +214,14 @@ export function TradeForm({
           value={formData.exitTime}
           onChange={(date) => onUpdate({ exitTime: date })}
         />
+      </SectionCard>
 
+      <SectionCard title="Risk">
         <View style={styles.row}>
           {riskMode === '$' ? (
             <TextInput
               ref={createRef('riskAmount')}
-              label="Risk $ (Optional)"
+              label="Risk Amount (Optional)"
               value={formData.riskAmount}
               onChangeText={(text) => onUpdate({ riskAmount: text })}
               mode="outlined"
@@ -231,7 +233,7 @@ export function TradeForm({
             />
           ) : (
             <TextInput
-              label="Risk % (Optional)"
+              label="Risk Percentage (Optional)"
               value={riskPctStr}
               onChangeText={handleRiskPctChange}
               mode="outlined"
