@@ -224,7 +224,7 @@ export function TradeForm({
             onChangeText={(text) => onUpdate({ riskAmount: text })}
             mode="outlined"
             keyboardType="decimal-pad"
-            style={styles.input}
+            style={[styles.input, styles.riskInput]}
             returnKeyType={getReturnKeyType('riskAmount')}
             blurOnSubmit={getBlurOnSubmit('riskAmount')}
             onSubmitEditing={() => handleSubmitEditing('riskAmount')}
@@ -236,7 +236,7 @@ export function TradeForm({
             onChangeText={handleRiskPctChange}
             mode="outlined"
             keyboardType="decimal-pad"
-            style={styles.input}
+            style={[styles.input, styles.riskInput]}
           />
         )}
 
@@ -388,9 +388,13 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flex: 1,
     },
 
-    riskHelper: {
-      marginTop: -theme.spacing.md,
+    riskInput: {
       marginBottom: theme.spacing.sm,
+    },
+    riskHelper: {
+      marginTop: 0,
+      marginBottom: theme.spacing.xs,
+      paddingHorizontal: 0,
     },
     confidenceContainer: {
       marginBottom: theme.spacing.lg,
@@ -425,8 +429,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.sm,
-      marginTop: theme.spacing.xs,
-      marginBottom: theme.spacing.sm,
+      marginTop: 0,
+      marginBottom: theme.spacing.xs,
     },
     modeSwitchText: {
       color: theme.colors.textSecondary,
