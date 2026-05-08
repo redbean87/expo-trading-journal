@@ -98,6 +98,7 @@ export function TradeEditForm({
     marketCondition: trade.marketCondition || '',
     htfContext: trade.htfContext || '',
     confidence: trade.confidence,
+    setupQuality: trade.setupQuality,
     ruleViolation: trade.ruleViolation || '',
     whatWorked: trade.whatWorked || '',
     whatFailed: trade.whatFailed || '',
