@@ -10,7 +10,6 @@ import { PsychologySelector } from './psychology-selector';
 import { StrategySelector } from './strategy-selector';
 import { WhatFailedSelector } from './what-failed-selector';
 import { WhatWorkedSelector } from './what-worked-selector';
-import { Button } from '../../components/button';
 import { Chip } from '../../components/chip';
 import { DateTimeInput } from '../../components/date-time-input';
 import { SectionCard } from '../../components/section-card';
@@ -217,61 +216,43 @@ export function TradeForm({
       </SectionCard>
 
       <SectionCard title="Risk">
-        <View style={styles.row}>
-          {riskMode === '$' ? (
-            <TextInput
-              ref={createRef('riskAmount')}
-              label="Risk Amount (Optional)"
-              value={formData.riskAmount}
-              onChangeText={(text) => onUpdate({ riskAmount: text })}
-              mode="outlined"
-              keyboardType="decimal-pad"
-              style={[styles.input, styles.flexInput]}
-              returnKeyType={getReturnKeyType('riskAmount')}
-              blurOnSubmit={getBlurOnSubmit('riskAmount')}
-              onSubmitEditing={() => handleSubmitEditing('riskAmount')}
-            />
-          ) : (
-            <TextInput
-              label="Risk Percentage (Optional)"
-              value={riskPctStr}
-              onChangeText={handleRiskPctChange}
-              mode="outlined"
-              keyboardType="decimal-pad"
-              style={[styles.input, styles.flexInput]}
-            />
-          )}
+        {riskMode === '$' ? (
+          <TextInput
+            ref={createRef('riskAmount')}
+            label="Amount (Optional)"
+            value={formData.riskAmount}
+            onChangeText={(text) => onUpdate({ riskAmount: text })}
+            mode="outlined"
+            keyboardType="decimal-pad"
+            style={styles.input}
+            returnKeyType={getReturnKeyType('riskAmount')}
+            blurOnSubmit={getBlurOnSubmit('riskAmount')}
+            onSubmitEditing={() => handleSubmitEditing('riskAmount')}
+          />
+        ) : (
+          <TextInput
+            label="Percentage (Optional)"
+            value={riskPctStr}
+            onChangeText={handleRiskPctChange}
+            mode="outlined"
+            keyboardType="decimal-pad"
+            style={styles.input}
+          />
+        )}
 
-          <View style={styles.miniToggle}>
-            <Button
-              mode={riskMode === '$' ? 'contained' : 'outlined'}
-              onPress={() => handleRiskModeChange('$')}
-              style={[
-                styles.miniToggleButton,
-                riskMode === '$' && styles.miniToggleButtonActive,
-              ]}
-              labelStyle={[
-                styles.miniToggleText,
-                riskMode === '$' && styles.miniToggleTextActive,
-              ]}
-            >
-              $
-            </Button>
-            <Button
-              mode={riskMode === '%' ? 'contained' : 'outlined'}
-              onPress={() => handleRiskModeChange('%')}
-              style={[
-                styles.miniToggleButton,
-                riskMode === '%' && styles.miniToggleButtonActive,
-              ]}
-              labelStyle={[
-                styles.miniToggleText,
-                riskMode === '%' && styles.miniToggleTextActive,
-              ]}
-            >
-              %
-            </Button>
-          </View>
+        <View style={styles.modeSwitchRow}>
+          <Text variant="bodySmall" style={styles.modeSwitchText}>
+            {riskMode === '$'
+              ? 'Using flat dollar amount.'
+              : 'Using percentage of position.'}
+          </Text>
+          <Text
+            variant="bodySmall"
+            style={styles.modeSwitchLink}
+            onPress={() => handleRiskModeChange(riskMode === '$' ? '%' : '$')}
+          >
+            {riskMode === '$' ? 'Switch to %' : 'Switch to $'}
+          </Text>
         </View>
 
         {formData.riskAmount ? (
@@ -440,29 +421,17 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       color: theme.colors.onSurface,
       fontWeight: '500',
     },
-    flexInput: {
-      flex: 1,
-    },
-    miniToggle: {
+    modeSwitchRow: {
       flexDirection: 'row',
-      gap: theme.spacing.xs,
       alignItems: 'center',
+      gap: theme.spacing.sm,
+      marginTop: -theme.spacing.md,
+      marginBottom: theme.spacing.sm,
     },
-    miniToggleButton: {
-      minWidth: 56,
-      height: 56,
-      justifyContent: 'center',
-      paddingHorizontal: theme.spacing.sm,
-      borderRadius: theme.spacing.sm,
+    modeSwitchText: {
+      color: theme.colors.textSecondary,
     },
-    miniToggleButtonActive: {
-      backgroundColor: theme.colors.primaryContainer,
-    },
-    miniToggleText: {
-      fontSize: 16,
-      fontWeight: '600',
-    },
-    miniToggleTextActive: {
-      color: theme.colors.onPrimaryContainer,
+    modeSwitchLink: {
+      color: theme.colors.primary,
     },
   });
