@@ -28,11 +28,11 @@ describe('calculateConfidenceAnalytics', () => {
     });
   });
 
-  describe('trades without confidence', () => {
-    it('should count trades without confidence', () => {
+  describe('trades without setup quality', () => {
+    it('should count trades without setup quality', () => {
       const trades = [
-        createTrade({ confidence: undefined }),
-        createTrade({ confidence: undefined }),
+        createTrade({ setupQuality: undefined }),
+        createTrade({ setupQuality: undefined }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
@@ -41,15 +41,15 @@ describe('calculateConfidenceAnalytics', () => {
     });
   });
 
-  describe('confidence level aggregation', () => {
-    it('should aggregate trades by confidence level', () => {
+  describe('setup quality level aggregation', () => {
+    it('should aggregate trades by setup quality level', () => {
       const trades = [
-        createTrade({ confidence: 1, pnl: 50 }),
-        createTrade({ confidence: 1, pnl: -30 }),
-        createTrade({ confidence: 2, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 75 }),
-        createTrade({ confidence: 4, pnl: 200 }),
-        createTrade({ confidence: 5, pnl: 150 }),
+        createTrade({ setupQuality: 1, pnl: 50 }),
+        createTrade({ setupQuality: 1, pnl: -30 }),
+        createTrade({ setupQuality: 2, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 75 }),
+        createTrade({ setupQuality: 4, pnl: 200 }),
+        createTrade({ setupQuality: 5, pnl: 150 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
@@ -61,12 +61,12 @@ describe('calculateConfidenceAnalytics', () => {
       expect(result.byLevel[5].count).toBe(1);
     });
 
-    it('should calculate win rate by confidence level', () => {
+    it('should calculate win rate by setup quality level', () => {
       const trades = [
-        createTrade({ confidence: 3, pnl: 100 }), // win
-        createTrade({ confidence: 3, pnl: 50 }), // win
-        createTrade({ confidence: 3, pnl: -25 }), // loss
-        createTrade({ confidence: 3, pnl: 0 }), // break-even
+        createTrade({ setupQuality: 3, pnl: 100 }), // win
+        createTrade({ setupQuality: 3, pnl: 50 }), // win
+        createTrade({ setupQuality: 3, pnl: -25 }), // loss
+        createTrade({ setupQuality: 3, pnl: 0 }), // break-even
       ];
       const result = calculateConfidenceAnalytics(trades);
 
@@ -76,11 +76,11 @@ describe('calculateConfidenceAnalytics', () => {
       expect(result.byLevel[3].winRate).toBe(50); // 2 wins / 4 total = 50%
     });
 
-    it('should calculate average P&L by confidence level', () => {
+    it('should calculate average P&L by setup quality level', () => {
       const trades = [
-        createTrade({ confidence: 4, pnl: 100 }),
-        createTrade({ confidence: 4, pnl: 200 }),
-        createTrade({ confidence: 4, pnl: -50 }),
+        createTrade({ setupQuality: 4, pnl: 100 }),
+        createTrade({ setupQuality: 4, pnl: 200 }),
+        createTrade({ setupQuality: 4, pnl: -50 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
@@ -92,16 +92,16 @@ describe('calculateConfidenceAnalytics', () => {
     it('should identify best performing level by avg P&L (min 3 trades)', () => {
       const trades = [
         // Level 1: avg = 50 (only 2 trades, not enough)
-        createTrade({ confidence: 1, pnl: 100 }),
-        createTrade({ confidence: 1, pnl: 0 }),
+        createTrade({ setupQuality: 1, pnl: 100 }),
+        createTrade({ setupQuality: 1, pnl: 0 }),
         // Level 3: avg = 100 (3 trades, eligible)
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
         // Level 5: avg = -100 (3 trades, eligible)
-        createTrade({ confidence: 5, pnl: -100 }),
-        createTrade({ confidence: 5, pnl: -100 }),
-        createTrade({ confidence: 5, pnl: -100 }),
+        createTrade({ setupQuality: 5, pnl: -100 }),
+        createTrade({ setupQuality: 5, pnl: -100 }),
+        createTrade({ setupQuality: 5, pnl: -100 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
@@ -111,9 +111,9 @@ describe('calculateConfidenceAnalytics', () => {
 
     it('should return null for best/worst when no level has 3+ trades', () => {
       const trades = [
-        createTrade({ confidence: 1, pnl: 100 }),
-        createTrade({ confidence: 2, pnl: 200 }),
-        createTrade({ confidence: 3, pnl: 50 }),
+        createTrade({ setupQuality: 1, pnl: 100 }),
+        createTrade({ setupQuality: 2, pnl: 200 }),
+        createTrade({ setupQuality: 3, pnl: 50 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
@@ -123,25 +123,25 @@ describe('calculateConfidenceAnalytics', () => {
   });
 
   describe('overconfidence detection', () => {
-    it('should detect overconfidence when high confidence underperforms', () => {
-      // High confidence (4-5) has low win rate compared to mid (level 3)
+    it('should detect overconfidence when high setup quality underperforms', () => {
+      // High setup quality (4-5) has low win rate compared to mid (level 3)
       const trades = [
         // Level 3: 80% win rate
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: -100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: -100 }),
         // Level 4: 25% win rate
-        createTrade({ confidence: 4, pnl: 100 }),
-        createTrade({ confidence: 4, pnl: -100 }),
-        createTrade({ confidence: 4, pnl: -100 }),
-        createTrade({ confidence: 4, pnl: -100 }),
+        createTrade({ setupQuality: 4, pnl: 100 }),
+        createTrade({ setupQuality: 4, pnl: -100 }),
+        createTrade({ setupQuality: 4, pnl: -100 }),
+        createTrade({ setupQuality: 4, pnl: -100 }),
         // Level 5: 25% win rate
-        createTrade({ confidence: 5, pnl: 100 }),
-        createTrade({ confidence: 5, pnl: -100 }),
-        createTrade({ confidence: 5, pnl: -100 }),
-        createTrade({ confidence: 5, pnl: -100 }),
+        createTrade({ setupQuality: 5, pnl: 100 }),
+        createTrade({ setupQuality: 5, pnl: -100 }),
+        createTrade({ setupQuality: 5, pnl: -100 }),
+        createTrade({ setupQuality: 5, pnl: -100 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
@@ -152,33 +152,33 @@ describe('calculateConfidenceAnalytics', () => {
       expect(result.overconfidenceDetected).toBe(true);
     });
 
-    it('should not detect overconfidence when high confidence performs well', () => {
+    it('should not detect overconfidence when high setup quality performs well', () => {
       const trades = [
         // Level 3: 60% win rate
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: -100 }),
-        createTrade({ confidence: 3, pnl: -100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: -100 }),
+        createTrade({ setupQuality: 3, pnl: -100 }),
         // Level 4: 80% win rate
-        createTrade({ confidence: 4, pnl: 100 }),
-        createTrade({ confidence: 4, pnl: 100 }),
-        createTrade({ confidence: 4, pnl: 100 }),
-        createTrade({ confidence: 4, pnl: 100 }),
-        createTrade({ confidence: 4, pnl: -100 }),
+        createTrade({ setupQuality: 4, pnl: 100 }),
+        createTrade({ setupQuality: 4, pnl: 100 }),
+        createTrade({ setupQuality: 4, pnl: 100 }),
+        createTrade({ setupQuality: 4, pnl: 100 }),
+        createTrade({ setupQuality: 4, pnl: -100 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
       expect(result.overconfidenceDetected).toBe(false);
     });
 
-    it('should require at least 5 high-confidence trades to detect overconfidence', () => {
+    it('should require at least 5 high-setup-quality trades to detect overconfidence', () => {
       const trades = [
-        // Only 4 high confidence trades (need 5)
-        createTrade({ confidence: 4, pnl: 100 }),
-        createTrade({ confidence: 4, pnl: -100 }),
-        createTrade({ confidence: 5, pnl: 100 }),
-        createTrade({ confidence: 5, pnl: -100 }),
+        // Only 4 high setup quality trades (need 5)
+        createTrade({ setupQuality: 4, pnl: 100 }),
+        createTrade({ setupQuality: 4, pnl: -100 }),
+        createTrade({ setupQuality: 5, pnl: 100 }),
+        createTrade({ setupQuality: 5, pnl: -100 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
@@ -187,67 +187,67 @@ describe('calculateConfidenceAnalytics', () => {
   });
 
   describe('insights', () => {
-    it('should provide insight for empty confidence data', () => {
+    it('should provide insight for empty setup quality data', () => {
       const result = calculateConfidenceAnalytics([]);
 
-      expect(result.insight).toContain('Start recording confidence levels');
+      expect(result.insight).toContain('Start recording setup quality ratings');
     });
 
-    it('should provide insight when higher confidence correlates with better results', () => {
+    it('should provide insight when higher setup quality correlates with better results', () => {
       const trades = [
         // Level 1: negative avg
-        createTrade({ confidence: 1, pnl: -50 }),
-        createTrade({ confidence: 1, pnl: -50 }),
-        createTrade({ confidence: 1, pnl: -50 }),
+        createTrade({ setupQuality: 1, pnl: -50 }),
+        createTrade({ setupQuality: 1, pnl: -50 }),
+        createTrade({ setupQuality: 1, pnl: -50 }),
         // Level 5: positive avg
-        createTrade({ confidence: 5, pnl: 100 }),
-        createTrade({ confidence: 5, pnl: 100 }),
-        createTrade({ confidence: 5, pnl: 100 }),
+        createTrade({ setupQuality: 5, pnl: 100 }),
+        createTrade({ setupQuality: 5, pnl: 100 }),
+        createTrade({ setupQuality: 5, pnl: 100 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
       expect(result.bestPerformingLevel).toBe(5);
       expect(result.worstPerformingLevel).toBe(1);
       expect(result.insight).toContain(
-        'Higher confidence correlates with better results'
+        'Higher quality setups correlate with better results'
       );
     });
 
-    it('should provide insight when lower confidence correlates with better results', () => {
+    it('should provide insight when lower setup quality correlates with better results', () => {
       const trades = [
         // Level 1: positive avg
-        createTrade({ confidence: 1, pnl: 100 }),
-        createTrade({ confidence: 1, pnl: 100 }),
-        createTrade({ confidence: 1, pnl: 100 }),
+        createTrade({ setupQuality: 1, pnl: 100 }),
+        createTrade({ setupQuality: 1, pnl: 100 }),
+        createTrade({ setupQuality: 1, pnl: 100 }),
         // Level 5: negative avg
-        createTrade({ confidence: 5, pnl: -50 }),
-        createTrade({ confidence: 5, pnl: -50 }),
-        createTrade({ confidence: 5, pnl: -50 }),
+        createTrade({ setupQuality: 5, pnl: -50 }),
+        createTrade({ setupQuality: 5, pnl: -50 }),
+        createTrade({ setupQuality: 5, pnl: -50 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
       expect(result.bestPerformingLevel).toBe(1);
       expect(result.worstPerformingLevel).toBe(5);
-      expect(result.insight).toContain('overthinking high-confidence setups');
+      expect(result.insight).toContain('overthinking high-quality setups');
     });
 
     it('should include overconfidence warning in insight when detected', () => {
       const trades = [
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: 100 }),
-        createTrade({ confidence: 3, pnl: -100 }),
-        createTrade({ confidence: 4, pnl: 100 }),
-        createTrade({ confidence: 4, pnl: -100 }),
-        createTrade({ confidence: 4, pnl: -100 }),
-        createTrade({ confidence: 5, pnl: -100 }),
-        createTrade({ confidence: 5, pnl: -100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: 100 }),
+        createTrade({ setupQuality: 3, pnl: -100 }),
+        createTrade({ setupQuality: 4, pnl: 100 }),
+        createTrade({ setupQuality: 4, pnl: -100 }),
+        createTrade({ setupQuality: 4, pnl: -100 }),
+        createTrade({ setupQuality: 5, pnl: -100 }),
+        createTrade({ setupQuality: 5, pnl: -100 }),
       ];
       const result = calculateConfidenceAnalytics(trades);
 
       expect(result.insight).toContain('Warning');
-      expect(result.insight).toContain('High confidence');
+      expect(result.insight).toContain('High setup quality');
     });
   });
 });

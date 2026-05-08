@@ -105,41 +105,50 @@ AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00, long `;
   });
 });
 
-describe('CSV Import - Confidence and Rule Violation', () => {
-  it('should parse confidence value in valid range (1-5)', async () => {
-    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,confidence
+describe('CSV Import - Setup Quality and Rule Violation', () => {
+  it('should parse setupQuality value in valid range (1-5)', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,setupQuality
 AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,4`;
 
     const result = await parseCsvFile(csv);
     expect(result.imported).toHaveLength(1);
-    expect(result.imported[0].confidence).toBe(4);
+    expect(result.imported[0].setupQuality).toBe(4);
   });
 
-  it('should round decimal confidence values', async () => {
-    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,confidence
+  it('should round decimal setupQuality values', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,setupQuality
 AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,3.00`;
 
     const result = await parseCsvFile(csv);
     expect(result.imported).toHaveLength(1);
-    expect(result.imported[0].confidence).toBe(3);
+    expect(result.imported[0].setupQuality).toBe(3);
   });
 
-  it('should ignore confidence values outside 1-5 range', async () => {
-    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,confidence
+  it('should ignore setupQuality values outside 1-5 range', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,setupQuality
 AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,6`;
 
     const result = await parseCsvFile(csv);
     expect(result.imported).toHaveLength(1);
-    expect(result.imported[0].confidence).toBeUndefined();
+    expect(result.imported[0].setupQuality).toBeUndefined();
   });
 
-  it('should handle missing confidence', async () => {
+  it('should handle missing setupQuality', async () => {
     const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime
 AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00`;
 
     const result = await parseCsvFile(csv);
     expect(result.imported).toHaveLength(1);
-    expect(result.imported[0].confidence).toBeUndefined();
+    expect(result.imported[0].setupQuality).toBeUndefined();
+  });
+
+  it('should fallback confidence to setupQuality for backward compatibility', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,confidence
+AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,4`;
+
+    const result = await parseCsvFile(csv);
+    expect(result.imported).toHaveLength(1);
+    expect(result.imported[0].setupQuality).toBe(4);
   });
 
   it('should parse ruleViolation string', async () => {
@@ -178,13 +187,13 @@ AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,  exit trade early  `;
     expect(result.imported[0].ruleViolation).toBe('exit trade early');
   });
 
-  it('should handle both confidence and ruleViolation together', async () => {
-    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,confidence,ruleViolation
+  it('should handle both setupQuality and ruleViolation together', async () => {
+    const csv = `symbol,shares,entryPrice,exitPrice,entryTime,exitTime,setupQuality,ruleViolation
 AAPL,100,150,160,2024-01-01T10:00:00,2024-01-01T11:00:00,5,flat macd`;
 
     const result = await parseCsvFile(csv);
     expect(result.imported).toHaveLength(1);
-    expect(result.imported[0].confidence).toBe(5);
+    expect(result.imported[0].setupQuality).toBe(5);
     expect(result.imported[0].ruleViolation).toBe('flat macd');
   });
 });

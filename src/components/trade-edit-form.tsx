@@ -66,6 +66,7 @@ export function TradeEditForm({
       marketCondition: formData.marketCondition || undefined,
       htfContext: formData.htfContext || undefined,
       confidence: formData.confidence,
+      setupQuality: formData.setupQuality,
       ruleViolation: formData.ruleViolation || undefined,
       whatWorked: formData.whatWorked || undefined,
       whatFailed: formData.whatFailed || undefined,

@@ -37,6 +37,7 @@ export const getTrades = query({
       whatWorked: trade.whatWorked,
       whatFailed: trade.whatFailed,
       confidence: trade.confidence,
+      setupQuality: trade.setupQuality,
       ruleViolation: trade.ruleViolation,
       importedFrom: trade.importedFrom,
       importId: trade.importId,
@@ -94,6 +95,7 @@ export const getTradesInRange = query({
       whatWorked: trade.whatWorked,
       whatFailed: trade.whatFailed,
       confidence: trade.confidence,
+      setupQuality: trade.setupQuality,
       ruleViolation: trade.ruleViolation,
       importedFrom: trade.importedFrom,
       importId: trade.importId,
@@ -147,6 +149,7 @@ export const getTrade = query({
       whatWorked: trade.whatWorked,
       whatFailed: trade.whatFailed,
       confidence: trade.confidence,
+      setupQuality: trade.setupQuality,
       ruleViolation: trade.ruleViolation,
       importedFrom: trade.importedFrom,
       importId: trade.importId,
@@ -179,7 +182,9 @@ export const addTrade = mutation({
     whatWorked: v.optional(v.string()),
     whatFailed: v.optional(v.string()),
     confidence: v.optional(v.number()),
+    setupQuality: v.optional(v.number()),
     ruleViolation: v.optional(v.string()),
+    importedFrom: v.optional(v.string()),
     importId: v.optional(v.string()),
     orderType: v.optional(v.string()),
     accountBalanceAfter: v.optional(v.number()),
@@ -212,6 +217,7 @@ export const addTrade = mutation({
       whatWorked: args.whatWorked,
       whatFailed: args.whatFailed,
       confidence: args.confidence,
+      setupQuality: args.setupQuality,
       ruleViolation: args.ruleViolation,
       importId: args.importId,
       orderType: args.orderType,
@@ -249,6 +255,7 @@ export const updateTrade = mutation({
     whatWorked: v.optional(v.string()),
     whatFailed: v.optional(v.string()),
     confidence: v.optional(v.number()),
+    setupQuality: v.optional(v.number()),
     ruleViolation: v.optional(v.string()),
     orderType: v.optional(v.string()),
     accountBalanceAfter: v.optional(v.number()),
@@ -295,6 +302,7 @@ export const updateTrade = mutation({
       whatWorked: updatedTrade!.whatWorked,
       whatFailed: updatedTrade!.whatFailed,
       confidence: updatedTrade!.confidence,
+      setupQuality: updatedTrade!.setupQuality,
       ruleViolation: updatedTrade!.ruleViolation,
       importedFrom: updatedTrade!.importedFrom,
       importId: updatedTrade!.importId,
@@ -351,6 +359,34 @@ export const clearAllTrades = mutation({
   },
 });
 
+// Mutation to migrate confidence to setupQuality (one-time)
+export const migrateConfidenceToSetupQuality = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error('Not authenticated');
+    }
+
+    const trades = await ctx.db
+      .query('trades')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .collect();
+
+    let migrated = 0;
+    for (const trade of trades) {
+      if (trade.confidence !== undefined && trade.setupQuality === undefined) {
+        await ctx.db.patch(trade._id, {
+          setupQuality: trade.confidence,
+        });
+        migrated++;
+      }
+    }
+
+    return { migrated };
+  },
+});
+
 // Mutation to import multiple trades
 export const importTrades = mutation({
   args: {
@@ -373,6 +409,7 @@ export const importTrades = mutation({
         whatWorked: v.optional(v.string()),
         whatFailed: v.optional(v.string()),
         confidence: v.optional(v.number()),
+        setupQuality: v.optional(v.number()),
         ruleViolation: v.optional(v.string()),
         importedFrom: v.optional(v.string()),
         importId: v.optional(v.string()),

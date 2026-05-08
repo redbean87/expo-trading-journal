@@ -19,7 +19,7 @@ function formatTrade(trade: AIReportTrade, index: number): string {
   const violation = trade.ruleViolation ? ' | ⚠️ Violation' : '';
   const psychology = trade.psychology ? ' | 🧠 Notes' : '';
 
-  return `**Trade ${index + 1}:** ${trade.symbol} ${trade.side === 'long' ? 'Long' : 'Short'} ${formatCurrency(trade.pnl)} | ${trade.exitTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} | Conf:${trade.confidence || 'N/A'}${violation}${psychology}`;
+  return `**Trade ${index + 1}:** ${trade.symbol} ${trade.side === 'long' ? 'Long' : 'Short'} ${formatCurrency(trade.pnl)} | ${trade.exitTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} | SQ:${trade.setupQuality || 'N/A'}${violation}${psychology}`;
 }
 
 /**
@@ -233,7 +233,7 @@ Please analyze my trading data and provide:
 
 1. **Edge & Leaks**: What are my biggest strengths and weaknesses based on the numbers?
 2. **Pattern Recognition**: What patterns do you see in my timing, strategy selection, and mistake frequency?
-3. **Psychological Insights**: Based on my notes and confidence ratings, what psychological factors are affecting my performance?
+3. **Psychological Insights**: Based on my notes and setup quality ratings, what psychological factors are affecting my performance?
 4. **Risk Management**: How can I improve my drawdowns and recovery times?
 5. **Strategy Optimization**: Which strategies should I focus on or abandon? What setup characteristics lead to my wins vs losses?
 6. **Actionable Steps**: Give me 3-5 specific, measurable actions to implement immediately.

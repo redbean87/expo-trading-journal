@@ -321,19 +321,19 @@ export function TradeForm({
 
         <View style={styles.confidenceContainer}>
           <Text variant="bodySmall" style={styles.confidenceLabel}>
-            Confidence (Optional)
+            Setup Quality (Optional)
           </Text>
           <View style={styles.confidenceChips}>
             {[1, 2, 3, 4, 5].map((value) => {
-              const isSelected = formData.confidence === value;
+              const isSelected = formData.setupQuality === value;
               return (
                 <Chip
                   key={value}
                   selected={isSelected}
                   onPress={() =>
                     onUpdate({
-                      confidence:
-                        formData.confidence === value ? undefined : value,
+                      setupQuality:
+                        formData.setupQuality === value ? undefined : value,
                     })
                   }
                   style={[

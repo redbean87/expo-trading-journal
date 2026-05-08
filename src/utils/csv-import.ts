@@ -86,6 +86,7 @@ type CsvRow = {
   whatWorked?: string;
   whatFailed?: string;
   confidence?: string;
+  setupQuality?: string;
   ruleViolation?: string;
   marketCondition?: string;
   htfContext?: string;
@@ -196,13 +197,26 @@ function parseCsvRowToTrade(
     // Build notes from link field only (psychology/whatWorked/whatFailed are now separate fields)
     const notes = row.link ? `Link: ${row.link}` : undefined;
 
-    // Parse confidence (1-5 scale)
+    // Parse confidence (1-5 scale) — deprecated, migrating to setupQuality
     let confidence: number | undefined;
     if (row.confidence) {
       const parsed = parseFloat(row.confidence);
       if (!isNaN(parsed) && parsed >= 1 && parsed <= 5) {
         confidence = Math.round(parsed);
       }
+    }
+
+    // Parse setupQuality (1-5 scale)
+    let setupQuality: number | undefined;
+    if (row.setupQuality) {
+      const parsed = parseFloat(row.setupQuality);
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 5) {
+        setupQuality = Math.round(parsed);
+      }
+    }
+    // Fallback: migrate from confidence if setupQuality not present
+    if (setupQuality === undefined && confidence !== undefined) {
+      setupQuality = confidence;
     }
 
     // Parse ruleViolation (treat "n/a" as undefined)
@@ -228,6 +242,7 @@ function parseCsvRowToTrade(
       whatWorked: row.whatWorked?.substring(0, 500),
       whatFailed: row.whatFailed?.substring(0, 500),
       confidence,
+      setupQuality,
       ruleViolation,
       marketCondition: row.marketCondition?.substring(0, 50),
       htfContext: row.htfContext?.substring(0, 50),

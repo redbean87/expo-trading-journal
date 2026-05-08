@@ -24,6 +24,7 @@ type BackendTrade = {
   whatWorked?: string;
   whatFailed?: string;
   confidence?: number;
+  setupQuality?: number;
   ruleViolation?: string;
   importedFrom?: string;
   importId?: string;

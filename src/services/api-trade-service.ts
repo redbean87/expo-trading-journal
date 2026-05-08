@@ -61,6 +61,7 @@ export const createApiTradeService = (client: ConvexReactClient) => ({
       whatWorked: trade.whatWorked,
       whatFailed: trade.whatFailed,
       confidence: trade.confidence,
+      setupQuality: trade.setupQuality,
       ruleViolation: trade.ruleViolation,
       importId: trade.importId,
       orderType: trade.orderType,

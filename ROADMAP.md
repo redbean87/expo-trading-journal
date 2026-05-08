@@ -18,9 +18,23 @@ The app has a solid foundation with:
 
 ### High Priority
 
-_None_
+- [ ] **Pre-Trade Checklist** - 4 binary questions before trade entry
+  - Setup from approved strategy list?
+  - Clear confirmation for entry?
+  - Risk clearly defined?
+  - HTF context supports the trade?
+  - Stored per-trade, displayed in form and detail view
+
+- [ ] **Structure Break Before Exit** - Boolean field to track if price structure broke before trade exit
+  - Helps distinguish emotional exits vs technically justified exits
+  - Display in Trade Management section
 
 ### Medium Priority
+
+- [ ] **Automated Migration Runner** - Add data migrations to CI/CD pipeline
+  - Add `npx convex run <migration> --prod` to GitHub Actions after deploy
+  - Make migrations idempotent (check before running)
+  - Consider migration tracking table for audit history
 
 - [x] **Strategy Analytics** - Performance breakdown by strategy tag
 - [x] **Screenshot Attachments** - Add images to trades for chart analysis
@@ -107,6 +121,19 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 
 ---
 
+## Data Migration Pattern (Learned)
+
+- [x] **Schema Evolution Workflow** - Rename `confidence` → `setupQuality` with backward compatibility
+  - Keep old field in schema during transition
+  - Create idempotent migration mutation
+  - Test in dev: `npx convex run trades:migrateConfidenceToSetupQuality`
+  - Deploy to prod via GitHub Actions (`npx convex deploy`)
+  - Run in prod: `npx convex run trades:migrateConfidenceToSetupQuality --prod`
+  - Verify migration count matches dev
+  - Future cleanup: Remove old field from schema in subsequent release
+
+---
+
 ## Completed Features
 
 - [x] Home dashboard with key metrics
@@ -131,7 +158,7 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Monthly/Weekly Breakdown - Performance metrics grouped by time period with toggle
 - [x] Emotion/Psychology Tracking - psychology field on trades with CSV import support
 - [x] Trade Notes - whatWorked and whatFailed reflection fields with CSV import support
-- [x] Confidence + Rule Violations - confidence level (1-5) and ruleViolation field with CSV import support
+- [x] **Setup Quality + Rule Violations** - setupQuality level (1-5) and ruleViolation field with CSV import support (renamed from confidence)
 - [x] Mistakes Tracking - Categorize trading errors with analytics dashboard showing frequency and P&L impact
 - [x] P&L Calendar Heatmap - Color-coded calendar showing daily profit/loss at a glance
 - [x] Performance by Day of Week - Bar chart showing P&L and win rate by weekday
@@ -145,3 +172,4 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] Trade Duration Histogram - Distribution chart of hold times across 7 duration buckets, bars colored by avg P&L
 - [x] R-Multiple Distribution - Histogram showing trades in R units; risk amount entered per trade via flat $ or % of account toggle
 - [x] Position Sizing Calculator - Dialog on home screen; account size, risk %, entry/stop → position size and dollar risk
+- [x] **Setup Quality Rename** - Renamed confidence → setupQuality across all layers (schema, forms, analytics, CSV, tests) with idempotent migration (700 trades migrated)

@@ -23,6 +23,7 @@ export const tradeSchema = z.object({
   marketCondition: z.string().max(50).optional(),
   htfContext: z.string().max(50).optional(),
   confidence: z.number().min(1).max(5).optional(),
+  setupQuality: z.number().min(1).max(5).optional(),
   ruleViolation: z.string().max(200).optional(),
   whatWorked: z.string().max(500).optional(),
   whatFailed: z.string().max(500).optional(),
@@ -106,6 +107,7 @@ export const tradeFormSchema = z
       .max(50, 'HTF context must be 50 characters or less')
       .optional(),
     confidence: z.number().min(1).max(5).optional(),
+    setupQuality: z.number().min(1).max(5).optional(),
     ruleViolation: z
       .string()
       .max(200, 'Rule violation must be 200 characters or less')
@@ -213,6 +215,7 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     marketCondition: formData.marketCondition,
     htfContext: formData.htfContext,
     confidence: formData.confidence,
+    setupQuality: formData.setupQuality,
     ruleViolation: formData.ruleViolation,
     whatWorked: formData.whatWorked,
     whatFailed: formData.whatFailed,

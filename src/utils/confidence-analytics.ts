@@ -25,9 +25,11 @@ export type ConfidenceAnalytics = {
 export function calculateConfidenceAnalytics(
   trades: Trade[]
 ): ConfidenceAnalytics {
-  const tradesWithConfidence = trades.filter((t) => t.confidence !== undefined);
-  const tradesWithoutConfidence = trades.filter(
-    (t) => t.confidence === undefined
+  const tradesWithSetupQuality = trades.filter(
+    (t) => t.setupQuality !== undefined
+  );
+  const tradesWithoutSetupQuality = trades.filter(
+    (t) => t.setupQuality === undefined
   );
 
   const byLevel: ConfidenceAnalytics['byLevel'] = {
@@ -38,9 +40,9 @@ export function calculateConfidenceAnalytics(
     5: { count: 0, wins: 0, losses: 0, totalPnl: 0, avgPnl: 0, winRate: 0 },
   };
 
-  // Aggregate data by confidence level
-  for (const trade of tradesWithConfidence) {
-    const level = trade.confidence as ConfidenceLevel;
+  // Aggregate data by setup quality level
+  for (const trade of tradesWithSetupQuality) {
+    const level = trade.setupQuality as ConfidenceLevel;
     if (level >= 1 && level <= 5) {
       const stats = byLevel[level];
       stats.count++;
@@ -99,30 +101,30 @@ export function calculateConfidenceAnalytics(
 
   // Generate insight
   let insight = '';
-  if (tradesWithConfidence.length === 0) {
+  if (tradesWithSetupQuality.length === 0) {
     insight =
-      'Start recording confidence levels to see how your self-assessment correlates with performance.';
+      'Start recording setup quality ratings to see how your pre-trade assessment correlates with performance.';
   } else if (bestLevel !== null && worstLevel !== null) {
     if (bestLevel > worstLevel) {
-      insight = `You perform best at confidence level ${bestLevel}. Higher confidence correlates with better results.`;
+      insight = `You perform best at setup quality level ${bestLevel}. Higher quality setups correlate with better results.`;
     } else if (bestLevel < worstLevel) {
-      insight = `You perform best at confidence level ${bestLevel}. Lower confidence correlates with better results - you might be overthinking high-confidence setups.`;
+      insight = `You perform best at setup quality level ${bestLevel}. Lower quality setups correlate with better results - you might be overthinking high-quality setups.`;
     } else {
-      insight = `Confidence level ${bestLevel} shows your best performance. Consider what makes those trades different.`;
+      insight = `Setup quality level ${bestLevel} shows your best performance. Consider what makes those trades different.`;
     }
   } else {
     insight =
-      'Keep tracking confidence to identify your optimal confidence zone.';
+      'Keep tracking setup quality to identify your optimal setup zone.';
   }
 
   if (overconfidenceDetected) {
     insight +=
-      ' Warning: High confidence (4-5) setups are underperforming. Consider being more selective.';
+      ' Warning: High setup quality (4-5) setups are underperforming. Consider being more selective.';
   }
 
   return {
-    totalTradesWithConfidence: tradesWithConfidence.length,
-    totalTradesWithoutConfidence: tradesWithoutConfidence.length,
+    totalTradesWithConfidence: tradesWithSetupQuality.length,
+    totalTradesWithoutConfidence: tradesWithoutSetupQuality.length,
     byLevel,
     bestPerformingLevel: bestLevel,
     worstPerformingLevel: worstLevel,

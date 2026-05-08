@@ -47,18 +47,18 @@ const createTrade = (overrides: Partial<Trade> = {}): Trade => ({
 });
 
 describe('ConfidenceCard', () => {
-  it('should show empty state when no trades have confidence data', () => {
+  it('should show empty state when no trades have setup quality data', () => {
     const trades = [
-      createTrade({ confidence: undefined }),
-      createTrade({ confidence: undefined }),
+      createTrade({ setupQuality: undefined }),
+      createTrade({ setupQuality: undefined }),
     ];
 
     const { getByText } = render(<ConfidenceCard trades={trades} />);
 
-    expect(getByText('No confidence data yet')).toBeTruthy();
+    expect(getByText('No setup quality data yet')).toBeTruthy();
     expect(
       getByText(
-        'Start rating your confidence (1-5) on trades to analyze how self-assessment correlates with performance'
+        'Start rating your setup quality (1-5) on trades to analyze how pre-trade assessment correlates with performance'
       )
     ).toBeTruthy();
   });
@@ -66,29 +66,29 @@ describe('ConfidenceCard', () => {
   it('should show empty state for empty trades array', () => {
     const { getByText } = render(<ConfidenceCard trades={[]} />);
 
-    expect(getByText('No confidence data yet')).toBeTruthy();
+    expect(getByText('No setup quality data yet')).toBeTruthy();
   });
 
-  it('should display analytics when confidence data exists', () => {
+  it('should display analytics when setup quality data exists', () => {
     const trades = [
-      createTrade({ confidence: 1, pnl: -50 }),
-      createTrade({ confidence: 1, pnl: -30 }),
-      createTrade({ confidence: 2, pnl: 100 }),
-      createTrade({ confidence: 3, pnl: 75 }),
+      createTrade({ setupQuality: 1, pnl: -50 }),
+      createTrade({ setupQuality: 1, pnl: -30 }),
+      createTrade({ setupQuality: 2, pnl: 100 }),
+      createTrade({ setupQuality: 3, pnl: 75 }),
     ];
 
     const { getByText } = render(<ConfidenceCard trades={trades} />);
 
-    expect(getByText('Confidence Analysis')).toBeTruthy();
-    expect(getByText('Trades with Confidence Rating:')).toBeTruthy();
+    expect(getByText('Setup Quality Analysis')).toBeTruthy();
+    expect(getByText('Trades with Setup Quality Rating:')).toBeTruthy();
     expect(getByText('4')).toBeTruthy();
-    expect(getByText('Performance by Confidence Level')).toBeTruthy();
+    expect(getByText('Performance by Setup Quality Level')).toBeTruthy();
   });
 
-  it('should display trades without confidence count when applicable', () => {
+  it('should display trades without setup quality count when applicable', () => {
     const trades = [
-      createTrade({ confidence: 3, pnl: 100 }),
-      createTrade({ confidence: undefined, pnl: 50 }),
+      createTrade({ setupQuality: 3, pnl: 100 }),
+      createTrade({ setupQuality: undefined, pnl: 50 }),
     ];
 
     const { getByText } = render(<ConfidenceCard trades={trades} />);
@@ -97,11 +97,11 @@ describe('ConfidenceCard', () => {
     expect(getByText('1')).toBeTruthy();
   });
 
-  it('should display confidence level breakdown rows', () => {
+  it('should display setup quality level breakdown rows', () => {
     const trades = [
-      createTrade({ confidence: 3, pnl: 100 }),
-      createTrade({ confidence: 3, pnl: 50 }),
-      createTrade({ confidence: 4, pnl: 200 }),
+      createTrade({ setupQuality: 3, pnl: 100 }),
+      createTrade({ setupQuality: 3, pnl: 50 }),
+      createTrade({ setupQuality: 4, pnl: 200 }),
     ];
 
     const { getByText } = render(<ConfidenceCard trades={trades} />);
@@ -113,7 +113,7 @@ describe('ConfidenceCard', () => {
   });
 
   it('should not display levels with no trades', () => {
-    const trades = [createTrade({ confidence: 3, pnl: 100 })];
+    const trades = [createTrade({ setupQuality: 3, pnl: 100 })];
 
     const { queryByText } = render(<ConfidenceCard trades={trades} />);
 

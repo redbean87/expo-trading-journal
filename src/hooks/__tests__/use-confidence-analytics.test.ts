@@ -18,12 +18,12 @@ const createTrade = (overrides: Partial<Trade> = {}): Trade => ({
 });
 
 describe('useConfidenceAnalytics', () => {
-  it('should calculate correct analytics for trades with confidence', () => {
+  it('should calculate correct analytics for trades with setup quality', () => {
     const trades = [
-      createTrade({ confidence: 1, pnl: -50 }),
-      createTrade({ confidence: 1, pnl: -30 }),
-      createTrade({ confidence: 2, pnl: 100 }),
-      createTrade({ confidence: 3, pnl: 75 }),
+      createTrade({ setupQuality: 1, pnl: -50 }),
+      createTrade({ setupQuality: 1, pnl: -30 }),
+      createTrade({ setupQuality: 2, pnl: 100 }),
+      createTrade({ setupQuality: 3, pnl: 75 }),
     ];
 
     const { result } = renderHook(() => useConfidenceAnalytics(trades));
@@ -42,15 +42,15 @@ describe('useConfidenceAnalytics', () => {
     expect(result.current.totalTradesWithoutConfidence).toBe(0);
     expect(result.current.bestPerformingLevel).toBeNull();
     expect(result.current.worstPerformingLevel).toBeNull();
-    expect(result.current.insight).toContain('Start recording confidence');
+    expect(result.current.insight).toContain('Start recording setup quality');
   });
 
-  it('should separate trades with and without confidence', () => {
+  it('should separate trades with and without setup quality', () => {
     const trades = [
-      createTrade({ confidence: 3, pnl: 100 }),
-      createTrade({ confidence: undefined, pnl: 50 }),
-      createTrade({ confidence: 4, pnl: 200 }),
-      createTrade({ confidence: undefined, pnl: -25 }),
+      createTrade({ setupQuality: 3, pnl: 100 }),
+      createTrade({ setupQuality: undefined, pnl: 50 }),
+      createTrade({ setupQuality: 4, pnl: 200 }),
+      createTrade({ setupQuality: undefined, pnl: -25 }),
     ];
 
     const { result } = renderHook(() => useConfidenceAnalytics(trades));

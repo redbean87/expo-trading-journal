@@ -43,7 +43,8 @@ const schema = defineSchema({
     psychology: v.optional(v.string()),
     whatWorked: v.optional(v.string()),
     whatFailed: v.optional(v.string()),
-    confidence: v.optional(v.number()),
+    confidence: v.optional(v.number()), // Deprecated: migrating to setupQuality
+    setupQuality: v.optional(v.number()),
     ruleViolation: v.optional(v.string()),
     importedFrom: v.optional(v.string()),
     importId: v.optional(v.string()),

@@ -217,7 +217,7 @@ export function TradeDetailContent({
             </SectionCard>
           )}
 
-          {(trade.psychology || trade.confidence !== undefined) && (
+          {(trade.psychology || trade.setupQuality !== undefined) && (
             <SectionCard title="Psychology">
               {trade.psychology && (
                 <DetailRow
@@ -237,8 +237,11 @@ export function TradeDetailContent({
                   }
                 />
               )}
-              {trade.confidence !== undefined && (
-                <DetailRow label="Confidence" value={`${trade.confidence}/5`} />
+              {trade.setupQuality !== undefined && (
+                <DetailRow
+                  label="Setup Quality"
+                  value={`${trade.setupQuality}/5`}
+                />
               )}
             </SectionCard>
           )}

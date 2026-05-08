@@ -67,18 +67,18 @@ export function ConfidenceCard({ trades }: ConfidenceCardProps) {
   const hasData = analytics.totalTradesWithConfidence > 0;
 
   return (
-    <SectionCard title="Confidence Analysis">
+    <SectionCard title="Setup Quality Analysis">
       {!hasData ? (
         <CardEmptyState
           icon="chart-line"
-          title="No confidence data yet"
-          subtitle="Start rating your confidence (1-5) on trades to analyze how self-assessment correlates with performance"
+          title="No setup quality data yet"
+          subtitle="Start rating your setup quality (1-5) on trades to analyze how pre-trade assessment correlates with performance"
         />
       ) : (
         <>
           <View style={styles.summarySection}>
             <StatRow
-              label="Trades with Confidence Rating:"
+              label="Trades with Setup Quality Rating:"
               value={`${analytics.totalTradesWithConfidence}`}
             />
             {analytics.totalTradesWithoutConfidence > 0 && (
@@ -99,7 +99,7 @@ export function ConfidenceCard({ trades }: ConfidenceCardProps) {
 
           <View style={styles.breakdownSection}>
             <Text variant="titleSmall" style={styles.sectionTitle}>
-              Performance by Confidence Level
+              Performance by Setup Quality Level
             </Text>
             <View style={styles.levelsList}>
               {([1, 2, 3, 4, 5] as ConfidenceLevel[]).map((level) => {

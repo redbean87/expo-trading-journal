@@ -32,6 +32,7 @@ type CsvExportRow = {
   setup: string;
   marketCondition: string;
   htfContext: string;
+  setupQuality: number;
   notes: string;
   pnl: number;
   pnlPercent: number;
@@ -49,6 +50,7 @@ function tradeToExportRow(trade: Trade): CsvExportRow {
     setup: trade.strategy ?? '',
     marketCondition: trade.marketCondition ?? '',
     htfContext: trade.htfContext ?? '',
+    setupQuality: trade.setupQuality ?? 0,
     notes: trade.notes ?? '',
     pnl: trade.pnl,
     pnlPercent: trade.pnlPercent,
@@ -70,6 +72,7 @@ export function tradesToCsv(trades: Trade[]): string {
       'setup',
       'marketCondition',
       'htfContext',
+      'setupQuality',
       'notes',
       'pnl',
       'pnlPercent',
