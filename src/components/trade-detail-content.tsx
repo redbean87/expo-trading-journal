@@ -154,10 +154,7 @@ export function TradeDetailContent({
             )}
           </SectionCard>
 
-          {(trade.strategy ||
-            trade.marketCondition ||
-            trade.htfContext ||
-            trade.confidence !== undefined) && (
+          {(trade.strategy || trade.marketCondition || trade.htfContext) && (
             <SectionCard title="Setup Context">
               {trade.strategy && (
                 <DetailRow label="Strategy" value={trade.strategy} />
@@ -170,9 +167,6 @@ export function TradeDetailContent({
               )}
               {trade.htfContext && (
                 <DetailRow label="HTF Context" value={trade.htfContext} />
-              )}
-              {trade.confidence !== undefined && (
-                <DetailRow label="Confidence" value={`${trade.confidence}/5`} />
               )}
             </SectionCard>
           )}
@@ -223,14 +217,19 @@ export function TradeDetailContent({
             </SectionCard>
           )}
 
-          {trade.psychology && (
+          {(trade.psychology || trade.confidence !== undefined) && (
             <SectionCard title="Psychology">
-              <LinkedText variant="bodyLarge" style={styles.notes}>
-                {trade.psychology
-                  .split(',')
-                  .map((t) => t.trim())
-                  .join(', ')}
-              </LinkedText>
+              {trade.psychology && (
+                <LinkedText variant="bodyLarge" style={styles.notes}>
+                  {trade.psychology
+                    .split(',')
+                    .map((t) => t.trim())
+                    .join(', ')}
+                </LinkedText>
+              )}
+              {trade.confidence !== undefined && (
+                <DetailRow label="Confidence" value={`${trade.confidence}/5`} />
+              )}
             </SectionCard>
           )}
 

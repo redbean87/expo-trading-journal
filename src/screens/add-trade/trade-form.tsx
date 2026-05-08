@@ -294,6 +294,30 @@ export function TradeForm({
           value={formData.htfContext}
           onSelect={(context) => onUpdate({ htfContext: context || undefined })}
         />
+      </SectionCard>
+
+      <SectionCard title="Trade Management">
+        <MistakeCategorySelector
+          value={formData.ruleViolation}
+          onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
+        />
+
+        <WhatWorkedSelector
+          value={formData.whatWorked}
+          onChange={(text) => onUpdate({ whatWorked: text || undefined })}
+        />
+
+        <WhatFailedSelector
+          value={formData.whatFailed}
+          onChange={(text) => onUpdate({ whatFailed: text || undefined })}
+        />
+      </SectionCard>
+
+      <SectionCard title="Psychology">
+        <PsychologySelector
+          value={formData.psychology}
+          onChange={(text) => onUpdate({ psychology: text || undefined })}
+        />
 
         <View style={styles.confidenceContainer}>
           <Text variant="bodySmall" style={styles.confidenceLabel}>
@@ -328,30 +352,6 @@ export function TradeForm({
             })}
           </View>
         </View>
-      </SectionCard>
-
-      <SectionCard title="Trade Management">
-        <MistakeCategorySelector
-          value={formData.ruleViolation}
-          onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
-        />
-
-        <WhatWorkedSelector
-          value={formData.whatWorked}
-          onChange={(text) => onUpdate({ whatWorked: text || undefined })}
-        />
-
-        <WhatFailedSelector
-          value={formData.whatFailed}
-          onChange={(text) => onUpdate({ whatFailed: text || undefined })}
-        />
-      </SectionCard>
-
-      <SectionCard title="Psychology">
-        <PsychologySelector
-          value={formData.psychology}
-          onChange={(text) => onUpdate({ psychology: text || undefined })}
-        />
       </SectionCard>
 
       <SectionCard title="Reflection">
@@ -392,9 +392,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       marginBottom: theme.spacing.sm,
     },
     riskHelper: {
-      marginTop: 0,
-      marginBottom: theme.spacing.xs,
+      marginBottom: theme.spacing.sm,
       paddingHorizontal: 0,
+      paddingVertical: 0,
     },
     confidenceContainer: {
       marginBottom: theme.spacing.lg,
@@ -429,8 +429,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.sm,
-      marginTop: 0,
-      marginBottom: theme.spacing.xs,
+      marginBottom: theme.spacing.sm,
     },
     modeSwitchText: {
       color: theme.colors.textSecondary,
