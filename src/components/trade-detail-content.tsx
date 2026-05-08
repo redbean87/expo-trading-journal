@@ -220,12 +220,22 @@ export function TradeDetailContent({
           {(trade.psychology || trade.confidence !== undefined) && (
             <SectionCard title="Psychology">
               {trade.psychology && (
-                <LinkedText variant="bodyLarge" style={styles.notes}>
-                  {trade.psychology
-                    .split(',')
-                    .map((t) => t.trim())
-                    .join(', ')}
-                </LinkedText>
+                <DetailRow
+                  label="Psychology"
+                  value={
+                    <View style={styles.chipRow}>
+                      {trade.psychology
+                        .split(',')
+                        .map((t) => t.trim())
+                        .filter(Boolean)
+                        .map((tag) => (
+                          <Chip key={tag} compact style={styles.chip}>
+                            {tag}
+                          </Chip>
+                        ))}
+                    </View>
+                  }
+                />
               )}
               {trade.confidence !== undefined && (
                 <DetailRow label="Confidence" value={`${trade.confidence}/5`} />
@@ -278,7 +288,7 @@ export function TradeDetailContent({
 
 type DetailRowProps = {
   label: string;
-  value: string;
+  value: string | React.ReactNode;
 };
 
 function DetailRow({ label, value }: DetailRowProps) {
@@ -291,9 +301,13 @@ function DetailRow({ label, value }: DetailRowProps) {
       >
         {label}
       </Text>
-      <Text variant="bodyLarge" style={detailRowStyles.value}>
-        {value}
-      </Text>
+      {typeof value === 'string' ? (
+        <Text variant="bodyLarge" style={detailRowStyles.value}>
+          {value}
+        </Text>
+      ) : (
+        <View style={detailRowStyles.valueContainer}>{value}</View>
+      )}
     </View>
   );
 }
@@ -312,6 +326,13 @@ const detailRowStyles = StyleSheet.create({
   value: {
     flex: 1,
     textAlign: 'right',
+  },
+  valueContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    flexWrap: 'wrap',
+    gap: 8,
   },
 });
 
@@ -371,6 +392,16 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     notes: {
       lineHeight: theme.spacing.lg + theme.spacing.sm,
+    },
+    chipRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'flex-end',
+      gap: theme.spacing.sm,
+      flex: 1,
+    },
+    chip: {
+      marginBottom: theme.spacing.xs,
     },
     mistakeChip: {
       backgroundColor: withAlpha(theme.colors.loss, 0.12),
