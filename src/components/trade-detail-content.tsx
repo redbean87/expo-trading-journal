@@ -137,12 +137,26 @@ export function TradeDetailContent({
             )}
             <DetailRow label="Entry" value={formatDateTime(trade.entryTime)} />
             <DetailRow label="Exit" value={formatDateTime(trade.exitTime)} />
+            {trade.stopLoss !== undefined && trade.stopLoss > 0 && (
+              <DetailRow
+                label="Stop Loss"
+                value={`$${trade.stopLoss.toFixed(2)}`}
+              />
+            )}
             {trade.riskAmount !== undefined && trade.riskAmount > 0 && (
               <DetailRow
                 label="Risk Amount"
                 value={`$${trade.riskAmount.toFixed(2)}`}
               />
             )}
+            {trade.riskAmount !== undefined &&
+              trade.riskAmount > 0 &&
+              trade.pnl !== undefined && (
+                <DetailRow
+                  label="R-Multiple"
+                  value={`${(trade.pnl / trade.riskAmount).toFixed(2)}R`}
+                />
+              )}
             {trade.orderType && (
               <DetailRow label="Order Type" value={trade.orderType} />
             )}

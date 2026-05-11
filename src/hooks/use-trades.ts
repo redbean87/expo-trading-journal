@@ -31,6 +31,7 @@ type BackendTrade = {
   orderType?: string;
   accountBalanceAfter?: number;
   riskAmount?: number;
+  stopLoss?: number;
   marketCondition?: string;
   htfContext?: string;
   structureBreakBeforeExit?: boolean;

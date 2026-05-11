@@ -19,6 +19,7 @@ export const tradeSchema = z.object({
   fees: z.number().min(0).optional(),
   commissions: z.number().min(0).optional(),
   riskAmount: z.number().positive().optional(),
+  stopLoss: z.number().positive().optional(),
   strategy: z.string().max(50).optional(),
   marketCondition: z.string().max(50).optional(),
   htfContext: z.string().max(50).optional(),
@@ -93,6 +94,16 @@ export const tradeFormSchema = z
           val === undefined ||
           (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
         { message: 'Risk amount must be a positive number' }
+      )
+      .optional(),
+    stopLoss: z
+      .string()
+      .refine(
+        (val) =>
+          val === '' ||
+          val === undefined ||
+          (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
+        { message: 'Stop loss must be a positive number' }
       )
       .optional(),
     strategy: z
@@ -188,6 +199,10 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     formData.commissions && formData.commissions !== ''
       ? parseFloat(formData.commissions)
       : undefined;
+  const stopLoss =
+    formData.stopLoss && formData.stopLoss !== ''
+      ? parseFloat(formData.stopLoss)
+      : undefined;
   const riskAmount =
     formData.riskAmount && formData.riskAmount !== ''
       ? parseFloat(formData.riskAmount)
@@ -213,6 +228,7 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     fees,
     commissions,
     riskAmount,
+    stopLoss,
     strategy: formData.strategy,
     marketCondition: formData.marketCondition,
     htfContext: formData.htfContext,

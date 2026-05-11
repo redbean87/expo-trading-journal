@@ -50,6 +50,10 @@ export function TradeEditForm({
       formData.riskAmount && formData.riskAmount !== ''
         ? parseFloat(formData.riskAmount)
         : undefined;
+    const stopLoss =
+      formData.stopLoss && formData.stopLoss !== ''
+        ? parseFloat(formData.stopLoss)
+        : undefined;
 
     await updateTrade(tradeId, {
       symbol: formData.symbol.toUpperCase(),
@@ -62,6 +66,7 @@ export function TradeEditForm({
       fees,
       commissions,
       riskAmount,
+      stopLoss,
       strategy: formData.strategy || undefined,
       marketCondition: formData.marketCondition || undefined,
       htfContext: formData.htfContext || undefined,
@@ -95,6 +100,7 @@ export function TradeEditForm({
     fees: trade.fees?.toString() || '',
     commissions: trade.commissions?.toString() || '',
     riskAmount: trade.riskAmount?.toString() || '',
+    stopLoss: trade.stopLoss?.toString() || '',
     strategy: trade.strategy || '',
     marketCondition: trade.marketCondition || '',
     htfContext: trade.htfContext || '',

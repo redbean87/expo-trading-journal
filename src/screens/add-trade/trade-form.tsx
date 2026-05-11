@@ -27,6 +27,7 @@ const FORM_FIELDS = [
   'fees',
   'commissions',
   'riskAmount',
+  'stopLoss',
   'notes',
 ] as const;
 
@@ -216,6 +217,19 @@ export function TradeForm({
       </SectionCard>
 
       <SectionCard title="Risk">
+        <TextInput
+          ref={createRef('stopLoss')}
+          label="Stop Loss (Optional)"
+          value={formData.stopLoss}
+          onChangeText={(text) => onUpdate({ stopLoss: text })}
+          mode="outlined"
+          keyboardType="decimal-pad"
+          style={[styles.input, styles.riskInput]}
+          returnKeyType={getReturnKeyType('stopLoss')}
+          blurOnSubmit={getBlurOnSubmit('stopLoss')}
+          onSubmitEditing={() => handleSubmitEditing('stopLoss')}
+        />
+
         {riskMode === '$' ? (
           <TextInput
             ref={createRef('riskAmount')}

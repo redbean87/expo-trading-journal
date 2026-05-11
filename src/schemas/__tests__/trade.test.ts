@@ -107,6 +107,14 @@ describe('tradeFormSchema', () => {
     });
     expect(result.success).toBe(true);
   });
+
+  it('should accept optional stopLoss', () => {
+    const result = tradeFormSchema.safeParse({
+      ...validFormData,
+      stopLoss: '145.50',
+    });
+    expect(result.success).toBe(true);
+  });
 });
 
 describe('tradeSchema', () => {

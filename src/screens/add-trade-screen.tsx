@@ -54,6 +54,10 @@ export default function AddTradeScreen() {
       formData.riskAmount && formData.riskAmount !== ''
         ? parseFloat(formData.riskAmount)
         : undefined;
+    const stopLoss =
+      formData.stopLoss && formData.stopLoss !== ''
+        ? parseFloat(formData.stopLoss)
+        : undefined;
 
     if (isEditMode && params.id) {
       await updateTrade(params.id, {
@@ -67,6 +71,7 @@ export default function AddTradeScreen() {
         fees,
         commissions,
         riskAmount,
+        stopLoss,
         strategy: formData.strategy || undefined,
         marketCondition: formData.marketCondition || undefined,
         htfContext: formData.htfContext || undefined,
@@ -94,6 +99,7 @@ export default function AddTradeScreen() {
         fees,
         commissions,
         riskAmount,
+        stopLoss,
         strategy: formData.strategy || undefined,
         marketCondition: formData.marketCondition || undefined,
         htfContext: formData.htfContext || undefined,
@@ -165,6 +171,7 @@ export default function AddTradeScreen() {
           fees: trade.fees?.toString() || '',
           commissions: trade.commissions?.toString() || '',
           riskAmount: trade.riskAmount?.toString() || '',
+          stopLoss: trade.stopLoss?.toString() || '',
           strategy: trade.strategy || '',
           marketCondition: trade.marketCondition || '',
           htfContext: trade.htfContext || '',
@@ -188,6 +195,7 @@ export default function AddTradeScreen() {
           fees: '',
           commissions: '',
           riskAmount: '',
+          stopLoss: '',
           strategy: '',
           marketCondition: '',
           htfContext: '',

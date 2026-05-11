@@ -36,6 +36,13 @@ The app has a solid foundation with:
 
 ### Medium Priority
 
+- [ ] **Stop Loss vs Risk Amount Comparison** - Show implied risk from stop loss vs planned risk
+  - Stop loss implies: `|entry - stop| × quantity` (technical/chart-based)
+  - Planned risk: user's intended dollar risk (account-based, e.g., 5%)
+  - Display gap/mismatch to identify sizing errors
+  - Could show in trade detail, analytics, or as a warning
+  - **Decision needed**: How to best surface this data without cluttering the form
+
 - [ ] **Automated Migration Runner** - Add data migrations to CI/CD pipeline
   - Add `npx convex run <migration> --prod` to GitHub Actions after deploy
   - Make migrations idempotent (check before running)

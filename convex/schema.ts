@@ -51,6 +51,7 @@ const schema = defineSchema({
     orderType: v.optional(v.string()),
     accountBalanceAfter: v.optional(v.number()),
     riskAmount: v.optional(v.number()),
+    stopLoss: v.optional(v.number()),
     marketCondition: v.optional(v.string()),
     htfContext: v.optional(v.string()),
     structureBreakBeforeExit: v.optional(v.boolean()),

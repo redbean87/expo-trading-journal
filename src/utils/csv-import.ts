@@ -100,6 +100,7 @@ type CsvRow = {
   marketCondition?: string;
   htfContext?: string;
   structureBreakBeforeExit?: string;
+  stopLoss?: string;
   link?: string;
   side?: string;
   direction?: string;
@@ -257,6 +258,10 @@ function parseCsvRowToTrade(
       marketCondition: row.marketCondition?.substring(0, 50),
       htfContext: row.htfContext?.substring(0, 50),
       structureBreakBeforeExit: parseBoolean(row.structureBreakBeforeExit),
+      stopLoss:
+        row.stopLoss && !isNaN(parseFloat(row.stopLoss))
+          ? parseFloat(row.stopLoss)
+          : undefined,
       pnl,
       pnlPercent,
     };
