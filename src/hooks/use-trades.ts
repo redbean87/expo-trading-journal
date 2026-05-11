@@ -34,7 +34,7 @@ type BackendTrade = {
   stopLoss?: number;
   marketCondition?: string;
   htfContext?: string;
-  structureBreakBeforeExit?: string;
+  structureBreakBeforeExit?: string | boolean;
   wouldTakeTradeAgain?: string;
 };
 

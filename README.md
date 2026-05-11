@@ -11,6 +11,11 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
 - Performance by time of day and day of week
 - Import/export trades via CSV (including Thinkorswim account statements)
 - Track fees and commissions separately per trade
+- **Stop Loss tracking** with optional field for chart-based technical levels
+- **Structure Break Before Exit** — track whether price structure broke before exit (yes/no/unsure)
+- **Trade Replay Decision** — track whether you'd take the trade again (yes/no/with adjustment)
+- **Setup Quality** rating (1-5) instead of emotional confidence
+- **Rule Violation tracking** — log mistakes and what worked/didn't work
 - Cloud sync across devices with Convex
 - User authentication (email/password + Google Sign-In)
 - Responsive desktop layout with master-detail view

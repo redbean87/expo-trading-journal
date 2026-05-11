@@ -219,6 +219,19 @@ When adding a new field to the `Trade` model, update the following files to prev
 
 > **Why `use-trades.ts` matters:** The `mapToTrade` and `mapFromTrade` functions are the bridge between the app's `Trade` type and Convex's backend types. If a field is added to the schema but not mapped here, it gets silently dropped on save/load. Prefer spreading the source object (`...trade`) and only explicitly overriding fields that need type transformation (e.g., `entryTime: new Date(...)`). This ensures new fields flow through automatically.
 
+### Changing a Field Type (Enum Conversions)
+
+When converting a field type (e.g., boolean → enum), you must also handle existing data:
+
+1. **Use `v.union()` in Convex schema** for backward compatibility during transition:
+   ```typescript
+   structureBreakBeforeExit: v.optional(v.union(v.boolean(), v.string()));
+   ```
+2. **Create a migration mutation** (temporary `internalMutation`) to convert existing data
+3. **Run migration** in dev and prod before removing union type
+4. **Update all UI components** that reference the old type (e.g., Switch → Chip selector)
+5. **Update CSV import/export** to handle new enum values
+
 ## Feature Completion Checklist
 
 Before marking a feature complete:

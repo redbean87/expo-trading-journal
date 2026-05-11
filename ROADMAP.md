@@ -18,12 +18,6 @@ The app has a solid foundation with:
 
 ### High Priority
 
-- [ ] **Structure Break Before Exit** - Boolean field to track if price structure broke before trade exit
-  - Helps distinguish emotional exits vs technically justified exits
-  - Display in Trade Management section
-
-### Needs Design Review
-
 - [ ] **Pre-Trade Checklist** - ON HOLD pending workflow analysis
   - 4 binary questions: approved strategy, clear confirmation, risk defined, HTF supports
   - **Blocker**: Current workflow is post-trade logging (import/manual entry after trade)
@@ -47,6 +41,13 @@ The app has a solid foundation with:
   - Add `npx convex run <migration> --prod` to GitHub Actions after deploy
   - Make migrations idempotent (check before running)
   - Consider migration tracking table for audit history
+
+### Recently Completed
+
+- [x] **Setup Quality Rename** - Renamed confidence → setupQuality with migration (700+ trades migrated)
+- [x] **Structure Break Before Exit** - Enum field (yes/no/unsure) to distinguish emotional vs technical exits
+- [x] **Would Take Trade Again** - Enum field (yes/no/withAdjustment) for trade replay decisions
+- [x] **Stop Loss Field** - Optional field for chart-based technical stop levels
 
 - [x] **Strategy Analytics** - Performance breakdown by strategy tag
 - [x] **Screenshot Attachments** - Add images to trades for chart analysis
