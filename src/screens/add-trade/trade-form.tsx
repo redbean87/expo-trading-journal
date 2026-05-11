@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { TextInput, Text, HelperText, Switch } from 'react-native-paper';
+import { TextInput, Text, HelperText } from 'react-native-paper';
 
 import { HtfContextSelector } from './htf-context-selector';
 import { MarketConditionSelector } from './market-condition-selector';
@@ -316,16 +316,40 @@ export function TradeForm({
           onSelect={(text) => onUpdate({ ruleViolation: text || undefined })}
         />
 
-        <View style={styles.structureBreakRow}>
+        <View style={styles.structureBreakContainer}>
           <Text variant="bodySmall" style={styles.structureBreakLabel}>
             Structure broke before exit
           </Text>
-          <Switch
-            value={formData.structureBreakBeforeExit ?? false}
-            onValueChange={(value) =>
-              onUpdate({ structureBreakBeforeExit: value })
-            }
-          />
+          <View style={styles.structureBreakChips}>
+            {(['yes', 'no', 'unsure'] as const).map((option) => {
+              const isSelected = formData.structureBreakBeforeExit === option;
+              return (
+                <Chip
+                  key={option}
+                  selected={isSelected}
+                  onPress={() =>
+                    onUpdate({
+                      structureBreakBeforeExit:
+                        formData.structureBreakBeforeExit === option
+                          ? undefined
+                          : option,
+                    })
+                  }
+                  style={[
+                    styles.structureBreakChip,
+                    isSelected && styles.structureBreakChipSelected,
+                  ]}
+                  textStyle={[
+                    styles.structureBreakChipText,
+                    isSelected && styles.structureBreakChipTextSelected,
+                  ]}
+                  compact
+                >
+                  {option.charAt(0).toUpperCase() + option.slice(1)}
+                </Chip>
+              );
+            })}
+          </View>
         </View>
 
         <WhatWorkedSelector
@@ -381,6 +405,48 @@ export function TradeForm({
       </SectionCard>
 
       <SectionCard title="Reflection">
+        <View style={styles.wouldTakeContainer}>
+          <Text variant="bodySmall" style={styles.wouldTakeLabel}>
+            Would take this trade again
+          </Text>
+          <View style={styles.wouldTakeChips}>
+            {(
+              [
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+                { value: 'withAdjustment', label: 'With Adjustment' },
+              ] as const
+            ).map((option) => {
+              const isSelected = formData.wouldTakeTradeAgain === option.value;
+              return (
+                <Chip
+                  key={option.value}
+                  selected={isSelected}
+                  onPress={() =>
+                    onUpdate({
+                      wouldTakeTradeAgain:
+                        formData.wouldTakeTradeAgain === option.value
+                          ? undefined
+                          : option.value,
+                    })
+                  }
+                  style={[
+                    styles.wouldTakeChip,
+                    isSelected && styles.wouldTakeChipSelected,
+                  ]}
+                  textStyle={[
+                    styles.wouldTakeChipText,
+                    isSelected && styles.wouldTakeChipTextSelected,
+                  ]}
+                  compact
+                >
+                  {option.label}
+                </Chip>
+              );
+            })}
+          </View>
+        </View>
+
         <TextInput
           ref={createRef('notes')}
           label="Notes (Optional)"
@@ -463,14 +529,65 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     modeSwitchLink: {
       color: theme.colors.primary,
     },
-    structureBreakRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+    structureBreakContainer: {
       marginTop: theme.spacing.md,
       marginBottom: theme.spacing.lg,
     },
     structureBreakLabel: {
       opacity: 0.7,
+      marginBottom: theme.spacing.sm,
+    },
+    structureBreakChips: {
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+    },
+    structureBreakChip: {
+      flex: 1,
+      borderRadius: theme.borderRadius.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      backgroundColor: theme.colors.surface,
+    },
+    structureBreakChipSelected: {
+      backgroundColor: theme.colors.surfaceVariant,
+      borderColor: theme.colors.primaryContainer,
+    },
+    structureBreakChipText: {
+      fontSize: 13,
+      color: theme.colors.textSecondary,
+    },
+    structureBreakChipTextSelected: {
+      color: theme.colors.onSurface,
+      fontWeight: '500',
+    },
+    wouldTakeContainer: {
+      marginBottom: theme.spacing.lg,
+    },
+    wouldTakeLabel: {
+      opacity: 0.7,
+      marginBottom: theme.spacing.sm,
+    },
+    wouldTakeChips: {
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+    },
+    wouldTakeChip: {
+      flex: 1,
+      borderRadius: theme.borderRadius.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      backgroundColor: theme.colors.surface,
+    },
+    wouldTakeChipSelected: {
+      backgroundColor: theme.colors.surfaceVariant,
+      borderColor: theme.colors.primaryContainer,
+    },
+    wouldTakeChipText: {
+      fontSize: 13,
+      color: theme.colors.textSecondary,
+    },
+    wouldTakeChipTextSelected: {
+      color: theme.colors.onSurface,
+      fontWeight: '500',
     },
   });

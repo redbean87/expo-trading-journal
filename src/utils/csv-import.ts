@@ -14,15 +14,6 @@ function getTimezoneOffsetMs(timezone: string, date: Date): number {
   return utcDate.getTime() - tzDate.getTime();
 }
 
-// Parse boolean string value
-function parseBoolean(value: string | undefined): boolean | undefined {
-  if (value === undefined || value.trim() === '') return undefined;
-  const lower = value.trim().toLowerCase();
-  if (lower === 'true' || lower === '1' || lower === 'yes') return true;
-  if (lower === 'false' || lower === '0' || lower === 'no') return false;
-  return undefined;
-}
-
 // Parse date string as local time
 function parseAsLocal(dateStr: string): Date {
   // Handle date-only format "YYYY-MM-DD" first to avoid UTC interpretation
@@ -100,6 +91,7 @@ type CsvRow = {
   marketCondition?: string;
   htfContext?: string;
   structureBreakBeforeExit?: string;
+  wouldTakeTradeAgain?: string;
   stopLoss?: string;
   link?: string;
   side?: string;
@@ -257,7 +249,16 @@ function parseCsvRowToTrade(
       ruleViolation,
       marketCondition: row.marketCondition?.substring(0, 50),
       htfContext: row.htfContext?.substring(0, 50),
-      structureBreakBeforeExit: parseBoolean(row.structureBreakBeforeExit),
+      structureBreakBeforeExit: row.structureBreakBeforeExit as
+        | 'yes'
+        | 'no'
+        | 'unsure'
+        | undefined,
+      wouldTakeTradeAgain: row.wouldTakeTradeAgain as
+        | 'yes'
+        | 'no'
+        | 'withAdjustment'
+        | undefined,
       stopLoss:
         row.stopLoss && !isNaN(parseFloat(row.stopLoss))
           ? parseFloat(row.stopLoss)

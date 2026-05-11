@@ -34,7 +34,8 @@ type BackendTrade = {
   stopLoss?: number;
   marketCondition?: string;
   htfContext?: string;
-  structureBreakBeforeExit?: boolean;
+  structureBreakBeforeExit?: string;
+  wouldTakeTradeAgain?: string;
 };
 
 function mapToTrade(trade: BackendTrade): Trade {
@@ -45,6 +46,10 @@ function mapToTrade(trade: BackendTrade): Trade {
     exitTime: new Date(trade.exitTime),
     side: trade.side as Trade['side'],
     importedFrom: trade.importedFrom as Trade['importedFrom'],
+    structureBreakBeforeExit:
+      trade.structureBreakBeforeExit as Trade['structureBreakBeforeExit'],
+    wouldTakeTradeAgain:
+      trade.wouldTakeTradeAgain as Trade['wouldTakeTradeAgain'],
   };
 }
 

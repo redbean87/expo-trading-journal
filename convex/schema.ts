@@ -54,7 +54,8 @@ const schema = defineSchema({
     stopLoss: v.optional(v.number()),
     marketCondition: v.optional(v.string()),
     htfContext: v.optional(v.string()),
-    structureBreakBeforeExit: v.optional(v.boolean()),
+    structureBreakBeforeExit: v.optional(v.union(v.boolean(), v.string())),
+    wouldTakeTradeAgain: v.optional(v.string()),
   })
     .index('by_user', ['userId']) // Index for efficient user queries
     .index('by_user_and_entry_time', ['userId', 'entryTime']) // Index for sorted queries

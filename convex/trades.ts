@@ -1,7 +1,7 @@
 import { getAuthUserId } from '@convex-dev/auth/server';
 import { v } from 'convex/values';
 
-import { mutation, query } from './_generated/server';
+import { internalMutation, mutation, query } from './_generated/server';
 
 // Query to get all trades for the authenticated user
 export const getTrades = query({
@@ -48,6 +48,7 @@ export const getTrades = query({
       marketCondition: trade.marketCondition,
       htfContext: trade.htfContext,
       structureBreakBeforeExit: trade.structureBreakBeforeExit,
+      wouldTakeTradeAgain: trade.wouldTakeTradeAgain,
     }));
   },
 });
@@ -164,6 +165,7 @@ export const getTrade = query({
       marketCondition: trade.marketCondition,
       htfContext: trade.htfContext,
       structureBreakBeforeExit: trade.structureBreakBeforeExit,
+      wouldTakeTradeAgain: trade.wouldTakeTradeAgain,
     };
   },
 });
@@ -198,7 +200,8 @@ export const addTrade = mutation({
     stopLoss: v.optional(v.number()),
     marketCondition: v.optional(v.string()),
     htfContext: v.optional(v.string()),
-    structureBreakBeforeExit: v.optional(v.boolean()),
+    structureBreakBeforeExit: v.optional(v.string()),
+    wouldTakeTradeAgain: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -235,6 +238,7 @@ export const addTrade = mutation({
       marketCondition: args.marketCondition,
       htfContext: args.htfContext,
       structureBreakBeforeExit: args.structureBreakBeforeExit,
+      wouldTakeTradeAgain: args.wouldTakeTradeAgain,
     });
 
     return {
@@ -273,7 +277,8 @@ export const updateTrade = mutation({
     stopLoss: v.optional(v.number()),
     marketCondition: v.optional(v.string()),
     htfContext: v.optional(v.string()),
-    structureBreakBeforeExit: v.optional(v.boolean()),
+    structureBreakBeforeExit: v.optional(v.string()),
+    wouldTakeTradeAgain: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -325,6 +330,7 @@ export const updateTrade = mutation({
       marketCondition: updatedTrade!.marketCondition,
       htfContext: updatedTrade!.htfContext,
       structureBreakBeforeExit: updatedTrade!.structureBreakBeforeExit,
+      wouldTakeTradeAgain: updatedTrade!.wouldTakeTradeAgain,
     };
   },
 });
@@ -433,7 +439,8 @@ export const importTrades = mutation({
         stopLoss: v.optional(v.number()),
         marketCondition: v.optional(v.string()),
         htfContext: v.optional(v.string()),
-        structureBreakBeforeExit: v.optional(v.boolean()),
+        structureBreakBeforeExit: v.optional(v.string()),
+        wouldTakeTradeAgain: v.optional(v.string()),
       })
     ),
   },
@@ -532,5 +539,27 @@ export const importTrades = mutation({
     }
 
     return { imported, skipped, updated };
+  },
+});
+
+// Internal mutation to migrate structureBreakBeforeExit from boolean to string enum
+export const migrateStructureBreakToEnum = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const trades = await ctx.db.query('trades').collect();
+
+    let migrated = 0;
+    for (const trade of trades) {
+      if (typeof trade.structureBreakBeforeExit === 'boolean') {
+        await ctx.db.patch(trade._id, {
+          structureBreakBeforeExit: trade.structureBreakBeforeExit
+            ? 'yes'
+            : 'no',
+        });
+        migrated++;
+      }
+    }
+
+    return { migrated };
   },
 });

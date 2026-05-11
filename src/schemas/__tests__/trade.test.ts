@@ -100,10 +100,18 @@ describe('tradeFormSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('should accept optional structureBreakBeforeExit boolean', () => {
+  it('should accept optional structureBreakBeforeExit enum', () => {
     const result = tradeFormSchema.safeParse({
       ...validFormData,
-      structureBreakBeforeExit: true,
+      structureBreakBeforeExit: 'yes',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should accept optional wouldTakeTradeAgain enum', () => {
+    const result = tradeFormSchema.safeParse({
+      ...validFormData,
+      wouldTakeTradeAgain: 'withAdjustment',
     });
     expect(result.success).toBe(true);
   });

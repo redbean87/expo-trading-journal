@@ -213,7 +213,13 @@ export function TradeDetailContent({
               {trade.structureBreakBeforeExit !== undefined && (
                 <DetailRow
                   label="Structure Break"
-                  value={trade.structureBreakBeforeExit ? 'Yes' : 'No'}
+                  value={
+                    trade.structureBreakBeforeExit === 'yes'
+                      ? 'Yes'
+                      : trade.structureBreakBeforeExit === 'no'
+                        ? 'No'
+                        : 'Unsure'
+                  }
                 />
               )}
               {trade.whatWorked && (
@@ -266,11 +272,25 @@ export function TradeDetailContent({
             </SectionCard>
           )}
 
-          {trade.notes && (
+          {(trade.wouldTakeTradeAgain || trade.notes) && (
             <SectionCard title="Reflection">
-              <LinkedText variant="bodyLarge" style={styles.notes}>
-                {trade.notes}
-              </LinkedText>
+              {trade.wouldTakeTradeAgain && (
+                <DetailRow
+                  label="Would Take Again"
+                  value={
+                    trade.wouldTakeTradeAgain === 'yes'
+                      ? 'Yes'
+                      : trade.wouldTakeTradeAgain === 'no'
+                        ? 'No'
+                        : 'With Adjustment'
+                  }
+                />
+              )}
+              {trade.notes && (
+                <LinkedText variant="bodyLarge" style={styles.notes}>
+                  {trade.notes}
+                </LinkedText>
+              )}
             </SectionCard>
           )}
 

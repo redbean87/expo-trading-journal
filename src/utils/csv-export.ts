@@ -33,7 +33,8 @@ type CsvExportRow = {
   marketCondition: string;
   htfContext: string;
   setupQuality: number;
-  structureBreakBeforeExit: boolean;
+  structureBreakBeforeExit: string;
+  wouldTakeTradeAgain: string;
   stopLoss: number;
   notes: string;
   pnl: number;
@@ -53,7 +54,8 @@ function tradeToExportRow(trade: Trade): CsvExportRow {
     marketCondition: trade.marketCondition ?? '',
     htfContext: trade.htfContext ?? '',
     setupQuality: trade.setupQuality ?? 0,
-    structureBreakBeforeExit: trade.structureBreakBeforeExit ?? false,
+    structureBreakBeforeExit: trade.structureBreakBeforeExit ?? '',
+    wouldTakeTradeAgain: trade.wouldTakeTradeAgain ?? '',
     stopLoss: trade.stopLoss ?? 0,
     notes: trade.notes ?? '',
     pnl: trade.pnl,

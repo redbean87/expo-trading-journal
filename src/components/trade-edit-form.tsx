@@ -78,6 +78,7 @@ export function TradeEditForm({
       psychology: formData.psychology || undefined,
       notes: formData.notes || undefined,
       structureBreakBeforeExit: formData.structureBreakBeforeExit,
+      wouldTakeTradeAgain: formData.wouldTakeTradeAgain,
       pnl,
       pnlPercent,
     });
@@ -112,6 +113,7 @@ export function TradeEditForm({
     psychology: trade.psychology || '',
     notes: trade.notes || '',
     structureBreakBeforeExit: trade.structureBreakBeforeExit,
+    wouldTakeTradeAgain: trade.wouldTakeTradeAgain,
   };
 
   return (

@@ -30,7 +30,8 @@ export const tradeSchema = z.object({
   whatFailed: z.string().max(500).optional(),
   psychology: z.string().max(200).optional(),
   notes: z.string().max(500).optional(),
-  structureBreakBeforeExit: z.boolean().optional(),
+  structureBreakBeforeExit: z.enum(['yes', 'no', 'unsure']).optional(),
+  wouldTakeTradeAgain: z.enum(['yes', 'no', 'withAdjustment']).optional(),
   pnl: z.number(),
   pnlPercent: z.number(),
   importedFrom: z.enum(['cash-balance', 'trade-history']).optional(),
@@ -140,7 +141,8 @@ export const tradeFormSchema = z
       .string()
       .max(500, 'Notes must be 500 characters or less')
       .optional(),
-    structureBreakBeforeExit: z.boolean().optional(),
+    structureBreakBeforeExit: z.enum(['yes', 'no', 'unsure']).optional(),
+    wouldTakeTradeAgain: z.enum(['yes', 'no', 'withAdjustment']).optional(),
   })
   .refine((data) => data.exitTime >= data.entryTime, {
     message: 'Exit time must be after entry time',
@@ -240,6 +242,7 @@ export function formDataToTrade(formData: TradeFormData, id: string): Trade {
     psychology: formData.psychology,
     notes: formData.notes,
     structureBreakBeforeExit: formData.structureBreakBeforeExit,
+    wouldTakeTradeAgain: formData.wouldTakeTradeAgain,
     pnl,
     pnlPercent,
   };
