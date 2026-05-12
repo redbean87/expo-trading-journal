@@ -30,6 +30,11 @@ The app has a solid foundation with:
 
 ### Medium Priority
 
+- [ ] **Append/Update Imported Trades** - Re-import same statement to append missing trades or update existing ones with new data (fees, commissions, etc.)
+  - Match existing trades by symbol + entry time + quantity (or importId)
+  - Update fields that were empty/missing in previous import
+  - Prevent duplicates while allowing data enrichment
+
 - [ ] **Stop Loss vs Risk Amount Comparison** - Show implied risk from stop loss vs planned risk
   - Stop loss implies: `|entry - stop| × quantity` (technical/chart-based)
   - Planned risk: user's intended dollar risk (account-based, e.g., 5%)
@@ -128,6 +133,9 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 
 ## Technical Improvements
 
+- [ ] **TOS Import Bug: Cash Balance hides Account Trade History trades** - When Cash Balance section has fills, Account Trade History is never parsed, causing missing trades for symbols that haven't settled in Cash Balance yet
+  - **Fix**: Parse Account Trade History as primary source (it's more complete/real-time), fall back to Cash Balance only if Trade History is empty
+  - **Trade-off**: Fees/commissions only available from Cash Balance; may need to merge both sources for complete data
 - [ ] Offline mode with sync queue
 - [ ] Expand test coverage
 - [ ] E2E tests for critical flows
