@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text } from 'react-native-paper';
@@ -40,59 +40,47 @@ export default function TradeDetailScreen() {
 
   if (isLoading) {
     return (
-      <>
-        <Stack.Screen options={{ title: 'Trade Details' }} />
-        <View style={[styles.container, styles.centerContent]}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.loadingText}>Loading trade...</Text>
-        </View>
-      </>
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <Text style={styles.loadingText}>Loading trade...</Text>
+      </View>
     );
   }
 
   if (notFound || !trade) {
     return (
-      <>
-        <Stack.Screen options={{ title: 'Trade Details' }} />
-        <View style={[styles.container, styles.centerContent]}>
-          <Text variant="headlineSmall" style={styles.errorText}>
-            Trade Not Found
-          </Text>
-          <Text variant="bodyMedium" style={styles.errorSubtext}>
-            This trade doesn&apos;t exist or has been deleted.
-          </Text>
-          <Button mode="contained" onPress={() => router.back()}>
-            Go Back
-          </Button>
-        </View>
-      </>
+      <View style={[styles.container, styles.centerContent]}>
+        <Text variant="headlineSmall" style={styles.errorText}>
+          Trade Not Found
+        </Text>
+        <Text variant="bodyMedium" style={styles.errorSubtext}>
+          This trade doesn&apos;t exist or has been deleted.
+        </Text>
+        <Button mode="contained" onPress={() => router.back()}>
+          Go Back
+        </Button>
+      </View>
     );
   }
 
   if (isEditing) {
     return (
-      <>
-        <Stack.Screen options={{ title: `Edit ${trade.symbol}` }} />
-        <TradeEditForm
-          trade={trade}
-          tradeId={params.id}
-          onComplete={handleCancelEdit}
-        />
-      </>
+      <TradeEditForm
+        trade={trade}
+        tradeId={params.id}
+        onComplete={handleCancelEdit}
+      />
     );
   }
 
   return (
-    <>
-      <Stack.Screen options={{ title: trade.symbol }} />
-      <TradeDetailContent
-        trade={trade}
-        onClose={() => router.back()}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onDeleteComplete={handleDeleteComplete}
-      />
-    </>
+    <TradeDetailContent
+      trade={trade}
+      onClose={() => router.back()}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      onDeleteComplete={handleDeleteComplete}
+    />
   );
 }
 

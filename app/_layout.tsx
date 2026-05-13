@@ -76,8 +76,7 @@ export default function RootLayout() {
                     <Stack.Screen
                       name="add-trade"
                       options={{
-                        headerShown: true,
-                        title: 'Add Trade',
+                        headerShown: false,
                         presentation: 'modal',
                       }}
                     />

@@ -219,6 +219,7 @@ export default function AddTradeScreen() {
       isEditMode={isEditMode}
       tradeId={params.id || null}
       onSubmit={handleSubmit}
+      onCancel={() => router.back()}
     />
   );
 }
