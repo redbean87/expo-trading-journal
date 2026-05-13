@@ -175,6 +175,7 @@ const createStyles = (theme: AppTheme, cellSize: number) =>
     dialog: {
       maxWidth: 600,
       alignSelf: 'center',
+      width: '90%',
     },
     dialogContent: {
       paddingHorizontal: 16,

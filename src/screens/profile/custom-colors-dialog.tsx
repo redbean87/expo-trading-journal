@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
   dialog: {
     maxWidth: 600,
     alignSelf: 'center',
+    width: '90%',
   },
   scrollArea: {
     maxHeight: 400,

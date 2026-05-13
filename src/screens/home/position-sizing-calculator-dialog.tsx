@@ -215,8 +215,9 @@ const resultRowStyles = (
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     dialog: {
-      maxWidth: 480,
+      maxWidth: 600,
       alignSelf: 'center',
+      width: '90%',
     },
     row: {
       flexDirection: 'row',

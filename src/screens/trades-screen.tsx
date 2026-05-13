@@ -689,8 +689,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       color: theme.colors.primary,
     },
     importDialog: {
-      maxWidth: 480,
+      maxWidth: 600,
       alignSelf: 'center',
+      width: '90%',
     },
     checkboxRow: {
       flexDirection: 'row',

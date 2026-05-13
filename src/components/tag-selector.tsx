@@ -275,8 +275,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       borderColor: theme.colors.textSecondary,
     },
     dialog: {
-      maxWidth: 400,
+      maxWidth: 600,
       alignSelf: 'center',
+      width: '90%',
     },
     dialogInput: {
       backgroundColor: theme.colors.surface,
