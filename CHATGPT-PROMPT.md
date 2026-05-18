@@ -35,7 +35,7 @@ Use this as my trade journal format going forward. When I share a trade screensh
 
 - Rule Violation / Mistake: (Optional — choose the BEST match from: Exited Too Early, Exited Too Late, No Valid Setup, Oversized Position, FOMO Entry, Revenge Trade, No Stop Loss, Moved Stop Loss, Wrong Direction, Poor Entry Timing, Ignored Trading Rules)
 - Structure Break Before Exit: (Optional — choose ONLY from: yes, no, unsure)
-- What Worked: (Optional — choose up to 3 from: Waited for pullback, Entered on confirmation, Followed plan, Good patience, Strong momentum setup, or describe custom)
+- What Worked: (Optional — choose up to 3 from: Waited for Confirmation, Entered on Pullback, Followed Plan, Good Patience, Strong Momentum Setup, or describe custom)
 - What Didn't Work: (Optional — choose up to 2 from: Poor Entry Timing, Chased Move, Late in Move, Entered Into Resistance, Entered Into Support, Range / Choppy Conditions, Weak Volume, No Clear Trend Continuation, No Higher Timeframe Level, Premature Exit (Read Issue), Held Too Long, Didn't Follow Plan, or describe custom)
 
 ## Psychology

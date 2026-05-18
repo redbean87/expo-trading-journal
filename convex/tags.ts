@@ -1,7 +1,8 @@
 import { getAuthUserId } from '@convex-dev/auth/server';
 import { v } from 'convex/values';
 
-import { mutation, query } from './_generated/server';
+import { Id } from './_generated/dataModel';
+import { internalMutation, mutation, query } from './_generated/server';
 
 // System tag definitions — idempotent seed data
 export const SYSTEM_TAG_DEFINITIONS = {
@@ -59,10 +60,6 @@ export const SYSTEM_TAG_DEFINITIONS = {
     'Followed Plan',
     'Good Patience',
     'Strong Momentum Setup',
-    'Respected Key Level',
-    'VWAP Entry',
-    'Trend Alignment',
-    'Scaled Out Properly',
   ],
 } as const;
 
@@ -222,6 +219,92 @@ export const syncSystemTags = mutation({
             isSystem: true,
             isActive: true,
             sortOrder: maxSortOrder + i,
+            createdAt: now,
+          });
+          totalAdded++;
+        }
+      }
+    }
+
+    return {
+      synced: changedFields.length > 0,
+      changedFields,
+      deleted: totalDeleted,
+      added: totalAdded,
+    };
+  },
+});
+
+// Internal mutation to list all tags for a field (for debugging)
+export const debugListTags = internalMutation({
+  args: { field: v.string() },
+  handler: async (ctx, args) => {
+    const tags = await ctx.db
+      .query('tags')
+      .withIndex('by_field_system', (q) => q.eq('field', args.field))
+      .collect();
+
+    return {
+      total: tags.length,
+      system: tags
+        .filter((t) => t.isSystem)
+        .map((t) => ({ label: t.label, isActive: t.isActive })),
+      custom: tags
+        .filter((t) => !t.isSystem)
+        .map((t) => ({
+          label: t.label,
+          isActive: t.isActive,
+          userId: t.userId,
+        })),
+    };
+  },
+});
+
+// Internal mutation to force sync system tags (handles extra tags too)
+export const forceSyncSystemTags = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const existingSystemTags = await ctx.db
+      .query('tags')
+      .withIndex('by_system', (q) => q.eq('isSystem', true))
+      .collect();
+
+    const changedFields: string[] = [];
+    const now = Date.now();
+    let totalAdded = 0;
+    let totalDeleted = 0;
+
+    for (const [field, expectedLabels] of Object.entries(
+      SYSTEM_TAG_DEFINITIONS
+    )) {
+      const fieldTags = existingSystemTags.filter((t) => t.field === field);
+      const existingLabels = fieldTags.map((t) => t.label);
+
+      // Check for exact match (same labels, no extras)
+      const expectedSet = new Set<string>(expectedLabels);
+      const existingSet = new Set<string>(existingLabels);
+      const hasExtras = existingLabels.some((l: string) => !expectedSet.has(l));
+      const hasMissing = expectedLabels.some(
+        (l: string) => !existingSet.has(l)
+      );
+
+      if (hasExtras || hasMissing) {
+        changedFields.push(field);
+
+        // Delete old system tags for this field
+        for (const tag of fieldTags) {
+          await ctx.db.delete(tag._id as Id<'tags'>);
+          totalDeleted++;
+        }
+
+        // Insert new tags
+        for (let i = 0; i < expectedLabels.length; i++) {
+          await ctx.db.insert('tags', {
+            field,
+            label: expectedLabels[i],
+            isSystem: true,
+            isActive: true,
+            sortOrder: i,
             createdAt: now,
           });
           totalAdded++;
