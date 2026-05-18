@@ -55,8 +55,8 @@ export const SYSTEM_TAG_DEFINITIONS = {
     "Didn't Follow Plan",
   ],
   whatWorked: [
-    'Waited for Confirmation',
-    'Entered on Pullback',
+    'Entered on Confirmation',
+    'Waited for Pullback',
     'Followed Plan',
     'Good Patience',
     'Strong Momentum Setup',
