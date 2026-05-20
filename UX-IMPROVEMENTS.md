@@ -2,24 +2,23 @@
 
 ## Active Items
 
-### 1. Remove Header
+### 1. Time Selection Across All Pages
 
-- **Status**: Not started
-- **Priority**: High (quick win)
-- **Notes**: Remove Expo Router Stack header from all screens for mobile. Currently takes ~56px of screen real estate. Can hide globally and add custom headers only where needed.
-- **Files**: `app/_layout.tsx` (Stack screenOptions), potentially add custom headers to specific screens
-
-### 2. Time Selection Across All Pages
-
-- **Status**: Not started
+- **Status**: Completed
 - **Priority**: High
-- **Notes**: Make time period filter (Today/Week/Month/Year/All) consistent across Home, Trades list, and Analytics pages. Currently only Home has this.
-- **Approach**: Create global time filter in Zustand store. All pages subscribe to same state. Selection persists when navigating between pages.
+- **Notes**: Global time period filter (Today/Week/Month/Year/All) now consistent across Home, Trades list, and Analytics pages. Selection persists via AsyncStorage and syncs across all pages.
 - **Files**:
-  - Create: `src/store/time-filter-store.ts`
-  - Update: `src/screens/home/home-screen.tsx`, `src/screens/trades-screen.tsx`, analytics screens
+  - Created: `src/store/time-filter-store.ts`
+  - Created: `src/components/time-filter-selector.tsx`
+  - Updated: `src/screens/home/home-screen.tsx` (replaced local state with global store)
+  - Updated: `src/screens/trades-screen.tsx` (added filter UI + integrated with `useTradeFilters`)
+  - Updated: `src/screens/analytics-layout.tsx` (switched to global store)
+  - Updated: `src/store/analytics-store.ts` (removed local `selectedRange`, re-exports global store)
+  - Updated: `src/hooks/use-home-summary.ts` (accepts `DateRangePreset` instead of `HomePeriod`)
+  - Updated: `src/hooks/use-trade-filters.ts` (accepts optional `timeRangeStart`)
+  - Updated: `app/_layout.tsx` (initialized store on app launch)
 
-### 3. Default Time Selection (User Setting)
+### 2. Default Time Selection (User Setting)
 
 - **Status**: Not started
 - **Priority**: Medium
@@ -30,15 +29,7 @@
   - `src/screens/profile/settings-screen.tsx` (add dropdown/select)
   - `src/store/time-filter-store.ts` (read default on init)
 
-### 4. Fix Modal Width on Mobile
-
-- **Status**: Not started
-- **Priority**: High (bug fix)
-- **Notes**: Theme color picker modal and possibly others span full width on mobile. Need maxWidth constraint.
-- **Fix**: Add `maxWidth` and `alignSelf: 'center'` to modal containers.
-- **Files**: Check `src/screens/profile/custom-theme-screen.tsx` or wherever theme picker modal is defined
-
-### 5. Theme Breakdown + Secondary Color
+### 3. Theme Breakdown + Secondary Color
 
 - **Status**: Not started
 - **Priority**: Low (nice to have)
@@ -51,7 +42,7 @@
   - `src/screens/profile/custom-theme-screen.tsx` (add secondary color picker)
   - `convex/schema.ts` (add secondary color to customColors)
 
-### 6. Migrate Prod Data to Dev
+### 4. Migrate Prod Data to Dev
 
 - **Status**: Not started
 - **Priority**: Medium
@@ -73,6 +64,8 @@
 - [x] Would Take Trade Again field
 - [x] Stop Loss field
 - [x] Update documentation (README, ROADMAP, CLAUDE, ChatGPT prompt)
+- [x] **Remove Header** — Hidden globally via `headerShown: false` in all layouts (`app/_layout.tsx`, `app/(tabs)/_layout.tsx`, `app/(tabs)/trades/_layout.tsx`, analytics layout). Verified complete.
+- [x] **Fix Modal Width on Mobile** — All Dialog/Portal components already have `maxWidth: 600`, `alignSelf: 'center'`, and `width: '90%'` constraints. Verified in: custom-colors, date-range-picker, position-sizing, date-picker, timezone-picker, tag-selector, trade-detail, trades import, profile dialogs, trade-filter. Verified complete.
 
 ---
 
@@ -80,10 +73,9 @@
 
 Ready to implement Phase 1 items:
 
-1. Remove header
-2. Fix modal width
-3. Default time selection setting
+1. Global time filter across pages (was #2)
+2. Default time selection setting (was #3)
 
-Then Phase 2: 4. Global time filter across pages 5. Prod-to-dev migration script
+Then Phase 2: 3. Prod-to-dev migration script (was #6)
 
-Phase 3 (future): 6. Theme audit and secondary color
+Phase 3 (future): 4. Theme audit and secondary color (was #5)

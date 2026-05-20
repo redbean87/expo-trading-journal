@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
+import { DateRangeFilter } from '../components/date-range-filter';
 import { LoadingState } from '../components/loading-state';
 import { ResponsiveContainer } from '../components/responsive-container';
 import { ResponsiveGrid } from '../components/responsive-grid';
@@ -8,17 +9,22 @@ import { StatCard } from '../components/stat-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useHomeSummary } from '../hooks/use-home-summary';
 import { useTrades } from '../hooks/use-trades';
-import { HomePeriod } from '../types';
+import { useTimeFilterStore } from '../store/time-filter-store';
 import { HomeEdgeMetrics } from './home/home-edge-metrics';
 import { HomeHeader } from './home/home-header';
-import { HomePeriodSelector } from './home/home-period-selector';
 import { HomeStreakBadge } from './home/home-streak-badge';
 import { PositionSizingCalculatorDialog } from './home/position-sizing-calculator-dialog';
 import { RecentTradesCard } from './home/recent-trades-card';
 
 export default function HomeScreen() {
   const { trades, isLoading } = useTrades();
-  const [period, setPeriod] = useState<HomePeriod>('all');
+  const {
+    selectedRange,
+    setSelectedRange,
+    customRangeStart,
+    customRangeEnd,
+    setCustomRange,
+  } = useTimeFilterStore();
   const [calcVisible, setCalcVisible] = useState(false);
   const theme = useAppTheme();
 
@@ -33,7 +39,7 @@ export default function HomeScreen() {
     profitFactor,
     recentTrades,
     currentStreak,
-  } = useHomeSummary(trades, period);
+  } = useHomeSummary(trades, selectedRange, customRangeStart, customRangeEnd);
 
   const styles = createStyles(theme);
 
@@ -44,7 +50,13 @@ export default function HomeScreen() {
           <View style={styles.content}>
             <HomeHeader onCalculatorPress={() => setCalcVisible(true)} />
             <HomeStreakBadge streak={currentStreak} />
-            <HomePeriodSelector period={period} onChangePeriod={setPeriod} />
+            <DateRangeFilter
+              selectedRange={selectedRange}
+              customRangeStart={customRangeStart}
+              customRangeEnd={customRangeEnd}
+              onSelectRange={setSelectedRange}
+              onSetCustomRange={setCustomRange}
+            />
 
             <View style={styles.statsGrid}>
               <ResponsiveGrid columns={{ mobile: 2, tablet: 2, desktop: 4 }}>

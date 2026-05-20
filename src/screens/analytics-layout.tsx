@@ -9,14 +9,15 @@ import React, {
 import { View, StyleSheet, ScrollView } from 'react-native';
 
 import { AnalyticsTabs } from '../components/analytics-tabs';
+import { DateRangeFilter } from '../components/date-range-filter';
 import { LoadingState } from '../components/loading-state';
 import { ResponsiveContainer } from '../components/responsive-container';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useTradesInRange } from '../hooks/use-trades';
 import { useAnalyticsStore } from '../store/analytics-store';
+import { useTimeFilterStore } from '../store/time-filter-store';
 import { AnalyticsSegment, Trade } from '../types';
 import { getDateRangeStart } from '../utils/date-range';
-import { DateRangeFilter } from './analytics/date-range-filter';
 import { StrategyFilter } from './analytics/strategy-filter';
 
 type AnalyticsLayoutContextValue = {
@@ -50,13 +51,12 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const {
     selectedRange,
+    setSelectedRange,
     customRangeStart,
     customRangeEnd,
-    selectedStrategy,
-    setSelectedRange,
     setCustomRange,
-    setSelectedStrategy,
-  } = useAnalyticsStore();
+  } = useTimeFilterStore();
+  const { selectedStrategy, setSelectedStrategy } = useAnalyticsStore();
 
   const startTime =
     selectedRange === 'custom'

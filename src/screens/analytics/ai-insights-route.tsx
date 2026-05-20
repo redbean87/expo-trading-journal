@@ -8,7 +8,7 @@ import { SectionCard } from '../../components/section-card';
 import { SegmentedButtons } from '../../components/segmented-buttons';
 import { useAIReport } from '../../hooks/use-ai-report';
 import { useAppTheme } from '../../hooks/use-app-theme';
-import { useAnalyticsStore } from '../../store/analytics-store';
+import { useTimeFilterStore } from '../../store/time-filter-store';
 import { generateAIReport } from '../../utils/ai-export';
 import { getDateRangeLabel } from '../../utils/date-range';
 import {
@@ -23,7 +23,7 @@ export default function AIInsightsRoute() {
   const styles = createStyles(theme);
   const { trades } = useAnalyticsData();
   const { selectedRange, customRangeStart, customRangeEnd } =
-    useAnalyticsStore();
+    useTimeFilterStore();
 
   const [tradeDateLimit, setTradeDateLimit] = useState<number>(30); // Default 30 days
   const [includeIndividualTrades, setIncludeIndividualTrades] =

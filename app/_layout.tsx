@@ -19,6 +19,7 @@ import { SettingsSyncProvider } from '@/providers/settings-sync-provider';
 import { useCustomThemeStore } from '@/store/custom-theme-store';
 import { useProfileStore } from '@/store/profile-store';
 import { useThemeStore } from '@/store/theme-store';
+import { useTimeFilterStore } from '@/store/time-filter-store';
 import { useTimezoneStore } from '@/store/timezone-store';
 import {
   lightTheme,
@@ -41,13 +42,15 @@ export default function RootLayout() {
   const { preset, customColors, loadCustomTheme } = useCustomThemeStore();
   const { loadTimezone } = useTimezoneStore();
   const { loadProfile } = useProfileStore();
+  const { loadTimeFilter } = useTimeFilterStore();
 
   useEffect(() => {
     loadTheme();
     loadCustomTheme();
     loadTimezone();
     loadProfile();
-  }, [loadTheme, loadCustomTheme, loadTimezone, loadProfile]);
+    loadTimeFilter();
+  }, [loadTheme, loadCustomTheme, loadTimezone, loadProfile, loadTimeFilter]);
 
   const baseTheme = themeMode === 'dark' ? darkTheme : lightTheme;
   const paperTheme =

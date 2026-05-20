@@ -91,4 +91,46 @@ describe('useHomeSummary', () => {
       expect(result.currentStreak).toEqual({ count: 1, type: 'win' });
     });
   });
+
+  describe('custom range filtering', () => {
+    it('filters trades within custom start and end', () => {
+      const midTrade = createTrade({
+        exitTime: new Date('2024-06-01T12:00:00'),
+      });
+      const earlyTrade = createTrade({
+        exitTime: new Date('2024-01-01T12:00:00'),
+      });
+      const lateTrade = createTrade({
+        exitTime: new Date('2024-12-01T12:00:00'),
+      });
+      const trades = [earlyTrade, midTrade, lateTrade];
+
+      const result = useHomeSummary(
+        trades,
+        'custom',
+        new Date('2024-03-01').getTime(),
+        new Date('2024-09-01').getTime()
+      );
+      expect(result.totalTrades).toBe(1);
+      expect(result.recentTrades).toHaveLength(3);
+    });
+
+    it('custom range with no end filters from start onwards', () => {
+      const midTrade = createTrade({
+        exitTime: new Date('2024-06-01T12:00:00'),
+      });
+      const earlyTrade = createTrade({
+        exitTime: new Date('2024-01-01T12:00:00'),
+      });
+      const trades = [earlyTrade, midTrade];
+
+      const result = useHomeSummary(
+        trades,
+        'custom',
+        new Date('2024-03-01').getTime(),
+        null
+      );
+      expect(result.totalTrades).toBe(1);
+    });
+  });
 });

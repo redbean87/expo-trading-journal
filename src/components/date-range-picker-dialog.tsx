@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Dialog, Portal, Text } from 'react-native-paper';
 
-import { Button } from '../../components/button';
-import { DatePickerDialog } from '../../components/date-picker-dialog';
-import { useAppTheme } from '../../hooks/use-app-theme';
+import { Button } from './button';
+import { DatePickerDialog } from './date-picker-dialog';
+import { useAppTheme } from '../hooks/use-app-theme';
 
 type DateRangePickerDialogProps = {
   visible: boolean;

@@ -4,7 +4,6 @@ import { Dialog, Divider, Portal, Text } from 'react-native-paper';
 
 import { Button } from '../../components/button';
 import { Chip } from '../../components/chip';
-import { DatePickerDialog } from '../../components/date-picker-dialog';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { TradeFilters, PnlFilter } from '../../hooks/use-trade-filters';
 import { TradeSide } from '../../types';
@@ -47,8 +46,6 @@ function TradeFilterModalContent({
   const styles = createStyles(theme);
 
   const [localFilters, setLocalFilters] = useState<TradeFilters>(filters);
-  const [showDateFromPicker, setShowDateFromPicker] = useState(false);
-  const [showDateToPicker, setShowDateToPicker] = useState(false);
 
   const updateLocalFilter = <K extends keyof TradeFilters>(
     key: K,
@@ -60,15 +57,6 @@ function TradeFilterModalContent({
   const handleApply = () => {
     onApplyFilters(localFilters);
     onDismiss();
-  };
-
-  const formatDate = (date: Date | null) => {
-    if (!date) return 'Any';
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
   };
 
   const handleClearAndClose = () => {
@@ -151,45 +139,6 @@ function TradeFilterModalContent({
                   ))}
                 </View>
               </View>
-
-              <Divider />
-
-              {/* Date Range Filter */}
-              <View style={styles.section}>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Date Range
-                </Text>
-                <View style={styles.dateRow}>
-                  <Button
-                    mode="outlined"
-                    onPress={() => setShowDateFromPicker(true)}
-                    style={styles.dateButton}
-                    compact
-                  >
-                    From: {formatDate(localFilters.dateFrom)}
-                  </Button>
-                  <Button
-                    mode="outlined"
-                    onPress={() => setShowDateToPicker(true)}
-                    style={styles.dateButton}
-                    compact
-                  >
-                    To: {formatDate(localFilters.dateTo)}
-                  </Button>
-                </View>
-                {(localFilters.dateFrom || localFilters.dateTo) && (
-                  <Button
-                    mode="text"
-                    onPress={() => {
-                      updateLocalFilter('dateFrom', null);
-                      updateLocalFilter('dateTo', null);
-                    }}
-                    compact
-                  >
-                    Clear dates
-                  </Button>
-                )}
-              </View>
             </ScrollView>
           </Dialog.ScrollArea>
 
@@ -199,28 +148,6 @@ function TradeFilterModalContent({
           </Dialog.Actions>
         </Dialog>
       </Portal>
-
-      <DatePickerDialog
-        visible={showDateFromPicker}
-        date={localFilters.dateFrom || undefined}
-        onDismiss={() => setShowDateFromPicker(false)}
-        onConfirm={(date) => {
-          setShowDateFromPicker(false);
-          updateLocalFilter('dateFrom', date);
-        }}
-        label="Select start date"
-      />
-
-      <DatePickerDialog
-        visible={showDateToPicker}
-        date={localFilters.dateTo || undefined}
-        onDismiss={() => setShowDateToPicker(false)}
-        onConfirm={(date) => {
-          setShowDateToPicker(false);
-          updateLocalFilter('dateTo', date);
-        }}
-        label="Select end date"
-      />
     </>
   );
 }

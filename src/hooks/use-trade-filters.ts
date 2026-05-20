@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Trade, TradeSide } from '../types';
+import { DateRangePreset, getDateRangeStart } from '../utils/date-range';
 
 export type PnlFilter = 'all' | 'winning' | 'losing';
 
@@ -9,8 +10,6 @@ export type TradeFilters = {
   side: TradeSide | 'all';
   pnl: PnlFilter;
   strategy: string | 'all';
-  dateFrom: Date | null;
-  dateTo: Date | null;
 };
 
 const defaultFilters: TradeFilters = {
@@ -18,13 +17,28 @@ const defaultFilters: TradeFilters = {
   side: 'all',
   pnl: 'all',
   strategy: 'all',
-  dateFrom: null,
-  dateTo: null,
 };
+
+function getTimeRangeBounds(
+  selectedRange: DateRangePreset,
+  customRangeStart?: number | null,
+  customRangeEnd?: number | null
+): { start: number | null; end: number | null } {
+  if (selectedRange === 'all') {
+    return { start: null, end: null };
+  }
+  if (selectedRange === 'custom') {
+    return { start: customRangeStart ?? null, end: customRangeEnd ?? null };
+  }
+  return { start: getDateRangeStart(selectedRange), end: null };
+}
 
 export function useTradeFilters(
   trades: Trade[],
-  initialFilters?: Partial<TradeFilters>
+  initialFilters?: Partial<TradeFilters>,
+  selectedRange?: DateRangePreset,
+  customRangeStart?: number | null,
+  customRangeEnd?: number | null
 ) {
   const [filters, setFilters] = useState<TradeFilters>(() => ({
     ...defaultFilters,
@@ -38,8 +52,29 @@ export function useTradeFilters(
     return [...new Set(strategies)].sort();
   }, [trades]);
 
+  const timeBounds = useMemo(
+    () =>
+      getTimeRangeBounds(
+        selectedRange ?? 'all',
+        customRangeStart,
+        customRangeEnd
+      ),
+    [selectedRange, customRangeStart, customRangeEnd]
+  );
+
   const filteredTrades = useMemo(() => {
     return trades.filter((trade) => {
+      // Time range filter (from global store)
+      if (
+        timeBounds.start != null &&
+        trade.exitTime.getTime() < timeBounds.start
+      ) {
+        return false;
+      }
+      if (timeBounds.end != null && trade.exitTime.getTime() > timeBounds.end) {
+        return false;
+      }
+
       // Search query - match symbol or strategy
       if (filters.searchQuery) {
         const query = filters.searchQuery.toLowerCase();
@@ -68,30 +103,18 @@ export function useTradeFilters(
         return false;
       }
 
-      // Date range filter
-      if (filters.dateFrom && trade.exitTime < filters.dateFrom) {
-        return false;
-      }
-      if (filters.dateTo) {
-        const endOfDay = new Date(filters.dateTo);
-        endOfDay.setHours(23, 59, 59, 999);
-        if (trade.exitTime > endOfDay) {
-          return false;
-        }
-      }
-
       return true;
     });
-  }, [trades, filters]);
+  }, [trades, filters, timeBounds]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
+    if (selectedRange && selectedRange !== 'all') count++;
     if (filters.side !== 'all') count++;
     if (filters.pnl !== 'all') count++;
     if (filters.strategy !== 'all') count++;
-    if (filters.dateFrom || filters.dateTo) count++;
     return count;
-  }, [filters]);
+  }, [filters, selectedRange]);
 
   const hasActiveFilters = filters.searchQuery !== '' || activeFilterCount > 0;
 

@@ -5,8 +5,8 @@ import {
   calculateCurrentStreak,
   calculateTradeAnalytics,
 } from './use-trade-analytics';
-import { HomePeriod, Trade } from '../types';
-import { getDateRangeStart } from '../utils/date-range';
+import { Trade } from '../types';
+import { DateRangePreset, getDateRangeStart } from '../utils/date-range';
 
 export type HomeSummary = {
   totalTrades: number;
@@ -21,7 +21,7 @@ export type HomeSummary = {
   currentStreak: CurrentStreak;
 };
 
-function getPeriodCutoff(period: HomePeriod): number | null {
+function getPeriodCutoff(period: DateRangePreset): number | null {
   if (period === 'all') return null;
   if (period === 'today') {
     const now = new Date();
@@ -32,14 +32,26 @@ function getPeriodCutoff(period: HomePeriod): number | null {
 
 export function useHomeSummary(
   trades: Trade[],
-  period: HomePeriod
+  period: DateRangePreset,
+  customRangeStart?: number | null,
+  customRangeEnd?: number | null
 ): HomeSummary {
   return useMemo(() => {
-    const cutoff = getPeriodCutoff(period);
-    const filtered =
-      cutoff === null
-        ? trades
-        : trades.filter((t) => t.exitTime.getTime() >= cutoff);
+    let filtered = trades;
+
+    if (period === 'custom' && customRangeStart != null) {
+      filtered = trades.filter((t) => t.exitTime.getTime() >= customRangeStart);
+      if (customRangeEnd != null) {
+        filtered = filtered.filter(
+          (t) => t.exitTime.getTime() <= customRangeEnd
+        );
+      }
+    } else {
+      const cutoff = getPeriodCutoff(period);
+      if (cutoff != null) {
+        filtered = trades.filter((t) => t.exitTime.getTime() >= cutoff);
+      }
+    }
 
     const analytics = calculateTradeAnalytics(filtered);
     const currentStreak = calculateCurrentStreak(filtered);
@@ -57,5 +69,5 @@ export function useHomeSummary(
       recentTrades,
       currentStreak,
     };
-  }, [trades, period]);
+  }, [trades, period, customRangeStart, customRangeEnd]);
 }

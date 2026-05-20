@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
 
+import { Chip } from './chip';
 import { DateRangePickerDialog } from './date-range-picker-dialog';
-import { Chip } from '../../components/chip';
-import { useAppTheme } from '../../hooks/use-app-theme';
-import { DateRangePreset, dateRangeOptions } from '../../utils/date-range';
+import { useAppTheme } from '../hooks/use-app-theme';
+import { DateRangePreset, dateRangeOptions } from '../utils/date-range';
 
 type DateRangeFilterProps = {
   selectedRange: DateRangePreset;
@@ -49,14 +48,10 @@ export function DateRangeFilter({
     return `${fmt(customRangeStart)} – ${fmt(customRangeEnd)}`;
   };
 
-  const customRangeLabel =
-    selectedRange === 'custom' ? formatCustomRange() : null;
+  const customLabel = formatCustomRange();
 
   return (
     <View style={styles.container}>
-      <Text variant="titleMedium" style={styles.label}>
-        Time Period
-      </Text>
       <View style={styles.chipRow}>
         {dateRangeOptions.map((option) => (
           <Chip
@@ -65,15 +60,14 @@ export function DateRangeFilter({
             onPress={() => handleChipPress(option.value)}
             style={styles.chip}
           >
-            {option.label}
+            {option.value === 'custom' &&
+            selectedRange === 'custom' &&
+            customLabel
+              ? customLabel
+              : option.label}
           </Chip>
         ))}
       </View>
-      {customRangeLabel ? (
-        <Text variant="bodySmall" style={styles.customRangeText}>
-          {customRangeLabel}
-        </Text>
-      ) : null}
 
       <DateRangePickerDialog
         visible={pickerVisible}
@@ -89,11 +83,10 @@ export function DateRangeFilter({
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     container: {
-      marginBottom: 16,
-    },
-    label: {
-      marginBottom: 12,
-      color: theme.colors.textSecondary,
+      marginBottom: theme.spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+      paddingBottom: theme.spacing.md,
     },
     chipRow: {
       flexDirection: 'row',
@@ -102,9 +95,5 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     chip: {
       marginBottom: 4,
-    },
-    customRangeText: {
-      marginTop: 8,
-      color: theme.colors.textSecondary,
     },
   });

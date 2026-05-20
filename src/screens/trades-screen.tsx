@@ -23,6 +23,7 @@ import {
 } from 'react-native-paper';
 
 import { Button } from '../components/button';
+import { DateRangeFilter } from '../components/date-range-filter';
 import { EmptyState } from '../components/empty-state';
 import { LoadingState } from '../components/loading-state';
 import { ResponsiveContainer } from '../components/responsive-container';
@@ -37,8 +38,8 @@ import {
 } from '../hooks/use-trade-filters';
 import { useTrades, useImportTrades } from '../hooks/use-trades';
 import { useProfileStore } from '../store/profile-store';
+import { useTimeFilterStore } from '../store/time-filter-store';
 import { Trade, TradeSide } from '../types';
-import { formatDateKey } from '../utils/calendar-helpers';
 import { tradesToCsv, generateExportFilename } from '../utils/csv-export';
 import { ImportResult, parseCsvFile } from '../utils/csv-import';
 import { downloadFile } from '../utils/file-download';
@@ -52,33 +53,16 @@ import { TradeFilterModal } from './trades/trade-filter-modal';
 type TradeSearchParams = {
   id?: string;
   edit?: string;
-  dateFrom?: string;
-  dateTo?: string;
   side?: string;
   pnl?: string;
   strategy?: string;
   q?: string;
 };
 
-function parseLocalDate(dateStr: string): Date | null {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
-  return new Date(year, month - 1, day);
-}
-
 function parseFiltersFromParams(
   params: TradeSearchParams
 ): Partial<TradeFilters> {
   const filters: Partial<TradeFilters> = {};
-
-  if (params.dateFrom) {
-    const date = parseLocalDate(params.dateFrom);
-    if (date) filters.dateFrom = date;
-  }
-  if (params.dateTo) {
-    const date = parseLocalDate(params.dateTo);
-    if (date) filters.dateTo = date;
-  }
 
   if (params.side === 'long' || params.side === 'short') {
     filters.side = params.side as TradeSide;
@@ -107,6 +91,13 @@ export default function TradesScreen() {
   const { isDesktop } = useBreakpoint();
   const isFocused = useIsFocused();
   const { defaultRiskPercent } = useProfileStore();
+  const {
+    selectedRange,
+    setSelectedRange,
+    customRangeStart,
+    customRangeEnd,
+    setCustomRange,
+  } = useTimeFilterStore();
 
   const params = useLocalSearchParams<TradeSearchParams>();
 
@@ -141,7 +132,13 @@ export default function TradesScreen() {
     activeFilterCount,
     updateFilter,
     clearFilters: clearFiltersState,
-  } = useTradeFilters(trades);
+  } = useTradeFilters(
+    trades,
+    undefined,
+    selectedRange,
+    customRangeStart,
+    customRangeEnd
+  );
 
   // Sync URL params to filter state on mount (deep-linking support)
   useEffect(() => {
@@ -158,13 +155,6 @@ export default function TradesScreen() {
   useEffect(() => {
     const newParams: Record<string, string> = {};
 
-    if (filters.dateFrom) {
-      newParams.dateFrom = formatDateKey(filters.dateFrom);
-    }
-    if (filters.dateTo) {
-      newParams.dateTo = formatDateKey(filters.dateTo);
-    }
-
     if (filters.side !== 'all') {
       newParams.side = filters.side;
     }
@@ -178,14 +168,7 @@ export default function TradesScreen() {
     }
 
     router.setParams(newParams);
-  }, [
-    filters.dateFrom,
-    filters.dateTo,
-    filters.side,
-    filters.pnl,
-    filters.strategy,
-    router,
-  ]);
+  }, [filters.side, filters.pnl, filters.strategy, router]);
 
   // Sync search query to URL on blur
   const handleSearchBlur = useCallback(() => {
@@ -195,8 +178,6 @@ export default function TradesScreen() {
   const clearFilters = () => {
     clearFiltersState();
     router.setParams({
-      dateFrom: undefined,
-      dateTo: undefined,
       side: undefined,
       pnl: undefined,
       strategy: undefined,
@@ -389,13 +370,22 @@ export default function TradesScreen() {
         icon: 'plus',
       }}
     >
-      <SearchBar
-        value={filters.searchQuery}
-        onChangeText={(text) => updateFilter('searchQuery', text)}
-        onBlur={handleSearchBlur}
-        onFilterPress={() => setFilterModalVisible(true)}
-        filterCount={activeFilterCount}
-      />
+      <View style={styles.filterArea}>
+        <DateRangeFilter
+          selectedRange={selectedRange}
+          customRangeStart={customRangeStart}
+          customRangeEnd={customRangeEnd}
+          onSelectRange={setSelectedRange}
+          onSetCustomRange={setCustomRange}
+        />
+        <SearchBar
+          value={filters.searchQuery}
+          onChangeText={(text) => updateFilter('searchQuery', text)}
+          onBlur={handleSearchBlur}
+          onFilterPress={() => setFilterModalVisible(true)}
+          filterCount={activeFilterCount}
+        />
+      </View>
       <EmptyState data={filteredTrades} fallback={noResultsFallback}>
         <FlatList
           data={filteredTrades}
@@ -635,8 +625,13 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     detailPane: {
       flex: 6,
     },
+    filterArea: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingTop: theme.spacing.lg,
+    },
     list: {
-      padding: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.lg,
+      paddingBottom: theme.spacing.lg,
       paddingTop: theme.spacing.sm,
     },
     fabContainer: {
