@@ -42,6 +42,7 @@ import { useTimeFilterStore } from '../store/time-filter-store';
 import { Trade, TradeSide } from '../types';
 import { tradesToCsv, generateExportFilename } from '../utils/csv-export';
 import { ImportResult, parseCsvFile } from '../utils/csv-import';
+import { DateRangePreset } from '../utils/date-range';
 import { downloadFile } from '../utils/file-download';
 import {
   isTosAccountStatement,
@@ -57,6 +58,9 @@ type TradeSearchParams = {
   pnl?: string;
   strategy?: string;
   q?: string;
+  range?: string;
+  rangeStart?: string;
+  rangeEnd?: string;
 };
 
 function parseFiltersFromParams(
@@ -81,6 +85,35 @@ function parseFiltersFromParams(
   }
 
   return filters;
+}
+
+const VALID_RANGE_PRESETS: DateRangePreset[] = [
+  'all',
+  'today',
+  'week',
+  'month',
+  'year',
+  'custom',
+];
+
+function parseTimeFilterFromParams(params: TradeSearchParams): {
+  range: DateRangePreset | null;
+  start: number | null;
+  end: number | null;
+} | null {
+  if (!params.range) return null;
+
+  const range = params.range as DateRangePreset;
+  if (!VALID_RANGE_PRESETS.includes(range)) return null;
+
+  if (range === 'custom') {
+    const start = params.rangeStart ? Number(params.rangeStart) : null;
+    const end = params.rangeEnd ? Number(params.rangeEnd) : null;
+    if (start == null || isNaN(start)) return null;
+    return { range, start, end };
+  }
+
+  return { range, start: null, end: null };
 }
 
 export default function TradesScreen() {
@@ -148,6 +181,15 @@ export default function TradesScreen() {
     if (hasUrlFilters) {
       setFilters((prev) => ({ ...prev, ...urlFilters }));
     }
+
+    const timeFilter = parseTimeFilterFromParams(params);
+    if (timeFilter && timeFilter.range) {
+      if (timeFilter.range === 'custom' && timeFilter.start != null) {
+        setCustomRange(timeFilter.start, timeFilter.end ?? Date.now());
+      } else {
+        setSelectedRange(timeFilter.range);
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -169,6 +211,31 @@ export default function TradesScreen() {
 
     router.setParams(newParams);
   }, [filters.side, filters.pnl, filters.strategy, router]);
+
+  // Sync time filter changes to URL
+  useEffect(() => {
+    const newParams: Record<string, string | undefined> = {};
+
+    if (selectedRange === 'all') {
+      newParams.range = undefined;
+      newParams.rangeStart = undefined;
+      newParams.rangeEnd = undefined;
+    } else if (selectedRange === 'custom') {
+      newParams.range = 'custom';
+      if (customRangeStart) {
+        newParams.rangeStart = String(customRangeStart);
+      }
+      if (customRangeEnd) {
+        newParams.rangeEnd = String(customRangeEnd);
+      }
+    } else {
+      newParams.range = selectedRange;
+      newParams.rangeStart = undefined;
+      newParams.rangeEnd = undefined;
+    }
+
+    router.setParams(newParams);
+  }, [selectedRange, customRangeStart, customRangeEnd, router]);
 
   // Sync search query to URL on blur
   const handleSearchBlur = useCallback(() => {

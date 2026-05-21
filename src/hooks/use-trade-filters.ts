@@ -109,12 +109,11 @@ export function useTradeFilters(
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (selectedRange && selectedRange !== 'all') count++;
     if (filters.side !== 'all') count++;
     if (filters.pnl !== 'all') count++;
     if (filters.strategy !== 'all') count++;
     return count;
-  }, [filters, selectedRange]);
+  }, [filters]);
 
   const hasActiveFilters = filters.searchQuery !== '' || activeFilterCount > 0;
 
