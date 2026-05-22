@@ -13,6 +13,7 @@ import {
 
 import { Button } from '../components/button';
 import { ResponsiveContainer } from '../components/responsive-container';
+import { TimeRangePicker } from '../components/time-range-picker';
 import { TimezonePicker } from '../components/timezone-picker';
 import { CustomColorsDialog } from './profile/custom-colors-dialog';
 import { useAppTheme } from '../hooks/use-app-theme';
@@ -167,6 +168,7 @@ export default function ProfileScreen() {
               )}
             />
             <TimezonePicker />
+            <TimeRangePicker />
             <List.Item
               title="Journal Name"
               description={displayName || 'Trading Journal'}

@@ -9,6 +9,7 @@ import { useProfileStore } from '../store/profile-store';
 import { useThemeStore } from '../store/theme-store';
 import { useTimezoneStore } from '../store/timezone-store';
 import { ThemeMode } from '../theme';
+import { DateRangePreset } from '../utils/date-range';
 
 import type { CustomColors } from '../types';
 
@@ -39,8 +40,10 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
   const {
     displayName,
     defaultRiskPercent,
+    defaultTimeRange,
     setFromCloud: setDisplayNameFromCloud,
     setDefaultRiskPercentFromCloud,
+    setDefaultTimeRangeFromCloud,
   } = useProfileStore();
   const {
     preset,
@@ -75,6 +78,7 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
         timezone: timezone,
         displayName: displayName ?? undefined,
         defaultRiskPercent: defaultRiskPercent ?? undefined,
+        defaultTimeRange: defaultTimeRange ?? undefined,
         customThemePreset: preset,
         customColors: customColors ? JSON.stringify(customColors) : undefined,
       }).catch((error) => {
@@ -101,6 +105,9 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     ) {
       updates.defaultRiskPercent = defaultRiskPercent;
     }
+    if (cloudSettings.defaultTimeRange === null && defaultTimeRange !== null) {
+      updates.defaultTimeRange = defaultTimeRange;
+    }
     if (cloudSettings.customThemePreset === null && preset !== null) {
       updates.customThemePreset = preset;
       if (customColors) {
@@ -121,6 +128,7 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     timezone,
     displayName,
     defaultRiskPercent,
+    defaultTimeRange,
     preset,
     customColors,
     updateCloudSettings,
@@ -169,6 +177,16 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
       setDefaultRiskPercentFromCloud(cloudSettings.defaultRiskPercent);
     }
 
+    // Apply default time range from cloud if it exists
+    if (
+      cloudSettings.defaultTimeRange !== undefined &&
+      !(isFirstSync && cloudSettings.defaultTimeRange === null)
+    ) {
+      setDefaultTimeRangeFromCloud(
+        cloudSettings.defaultTimeRange as DateRangePreset
+      );
+    }
+
     // Apply custom theme from cloud
     if (
       cloudSettings.customThemePreset === 'custom' ||
@@ -203,6 +221,7 @@ export function SettingsSyncProvider({ children }: SettingsSyncProviderProps) {
     setTimezoneFromCloud,
     setDisplayNameFromCloud,
     setDefaultRiskPercentFromCloud,
+    setDefaultTimeRangeFromCloud,
     setCustomThemeFromCloud,
   ]);
 

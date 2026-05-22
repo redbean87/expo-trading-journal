@@ -21,6 +21,7 @@ const schema = defineSchema({
     defaultRiskPercent: v.optional(v.number()), // Default risk % per trade
     customThemePreset: v.optional(v.string()), // 'default' | 'custom'
     customColors: v.optional(v.string()), // JSON stringified CustomColors
+    defaultTimeRange: v.optional(v.string()), // 'all' | 'today' | 'week' | 'month' | 'year'
     settingsUpdatedAt: v.optional(v.number()), // Timestamp for conflict resolution
   }).index('by_email', ['email']),
 

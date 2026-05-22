@@ -1,15 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
+import { DateRangePreset } from '../utils/date-range';
+
 type ProfileStore = {
   displayName: string | null;
   defaultRiskPercent: number | null;
+  defaultTimeRange: DateRangePreset | null;
   isLoading: boolean;
   setDisplayName: (name: string | null) => Promise<void>;
   setDefaultRiskPercent: (pct: number | null) => Promise<void>;
+  setDefaultTimeRange: (range: DateRangePreset | null) => Promise<void>;
   loadProfile: () => Promise<void>;
   setFromCloud: (name: string | null) => void;
   setDefaultRiskPercentFromCloud: (pct: number | null) => void;
+  setDefaultTimeRangeFromCloud: (range: DateRangePreset | null) => void;
 };
 
 const PROFILE_STORAGE_KEY = '@user_profile';
@@ -17,6 +22,7 @@ const PROFILE_STORAGE_KEY = '@user_profile';
 export const useProfileStore = create<ProfileStore>((set) => ({
   displayName: null,
   defaultRiskPercent: null,
+  defaultTimeRange: 'year',
   isLoading: true,
 
   loadProfile: async () => {
@@ -27,6 +33,7 @@ export const useProfileStore = create<ProfileStore>((set) => ({
         set({
           displayName: profile.displayName ?? null,
           defaultRiskPercent: profile.defaultRiskPercent ?? null,
+          defaultTimeRange: profile.defaultTimeRange ?? 'year',
           isLoading: false,
         });
       } else {
@@ -69,11 +76,29 @@ export const useProfileStore = create<ProfileStore>((set) => ({
     }
   },
 
+  setDefaultTimeRange: async (range: DateRangePreset | null) => {
+    set({ defaultTimeRange: range });
+    try {
+      const stored = await AsyncStorage.getItem(PROFILE_STORAGE_KEY);
+      const current = stored ? JSON.parse(stored) : {};
+      await AsyncStorage.setItem(
+        PROFILE_STORAGE_KEY,
+        JSON.stringify({ ...current, defaultTimeRange: range })
+      );
+    } catch (error) {
+      console.error('Error saving default time range:', error);
+    }
+  },
+
   setFromCloud: (name: string | null) => {
     set({ displayName: name });
   },
 
   setDefaultRiskPercentFromCloud: (pct: number | null) => {
     set({ defaultRiskPercent: pct });
+  },
+
+  setDefaultTimeRangeFromCloud: (range: DateRangePreset | null) => {
+    set({ defaultTimeRange: range });
   },
 }));

@@ -25,6 +25,7 @@ export const getSettings = query({
       defaultRiskPercent: user.defaultRiskPercent ?? null,
       customThemePreset: user.customThemePreset ?? null,
       customColors: user.customColors ?? null,
+      defaultTimeRange: user.defaultTimeRange ?? null,
       settingsUpdatedAt: user.settingsUpdatedAt ?? null,
     };
   },
@@ -39,6 +40,7 @@ export const updateSettings = mutation({
     defaultRiskPercent: v.optional(v.number()),
     customThemePreset: v.optional(v.string()),
     customColors: v.optional(v.string()),
+    defaultTimeRange: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -84,6 +86,16 @@ export const updateSettings = mutation({
       }
       updates.customThemePreset = args.customThemePreset;
     }
+    if (args.defaultTimeRange !== undefined) {
+      const validRanges = ['all', 'today', 'week', 'month', 'year'];
+      if (
+        args.defaultTimeRange &&
+        !validRanges.includes(args.defaultTimeRange)
+      ) {
+        throw new Error('Invalid default time range');
+      }
+      updates.defaultTimeRange = args.defaultTimeRange || null;
+    }
     if (args.customColors !== undefined) {
       // Validate JSON structure if provided
       if (args.customColors) {
@@ -125,6 +137,7 @@ export const updateSettings = mutation({
       defaultRiskPercent: user?.defaultRiskPercent ?? null,
       customThemePreset: user?.customThemePreset ?? null,
       customColors: user?.customColors ?? null,
+      defaultTimeRange: user?.defaultTimeRange ?? null,
       settingsUpdatedAt: user?.settingsUpdatedAt ?? null,
     };
   },

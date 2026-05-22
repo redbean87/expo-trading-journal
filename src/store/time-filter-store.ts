@@ -10,7 +10,7 @@ type TimeFilterStore = {
   isLoading: boolean;
   setSelectedRange: (range: DateRangePreset) => Promise<void>;
   setCustomRange: (start: number, end: number) => Promise<void>;
-  loadTimeFilter: () => Promise<void>;
+  loadTimeFilter: (fallbackRange?: DateRangePreset) => Promise<void>;
 };
 
 type PersistedTimeFilter = {
@@ -27,19 +27,22 @@ export const useTimeFilterStore = create<TimeFilterStore>((set) => ({
   customRangeEnd: null,
   isLoading: true,
 
-  loadTimeFilter: async () => {
+  loadTimeFilter: async (fallbackRange?: DateRangePreset) => {
     try {
       const stored = await AsyncStorage.getItem(TIME_FILTER_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored) as PersistedTimeFilter;
         set({
-          selectedRange: parsed.selectedRange ?? 'all',
+          selectedRange: parsed.selectedRange ?? fallbackRange ?? 'all',
           customRangeStart: parsed.customRangeStart ?? null,
           customRangeEnd: parsed.customRangeEnd ?? null,
           isLoading: false,
         });
       } else {
-        set({ isLoading: false });
+        set({
+          selectedRange: fallbackRange ?? 'all',
+          isLoading: false,
+        });
       }
     } catch (error) {
       console.error('Error loading time filter:', error);

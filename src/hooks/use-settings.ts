@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from 'convex/react';
 
+import { useAuth } from './use-auth';
 import { api } from '../../convex/_generated/api';
 import { useCustomThemeStore } from '../store/custom-theme-store';
 import { useProfileStore } from '../store/profile-store';
@@ -7,7 +8,7 @@ import { useThemeStore } from '../store/theme-store';
 import { useTimezoneStore } from '../store/timezone-store';
 import { ThemeMode } from '../theme';
 import { type CustomColors, type CustomThemePreset } from '../types';
-import { useAuth } from './use-auth';
+import { DateRangePreset } from '../utils/date-range';
 
 export type CloudSettings = {
   themeMode: string | null;
@@ -16,6 +17,7 @@ export type CloudSettings = {
   defaultRiskPercent: number | null;
   customThemePreset: string | null;
   customColors: string | null; // JSON string
+  defaultTimeRange: string | null;
   settingsUpdatedAt: number | null;
 };
 
@@ -190,6 +192,44 @@ export function useUpdateDefaultRiskPercent() {
         });
       } catch (error) {
         console.error('Failed to sync default risk percent to cloud:', error);
+        // Local state is already correct, just log the error
+      }
+    }
+  };
+}
+
+/**
+ * Hook to update default time range both locally and in cloud
+ */
+export function useUpdateDefaultTimeRange() {
+  const { isAuthenticated } = useAuth();
+  const { setDefaultTimeRange } = useProfileStore();
+  const updateCloudSettings = useUpdateCloudSettings();
+
+  return async (range: DateRangePreset | null) => {
+    // Validate
+    const validRanges: DateRangePreset[] = [
+      'all',
+      'today',
+      'week',
+      'month',
+      'year',
+    ];
+    if (range !== null && !validRanges.includes(range)) {
+      throw new Error('Invalid default time range');
+    }
+
+    // Always update local (optimistic + offline support)
+    await setDefaultTimeRange(range);
+
+    // Sync to cloud if authenticated
+    if (isAuthenticated) {
+      try {
+        await updateCloudSettings({
+          defaultTimeRange: range ?? undefined,
+        });
+      } catch (error) {
+        console.error('Failed to sync default time range to cloud:', error);
         // Local state is already correct, just log the error
       }
     }

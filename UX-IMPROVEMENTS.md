@@ -18,18 +18,7 @@
   - Updated: `src/hooks/use-trade-filters.ts` (accepts optional `timeRangeStart`)
   - Updated: `app/_layout.tsx` (initialized store on app launch)
 
-### 2. Default Time Selection (User Setting)
-
-- **Status**: Not started
-- **Priority**: Medium
-- **Notes**: Allow user to set their preferred default time period in settings. Save to Convex user profile.
-- **Default**: "Week" (common trading view)
-- **Files**:
-  - `convex/schema.ts` (add defaultTimePeriod to users table)
-  - `src/screens/profile/settings-screen.tsx` (add dropdown/select)
-  - `src/store/time-filter-store.ts` (read default on init)
-
-### 3. Theme Breakdown + Secondary Color
+### 2. Theme Breakdown + Secondary Color
 
 - **Status**: Not started
 - **Priority**: Low (nice to have)
@@ -66,16 +55,14 @@
 - [x] Update documentation (README, ROADMAP, CLAUDE, ChatGPT prompt)
 - [x] **Remove Header** — Hidden globally via `headerShown: false` in all layouts (`app/_layout.tsx`, `app/(tabs)/_layout.tsx`, `app/(tabs)/trades/_layout.tsx`, analytics layout). Verified complete.
 - [x] **Fix Modal Width on Mobile** — All Dialog/Portal components already have `maxWidth: 600`, `alignSelf: 'center'`, and `width: '90%'` constraints. Verified in: custom-colors, date-range-picker, position-sizing, date-picker, timezone-picker, tag-selector, trade-detail, trades import, profile dialogs, trade-filter. Verified complete.
+- [x] **Default Time Selection (User Setting)** — Added user-configurable default time range. Default is "This Year". Persists via AsyncStorage and syncs to Convex profile for cross-device sync. Added `TimeRangePicker` dialog to Appearance settings. Time filter store uses user's default when no explicit selection is stored.
+  - Files: `convex/schema.ts`, `convex/settings.ts`, `src/store/profile-store.ts`, `src/hooks/use-settings.ts`, `src/providers/settings-sync-provider.tsx`, `src/components/time-range-picker.tsx`, `src/screens/profile-screen.tsx`, `src/store/time-filter-store.ts`, `app/_layout.tsx`
 
 ---
 
 ## Next Steps
 
-Ready to implement Phase 1 items:
+Ready to implement:
 
-1. Global time filter across pages (was #2)
-2. Default time selection setting (was #3)
-
-Then Phase 2: 3. Prod-to-dev migration script (was #6)
-
-Phase 3 (future): 4. Theme audit and secondary color (was #5)
+1. Prod-to-dev migration script
+2. Theme audit and secondary color (future)
