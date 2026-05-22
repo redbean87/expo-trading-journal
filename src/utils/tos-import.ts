@@ -259,7 +259,7 @@ function parseTradeHistoryFills(
 function emitTrade(
   symbol: string,
   accum: PositionAccum,
-  source: 'cash-balance' | 'trade-history'
+  source: 'cash-balance' | 'trade-history' | 'tos-merged'
 ): Omit<Trade, 'id'> | null {
   const qty = Math.min(accum.totalBuyQty, accum.totalSellQty);
   if (qty === 0) return null;
@@ -299,7 +299,7 @@ function emitTrade(
     .toNumber();
 
   const importId =
-    source === 'cash-balance' && accum.firstBuyRef
+    (source === 'cash-balance' || source === 'tos-merged') && accum.firstBuyRef
       ? `cb-${accum.firstBuyRef}`
       : undefined;
 
@@ -327,46 +327,51 @@ export function parseTosAccountStatement(content: string): ImportResult {
   const errors: string[] = [];
   let skipped = 0;
 
-  // Try Cash Balance section first (old TOS format with TRD rows)
-  let fills: ParsedFill[] = [];
-  let fillSource: 'cash-balance' | 'trade-history' = 'cash-balance';
+  // Parse both sections independently
   const cashSection = extractSection(content, 'Cash Balance');
-  if (cashSection) {
-    fills = parseCashBalanceFills(cashSection, errors);
+  const cashFills = cashSection
+    ? parseCashBalanceFills(cashSection, errors)
+    : [];
+
+  const tradeHistorySection = extractSection(content, 'Account Trade History');
+  const historyFills = tradeHistorySection
+    ? parseTradeHistoryFills(tradeHistorySection, errors)
+    : [];
+
+  // Build CB lookup map with used flags for fill-level matching
+  const cbMap = new Map<string, { fill: ParsedFill; used: boolean }>();
+  for (const fill of cashFills) {
+    const key = `${fill.symbol}-${fill.date}-${fill.action}-${fill.quantity}`;
+    cbMap.set(key, { fill, used: false });
   }
 
-  // Fall back to Account Trade History (newer Schwab format)
-  if (fills.length === 0) {
-    const tradeHistorySection = extractSection(
-      content,
-      'Account Trade History'
-    );
-    if (tradeHistorySection) {
-      fills = parseTradeHistoryFills(tradeHistorySection, errors);
-      fillSource = 'trade-history';
+  // Merge: enrich TH fills with CB data where available
+  const mergedFills: ParsedFill[] = [];
+  let anyCbMatched = false;
+  for (const thFill of historyFills) {
+    const key = `${thFill.symbol}-${thFill.date}-${thFill.action}-${thFill.quantity}`;
+    const cbEntry = cbMap.get(key);
+    if (cbEntry && !cbEntry.used) {
+      cbEntry.used = true;
+      anyCbMatched = true;
+      mergedFills.push({
+        ...thFill,
+        miscFees: cbEntry.fill.miscFees,
+        commissions: cbEntry.fill.commissions,
+        amount: cbEntry.fill.amount,
+        balance: cbEntry.fill.balance,
+        refNum: cbEntry.fill.refNum,
+      });
+    } else {
+      mergedFills.push(thFill);
     }
   }
 
-  // When using Cash Balance as primary, cross-reference Trade History for order types
-  // (Cash Balance has no Order Type column; Trade History has it for every fill)
-  const orderTypeMap = new Map<string, string>(); // key: `${symbol}-${date}`
-  if (fillSource === 'cash-balance') {
-    const tradeHistorySection = extractSection(
-      content,
-      'Account Trade History'
-    );
-    if (tradeHistorySection) {
-      const historyFills = parseTradeHistoryFills(tradeHistorySection, errors);
-      for (const fill of historyFills) {
-        if (fill.action === 'BOT' && fill.orderType) {
-          const key = `${fill.symbol}-${fill.date}`;
-          if (!orderTypeMap.has(key)) orderTypeMap.set(key, fill.orderType);
-        }
-      }
-    }
-  }
-
-  if (fills.length === 0 && errors.length === 0) {
+  if (
+    mergedFills.length === 0 &&
+    cashFills.length === 0 &&
+    errors.length === 0
+  ) {
     return {
       imported,
       skipped,
@@ -376,11 +381,16 @@ export function parseTosAccountStatement(content: string): ImportResult {
     };
   }
 
-  // Position lifecycle tracking: accumulate fills until position returns to 0, then emit one Trade
+  // Determine source label: use 'tos-merged' only when CB data was actually matched
+  const thSource: 'trade-history' | 'tos-merged' = anyCbMatched
+    ? 'tos-merged'
+    : 'trade-history';
+
+  // Position lifecycle tracking for merged fills
   const positions = new Map<string, PositionAccum>();
   let unmatchedSells = 0;
 
-  for (const fill of fills) {
+  for (const fill of mergedFills) {
     if (fill.action === 'BOT') {
       if (!positions.has(fill.symbol)) positions.set(fill.symbol, newAccum());
       const accum = positions.get(fill.symbol)!;
@@ -389,10 +399,7 @@ export function parseTosAccountStatement(content: string): ImportResult {
         accum.firstBuyDate = fill.date;
         accum.firstBuyTime = fill.time;
         accum.firstBuyRef = fill.refNum;
-        accum.orderType =
-          fill.orderType ||
-          orderTypeMap.get(`${fill.symbol}-${fill.date}`) ||
-          '';
+        accum.orderType = fill.orderType || '';
       }
       accum.totalBuyQty += fill.quantity;
       accum.buySum += fill.price * fill.quantity;
@@ -421,7 +428,54 @@ export function parseTosAccountStatement(content: string): ImportResult {
 
       // Position fully closed — emit one Trade and reset
       if (accum.totalSellQty >= accum.totalBuyQty) {
-        const trade = emitTrade(fill.symbol, accum, fillSource);
+        const trade = emitTrade(fill.symbol, accum, thSource);
+        if (trade) {
+          imported.push(trade);
+        } else {
+          errors.push(`${fill.symbol}: Failed to build trade from position`);
+          skipped++;
+        }
+        positions.set(fill.symbol, newAccum());
+      }
+    }
+  }
+
+  // Emit unmatched Cash Balance fills as separate trades
+  for (const [, cbEntry] of cbMap) {
+    if (cbEntry.used) continue;
+    const fill = cbEntry.fill;
+    if (fill.action === 'BOT') {
+      if (!positions.has(fill.symbol)) positions.set(fill.symbol, newAccum());
+      const accum = positions.get(fill.symbol)!;
+      if (accum.firstBuyDate === '') {
+        accum.firstBuyDate = fill.date;
+        accum.firstBuyTime = fill.time;
+        accum.firstBuyRef = fill.refNum;
+      }
+      accum.totalBuyQty += fill.quantity;
+      accum.buySum += fill.price * fill.quantity;
+      accum.totalBuyAmount += Math.abs(fill.amount);
+      accum.totalBuyMiscFees += fill.miscFees;
+      accum.totalBuyCommissions += fill.commissions;
+    } else {
+      const accum = positions.get(fill.symbol);
+      if (!accum || accum.totalBuyQty === 0) {
+        unmatchedSells++;
+        skipped++;
+        continue;
+      }
+      if (accum.firstSellDate === null) {
+        accum.firstSellDate = fill.date;
+        accum.firstSellTime = fill.time;
+      }
+      accum.totalSellQty += fill.quantity;
+      accum.sellSum += fill.price * fill.quantity;
+      accum.totalSellAmount += fill.amount;
+      accum.totalSellMiscFees += fill.miscFees;
+      accum.totalSellCommissions += fill.commissions;
+      if (fill.balance > 0) accum.lastBalance = fill.balance;
+      if (accum.totalSellQty >= accum.totalBuyQty) {
+        const trade = emitTrade(fill.symbol, accum, 'cash-balance');
         if (trade) {
           imported.push(trade);
         } else {

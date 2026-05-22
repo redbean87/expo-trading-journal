@@ -34,7 +34,9 @@ export const tradeSchema = z.object({
   wouldTakeTradeAgain: z.enum(['yes', 'no', 'withAdjustment']).optional(),
   pnl: z.number(),
   pnlPercent: z.number(),
-  importedFrom: z.enum(['cash-balance', 'trade-history']).optional(),
+  importedFrom: z
+    .enum(['cash-balance', 'trade-history', 'tos-merged'])
+    .optional(),
   importId: z.string().optional(),
   orderType: z.string().optional(),
   accountBalanceAfter: z.number().optional(),

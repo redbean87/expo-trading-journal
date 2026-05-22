@@ -305,4 +305,161 @@ Profits and Losses`;
     expect(trade.exitTime.getHours()).toBe(8);
     expect(trade.exitTime.getMinutes()).toBe(46);
   });
+
+  describe('Merged TOS import (fill-level merge)', () => {
+    const MERGED_HEADER = `Account Statement for 54639299SCHW (Individual) since 3/18/26 through 3/18/26
+
+Cash Balance
+DATE,TIME,TYPE,REF #,DESCRIPTION,Misc Fees,Commissions & Fees,AMOUNT,BALANCE
+3/19/26,08:37:00,TRD,="1",BOT +250 SER @2.1687,,,-542.18,"2,501.83"
+3/19/26,08:37:00,TRD,="1",BOT +8 SER @2.135,,,-17.08,"2,484.75"
+3/19/26,08:37:00,TRD,="1",BOT +242 SER @2.1397,,,-517.81,"1,966.94"
+3/19/26,08:37:00,TRD,="1",BOT +250 SER @2.136,,,-534.00,"1,432.94"
+3/19/26,08:37:00,TRD,="1",BOT +250 SER @2.125,,,-531.25,"901.69"
+3/19/26,08:37:00,TRD,="1",SOLD -1000 SER @2.1306,-0.15,,2130.60,"3,032.29"
+3/19/26,09:15:00,TRD,="2",BOT +500 AAPL @150.00,,,-75000.00,"0.00"
+3/19/26,09:16:00,TRD,="2",SOLD -500 AAPL @151.00,-0.25,-1.50,75500.00,"500.00"
+,,,,TOTAL,,,,"$500.00"
+
+Futures Statements
+
+Account Trade History`;
+
+    function makeMergedSample(tradeLines: string) {
+      return `${MERGED_HEADER}
+${tradeLines}
+
+Profits and Losses`;
+    }
+
+    it('imports trades from both sections when both are present', () => {
+      const content = makeMergedSample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:37:25,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.1687,2.16872,LMT
+,3/19/26 08:37:28,STOCK,BUY,+8,TO OPEN,SER,,,STOCK,2.135,2.135,LMT
+,3/19/26 08:37:28,STOCK,BUY,+242,TO OPEN,SER,,,STOCK,2.1397,2.13971,LMT
+,3/19/26 08:37:32,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.136,2.136,LMT
+,3/19/26 08:37:34,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.125,2.125,LMT
+,3/19/26 08:37:37,STOCK,SELL,-1000,TO CLOSE,SER,,,STOCK,2.1306,2.1306,MKT
+,3/19/26 09:15:00,STOCK,BUY,+500,TO OPEN,AAPL,,,STOCK,150.00,150.00,LMT
+,3/19/26 09:16:00,STOCK,SELL,-500,TO CLOSE,AAPL,,,STOCK,151.00,151.00,LMT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      expect(result.errors).toHaveLength(0);
+      expect(result.imported).toHaveLength(2);
+
+      const serTrade = result.imported.find((t) => t.symbol === 'SER');
+      const aaplTrade = result.imported.find((t) => t.symbol === 'AAPL');
+
+      expect(serTrade).toBeDefined();
+      expect(aaplTrade).toBeDefined();
+    });
+
+    it('enriches merged trades with CB fees and exact amounts', () => {
+      const content = makeMergedSample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 09:15:00,STOCK,BUY,+500,TO OPEN,AAPL,,,STOCK,150.00,150.00,LMT
+,3/19/26 09:16:00,STOCK,SELL,-500,TO CLOSE,AAPL,,,STOCK,151.00,151.00,LMT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      expect(result.imported.length).toBeGreaterThanOrEqual(1);
+
+      const aaplTrade = result.imported.find((t) => t.symbol === 'AAPL');
+      expect(aaplTrade).toBeDefined();
+      expect(aaplTrade!.fees).toBeCloseTo(0.25, 2);
+      expect(aaplTrade!.commissions).toBeCloseTo(1.5, 2);
+      expect(aaplTrade!.importedFrom).toBe('tos-merged');
+    });
+
+    it('stamps importedFrom as tos-merged when both sections have matching fills', () => {
+      const content = makeMergedSample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:37:25,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.1687,2.16872,LMT
+,3/19/26 08:37:28,STOCK,BUY,+8,TO OPEN,SER,,,STOCK,2.135,2.135,LMT
+,3/19/26 08:37:28,STOCK,BUY,+242,TO OPEN,SER,,,STOCK,2.1397,2.13971,LMT
+,3/19/26 08:37:32,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.136,2.136,LMT
+,3/19/26 08:37:34,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.125,2.125,LMT
+,3/19/26 08:37:37,STOCK,SELL,-1000,TO CLOSE,SER,,,STOCK,2.1306,2.1306,MKT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      const serTrade = result.imported.find((t) => t.symbol === 'SER');
+      expect(serTrade).toBeDefined();
+      expect(serTrade!.importedFrom).toBe('tos-merged');
+    });
+
+    it('preserves orderType from Trade History on merged trades', () => {
+      const content = makeMergedSample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 09:15:00,STOCK,BUY,+500,TO OPEN,AAPL,,,STOCK,150.00,150.00,LMT
+,3/19/26 09:16:00,STOCK,SELL,-500,TO CLOSE,AAPL,,,STOCK,151.00,151.00,MKT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      const aaplTrade = result.imported.find((t) => t.symbol === 'AAPL');
+      expect(aaplTrade).toBeDefined();
+      expect(aaplTrade!.orderType).toBe('LMT');
+    });
+
+    it('sets importId from CB refNum on merged trades', () => {
+      const content = makeMergedSample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 09:15:00,STOCK,BUY,+500,TO OPEN,AAPL,,,STOCK,150.00,150.00,LMT
+,3/19/26 09:16:00,STOCK,SELL,-500,TO CLOSE,AAPL,,,STOCK,151.00,151.00,LMT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      const aaplTrade = result.imported.find((t) => t.symbol === 'AAPL');
+      expect(aaplTrade).toBeDefined();
+      expect(aaplTrade!.importId).toBe('cb-2');
+    });
+
+    it('includes unmatched CB fills as separate cash-balance trades', () => {
+      // TH has no AAPL fills, but CB does
+      const content = makeMergedSample(
+        `,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:37:25,STOCK,BUY,+250,TO OPEN,SER,,,STOCK,2.1687,2.16872,LMT
+,3/19/26 08:37:37,STOCK,SELL,-1000,TO CLOSE,SER,,,STOCK,2.1306,2.1306,MKT`
+      );
+
+      const result = parseTosAccountStatement(content);
+      expect(result.imported).toHaveLength(2);
+
+      const serTrade = result.imported.find((t) => t.symbol === 'SER');
+      const aaplTrade = result.imported.find((t) => t.symbol === 'AAPL');
+
+      expect(serTrade).toBeDefined();
+      expect(serTrade!.importedFrom).toBe('tos-merged');
+
+      expect(aaplTrade).toBeDefined();
+      expect(aaplTrade!.importedFrom).toBe('cash-balance');
+    });
+
+    it('falls back to trade-history when Cash Balance has no TRD rows', () => {
+      const header = `Account Statement for 54639299SCHW (Individual) since 3/18/26 through 3/18/26
+
+Cash Balance
+DATE,TIME,TYPE,REF #,DESCRIPTION,Misc Fees,Commissions & Fees,AMOUNT,BALANCE
+3/19/26,00:00:00,BAL,,Cash balance at the start of business day 19.03 CST,,,,"3,041.99"
+,,,,TOTAL,,,,"$3,041.99"
+
+Futures Statements
+
+Account Trade History`;
+
+      const content = `${header}
+,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:37:25,STOCK,BUY,+500,TO OPEN,SER,,,STOCK,2.15,2.15,LMT
+,3/19/26 08:38:39,STOCK,SELL,-500,TO CLOSE,SER,,,STOCK,2.185,2.185,MKT
+
+Profits and Losses`;
+
+      const result = parseTosAccountStatement(content);
+      expect(result.imported).toHaveLength(1);
+      expect(result.imported[0].importedFrom).toBe('trade-history');
+      expect(result.imported[0].fees).toBeUndefined();
+    });
+  });
 });

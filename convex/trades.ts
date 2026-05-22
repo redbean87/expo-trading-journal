@@ -519,7 +519,8 @@ export const importTrades = mutation({
         imported++;
       } else if (
         existing.importedFrom === 'trade-history' &&
-        trade.importedFrom === 'cash-balance'
+        (trade.importedFrom === 'cash-balance' ||
+          trade.importedFrom === 'tos-merged')
       ) {
         await ctx.db.patch(existing._id, {
           fees: trade.fees,
@@ -528,7 +529,7 @@ export const importTrades = mutation({
           exitPrice: trade.exitPrice,
           pnl: trade.pnl,
           pnlPercent: trade.pnlPercent,
-          importedFrom: 'cash-balance',
+          importedFrom: trade.importedFrom,
           importId: trade.importId,
           accountBalanceAfter: trade.accountBalanceAfter,
         });
