@@ -1,11 +1,10 @@
-import Google from '@auth/core/providers/google';
 import { Password } from '@convex-dev/auth/providers/Password';
 import { convexAuth } from '@convex-dev/auth/server';
 
 import type { MutationCtx } from './_generated/server';
 
 export const { auth, signIn, signOut, store } = convexAuth({
-  providers: [Password, Google],
+  providers: [Password],
   callbacks: {
     async createOrUpdateUser(ctx: MutationCtx, args) {
       // If updating existing user, return their ID
@@ -38,5 +37,5 @@ export const { auth, signIn, signOut, store } = convexAuth({
 
 // Default export required by Convex
 export default {
-  providers: [Password, Google],
+  providers: [Password],
 };

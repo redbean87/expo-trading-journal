@@ -448,3 +448,78 @@ export const deleteTag = mutation({
     return { success: true };
   },
 });
+
+// Query to export all user-created tags for a specific user (public, no auth required)
+export const exportUserTags = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const tags = await ctx.db
+      .query('tags')
+      .withIndex('by_user_field', (q) => q.eq('userId', args.userId))
+      .collect();
+
+    // Only return non-system tags (system tags are already seeded in dev)
+    return tags
+      .filter((tag) => !tag.isSystem)
+      .map((tag) => ({
+        field: tag.field,
+        label: tag.label,
+        isActive: tag.isActive,
+        sortOrder: tag.sortOrder,
+        createdAt: tag.createdAt,
+      }));
+  },
+});
+
+// Mutation to import user tags (public, no auth required)
+export const importUserTags = mutation({
+  args: {
+    userId: v.string(),
+    tags: v.array(
+      v.object({
+        field: v.string(),
+        label: v.string(),
+        isActive: v.boolean(),
+        sortOrder: v.number(),
+        createdAt: v.number(),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    let imported = 0;
+    for (const tag of args.tags) {
+      await ctx.db.insert('tags', {
+        userId: args.userId,
+        ...tag,
+        isSystem: false,
+      });
+      imported++;
+    }
+    return { imported };
+  },
+});
+
+// Mutation to delete all user-created tags for a specific user (public, no auth required)
+export const deleteUserTags = mutation({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const tags = await ctx.db
+      .query('tags')
+      .withIndex('by_user_field', (q) => q.eq('userId', args.userId))
+      .collect();
+
+    let deleted = 0;
+    for (const tag of tags) {
+      if (!tag.isSystem) {
+        await ctx.db.delete(tag._id);
+        deleted++;
+      }
+    }
+
+    return { deleted };
+  },
+});

@@ -142,3 +142,76 @@ export const updateSettings = mutation({
     };
   },
 });
+
+// Query to find a user by email (public, no auth required)
+export const findUserByEmail = query({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_email', (q) => q.eq('email', args.email))
+      .first();
+
+    if (!user) return null;
+
+    return {
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      displayName: user.displayName,
+      themeMode: user.themeMode,
+      timezone: user.timezone,
+      defaultRiskPercent: user.defaultRiskPercent,
+      defaultTimeRange: user.defaultTimeRange,
+      customThemePreset: user.customThemePreset,
+      customColors: user.customColors,
+      settingsUpdatedAt: user.settingsUpdatedAt,
+    };
+  },
+});
+
+// Query to export user settings (public, no auth required)
+export const exportUserSettings = query({
+  args: {
+    userId: v.id('users'),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) return null;
+
+    return {
+      displayName: user.displayName ?? undefined,
+      themeMode: user.themeMode ?? undefined,
+      timezone: user.timezone ?? undefined,
+      defaultRiskPercent: user.defaultRiskPercent ?? undefined,
+      defaultTimeRange: user.defaultTimeRange ?? undefined,
+      customThemePreset: user.customThemePreset ?? undefined,
+      customColors: user.customColors ?? undefined,
+    };
+  },
+});
+
+// Mutation to import (overwrite) user settings (public, no auth required)
+export const importUserSettings = mutation({
+  args: {
+    userId: v.id('users'),
+    settings: v.object({
+      displayName: v.optional(v.string()),
+      themeMode: v.optional(v.string()),
+      timezone: v.optional(v.string()),
+      defaultRiskPercent: v.optional(v.number()),
+      defaultTimeRange: v.optional(v.string()),
+      customThemePreset: v.optional(v.string()),
+      customColors: v.optional(v.string()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, {
+      ...args.settings,
+      settingsUpdatedAt: Date.now(),
+    });
+    return { success: true };
+  },
+});

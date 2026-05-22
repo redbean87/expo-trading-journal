@@ -563,3 +563,123 @@ export const migrateStructureBreakToEnum = internalMutation({
     return { migrated };
   },
 });
+
+// Query to export all trades for a specific user (public, no auth required)
+export const exportUserTrades = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const trades = await ctx.db
+      .query('trades')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .collect();
+
+    return trades.map((trade) => ({
+      symbol: trade.symbol,
+      entryPrice: trade.entryPrice,
+      exitPrice: trade.exitPrice,
+      quantity: trade.quantity,
+      entryTime: trade.entryTime,
+      exitTime: trade.exitTime,
+      side: trade.side,
+      pnl: trade.pnl,
+      pnlPercent: trade.pnlPercent,
+      fees: trade.fees,
+      commissions: trade.commissions,
+      notes: trade.notes,
+      strategy: trade.strategy,
+      psychology: trade.psychology,
+      whatWorked: trade.whatWorked,
+      whatFailed: trade.whatFailed,
+      confidence: trade.confidence,
+      setupQuality: trade.setupQuality,
+      ruleViolation: trade.ruleViolation,
+      importedFrom: trade.importedFrom,
+      importId: trade.importId,
+      orderType: trade.orderType,
+      accountBalanceAfter: trade.accountBalanceAfter,
+      riskAmount: trade.riskAmount,
+      stopLoss: trade.stopLoss,
+      marketCondition: trade.marketCondition,
+      htfContext: trade.htfContext,
+      structureBreakBeforeExit:
+        typeof trade.structureBreakBeforeExit === 'boolean'
+          ? trade.structureBreakBeforeExit
+            ? 'yes'
+            : 'no'
+          : trade.structureBreakBeforeExit,
+      wouldTakeTradeAgain: trade.wouldTakeTradeAgain,
+    }));
+  },
+});
+
+// Mutation to import trades directly (public, no auth required)
+export const importUserTrades = mutation({
+  args: {
+    userId: v.string(),
+    trades: v.array(
+      v.object({
+        symbol: v.string(),
+        entryPrice: v.number(),
+        exitPrice: v.number(),
+        quantity: v.number(),
+        entryTime: v.number(),
+        exitTime: v.number(),
+        side: v.string(),
+        pnl: v.number(),
+        pnlPercent: v.number(),
+        fees: v.optional(v.number()),
+        commissions: v.optional(v.number()),
+        notes: v.optional(v.string()),
+        strategy: v.optional(v.string()),
+        psychology: v.optional(v.string()),
+        whatWorked: v.optional(v.string()),
+        whatFailed: v.optional(v.string()),
+        confidence: v.optional(v.number()),
+        setupQuality: v.optional(v.number()),
+        ruleViolation: v.optional(v.string()),
+        importedFrom: v.optional(v.string()),
+        importId: v.optional(v.string()),
+        orderType: v.optional(v.string()),
+        accountBalanceAfter: v.optional(v.number()),
+        riskAmount: v.optional(v.number()),
+        stopLoss: v.optional(v.number()),
+        marketCondition: v.optional(v.string()),
+        htfContext: v.optional(v.string()),
+        structureBreakBeforeExit: v.optional(v.string()),
+        wouldTakeTradeAgain: v.optional(v.string()),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    let imported = 0;
+    for (const trade of args.trades) {
+      await ctx.db.insert('trades', {
+        userId: args.userId,
+        ...trade,
+      });
+      imported++;
+    }
+    return { imported };
+  },
+});
+
+// Mutation to delete all trades for a specific user (public, no auth required)
+export const deleteUserTrades = mutation({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const trades = await ctx.db
+      .query('trades')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .collect();
+
+    for (const trade of trades) {
+      await ctx.db.delete(trade._id);
+    }
+
+    return { deleted: trades.length };
+  },
+});
