@@ -1,9 +1,13 @@
-# Google OAuth Implementation
+# Google OAuth Setup
+
+Current Google Sign-In implementation using `expo-web-browser` with Convex Auth.
 
 ## Overview
+
 Google Sign-In authentication with Convex Auth, plus a Profile tab with logout functionality.
 
 ## Files Created
+
 - `app/auth/callback.tsx` - OAuth callback handler that cleans URL params and redirects to home
 - `src/components/google-sign-in-button.tsx` - Reusable Google sign-in button
 - `src/components/auth-divider.tsx` - "OR" divider between auth methods
@@ -11,6 +15,7 @@ Google Sign-In authentication with Convex Auth, plus a Profile tab with logout f
 - `app/(tabs)/profile.tsx` - Profile tab route
 
 ## Files Modified
+
 - `convex/auth.ts` - Added Google provider from `@auth/core/providers/google`
 - `src/hooks/use-auth.ts` - Added `signInWithGoogle` method
 - `src/screens/auth/login-screen.tsx` - Added Google sign-in button
@@ -19,6 +24,7 @@ Google Sign-In authentication with Convex Auth, plus a Profile tab with logout f
 - `src/providers/convex-provider.tsx` - Configured localStorage for web OAuth
 
 ## Convex Environment Variables
+
 ```bash
 npx convex env set AUTH_GOOGLE_ID <your-google-client-id>
 npx convex env set AUTH_GOOGLE_SECRET <your-google-client-secret>
@@ -26,37 +32,46 @@ npx convex env set SITE_URL "http://localhost:8081/auth/callback"
 ```
 
 ## Google Cloud Console Configuration
+
 1. Go to [Google Cloud Console](https://console.cloud.google.com/) > APIs & Services > Credentials
 2. Create OAuth 2.0 Client ID (Web application)
-3. Set **Authorized redirect URI**: `https://uncommon-turtle-66.convex.site/api/auth/callback/google`
+3. Set **Authorized redirect URI**: `https://<your-project>.convex.site/api/auth/callback/google`
 
 ## OAuth Flow
+
 1. User clicks "Sign in with Google"
-2. Redirects to Google → Convex backend processes OAuth
+2. Redirects to Google -> Convex backend processes OAuth
 3. Convex redirects to `SITE_URL` (`/auth/callback?code=...`)
 4. Callback route waits for authentication, cleans URL, redirects to `/`
 
 ## Key Issue Solved
-The OAuth `?code=` query parameter was persisting in the URL after authentication. On page refresh, Convex Auth would try to re-process the stale code, which invalidated the session (OAuth codes are single-use).
+
+The OAuth `?code=` query parameter was persisting in the URL after authentication. On page refresh, Convex Auth would try to re-process the stale code, invalidating the session (OAuth codes are single-use).
 
 **Solution**: Created a dedicated `/auth/callback` route that:
+
 - Receives the OAuth callback with query params
 - Waits for Convex Auth to process the code
 - Cleans the URL using `history.replaceState`
 - Redirects to home with a clean URL
 
 ## Production Deployment
+
 Update `SITE_URL` to your production callback URL:
+
 ```bash
 npx convex env set SITE_URL "https://yourdomain.com/auth/callback"
 ```
 
 ## Dependencies
+
 - `expo-web-browser` - For native OAuth flow (dynamically imported only on native)
 - `@auth/core` - Already installed, provides Google provider
 
 ## Testing
+
 OAuth does NOT work in Expo Go on native. For mobile testing:
+
 ```bash
 npx expo run:android
 # or
@@ -64,3 +79,13 @@ npx expo run:ios
 ```
 
 Web testing works with `npm run web`.
+
+## Alternative: Platform-Specific OAuth (Planned)
+
+For a more native mobile experience, consider migrating to:
+
+- **Web**: `@react-oauth/google` (native Google button, popup flow)
+- **Mobile**: `expo-auth-session` (proper native OAuth with PKCE)
+- Requires a redirect service (see [setup-vercel-redirect.md](setup-vercel-redirect.md))
+
+This approach is documented in the Apple Sign-In guide since it's required for App Store compliance.

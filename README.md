@@ -50,7 +50,7 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
    npm install
    ```
 
-2. **Set up Convex** (see [CONVEX_SETUP.md](CONVEX_SETUP.md) for detailed guide):
+2. **Set up Convex** (see [docs/setup-convex.md](docs/setup-convex.md) for detailed guide):
 
    ```bash
    # Login and create Convex project
@@ -130,7 +130,8 @@ src/
 
 ## Key Files
 
-- [CONVEX_SETUP.md](CONVEX_SETUP.md) - Complete Convex setup guide
+- [docs/setup.md](docs/setup.md) - Setup overview and quick start
+- [docs/setup-convex.md](docs/setup-convex.md) - Convex setup guide
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Architecture details
 - [CLAUDE.md](CLAUDE.md) - Code style guidelines
 
@@ -187,7 +188,7 @@ To switch from Convex to another service:
 - Ensure `npx convex dev` is running
 - Check internet connection
 
-See [CONVEX_SETUP.md](CONVEX_SETUP.md) for more help.
+See [docs/setup-convex.md](docs/setup-convex.md) for more help.
 
 ## Resources
 

@@ -35,6 +35,11 @@ The app has a solid foundation with:
   - Update fields that were empty/missing in previous import
   - Prevent duplicates while allowing data enrichment
 
+- [ ] **Migrate Prod Data to Dev** - Periodic script to copy production trades to dev environment for testing with real data
+  - Export from prod via Convex CLI or internal function
+  - Import to dev via Convex CLI
+  - Manual script run weekly or as needed
+
 - [ ] **Stop Loss vs Risk Amount Comparison** - Show implied risk from stop loss vs planned risk
   - Stop loss implies: `|entry - stop| × quantity` (technical/chart-based)
   - Planned risk: user's intended dollar risk (account-based, e.g., 5%)
@@ -64,6 +69,7 @@ The app has a solid foundation with:
 - [x] **R-Multiple Distribution** - Histogram of trades expressed in risk units (R)
 - [ ] **MFE/MAE Analysis** - Max favorable/adverse excursion charts (requires additional trade data)
 - [x] **Position Sizing Calculator** - Calculate size based on risk %
+- [ ] **Theme Breakdown + Secondary Color** - Audit where each theme color token is used and add a secondary accent color to the custom theme system for more visual variety
 - [ ] **Trade Goals** - Daily/weekly/monthly P&L targets
 - [ ] **Notifications** - Milestone alerts (reached $X profit, etc.)
 - [ ] **Onboarding Tutorial** - First-time user walkthrough
