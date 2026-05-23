@@ -18,6 +18,21 @@ export function formatDateTime(date: Date, timezone?: string): string {
   });
 }
 
+export function formatDateTimeWithSeconds(
+  date: Date,
+  timezone?: string
+): string {
+  return new Date(date).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: timezone,
+  });
+}
+
 /**
  * Format duration between two dates in a human-readable format
  */

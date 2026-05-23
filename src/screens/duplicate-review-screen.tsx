@@ -150,7 +150,7 @@ export default function DuplicateReviewScreen() {
                   onPress={() => handleMerge(pair)}
                   style={styles.mergeButton}
                 >
-                  Merge (Keep Best)
+                  Merge Trades
                 </Button>
 
                 <View style={styles.secondaryActions}>

@@ -4,7 +4,7 @@ import { Text, Card } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
 import { Trade } from '../types';
-import { formatDateTime } from '../utils/date-format';
+import { formatDateTimeWithSeconds } from '../utils/date-format';
 
 type DuplicateTradeCardProps = {
   trade: Trade;
@@ -49,15 +49,21 @@ export function DuplicateTradeCard({
         </Text>
 
         <View style={styles.fieldsContainer}>
-          {formatField('Entry Time', formatDateTime(trade.entryTime))}
-          {formatField('Exit Time', formatDateTime(trade.exitTime))}
+          {formatField(
+            'Entry Time',
+            formatDateTimeWithSeconds(trade.entryTime)
+          )}
+          {formatField('Exit Time', formatDateTimeWithSeconds(trade.exitTime))}
           {formatField('Entry Price', trade.entryPrice.toFixed(4))}
           {formatField('Exit Price', trade.exitPrice.toFixed(4))}
           {formatField('Fees', trade.fees?.toFixed(2) ?? '0.00')}
           {formatField('Commissions', trade.commissions?.toFixed(2) ?? '0.00')}
           {formatField('Order Type', trade.orderType ?? '-')}
-          {formatField('Source', trade.importedFrom ?? 'manual')}
-          {trade.importId && formatField('Import ID', trade.importId)}
+          {(trade.fees ?? 0) > 0 && (
+            <Text style={styles.feeNote}>
+              P&L includes ${(trade.fees ?? 0).toFixed(2)} in fees
+            </Text>
+          )}
         </View>
       </Card.Content>
     </Card>
@@ -116,6 +122,13 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     highlightedValue: {
       color: theme.colors.primary,
       fontWeight: 'bold',
+    },
+    feeNote: {
+      fontSize: 11,
+      color: theme.colors.textSecondary,
+      fontStyle: 'italic',
+      marginTop: theme.spacing.xs,
+      textAlign: 'center',
     },
   });
 }
