@@ -30,10 +30,10 @@ The app has a solid foundation with:
 
 ### Medium Priority
 
-- [ ] **Append/Update Imported Trades** - Re-import same statement to append missing trades or update existing ones with new data (fees, commissions, etc.)
+- [x] **Append/Update Imported Trades** - Re-import same statement to append missing trades or update existing ones with new data (fees, commissions, etc.)
   - Match existing trades by symbol + entry time + quantity (or importId)
-  - Update fields that were empty/missing in previous import
-  - Prevent duplicates while allowing data enrichment
+  - Vendor-authoritative fields overwrite existing data (prices, fees, commissions, timestamps)
+  - Protected fields preserved (notes, psychology, setupQuality, journal entries)
 
 - [ ] **Migrate Prod Data to Dev** - Periodic script to copy production trades to dev environment for testing with real data
   - Export from prod via Convex CLI or internal function
@@ -139,7 +139,7 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 
 ## Technical Improvements
 
-- [ ] **TOS Import Bug: Cash Balance hides Account Trade History trades** - When Cash Balance section has fills, Account Trade History is never parsed, causing missing trades for symbols that haven't settled in Cash Balance yet
+- [x] **TOS Import Bug: Cash Balance hides Account Trade History trades** - When Cash Balance section has fills, Account Trade History is never parsed, causing missing trades for symbols that haven't settled in Cash Balance yet
   - **Fix**: Parse Account Trade History as primary source (it's more complete/real-time), fall back to Cash Balance only if Trade History is empty
   - **Trade-off**: Fees/commissions only available from Cash Balance; may need to merge both sources for complete data
 - [ ] Offline mode with sync queue
@@ -200,3 +200,5 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] R-Multiple Distribution - Histogram showing trades in R units; risk amount entered per trade via flat $ or % of account toggle
 - [x] Position Sizing Calculator - Dialog on home screen; account size, risk %, entry/stop → position size and dollar risk
 - [x] **Setup Quality Rename** - Renamed confidence → setupQuality across all layers (schema, forms, analytics, CSV, tests) with idempotent migration (700 trades migrated)
+- [x] **Append/Update Imported Trades** - Re-import same statement to enrich existing trades with vendor data (fees, commissions, prices, timestamps) while preserving user journal fields
+- [x] **TOS Import Bug Fix** - Account Trade History parsed as primary source, Cash Balance fills merged for fees/commissions; no more missing trades when Cash Balance has early fills

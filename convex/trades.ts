@@ -436,6 +436,57 @@ export const clearAllTrades = mutation({
   },
 });
 
+/**
+ * Build a patch object for enriching an existing trade with data from an
+ * incoming import.
+ *
+ * Keep in sync with `src/utils/import-enrichment.ts` — `buildEnrichmentUpdates`.
+ */
+function buildEnrichmentUpdates(
+  existing: Record<string, unknown>,
+  incoming: Record<string, unknown>
+): Record<string, unknown> | null {
+  const updates: Record<string, unknown> = {};
+
+  const vendorAuthoritative = [
+    'entryPrice',
+    'exitPrice',
+    'entryTime',
+    'exitTime',
+    'pnl',
+    'pnlPercent',
+    'fees',
+    'commissions',
+    'orderType',
+    'accountBalanceAfter',
+    'importedFrom',
+  ];
+
+  const fillIfEmpty = ['importId'];
+
+  for (const key of vendorAuthoritative) {
+    const incomingValue = incoming[key];
+    if (incomingValue !== undefined && incomingValue !== null) {
+      const existingValue = existing[key];
+      if (existingValue !== incomingValue) {
+        updates[key] = incomingValue;
+      }
+    }
+  }
+
+  for (const key of fillIfEmpty) {
+    const incomingValue = incoming[key];
+    if (incomingValue !== undefined && incomingValue !== null) {
+      const existingValue = existing[key];
+      if (existingValue === undefined || existingValue === null) {
+        updates[key] = incomingValue;
+      }
+    }
+  }
+
+  return Object.keys(updates).length > 0 ? updates : null;
+}
+
 // Mutation to import multiple trades
 export const importTrades = mutation({
   args: {
@@ -513,55 +564,31 @@ export const importTrades = mutation({
     let updated = 0;
 
     for (const trade of args.trades) {
+      let existing = null;
+
       // Primary dedup: by importId (reliable Schwab REF #-based key)
       if (trade.importId) {
-        const existingById = importIdMatchMap.get(trade.importId);
-        if (existingById) {
-          skipped++;
-          continue;
-        }
-        // Also check fallback key — handles existing trades that predate importId
-        // and upgrades them with the new fields instead of inserting a duplicate
-        const fallbackKey = `${trade.symbol}-${trade.entryTime}-${trade.quantity}`;
-        const existingByKey = existingTradeMap.get(fallbackKey);
-        if (existingByKey) {
-          await ctx.db.patch(existingByKey._id, {
-            importId: trade.importId,
-            orderType: trade.orderType,
-            accountBalanceAfter: trade.accountBalanceAfter,
-          });
-          updated++;
-          continue;
-        }
+        existing = importIdMatchMap.get(trade.importId) ?? null;
+      }
+
+      // Fallback dedup: by symbol-entryTime-quantity
+      if (!existing) {
+        const key = `${trade.symbol}-${trade.entryTime}-${trade.quantity}`;
+        existing = existingTradeMap.get(key) ?? null;
+      }
+
+      if (!existing) {
         await ctx.db.insert('trades', { userId, ...trade });
         imported++;
         continue;
       }
 
-      // Fallback dedup: by symbol-entryTime-quantity
-      const key = `${trade.symbol}-${trade.entryTime}-${trade.quantity}`;
-      const existing = existingTradeMap.get(key);
-
-      if (!existing) {
-        await ctx.db.insert('trades', { userId, ...trade });
-        existingTradeMap.set(key, { userId, ...trade } as never);
-        imported++;
-      } else if (
-        existing.importedFrom === 'trade-history' &&
-        (trade.importedFrom === 'cash-balance' ||
-          trade.importedFrom === 'tos-merged')
-      ) {
-        await ctx.db.patch(existing._id, {
-          fees: trade.fees,
-          commissions: trade.commissions,
-          entryPrice: trade.entryPrice,
-          exitPrice: trade.exitPrice,
-          pnl: trade.pnl,
-          pnlPercent: trade.pnlPercent,
-          importedFrom: trade.importedFrom,
-          importId: trade.importId,
-          accountBalanceAfter: trade.accountBalanceAfter,
-        });
+      const updates = buildEnrichmentUpdates(
+        existing as Record<string, unknown>,
+        trade as Record<string, unknown>
+      );
+      if (updates) {
+        await ctx.db.patch(existing._id, updates);
         updated++;
       } else {
         skipped++;
