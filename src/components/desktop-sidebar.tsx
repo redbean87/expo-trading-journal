@@ -4,6 +4,8 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useDuplicateDetection } from '../hooks/use-duplicate-detection';
+import { useTrades } from '../hooks/use-trades';
 
 type SidebarItem = {
   route: string;
@@ -47,6 +49,8 @@ export function DesktopSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const styles = createStyles(theme);
+  const { trades } = useTrades();
+  const duplicatePairs = useDuplicateDetection(trades);
 
   const isActive = (item: SidebarItem) =>
     item.matchPaths.some(
@@ -102,6 +106,11 @@ export function DesktopSidebar() {
               >
                 {item.label}
               </Text>
+              {item.label === 'Trades' && duplicatePairs.length > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{duplicatePairs.length}</Text>
+                </View>
+              )}
             </Pressable>
           );
         })}
@@ -133,6 +142,21 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       fontSize: 14,
     },
     activeLabel: {
+      fontWeight: '600',
+    },
+    badge: {
+      backgroundColor: '#ef4444',
+      borderRadius: 10,
+      minWidth: 20,
+      height: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginLeft: theme.spacing.sm,
+      paddingHorizontal: 6,
+    },
+    badgeText: {
+      color: '#ffffff',
+      fontSize: 12,
       fontWeight: '600',
     },
   });
