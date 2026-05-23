@@ -186,6 +186,7 @@ import { spacing, borderRadius } from '../theme';
 - Don't store sensitive data (API keys, credentials) in code
 - Don't use `any` type unless absolutely necessary
 - Don't over-comment code - prefer self-documenting code with clear naming
+- **Never commit or push without explicit user approval.** Wait for the user to test changes and confirm "ready to commit" before running git commands. Never assume approval.
 
 ## Testing
 

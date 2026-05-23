@@ -164,6 +164,7 @@ export default function DuplicateReviewScreen() {
                   <Button
                     mode="outlined"
                     onPress={() => handleDeleteImported(pair)}
+                    textColor={theme.colors.error}
                     style={[styles.secondaryButton, styles.deleteButton]}
                   >
                     Delete New
@@ -171,6 +172,7 @@ export default function DuplicateReviewScreen() {
                   <Button
                     mode="outlined"
                     onPress={() => handleDeleteExisting(pair)}
+                    textColor={theme.colors.error}
                     style={[styles.secondaryButton, styles.deleteButton]}
                   >
                     Delete Old

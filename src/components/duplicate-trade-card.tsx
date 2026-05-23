@@ -43,10 +43,19 @@ export function DuplicateTradeCard({
         <Text style={styles.cardLabel}>{label}</Text>
         <Text style={styles.symbol}>{trade.symbol}</Text>
         <Text style={styles.meta}>LONG • {trade.quantity} shares</Text>
-        <Text style={[styles.pnl, { color: pnlColor }]}>
-          {isProfit ? '+' : ''}
-          {trade.pnl.toFixed(2)} ({trade.pnlPercent.toFixed(2)}%)
-        </Text>
+        <View style={styles.pnlRow}>
+          <Text style={[styles.pnl, { color: pnlColor }]}>
+            {isProfit ? '+' : ''}
+            {trade.pnl.toFixed(2)} ({trade.pnlPercent.toFixed(2)}%)
+          </Text>
+          {(trade.fees ?? 0) > 0 && (
+            <Text style={styles.feeNote}>
+              {trade.importedFrom === 'cash-balance'
+                ? `P&L includes $${(trade.fees ?? 0).toFixed(2)} in fees`
+                : `P&L before $${(trade.fees ?? 0).toFixed(2)} in fees`}
+            </Text>
+          )}
+        </View>
 
         <View style={styles.fieldsContainer}>
           {formatField(
@@ -59,11 +68,6 @@ export function DuplicateTradeCard({
           {formatField('Fees', trade.fees?.toFixed(2) ?? '0.00')}
           {formatField('Commissions', trade.commissions?.toFixed(2) ?? '0.00')}
           {formatField('Order Type', trade.orderType ?? '-')}
-          {(trade.fees ?? 0) > 0 && (
-            <Text style={styles.feeNote}>
-              P&L includes ${(trade.fees ?? 0).toFixed(2)} in fees
-            </Text>
-          )}
         </View>
       </Card.Content>
     </Card>
@@ -94,11 +98,15 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       color: theme.colors.textSecondary,
       marginTop: theme.spacing.xs,
     },
+    pnlRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.spacing.sm,
+      marginBottom: theme.spacing.md,
+    },
     pnl: {
       fontSize: 18,
       fontWeight: '600',
-      marginTop: theme.spacing.sm,
-      marginBottom: theme.spacing.md,
     },
     fieldsContainer: {
       marginTop: theme.spacing.sm,
@@ -127,8 +135,7 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       fontSize: 11,
       color: theme.colors.textSecondary,
       fontStyle: 'italic',
-      marginTop: theme.spacing.xs,
-      textAlign: 'center',
+      marginLeft: theme.spacing.sm,
     },
   });
 }
