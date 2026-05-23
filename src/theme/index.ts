@@ -163,6 +163,8 @@ const customColors = {
 
 const lightColors = {
   ...customColors,
+  error: '#B3261E',
+  onError: '#ffffff',
   background: '#f5f5f5',
   surface: '#ffffff',
   surfaceVariant: '#f5f5f5',
@@ -178,6 +180,8 @@ const lightColors = {
 
 const darkColors = {
   ...customColors,
+  error: '#B3261E',
+  onError: '#ffffff',
   background: '#121212',
   surface: '#1e1e1e',
   surfaceVariant: '#2c2c2c',
