@@ -41,6 +41,10 @@ export default function TabLayout() {
           title: 'Trades',
           tabBarBadge:
             duplicatePairs.length > 0 ? duplicatePairs.length : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: theme.colors.error,
+            color: theme.colors.onError,
+          },
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="format-list-bulleted"
