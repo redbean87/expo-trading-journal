@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
@@ -14,12 +15,18 @@ export default function DuplicateReviewScreen() {
   const theme = useAppTheme();
   const styles = createStyles(theme);
 
+  const router = useRouter();
   const { trades } = useTrades();
   const pairs = useDuplicateDetection(trades);
   const mergeTrades = useMergeTrades();
   const deleteTrade = useDeleteTrade();
 
   const { endReview, removePair } = useDuplicateReviewStore();
+
+  const handleBack = () => {
+    endReview();
+    router.back();
+  };
 
   const getDifferingFields = (
     existing: (typeof pairs)[0]['existing'],
@@ -82,7 +89,7 @@ export default function DuplicateReviewScreen() {
     return (
       <View style={styles.container}>
         <Appbar.Header>
-          <Appbar.BackAction onPress={endReview} />
+          <Appbar.BackAction onPress={handleBack} />
           <Appbar.Content title="Review Duplicates" />
         </Appbar.Header>
         <View style={styles.emptyState}>
@@ -92,7 +99,7 @@ export default function DuplicateReviewScreen() {
           </Text>
           <Button
             mode="contained"
-            onPress={endReview}
+            onPress={handleBack}
             style={styles.doneButton}
           >
             Done
@@ -105,7 +112,7 @@ export default function DuplicateReviewScreen() {
   return (
     <View style={styles.container}>
       <Appbar.Header>
-        <Appbar.BackAction onPress={endReview} />
+        <Appbar.BackAction onPress={handleBack} />
         <Appbar.Content
           title={`Review Duplicates (${pairs.length} remaining)`}
         />
