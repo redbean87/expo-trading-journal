@@ -382,6 +382,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     cardActions: {
       justifyContent: 'center',
       paddingVertical: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.lg,
     },
     actionButton: {
       minWidth: 150,
