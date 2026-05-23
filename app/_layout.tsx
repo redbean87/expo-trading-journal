@@ -94,6 +94,13 @@ export default function RootLayout() {
                       name="auth/callback"
                       options={{ headerShown: false }}
                     />
+                    <Stack.Screen
+                      name="duplicate-review"
+                      options={{
+                        headerShown: false,
+                        presentation: 'modal',
+                      }}
+                    />
                   </Stack>
                 </SidebarLayout>
               </AuthGate>

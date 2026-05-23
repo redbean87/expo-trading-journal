@@ -14,6 +14,7 @@ import type * as http from "../http.js";
 import type * as settings from "../settings.js";
 import type * as tags from "../tags.js";
 import type * as trades from "../trades.js";
+import type * as trades_analysis from "../trades_analysis.js";
 
 import type {
   ApiFromModules,
@@ -28,6 +29,7 @@ declare const fullApi: ApiFromModules<{
   settings: typeof settings;
   tags: typeof tags;
   trades: typeof trades;
+  trades_analysis: typeof trades_analysis;
 }>;
 
 /**

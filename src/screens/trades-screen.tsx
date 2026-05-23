@@ -31,12 +31,14 @@ import { SearchBar } from '../components/search-bar';
 import { TradeCard } from '../components/trade-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useBreakpoint } from '../hooks/use-breakpoint';
+import { useDuplicateDetection } from '../hooks/use-duplicate-detection';
 import {
   PnlFilter,
   TradeFilters,
   useTradeFilters,
 } from '../hooks/use-trade-filters';
 import { useTrades, useImportTrades } from '../hooks/use-trades';
+import { useDuplicateReviewStore } from '../store/duplicate-review-store';
 import { useProfileStore } from '../store/profile-store';
 import { useTimeFilterStore } from '../store/time-filter-store';
 import { Trade, TradeSide } from '../types';
@@ -156,6 +158,10 @@ export default function TradesScreen() {
       useNativeDriver: true,
     }).start();
   }, [fabOpen, fabAnimValue]);
+
+  // Duplicate detection for post-import review
+  const duplicatePairs = useDuplicateDetection(trades);
+  const { startReview } = useDuplicateReviewStore();
 
   const {
     filters,
@@ -437,6 +443,24 @@ export default function TradesScreen() {
         icon: 'plus',
       }}
     >
+      {duplicatePairs.length > 0 && (
+        <View style={styles.duplicateBanner}>
+          <Text style={styles.duplicateBannerText}>
+            {duplicatePairs.length} potential duplicate
+            {duplicatePairs.length === 1 ? '' : 's'} detected
+          </Text>
+          <Button
+            mode="contained"
+            onPress={() => {
+              startReview();
+              router.push('/duplicate-review');
+            }}
+            style={styles.duplicateBannerButton}
+          >
+            Review
+          </Button>
+        </View>
+      )}
       <View style={styles.filterArea}>
         <DateRangeFilter
           selectedRange={selectedRange}
@@ -763,5 +787,23 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     checkboxLabel: {
       flex: 1,
       marginLeft: theme.spacing.sm,
+    },
+    duplicateBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.colors.primaryContainer,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.md,
+      marginHorizontal: theme.spacing.lg,
+      marginTop: theme.spacing.md,
+      borderRadius: theme.borderRadius.md,
+    },
+    duplicateBannerText: {
+      flex: 1,
+      color: theme.colors.onPrimaryContainer,
+      fontWeight: '600',
+    },
+    duplicateBannerButton: {
+      marginRight: theme.spacing.sm,
     },
   });

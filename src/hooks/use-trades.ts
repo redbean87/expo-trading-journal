@@ -154,3 +154,14 @@ export function useImportTrades() {
     return await mutate({ trades: trades.map(mapFromTrade) });
   };
 }
+
+export function useMergeTrades() {
+  const mutate = useMutation(api.trades.mergeTrades);
+
+  return async (existingId: string, importedId: string): Promise<void> => {
+    await mutate({
+      existingId: existingId as Id<'trades'>,
+      importedId: importedId as Id<'trades'>,
+    });
+  };
+}

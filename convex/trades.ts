@@ -359,7 +359,64 @@ export const deleteTrade = mutation({
   },
 });
 
-// Mutation to clear all trades for the user
+// Mutation to merge two duplicate trades
+// Keeps the imported trade (better source) and deletes the existing one
+// Merges fees/importId from CB into the TH trade
+export const mergeTrades = mutation({
+  args: {
+    existingId: v.id('trades'),
+    importedId: v.id('trades'),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error('Not authenticated');
+    }
+
+    // Fetch both trades
+    const existing = await ctx.db.get(args.existingId);
+    const imported = await ctx.db.get(args.importedId);
+
+    if (!existing || !imported) {
+      throw new Error('One or both trades not found');
+    }
+    if (existing.userId !== userId || imported.userId !== userId) {
+      throw new Error('Not authorized');
+    }
+
+    // Determine which trade to keep: prefer imported (tos-merged/trade-history) over cash-balance
+    // because imported has exact timestamps and orderType
+    const tradeToKeep = imported;
+    const tradeToDelete = existing;
+
+    // Merge fields: keep imported's base data, add CB's enrichment if available
+    const mergedFees = tradeToKeep.fees ?? tradeToDelete.fees ?? undefined;
+    const mergedCommissions =
+      tradeToKeep.commissions ?? tradeToDelete.commissions ?? undefined;
+    const mergedImportId =
+      tradeToKeep.importId || tradeToDelete.importId || undefined;
+    const mergedAccountBalanceAfter =
+      tradeToKeep.accountBalanceAfter ??
+      tradeToDelete.accountBalanceAfter ??
+      undefined;
+
+    // Update the kept trade with merged data
+    await ctx.db.patch(tradeToKeep._id, {
+      fees: mergedFees,
+      commissions: mergedCommissions,
+      importId: mergedImportId,
+      accountBalanceAfter: mergedAccountBalanceAfter,
+      importedFrom: 'tos-merged',
+    });
+
+    // Delete the duplicate
+    await ctx.db.delete(tradeToDelete._id);
+
+    return { merged: true, keptId: tradeToKeep._id };
+  },
+});
+
+// Mutation to clear all trades for the authenticated user
 export const clearAllTrades = mutation({
   args: {},
   handler: async (ctx) => {
@@ -376,34 +433,6 @@ export const clearAllTrades = mutation({
     for (const trade of trades) {
       await ctx.db.delete(trade._id);
     }
-  },
-});
-
-// Mutation to migrate confidence to setupQuality (one-time)
-export const migrateConfidenceToSetupQuality = mutation({
-  args: {},
-  handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error('Not authenticated');
-    }
-
-    const trades = await ctx.db
-      .query('trades')
-      .withIndex('by_user', (q) => q.eq('userId', userId))
-      .collect();
-
-    let migrated = 0;
-    for (const trade of trades) {
-      if (trade.confidence !== undefined && trade.setupQuality === undefined) {
-        await ctx.db.patch(trade._id, {
-          setupQuality: trade.confidence,
-        });
-        migrated++;
-      }
-    }
-
-    return { migrated };
   },
 });
 
