@@ -793,10 +793,10 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       alignItems: 'center',
       backgroundColor: theme.colors.primaryContainer,
       paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
       marginHorizontal: theme.spacing.lg,
       marginTop: theme.spacing.md,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borderRadius.sm,
     },
     duplicateBannerText: {
       flex: 1,

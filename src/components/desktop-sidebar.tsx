@@ -93,24 +93,28 @@ export function DesktopSidebar() {
                     : theme.colors.textSecondary
                 }
               />
-              <Text
-                style={[
-                  styles.label,
-                  {
-                    color: active
-                      ? theme.colors.onPrimaryContainer
-                      : theme.colors.textSecondary,
-                  },
-                  active && styles.activeLabel,
-                ]}
-              >
-                {item.label}
-              </Text>
-              {item.label === 'Trades' && duplicatePairs.length > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{duplicatePairs.length}</Text>
-                </View>
-              )}
+              <View style={styles.labelContainer}>
+                <Text
+                  style={[
+                    styles.label,
+                    {
+                      color: active
+                        ? theme.colors.onPrimaryContainer
+                        : theme.colors.textSecondary,
+                    },
+                    active && styles.activeLabel,
+                  ]}
+                >
+                  {item.label}
+                </Text>
+                {item.label === 'Trades' && duplicatePairs.length > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>
+                      {duplicatePairs.length}
+                    </Text>
+                  </View>
+                )}
+              </View>
             </Pressable>
           );
         })}
@@ -137,25 +141,31 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       paddingVertical: theme.spacing.md,
       borderRadius: theme.spacing.sm,
     },
-    label: {
+    labelContainer: {
+      flex: 1,
+      position: 'relative',
       marginLeft: theme.spacing.md,
+    },
+    label: {
       fontSize: 14,
     },
     activeLabel: {
       fontWeight: '600',
     },
     badge: {
-      backgroundColor: '#ef4444',
+      position: 'absolute',
+      top: -8,
+      right: 0,
+      backgroundColor: theme.colors.error,
       borderRadius: 10,
       minWidth: 20,
       height: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      marginLeft: theme.spacing.sm,
       paddingHorizontal: 6,
     },
     badgeText: {
-      color: '#ffffff',
+      color: theme.colors.onError,
       fontSize: 12,
       fontWeight: '600',
     },
