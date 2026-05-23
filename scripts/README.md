@@ -38,7 +38,7 @@ npx tsx scripts/migrate-prod-to-dev.ts \
 ## What Does NOT Get Migrated
 
 - **System Tags**: Already exist in dev via seed data
-- **Attachment Files**: R2 objects are environment-specific
+- **Attachment Files**: R2 objects are environment-specific and not accessible across deployments
 - **Auth Credentials**: Users must log into dev to create their account
 
 ## How It Works

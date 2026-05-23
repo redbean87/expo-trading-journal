@@ -35,11 +35,6 @@ The app has a solid foundation with:
   - Vendor-authoritative fields overwrite existing data (prices, fees, commissions, timestamps)
   - Protected fields preserved (notes, psychology, setupQuality, journal entries)
 
-- [ ] **Migrate Prod Data to Dev** - Periodic script to copy production trades to dev environment for testing with real data
-  - Export from prod via Convex CLI or internal function
-  - Import to dev via Convex CLI
-  - Manual script run weekly or as needed
-
 - [ ] **Stop Loss vs Risk Amount Comparison** - Show implied risk from stop loss vs planned risk
   - Stop loss implies: `|entry - stop| × quantity` (technical/chart-based)
   - Planned risk: user's intended dollar risk (account-based, e.g., 5%)
@@ -202,3 +197,4 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] **Setup Quality Rename** - Renamed confidence → setupQuality across all layers (schema, forms, analytics, CSV, tests) with idempotent migration (700 trades migrated)
 - [x] **Append/Update Imported Trades** - Re-import same statement to enrich existing trades with vendor data (fees, commissions, prices, timestamps) while preserving user journal fields
 - [x] **TOS Import Bug Fix** - Account Trade History parsed as primary source, Cash Balance fills merged for fees/commissions; no more missing trades when Cash Balance has early fills
+- [x] **Migrate Prod Data to Dev** - CLI script to copy production trades, tags, and settings to dev environment for testing with real data (attachments excluded — R2 objects are env-specific)
