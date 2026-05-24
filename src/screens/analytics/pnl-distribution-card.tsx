@@ -12,6 +12,7 @@ import { useContentWidth } from '../../hooks/use-content-width';
 import { PnlBin, usePnlDistribution } from '../../hooks/use-pnl-distribution';
 import { Trade } from '../../types';
 import {
+  getBarXAxisInset,
   getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
@@ -47,6 +48,7 @@ export default function PnlDistributionCard({
   const chartHeight = getChartHeight('bar', breakpoint);
 
   const data = useMemo(() => bins.map((bin) => bin.count), [bins]);
+  const xAxisInset = getBarXAxisInset(chartWidth, data.length);
   const labels = useMemo(() => bins.map((bin) => bin.label), [bins]);
   const yAxisMax = useMemo(() => Math.max(...data, 1), [data]);
 
@@ -157,7 +159,7 @@ export default function PnlDistributionCard({
               style={styles.xAxis}
               data={data}
               formatLabel={(_: unknown, index: number) => labels[index]}
-              contentInset={{ left: 24, right: 24 }}
+              contentInset={xAxisInset}
               svg={{
                 fontSize: 10,
                 fill: theme.colors.textSecondary,

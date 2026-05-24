@@ -11,6 +11,7 @@ import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { useContentWidth } from '../../hooks/use-content-width';
 import { HtfContextMetrics } from '../../hooks/use-htf-context-analytics';
 import {
+  getBarXAxisInset,
   getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
@@ -45,6 +46,7 @@ export default function HtfContextPnlBarCard({
   const chartHeight = getChartHeight('bar', breakpoint);
 
   const data = useMemo(() => contexts.map((c) => c.totalPnl), [contexts]);
+  const xAxisInset = getBarXAxisInset(chartWidth, data.length);
 
   const labels = useMemo(
     () =>
@@ -146,7 +148,7 @@ export default function HtfContextPnlBarCard({
               formatLabel={(_: unknown, index: number) =>
                 index % labelStep === 0 ? labels[index] : ''
               }
-              contentInset={{ left: 24, right: 24 }}
+              contentInset={xAxisInset}
               svg={{
                 fontSize: 10,
                 fill: theme.colors.textSecondary,

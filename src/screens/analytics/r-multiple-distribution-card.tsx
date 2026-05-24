@@ -15,6 +15,7 @@ import {
 } from '../../hooks/use-r-multiple-distribution';
 import { Trade } from '../../types';
 import {
+  getBarXAxisInset,
   getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
@@ -50,6 +51,7 @@ export default function RMultipleDistributionCard({
   const chartHeight = getChartHeight('bar', breakpoint);
 
   const data = useMemo(() => bins.map((bin) => bin.count), [bins]);
+  const xAxisInset = getBarXAxisInset(chartWidth, data.length);
   const labels = useMemo(() => bins.map((bin) => bin.label), [bins]);
   const yAxisMax = useMemo(() => Math.max(...data, 1), [data]);
 
@@ -160,7 +162,7 @@ export default function RMultipleDistributionCard({
               style={styles.xAxis}
               data={data}
               formatLabel={(_: unknown, index: number) => labels[index]}
-              contentInset={{ left: 24, right: 24 }}
+              contentInset={xAxisInset}
               svg={{
                 fontSize: 10,
                 fill: theme.colors.textSecondary,

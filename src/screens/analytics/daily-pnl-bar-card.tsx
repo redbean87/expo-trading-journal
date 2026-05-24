@@ -12,6 +12,7 @@ import { useContentWidth } from '../../hooks/use-content-width';
 import { useDailyPnl } from '../../hooks/use-daily-pnl';
 import { Trade } from '../../types';
 import {
+  getBarXAxisInset,
   getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
@@ -54,6 +55,7 @@ export default function DailyPnlBarCard({ trades }: DailyPnlBarCardProps) {
     () => sortedDays.map((day) => day.totalPnl),
     [sortedDays]
   );
+  const xAxisInset = getBarXAxisInset(chartWidth, data.length);
 
   const labels = useMemo(
     () =>
@@ -166,7 +168,7 @@ export default function DailyPnlBarCard({ trades }: DailyPnlBarCardProps) {
               formatLabel={(_: unknown, index: number) =>
                 index % labelStep === 0 ? labels[index] : ''
               }
-              contentInset={{ left: 24, right: 24 }}
+              contentInset={xAxisInset}
               svg={{
                 fontSize: 10,
                 fill: theme.colors.textSecondary,

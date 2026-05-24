@@ -23,5 +23,11 @@ declare module 'react-native-svg-charts' {
 
   export class AreaChart extends Component<ChartProps> {}
   export class YAxis extends Component<ChartProps & { scale?: unknown }> {}
-  export class XAxis extends Component<ChartProps & { scale?: unknown }> {}
+  export class XAxis extends Component<
+    ChartProps & {
+      scale?: unknown;
+      spacingInner?: number;
+      spacingOuter?: number;
+    }
+  > {}
 }

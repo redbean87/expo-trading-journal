@@ -13,6 +13,7 @@ import { useContentWidth } from '../../hooks/use-content-width';
 import { useTimeOfDayBreakdown } from '../../hooks/use-time-of-day-breakdown';
 import { Trade } from '../../types';
 import {
+  getBarXAxisInset,
   getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
@@ -60,6 +61,7 @@ export default function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
     () => breakdown.map((hour) => hour.totalPnl),
     [breakdown]
   );
+  const xAxisInset = getBarXAxisInset(chartWidth, data.length);
   const labels = useMemo(
     () => breakdown.map((hour) => hour.hourLabel),
     [breakdown]
@@ -188,7 +190,7 @@ export default function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
                 style={styles.xAxis}
                 data={data}
                 formatLabel={(_, index) => labels[index]}
-                contentInset={{ left: 24, right: 24 }}
+                contentInset={xAxisInset}
                 svg={{
                   fontSize: 10,
                   fill: theme.colors.textSecondary,
