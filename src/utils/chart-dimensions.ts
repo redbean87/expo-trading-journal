@@ -93,30 +93,3 @@ export function getChartHeight(
       return DEFAULT_BAR_CHART_HEIGHT;
   }
 }
-
-/**
- * Calculate the horizontal contentInset for an XAxis that sits below a BarChart
- * so labels are centered exactly under each bar.
- *
- * The BarChart uses a band scale with spacingInner/spacingOuter, while the
- * XAxis uses a linear scale by default. Because the linear scale has a
- * slightly different slope than the band scale when symmetric insets are used,
- * we compute asymmetric left/right insets so the first and last labels
- * line up with the first and last bar centers — which forces every label
- * in between to align perfectly as well.
- */
-export function getBarXAxisInset(
-  chartWidth: number,
-  barCount: number,
-  barChartInset: number = 8,
-  spacingInner: number = 0.3,
-  spacingOuter: number = 0.2
-): { left: number; right: number } {
-  const range = chartWidth - barChartInset * 2;
-  const step =
-    range / (barCount + spacingInner * (barCount - 1) + spacingOuter * 2);
-  return {
-    left: barChartInset + step * (spacingOuter + 0.5 - spacingInner / 2),
-    right: barChartInset + step * (spacingOuter + 0.5 + spacingInner / 2),
-  };
-}

@@ -1,3 +1,4 @@
+import * as d3Scale from 'd3-scale';
 import React, { useMemo } from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
 import { Text } from 'react-native-paper';
@@ -13,7 +14,6 @@ import { useContentWidth } from '../../hooks/use-content-width';
 import { useTimeOfDayBreakdown } from '../../hooks/use-time-of-day-breakdown';
 import { Trade } from '../../types';
 import {
-  getBarXAxisInset,
   getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
@@ -61,7 +61,7 @@ export default function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
     () => breakdown.map((hour) => hour.totalPnl),
     [breakdown]
   );
-  const xAxisInset = getBarXAxisInset(chartWidth, data.length);
+
   const labels = useMemo(
     () => breakdown.map((hour) => hour.hourLabel),
     [breakdown]
@@ -189,8 +189,11 @@ export default function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
               <XAxis
                 style={styles.xAxis}
                 data={data}
+                scale={d3Scale.scaleBand}
                 formatLabel={(_, index) => labels[index]}
-                contentInset={xAxisInset}
+                spacingInner={0.3}
+                spacingOuter={0.2}
+                contentInset={{ left: 8, right: 8 }}
                 svg={{
                   fontSize: 10,
                   fill: theme.colors.textSecondary,

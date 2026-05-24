@@ -41,6 +41,7 @@
     "@react-native-async-storage/async-storage": "^2.2.0",
     "babel-preset-expo": "~54.0.10",
     "convex": "^1.39.1",
+    "d3-scale": "^4.0.2",
     "decimal.js": "^10.6.0",
     "expo": "~54.0.31",
     "expo-constants": "~18.0.13",

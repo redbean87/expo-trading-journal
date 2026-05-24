@@ -1,3 +1,4 @@
+import * as d3Scale from 'd3-scale';
 import React, { useMemo } from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
 import { Text } from 'react-native-paper';
@@ -13,7 +14,6 @@ import { useContentWidth } from '../../hooks/use-content-width';
 import { useDayOfWeekBreakdown } from '../../hooks/use-day-of-week-breakdown';
 import { Trade } from '../../types';
 import {
-  getBarXAxisInset,
   getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
@@ -58,7 +58,7 @@ export default function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
   const chartHeight = getChartHeight('bar', breakpoint);
 
   const data = useMemo(() => breakdown.map((day) => day.totalPnl), [breakdown]);
-  const xAxisInset = getBarXAxisInset(chartWidth, data.length);
+
   const labels = useMemo(
     () => breakdown.map((day) => day.dayLabel),
     [breakdown]
@@ -186,8 +186,11 @@ export default function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
               <XAxis
                 style={styles.xAxis}
                 data={data}
+                scale={d3Scale.scaleBand}
                 formatLabel={(_, index) => labels[index]}
-                contentInset={xAxisInset}
+                spacingInner={0.3}
+                spacingOuter={0.2}
+                contentInset={{ left: 8, right: 8 }}
                 svg={{
                   fontSize: 10,
                   fill: theme.colors.textSecondary,

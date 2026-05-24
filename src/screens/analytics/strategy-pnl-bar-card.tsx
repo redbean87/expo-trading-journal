@@ -1,3 +1,4 @@
+import * as d3Scale from 'd3-scale';
 import React, { useMemo } from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
 import { Line, Rect } from 'react-native-svg';
@@ -11,7 +12,6 @@ import { useBreakpoint } from '../../hooks/use-breakpoint';
 import { useContentWidth } from '../../hooks/use-content-width';
 import { StrategyMetrics } from '../../hooks/use-strategy-analytics';
 import {
-  getBarXAxisInset,
   getChartHeight,
   getChartWidth,
   Y_AXIS_LABEL_WIDTH,
@@ -46,7 +46,6 @@ export default function StrategyPnlBarCard({
   const chartHeight = getChartHeight('bar', breakpoint);
 
   const data = useMemo(() => strategies.map((s) => s.totalPnl), [strategies]);
-  const xAxisInset = getBarXAxisInset(chartWidth, data.length);
 
   const labels = useMemo(
     () =>
@@ -145,10 +144,13 @@ export default function StrategyPnlBarCard({
             <XAxis
               style={styles.xAxis}
               data={data}
+              scale={d3Scale.scaleBand}
               formatLabel={(_: unknown, index: number) =>
                 index % labelStep === 0 ? labels[index] : ''
               }
-              contentInset={xAxisInset}
+              spacingInner={0.3}
+              spacingOuter={0.2}
+              contentInset={{ left: 8, right: 8 }}
               svg={{
                 fontSize: 10,
                 fill: theme.colors.textSecondary,
