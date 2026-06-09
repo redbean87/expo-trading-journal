@@ -104,7 +104,17 @@ export function TradeCard({
                   >
                     {isProfit ? '+' : ''}${trade.pnl.toFixed(2)}
                   </Text>
-                  <Text variant="bodySmall" style={styles.meta}>
+                  <Text
+                    variant="bodySmall"
+                    style={[
+                      styles.meta,
+                      {
+                        color: isProfit
+                          ? theme.colors.profit
+                          : theme.colors.loss,
+                      },
+                    ]}
+                  >
                     {trade.pnlPercent >= 0 ? '+' : ''}
                     {trade.pnlPercent.toFixed(2)}%
                   </Text>

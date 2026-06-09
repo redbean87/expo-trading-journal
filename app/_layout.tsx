@@ -101,6 +101,13 @@ export default function RootLayout() {
                         presentation: 'modal',
                       }}
                     />
+                    <Stack.Screen
+                      name="daily-digest"
+                      options={{
+                        headerShown: false,
+                        presentation: 'modal',
+                      }}
+                    />
                   </Stack>
                 </SidebarLayout>
               </AuthGate>

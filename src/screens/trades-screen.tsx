@@ -604,6 +604,26 @@ export default function TradesScreen() {
                     </Text>
                   </View>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.pillButton, styles.pillButtonSecond]}
+                  onPress={() => {
+                    setFabOpen(false);
+                    router.push('/daily-digest');
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.pillContent}>
+                    <IconButton
+                      icon="clipboard-text"
+                      size={20}
+                      iconColor={theme.colors.onSurface}
+                      style={styles.pillIcon}
+                    />
+                    <Text variant="labelLarge" style={styles.pillLabel}>
+                      Daily Digest
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               </Animated.View>
               <Animated.View
                 style={{
