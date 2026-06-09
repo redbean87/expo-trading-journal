@@ -387,12 +387,12 @@ export default function TradesScreen() {
 
   const handleSelectTrade = (id: string) => {
     if (isDesktop) {
-      router.replace(`/trades/${id}`);
+      router.setParams({ id });
     }
   };
 
   const handleClearSelection = () => {
-    router.replace('/trades');
+    router.setParams({ id: undefined, edit: undefined });
   };
 
   const onRefresh = async () => {
