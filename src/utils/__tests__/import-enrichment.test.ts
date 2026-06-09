@@ -45,11 +45,18 @@ describe('buildEnrichmentUpdates', () => {
     expect(updates).toBeNull();
   });
 
-  it('does not change symbol, quantity, or side', () => {
+  it('does not change symbol or side', () => {
     const existing = { symbol: 'AAPL', quantity: 100, side: 'long' };
     const incoming = { symbol: 'AAPL', quantity: 200, side: 'short' };
     const updates = buildEnrichmentUpdates(existing, incoming);
-    expect(updates).toBeNull();
+    expect(updates).toEqual({ quantity: 200 });
+  });
+
+  it('updates quantity from vendor import', () => {
+    const existing = { quantity: 100 };
+    const incoming = { quantity: 250 };
+    const updates = buildEnrichmentUpdates(existing, incoming);
+    expect(updates).toEqual({ quantity: 250 });
   });
 
   it('updates entryTime and exitTime from vendor import', () => {

@@ -437,6 +437,88 @@ Profits and Losses`;
       expect(aaplTrade!.importedFrom).toBe('cash-balance');
     });
 
+    it('matches multiple CB fills that sum to a single TH fill quantity', () => {
+      // Regression: Schwab sometimes splits one fill into multiple CB rows
+      // (e.g. +100 and +150) while TH combines them into one row (+250).
+      const MERGED_HEADER = `Account Statement for 54639299SCHW (Individual) since 3/18/26 through 3/18/26
+
+Cash Balance
+DATE,TIME,TYPE,REF #,DESCRIPTION,Misc Fees,Commissions & Fees,AMOUNT,BALANCE
+3/19/26,08:30:00,TRD,="1",BOT +100 AAPL @150.00,,,-15000.00,"1,000.00"
+3/19/26,08:30:00,TRD,="1",BOT +150 AAPL @150.00,,,-22500.00,"0.00"
+3/19/26,09:00:00,TRD,="2",SOLD -250 AAPL @151.00,-0.10,,37750.00,"500.00"
+,,,,TOTAL,,,,"$500.00"
+
+Futures Statements
+
+Account Trade History`;
+
+      const content = `${MERGED_HEADER}
+,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:30:00,STOCK,BUY,+250,TO OPEN,AAPL,,,STOCK,150.00,150.00,LMT
+,3/19/26 09:00:00,STOCK,SELL,-250,TO CLOSE,AAPL,,,STOCK,151.00,151.00,LMT
+
+Profits and Losses`;
+
+      const result = parseTosAccountStatement(content);
+      expect(result.errors).toHaveLength(0);
+      expect(result.imported).toHaveLength(1);
+      expect(result.unmatchedBuys).toBe(0);
+      expect(result.unmatchedSells).toBe(0);
+
+      const trade = result.imported[0];
+      expect(trade.symbol).toBe('AAPL');
+      expect(trade.quantity).toBe(250);
+      expect(trade.entryPrice).toBe(150.0);
+      expect(trade.exitPrice).toBe(151.0);
+      // P&L from display prices: (151 - 150) * 250 - 0.10 = 249.90
+      expect(trade.pnl).toBeCloseTo(249.9, 1);
+      expect(trade.fees).toBeCloseTo(0.1, 2);
+      expect(trade.importedFrom).toBe('tos-merged');
+    });
+
+    it('matches multiple CB fills with the same key to the correct TH fills', () => {
+      // Regression: a Map with single entries per key overwrote earlier fills,
+      // causing some CB data to be lost or matched to the wrong TH fill.
+      const MERGED_HEADER = `Account Statement for 54639299SCHW (Individual) since 3/18/26 through 3/18/26
+
+Cash Balance
+DATE,TIME,TYPE,REF #,DESCRIPTION,Misc Fees,Commissions & Fees,AMOUNT,BALANCE
+3/19/26,08:30:00,TRD,="1",BOT +500 AAPL @149.00,,,-74500.00,"1,000.00"
+3/19/26,08:30:00,TRD,="1",BOT +500 AAPL @150.00,,,-75000.00,"0.00"
+3/19/26,09:00:00,TRD,="2",SOLD -500 AAPL @151.00,-0.10,,75500.00,"500.00"
+3/19/26,09:00:00,TRD,="2",SOLD -500 AAPL @152.00,-0.10,,76000.00,"760.00"
+,,,,TOTAL,,,,"$760.00"
+
+Futures Statements
+
+Account Trade History`;
+
+      const content = `${MERGED_HEADER}
+,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,3/19/26 08:30:00,STOCK,BUY,+500,TO OPEN,AAPL,,,STOCK,149.00,149.00,LMT
+,3/19/26 08:30:00,STOCK,BUY,+500,TO OPEN,AAPL,,,STOCK,150.00,150.00,LMT
+,3/19/26 09:00:00,STOCK,SELL,-500,TO CLOSE,AAPL,,,STOCK,151.00,151.00,LMT
+,3/19/26 09:00:00,STOCK,SELL,-500,TO CLOSE,AAPL,,,STOCK,152.00,152.00,LMT
+
+Profits and Losses`;
+
+      const result = parseTosAccountStatement(content);
+      expect(result.errors).toHaveLength(0);
+      expect(result.imported).toHaveLength(1);
+
+      const trade = result.imported[0];
+      expect(trade.symbol).toBe('AAPL');
+      expect(trade.quantity).toBe(1000);
+      // Weighted avg entry: (500*149 + 500*150) / 1000 = 149.5
+      expect(trade.entryPrice).toBe(149.5);
+      // Weighted avg exit: (500*151 + 500*152) / 1000 = 151.5
+      expect(trade.exitPrice).toBe(151.5);
+      // P&L calculated from display prices, not exact amounts
+      expect(trade.pnl).toBeCloseTo(1999.8, 1); // (151.5-149.5)*1000 - 0.20 fees
+      expect(trade.fees).toBeCloseTo(0.2, 2);
+    });
+
     it('falls back to trade-history when Cash Balance has no TRD rows', () => {
       const header = `Account Statement for 54639299SCHW (Individual) since 3/18/26 through 3/18/26
 

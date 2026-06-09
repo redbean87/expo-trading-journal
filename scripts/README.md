@@ -8,9 +8,41 @@ Migrate user data (trades, tags, settings) from Convex production to development
 - Users must exist in dev (have logged in at least once)
 - Run from project root
 
+## Quick Setup (One-Time)
+
+Create a `.env.migrate` file in the project root with your details:
+
+```bash
+cp .env.migrate.example .env.migrate
+```
+
+Then edit `.env.migrate`:
+
+```text
+MIGRATE_EMAIL=your-email@example.com
+MIGRATE_PROD_DEPLOYMENT=your-prod-deployment-name
+MIGRATE_DEV_DEPLOYMENT=your-dev-deployment-name
+```
+
+> `.env.migrate` is gitignored — your credentials stay local.
+
 ## Usage
 
-### Dry Run (Preview)
+### With `.env.migrate` (Recommended)
+
+After setting up the file, run without any arguments:
+
+```bash
+# Preview what will be migrated
+npx tsx scripts/migrate-prod-to-dev.ts --dry-run
+
+# Actually migrate
+npx tsx scripts/migrate-prod-to-dev.ts
+```
+
+### With CLI Arguments (No Config File)
+
+You can still pass everything explicitly, which also overrides `.env.migrate`:
 
 ```bash
 npx tsx scripts/migrate-prod-to-dev.ts \
@@ -20,13 +52,19 @@ npx tsx scripts/migrate-prod-to-dev.ts \
   --dry-run
 ```
 
-### Actual Migration
+### Multiple Users
+
+Set multiple emails in `.env.migrate`:
+
+```text
+MIGRATE_EMAIL=user1@example.com,user2@example.com
+```
+
+Or pass them via CLI:
 
 ```bash
 npx tsx scripts/migrate-prod-to-dev.ts \
-  --emails user@example.com,another@example.com \
-  --prod-deployment proficient-orca-351 \
-  --dev-deployment uncommon-turtle-66
+  --emails user1@example.com,user2@example.com
 ```
 
 ## What Gets Migrated

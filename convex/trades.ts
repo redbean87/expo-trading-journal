@@ -451,6 +451,7 @@ function buildEnrichmentUpdates(
   const vendorAuthoritative = [
     'entryPrice',
     'exitPrice',
+    'quantity',
     'entryTime',
     'exitTime',
     'pnl',
@@ -575,6 +576,34 @@ export const importTrades = mutation({
       if (!existing) {
         const key = `${trade.symbol}-${trade.entryTime}-${trade.quantity}`;
         existing = existingTradeMap.get(key) ?? null;
+      }
+
+      // Tertiary fuzzy dedup: same symbol + same calendar day + TOS source +
+      // exact quantity or entryPrice within 1%
+      if (!existing && !trade.importId) {
+        const tradeDay = Math.floor(trade.entryTime / 86400000);
+        const candidates = existingTrades.filter((t) => {
+          if (
+            t.importedFrom !== 'tos-merged' &&
+            t.importedFrom !== 'trade-history' &&
+            t.importedFrom !== 'cash-balance'
+          ) {
+            return false;
+          }
+          if (t.symbol !== trade.symbol) return false;
+          const existingDay = Math.floor(t.entryTime / 86400000);
+          if (existingDay !== tradeDay) return false;
+          if (t.quantity === trade.quantity) return true;
+          const maxPrice = Math.max(t.entryPrice, trade.entryPrice);
+          if (maxPrice > 0) {
+            const priceDiff = Math.abs(t.entryPrice - trade.entryPrice);
+            if (priceDiff / maxPrice <= 0.01) return true;
+          }
+          return false;
+        });
+        if (candidates.length === 1) {
+          existing = candidates[0];
+        }
       }
 
       if (!existing) {

@@ -3,7 +3,7 @@
  * incoming import.
  *
  * **Vendor-authoritative fields** (always overwritten if incoming has a value):
- * `entryPrice`, `exitPrice`, `entryTime`, `exitTime`, `pnl`, `pnlPercent`,
+ * `entryPrice`, `exitPrice`, `quantity`, `entryTime`, `exitTime`, `pnl`, `pnlPercent`,
  * `fees`, `commissions`, `orderType`, `accountBalanceAfter`, `importedFrom`.
  *
  * **Fill-if-empty fields** (only set if existing is null/undefined):
@@ -28,6 +28,7 @@ export function buildEnrichmentUpdates(
   const vendorAuthoritative = [
     'entryPrice',
     'exitPrice',
+    'quantity',
     'entryTime',
     'exitTime',
     'pnl',

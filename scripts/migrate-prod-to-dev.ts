@@ -14,6 +14,13 @@ import fs from 'fs';
 import path from 'path';
 
 import { ConvexClient } from 'convex/browser';
+import { config } from 'dotenv';
+
+// Load optional .env.migrate for default configuration
+const envPath = path.join(process.cwd(), '.env.migrate');
+if (fs.existsSync(envPath)) {
+  config({ path: envPath });
+}
 
 interface CliArgs {
   emails: string[];
@@ -39,14 +46,31 @@ function parseArgs(): CliArgs {
     }
   }
 
+  // Fall back to .env.migrate values when CLI args are missing
+  if (!result.emails?.length && process.env.MIGRATE_EMAIL) {
+    result.emails = process.env.MIGRATE_EMAIL.split(',').map((e) => e.trim());
+  }
+  if (!result.prodDeployment && process.env.MIGRATE_PROD_DEPLOYMENT) {
+    result.prodDeployment = process.env.MIGRATE_PROD_DEPLOYMENT;
+  }
+  if (!result.devDeployment && process.env.MIGRATE_DEV_DEPLOYMENT) {
+    result.devDeployment = process.env.MIGRATE_DEV_DEPLOYMENT;
+  }
+
   if (!result.emails?.length) {
-    throw new Error('--emails is required');
+    throw new Error(
+      '--emails is required (or set MIGRATE_EMAIL in .env.migrate)'
+    );
   }
   if (!result.prodDeployment) {
-    throw new Error('--prod-deployment is required');
+    throw new Error(
+      '--prod-deployment is required (or set MIGRATE_PROD_DEPLOYMENT in .env.migrate)'
+    );
   }
   if (!result.devDeployment) {
-    throw new Error('--dev-deployment is required');
+    throw new Error(
+      '--dev-deployment is required (or set MIGRATE_DEV_DEPLOYMENT in .env.migrate)'
+    );
   }
 
   return result as CliArgs;
