@@ -159,6 +159,13 @@ export default function TradesScreen() {
     }).start();
   }, [fabOpen, fabAnimValue]);
 
+  // Reset FAB when screen loses focus to prevent blocking interaction
+  useEffect(() => {
+    if (!isFocused) {
+      setFabOpen(false);
+    }
+  }, [isFocused]);
+
   // Duplicate detection for post-import review
   const duplicatePairs = useDuplicateDetection(trades);
   const { startReview } = useDuplicateReviewStore();
@@ -523,6 +530,7 @@ export default function TradesScreen() {
                 styles.fabContainer,
                 isDesktop && { bottom: theme.spacing.xl },
               ]}
+              pointerEvents="box-none"
             >
               <Animated.View
                 style={{

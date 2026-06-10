@@ -21,6 +21,7 @@ import { DatePickerDialog } from '../components/date-picker-dialog';
 import { EmptyState } from '../components/empty-state';
 import { ResponsiveContainer } from '../components/responsive-container';
 import { useAppTheme } from '../hooks/use-app-theme';
+import { useBreakpoint } from '../hooks/use-breakpoint';
 import { useTrades } from '../hooks/use-trades';
 import { useTimezoneStore } from '../store/timezone-store';
 import { Trade } from '../types';
@@ -36,6 +37,7 @@ import { formatDate } from '../utils/date-format';
 export default function DailyDigestScreen() {
   const theme = useAppTheme();
   const styles = createStyles(theme);
+  const { isDesktop } = useBreakpoint();
   const { trades } = useTrades();
   const { timezone } = useTimezoneStore();
 
@@ -114,8 +116,10 @@ export default function DailyDigestScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
+      <View style={[styles.header, !isDesktop && styles.headerMobile]}>
+        <View
+          style={[styles.headerLeft, isDesktop && styles.headerLeftDesktop]}
+        >
           <IconButton icon="calendar" onPress={() => setShowDatePicker(true)} />
           <Text variant="bodySmall" style={styles.switchLabel}>
             Structured
@@ -125,10 +129,13 @@ export default function DailyDigestScreen() {
             onValueChange={(value) => setMode(value ? 'structured' : 'simple')}
           />
         </View>
-        <Text variant="titleLarge" style={styles.title}>
+        <Text
+          variant="titleLarge"
+          style={isDesktop ? styles.titleDesktop : styles.titleMobile}
+        >
           {dateLabel}
         </Text>
-        <View style={styles.headerSpacer} />
+        {isDesktop && <View style={styles.headerSpacer} />}
       </View>
 
       <ScrollView
@@ -540,22 +547,31 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       paddingTop: theme.spacing.lg,
       paddingBottom: theme.spacing.md,
     },
+    headerMobile: {
+      justifyContent: 'space-between',
+    },
     headerLeft: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.sm,
+    },
+    headerLeftDesktop: {
       width: 160,
     },
-    title: {
+    titleDesktop: {
       flex: 1,
       textAlign: 'center',
     },
-    switchLabel: {
-      color: theme.colors.textSecondary,
+    titleMobile: {
+      textAlign: 'right',
     },
     headerSpacer: {
       width: 160,
     },
+    switchLabel: {
+      color: theme.colors.textSecondary,
+    },
+
     scrollView: {
       flex: 1,
     },
