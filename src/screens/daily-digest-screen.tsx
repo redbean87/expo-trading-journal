@@ -6,9 +6,17 @@ import {
   Clipboard,
   TextInput,
 } from 'react-native';
-import { Text, Card, IconButton, Snackbar, Portal } from 'react-native-paper';
+import {
+  Text,
+  Card,
+  IconButton,
+  Snackbar,
+  Portal,
+  Switch,
+} from 'react-native-paper';
 
 import { Button } from '../components/button';
+import { Chip } from '../components/chip';
 import { DatePickerDialog } from '../components/date-picker-dialog';
 import { EmptyState } from '../components/empty-state';
 import { ResponsiveContainer } from '../components/responsive-container';
@@ -19,6 +27,7 @@ import { Trade } from '../types';
 import { withAlpha } from '../utils/color-intensity';
 import {
   generateDailyDigestMarkdown,
+  generateScreenshotFilename,
   getTradesForDate,
   TradeContext,
 } from '../utils/daily-digest';
@@ -36,12 +45,16 @@ export default function DailyDigestScreen() {
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [contexts, setContexts] = useState<TradeContext[]>([]);
+  const [mode, setMode] = useState<'simple' | 'structured'>('structured');
   const [copied, setCopied] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const dailyTrades = useMemo(() => {
-    return getTradesForDate(trades, selectedDate);
+    const dayTrades = getTradesForDate(trades, selectedDate);
+    return dayTrades.sort(
+      (a, b) => a.entryTime.getTime() - b.entryTime.getTime()
+    );
   }, [trades, selectedDate]);
 
   const handleDateChange = useCallback((date: Date) => {
@@ -57,9 +70,24 @@ export default function DailyDigestScreen() {
           c.tradeId === tradeId ? { ...c, context: value } : c
         );
       }
-      return [...prev, { tradeId, context: value }];
+      return [...prev, { tradeId, mode: 'simple', context: value }];
     });
   }, []);
+
+  const handleStructuredContextChange = useCallback(
+    (tradeId: string, field: keyof TradeContext, value: string) => {
+      setContexts((prev) => {
+        const existing = prev.find((c) => c.tradeId === tradeId);
+        if (existing) {
+          return prev.map((c) =>
+            c.tradeId === tradeId ? { ...c, [field]: value } : c
+          );
+        }
+        return [...prev, { tradeId, [field]: value } as TradeContext];
+      });
+    },
+    []
+  );
 
   const handleCopy = useCallback(() => {
     if (dailyTrades.length === 0) return;
@@ -68,6 +96,7 @@ export default function DailyDigestScreen() {
       dailyTrades,
       selectedDate,
       contexts,
+      mode,
       timezone
     );
     Clipboard.setString(markdown);
@@ -75,7 +104,7 @@ export default function DailyDigestScreen() {
     setSnackbarMessage('Copied to clipboard!');
     setSnackbarVisible(true);
     setTimeout(() => setCopied(false), 3000);
-  }, [dailyTrades, selectedDate, contexts, timezone]);
+  }, [dailyTrades, selectedDate, contexts, mode, timezone]);
 
   const handleCloseSnackbar = useCallback(() => {
     setSnackbarVisible(false);
@@ -86,14 +115,26 @@ export default function DailyDigestScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <IconButton icon="calendar" onPress={() => setShowDatePicker(true)} />
+        <View style={styles.headerLeft}>
+          <IconButton icon="calendar" onPress={() => setShowDatePicker(true)} />
+          <Text variant="bodySmall" style={styles.switchLabel}>
+            Structured
+          </Text>
+          <Switch
+            value={mode === 'structured'}
+            onValueChange={(value) => setMode(value ? 'structured' : 'simple')}
+          />
+        </View>
         <Text variant="titleLarge" style={styles.title}>
           {dateLabel}
         </Text>
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+      >
         <ResponsiveContainer>
           <EmptyState
             data={dailyTrades}
@@ -106,10 +147,10 @@ export default function DailyDigestScreen() {
                 <TradeDigestCard
                   key={trade.id}
                   trade={trade}
-                  context={
-                    contexts.find((c) => c.tradeId === trade.id)?.context || ''
-                  }
+                  context={contexts.find((c) => c.tradeId === trade.id)}
+                  mode={mode}
                   onContextChange={handleContextChange}
+                  onStructuredContextChange={handleStructuredContextChange}
                   timezone={timezone}
                 />
               ))}
@@ -118,19 +159,17 @@ export default function DailyDigestScreen() {
         </ResponsiveContainer>
       </ScrollView>
 
-      <ResponsiveContainer>
-        <View style={styles.footer}>
-          <Button
-            mode="contained"
-            onPress={handleCopy}
-            disabled={dailyTrades.length === 0}
-            icon={copied ? 'check' : 'content-copy'}
-            style={styles.copyButton}
-          >
-            {copied ? 'Copied!' : 'Copy Markdown'}
-          </Button>
-        </View>
-      </ResponsiveContainer>
+      <View style={styles.footer}>
+        <Button
+          mode="contained"
+          onPress={handleCopy}
+          disabled={dailyTrades.length === 0}
+          icon={copied ? 'check' : 'content-copy'}
+          style={styles.copyButton}
+        >
+          {copied ? 'Copied!' : 'Copy Markdown'}
+        </Button>
+      </View>
 
       <DatePickerDialog
         visible={showDatePicker}
@@ -160,21 +199,68 @@ export default function DailyDigestScreen() {
 function TradeDigestCard({
   trade,
   context,
+  mode,
   onContextChange,
+  onStructuredContextChange,
   timezone,
 }: {
   trade: Trade;
-  context: string;
+  context: TradeContext | undefined;
+  mode: 'simple' | 'structured';
   onContextChange: (tradeId: string, value: string) => void;
+  onStructuredContextChange: (
+    tradeId: string,
+    field: keyof TradeContext,
+    value: string
+  ) => void;
   timezone?: string;
 }) {
   const theme = useAppTheme();
   const styles = tradeCardStyles(theme);
   const isProfit = trade.pnl >= 0;
   const sideColor = isProfit ? theme.colors.profit : theme.colors.loss;
+  const screenshot = generateScreenshotFilename(trade);
+  const rMultiple =
+    trade.riskAmount !== undefined &&
+    trade.riskAmount > 0 &&
+    trade.pnl !== undefined
+      ? trade.pnl / trade.riskAmount
+      : null;
+
+  const simpleContext = context?.context || '';
+  const setup = context?.setup || '';
+  const trigger = context?.trigger || '';
+  const support = context?.support || '';
+  const target = context?.target || '';
+  const setupCustom = context?.setupCustom || '';
+  const supportCustom = context?.supportCustom || '';
 
   const handleContextTextChange = (text: string) => {
     onContextChange(trade.id, text);
+  };
+
+  const handleSetupChange = (value: string) => {
+    onStructuredContextChange(trade.id, 'setup', value);
+  };
+
+  const handleTriggerChange = (text: string) => {
+    onStructuredContextChange(trade.id, 'trigger', text);
+  };
+
+  const handleSupportChange = (value: string) => {
+    onStructuredContextChange(trade.id, 'support', value);
+  };
+
+  const handleTargetChange = (text: string) => {
+    onStructuredContextChange(trade.id, 'target', text);
+  };
+
+  const handleSetupCustomChange = (text: string) => {
+    onStructuredContextChange(trade.id, 'setupCustom', text);
+  };
+
+  const handleSupportCustomChange = (text: string) => {
+    onStructuredContextChange(trade.id, 'supportCustom', text);
   };
 
   return (
@@ -212,79 +298,195 @@ function TradeDigestCard({
           </Text>
         </View>
 
+        <View style={styles.screenshotRow}>
+          <Text variant="bodySmall" style={styles.screenshotLabel}>
+            Screenshot:
+          </Text>
+          <Text variant="bodySmall" style={styles.screenshotValue}>
+            {screenshot}
+          </Text>
+        </View>
+
         <View style={styles.detailsGrid}>
-          <DetailItem label="Qty" value={`${trade.quantity} shares`} />
-          <DetailItem label="Entry" value={`$${trade.entryPrice.toFixed(2)}`} />
-          <DetailItem label="Exit" value={`$${trade.exitPrice.toFixed(2)}`} />
           <DetailItem
-            label="Entry Time"
+            label="Time"
             value={trade.entryTime.toLocaleTimeString('en-US', {
               hour: 'numeric',
               minute: '2-digit',
               timeZone: timezone,
             })}
           />
-          <DetailItem
-            label="Exit Time"
-            value={trade.exitTime.toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              minute: '2-digit',
-              timeZone: timezone,
-            })}
-          />
-          {trade.fees !== undefined && trade.fees > 0 && (
-            <DetailItem label="Fees" value={`$${trade.fees.toFixed(2)}`} />
-          )}
-          {trade.commissions !== undefined && trade.commissions > 0 && (
-            <DetailItem
-              label="Commissions"
-              value={`$${trade.commissions.toFixed(2)}`}
-            />
-          )}
-          {trade.orderType && (
-            <DetailItem label="Order Type" value={trade.orderType} />
-          )}
+          <DetailItem label="Qty" value={`${trade.quantity} shares`} />
+          <DetailItem label="Entry" value={`$${trade.entryPrice.toFixed(2)}`} />
+          <DetailItem label="Exit" value={`$${trade.exitPrice.toFixed(2)}`} />
           {trade.riskAmount !== undefined && trade.riskAmount > 0 && (
             <DetailItem
               label="Risk"
               value={`$${trade.riskAmount.toFixed(2)}`}
             />
           )}
-          {trade.riskAmount !== undefined &&
-            trade.riskAmount > 0 &&
-            trade.pnl !== undefined && (
-              <DetailItem
-                label="R-Multiple"
-                value={`${(trade.pnl / trade.riskAmount).toFixed(2)}R`}
-              />
-            )}
-          {trade.accountBalanceAfter !== undefined && (
+          {rMultiple !== null && (
             <DetailItem
-              label="Balance After"
-              value={`$${trade.accountBalanceAfter.toFixed(2)}`}
+              label="R-Multiple"
+              value={`${rMultiple >= 0 ? '+' : ''}${rMultiple.toFixed(2)}R`}
             />
           )}
         </View>
 
         <View style={styles.contextInputContainer}>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.contextInput}
-              placeholder="Add quick context..."
-              placeholderTextColor={theme.colors.textSecondary}
-              value={context}
-              onChangeText={handleContextTextChange}
-              multiline
-              maxLength={200}
-              numberOfLines={1}
-            />
-            <Text variant="bodySmall" style={styles.contextHint}>
-              {context.length}/200
-            </Text>
-          </View>
+          {mode === 'simple' ? (
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.contextInput}
+                placeholder="Add quick context..."
+                placeholderTextColor={theme.colors.textSecondary}
+                value={simpleContext}
+                onChangeText={handleContextTextChange}
+                multiline
+                maxLength={200}
+                numberOfLines={1}
+              />
+              <Text variant="bodySmall" style={styles.contextHint}>
+                {simpleContext.length}/200
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.structuredContainer}>
+              <ContextChipRow
+                label="Setup"
+                options={[
+                  'Key Level Breakout',
+                  'Pullback',
+                  'Range Break',
+                  'Reversal',
+                  'Custom',
+                ]}
+                value={setup}
+                onChange={handleSetupChange}
+                customValue={setupCustom}
+                onCustomChange={handleSetupCustomChange}
+              />
+              <ContextTextInput
+                label="Trigger"
+                value={trigger}
+                onChangeText={handleTriggerChange}
+                placeholder="e.g., First 1-min candle new high"
+              />
+              <ContextChipRow
+                label="Support"
+                options={[
+                  'Trend',
+                  'Range',
+                  'Choppy',
+                  'High Momentum',
+                  'Custom',
+                ]}
+                value={support}
+                onChange={handleSupportChange}
+                customValue={supportCustom}
+                onCustomChange={handleSupportCustomChange}
+              />
+              <ContextTextInput
+                label="Target"
+                value={target}
+                onChangeText={handleTargetChange}
+                placeholder="e.g., Previous high"
+              />
+              <View style={styles.sideRow}>
+                <Text variant="bodySmall" style={styles.sideLabel}>
+                  Side:
+                </Text>
+                <Text variant="bodySmall" style={styles.sideValue}>
+                  {trade.side.toUpperCase()}
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
       </Card.Content>
     </Card>
+  );
+}
+
+function ContextChipRow({
+  label,
+  options,
+  value,
+  onChange,
+  customValue,
+  onCustomChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (value: string) => void;
+  customValue?: string;
+  onCustomChange?: (text: string) => void;
+}) {
+  const theme = useAppTheme();
+  const styles = createStyles(theme);
+
+  return (
+    <View style={styles.structuredField}>
+      <Text variant="bodySmall" style={styles.contextFieldLabel}>
+        {label}
+      </Text>
+      <View style={styles.chipRow}>
+        {options.map((option) => (
+          <Chip
+            key={option}
+            selected={value === option}
+            onPress={() => onChange(value === option ? '' : option)}
+            compact
+          >
+            {option}
+          </Chip>
+        ))}
+      </View>
+      {value === 'Custom' && onCustomChange && (
+        <TextInput
+          style={styles.customInput}
+          placeholder={`Custom ${label.toLowerCase()}...`}
+          placeholderTextColor={theme.colors.textSecondary}
+          value={customValue || ''}
+          onChangeText={onCustomChange}
+          multiline
+          numberOfLines={1}
+        />
+      )}
+    </View>
+  );
+}
+
+function ContextTextInput({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+}) {
+  const theme = useAppTheme();
+  const styles = createStyles(theme);
+
+  return (
+    <View style={styles.structuredField}>
+      <Text variant="bodySmall" style={styles.contextFieldLabel}>
+        {label}
+      </Text>
+      <TextInput
+        style={styles.customInput}
+        placeholder={placeholder || ''}
+        placeholderTextColor={theme.colors.textSecondary}
+        value={value}
+        onChangeText={onChangeText}
+        multiline
+        numberOfLines={1}
+      />
+    </View>
   );
 }
 
@@ -311,6 +513,26 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       flex: 1,
       backgroundColor: theme.colors.background,
     },
+    chipRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: theme.spacing.sm,
+    },
+    contextFieldLabel: {
+      color: theme.colors.textSecondary,
+      marginBottom: theme.spacing.xs,
+    },
+    customInput: {
+      backgroundColor: theme.colors.surfaceVariant,
+      borderRadius: theme.borderRadius.sm,
+      padding: theme.spacing.sm,
+      color: theme.colors.onSurface,
+      fontSize: 14,
+      marginTop: theme.spacing.xs,
+    },
+    structuredField: {
+      marginBottom: theme.spacing.sm,
+    },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -318,15 +540,28 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       paddingTop: theme.spacing.lg,
       paddingBottom: theme.spacing.md,
     },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+      width: 160,
+    },
     title: {
       flex: 1,
       textAlign: 'center',
     },
+    switchLabel: {
+      color: theme.colors.textSecondary,
+    },
     headerSpacer: {
-      width: 48,
+      width: 160,
     },
     scrollView: {
       flex: 1,
+    },
+    scrollViewContent: {
+      flexGrow: 1,
+      minHeight: '100%',
     },
     tradesList: {
       paddingHorizontal: theme.spacing.lg,
@@ -378,6 +613,19 @@ const tradeCardStyles = (theme: ReturnType<typeof useAppTheme>) =>
     pnl: {
       fontWeight: 'bold',
     },
+    screenshotRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+      marginBottom: theme.spacing.sm,
+    },
+    screenshotLabel: {
+      color: theme.colors.textSecondary,
+    },
+    screenshotValue: {
+      color: theme.colors.onSurface,
+      fontWeight: '500',
+    },
     detailsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -406,6 +654,30 @@ const tradeCardStyles = (theme: ReturnType<typeof useAppTheme>) =>
       right: theme.spacing.sm,
       top: theme.spacing.sm,
       color: theme.colors.textTertiary,
+    },
+    modeToggle: {
+      flexDirection: 'row',
+      gap: theme.spacing.sm,
+      marginBottom: theme.spacing.sm,
+    },
+    modeChip: {
+      borderRadius: theme.borderRadius.sm,
+    },
+    structuredContainer: {
+      marginTop: theme.spacing.sm,
+    },
+    sideRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+      marginTop: theme.spacing.sm,
+    },
+    sideLabel: {
+      color: theme.colors.textSecondary,
+    },
+    sideValue: {
+      color: theme.colors.onSurface,
+      fontWeight: '500',
     },
   });
 
