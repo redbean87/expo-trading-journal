@@ -362,7 +362,8 @@ export default function TradesScreen() {
         }));
       }
 
-      const { imported, skipped, updated } = await importTrades(tradesToImport);
+      const result = await importTrades(tradesToImport);
+      const { imported, skipped, updated } = result;
 
       const totalSkipped = skipped + pendingImport.skipped;
       const parts = [`Imported ${imported} trades`];
@@ -381,6 +382,19 @@ export default function TradesScreen() {
       if (pendingImport.errors.length > 0) {
         parts.push('some rows had errors');
       }
+
+      // Warning if some trades were silently dropped (not imported, updated, or skipped)
+      const expectedCount = tradesToImport.length;
+      const accountedFor = imported + updated + skipped;
+      if (accountedFor < expectedCount) {
+        parts.push(
+          `⚠️ Expected ${expectedCount} trades, only ${accountedFor} processed`
+        );
+      } else if (imported === 0 && skipped > 0) {
+        // All trades were duplicates - show clearer message
+        parts.push(`All ${skipped} trades already exist`);
+      }
+
       setSnackbarMessage(parts.join(' · '));
       setSnackbarVisible(true);
       setIsImporting(false);
@@ -533,6 +547,7 @@ export default function TradesScreen() {
               pointerEvents="box-none"
             >
               <Animated.View
+                // eslint-disable-next-line react-native/no-inline-styles
                 style={{
                   opacity: fabAnimValue,
                   transform: [

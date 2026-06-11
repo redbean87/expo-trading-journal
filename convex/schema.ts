@@ -91,6 +91,23 @@ const schema = defineSchema({
     .index('by_field_label', ['field', 'label'])
     .index('by_field_active', ['field', 'isActive'])
     .index('by_system', ['isSystem']),
+
+  // Import audit log for tracking import operations
+  importAudits: defineTable({
+    userId: v.string(),
+    importType: v.string(), // 'csv', 'tos-account-statement'
+    expectedTrades: v.number(),
+    importedCount: v.number(),
+    skippedCount: v.number(),
+    updatedCount: v.number(),
+    unmatchedBuys: v.optional(v.number()),
+    unmatchedSells: v.optional(v.number()),
+    errors: v.optional(v.array(v.string())),
+    fileName: v.optional(v.string()),
+    importedAt: v.number(),
+  })
+    .index('by_user', ['userId'])
+    .index('by_user_and_time', ['userId', 'importedAt']),
 });
 
 export default schema;

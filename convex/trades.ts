@@ -531,6 +531,11 @@ export const importTrades = mutation({
       throw new Error('Not authenticated');
     }
 
+    const importType =
+      args.trades.length > 0 && args.trades[0].importedFrom
+        ? (args.trades[0].importedFrom as string)
+        : 'csv';
+
     // Build importId lookup for trades that have one
     const importIds = args.trades
       .map((t) => t.importId)
@@ -563,23 +568,32 @@ export const importTrades = mutation({
     let imported = 0;
     let skipped = 0;
     let updated = 0;
+    const skippedDetails: string[] = [];
 
     for (const trade of args.trades) {
       let existing = null;
+      let dedupReason = '';
 
       // Primary dedup: by importId (reliable Schwab REF #-based key)
       if (trade.importId) {
         existing = importIdMatchMap.get(trade.importId) ?? null;
+        if (existing) {
+          dedupReason = 'importId';
+        }
       }
 
       // Fallback dedup: by symbol-entryTime-quantity
       if (!existing) {
         const key = `${trade.symbol}-${trade.entryTime}-${trade.quantity}`;
         existing = existingTradeMap.get(key) ?? null;
+        if (existing) {
+          dedupReason = 'symbol-entryTime-quantity';
+        }
       }
 
       // Tertiary fuzzy dedup: same symbol + same calendar day + TOS source +
-      // exact quantity or entryPrice within 1%
+      // exact quantity AND entryPrice within 1% (both must match)
+      // This prevents false positives when multiple trades on same day
       if (!existing && !trade.importId) {
         const tradeDay = Math.floor(trade.entryTime / 86400000);
         const candidates = existingTrades.filter((t) => {
@@ -593,7 +607,8 @@ export const importTrades = mutation({
           if (t.symbol !== trade.symbol) return false;
           const existingDay = Math.floor(t.entryTime / 86400000);
           if (existingDay !== tradeDay) return false;
-          if (t.quantity === trade.quantity) return true;
+          // Require BOTH exact quantity AND entryPrice within 1%
+          if (t.quantity !== trade.quantity) return false;
           const maxPrice = Math.max(t.entryPrice, trade.entryPrice);
           if (maxPrice > 0) {
             const priceDiff = Math.abs(t.entryPrice - trade.entryPrice);
@@ -603,6 +618,7 @@ export const importTrades = mutation({
         });
         if (candidates.length === 1) {
           existing = candidates[0];
+          dedupReason = 'fuzzy-day-match';
         }
       }
 
@@ -621,10 +637,64 @@ export const importTrades = mutation({
         updated++;
       } else {
         skipped++;
+        skippedDetails.push(
+          `${trade.symbol} ${trade.quantity}sh @${trade.entryPrice} (${dedupReason})`
+        );
       }
     }
 
-    return { imported, skipped, updated };
+    // Create audit log entry
+    const auditId = await ctx.db.insert('importAudits', {
+      userId,
+      importType,
+      expectedTrades: args.trades.length,
+      importedCount: imported,
+      skippedCount: skipped,
+      updatedCount: updated,
+      errors: skippedDetails.length > 0 ? skippedDetails : undefined,
+      importedAt: Date.now(),
+    });
+
+    return {
+      imported,
+      skipped,
+      updated,
+      auditId: auditId.toString(),
+      skippedDetails,
+    };
+  },
+});
+
+// Query to get import audits for the authenticated user
+export const getImportAudits = query({
+  args: {
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error('Not authenticated');
+    }
+
+    const audits = await ctx.db
+      .query('importAudits')
+      .withIndex('by_user_and_time', (q) => q.eq('userId', userId))
+      .order('desc')
+      .take(args.limit ?? 100);
+
+    return audits.map((audit) => ({
+      id: audit._id,
+      importType: audit.importType,
+      expectedTrades: audit.expectedTrades,
+      importedCount: audit.importedCount,
+      skippedCount: audit.skippedCount,
+      updatedCount: audit.updatedCount,
+      unmatchedBuys: audit.unmatchedBuys,
+      unmatchedSells: audit.unmatchedSells,
+      errors: audit.errors,
+      fileName: audit.fileName,
+      importedAt: audit.importedAt,
+    }));
   },
 });
 
@@ -748,6 +818,65 @@ export const importUserTrades = mutation({
       imported++;
     }
     return { imported };
+  },
+});
+
+// Query to find user by email (public, no auth required)
+export const getUserByEmail = query({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_email', (q) => q.eq('email', args.email))
+      .first();
+
+    if (!user) {
+      return null;
+    }
+
+    return {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+    };
+  },
+});
+
+// Mutation to delete trades for a specific user within a date range (public, no auth required)
+export const deleteUserTradesInRange = mutation({
+  args: {
+    userId: v.string(),
+    startTime: v.number(),
+    endTime: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    let tradesQuery;
+    if (args.endTime !== undefined) {
+      tradesQuery = ctx.db
+        .query('trades')
+        .withIndex('by_user_and_exit_time', (q) =>
+          q
+            .eq('userId', args.userId)
+            .gte('exitTime', args.startTime)
+            .lte('exitTime', args.endTime!)
+        );
+    } else {
+      tradesQuery = ctx.db
+        .query('trades')
+        .withIndex('by_user_and_exit_time', (q) =>
+          q.eq('userId', args.userId).gte('exitTime', args.startTime)
+        );
+    }
+
+    const trades = await tradesQuery.collect();
+
+    for (const trade of trades) {
+      await ctx.db.delete(trade._id);
+    }
+
+    return { deleted: trades.length };
   },
 });
 
