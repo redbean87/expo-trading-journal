@@ -33,7 +33,9 @@ export function DateRangeFilter({
   };
 
   const handleCustomConfirm = (start: Date, end: Date) => {
-    onSetCustomRange(start.getTime(), end.getTime());
+    const endOfDay = new Date(end);
+    endOfDay.setHours(23, 59, 59, 999);
+    onSetCustomRange(start.getTime(), endOfDay.getTime());
     setPickerVisible(false);
   };
 

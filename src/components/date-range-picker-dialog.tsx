@@ -38,7 +38,11 @@ export function DateRangePickerDialog({
 
   const handleStartConfirm = (date: Date) => {
     setStartDate(date);
-    if (endDate && date > endDate) setEndDate(undefined);
+    if (!endDate) {
+      setEndDate(date);
+    } else if (date > endDate) {
+      setEndDate(undefined);
+    }
     setActivePicker(null);
   };
 
