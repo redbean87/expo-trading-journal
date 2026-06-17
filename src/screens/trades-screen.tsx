@@ -31,7 +31,7 @@ import { SearchBar } from '../components/search-bar';
 import { TradeCard } from '../components/trade-card';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useBreakpoint } from '../hooks/use-breakpoint';
-import { useDuplicateDetection } from '../hooks/use-duplicate-detection';
+import { usePendingDuplicatePairs } from '../hooks/use-duplicate-detection';
 import {
   PnlFilter,
   TradeFilters,
@@ -167,8 +167,8 @@ export default function TradesScreen() {
   }, [isFocused]);
 
   // Duplicate detection for post-import review
-  const duplicatePairs = useDuplicateDetection(trades);
-  const { startReview } = useDuplicateReviewStore();
+  const duplicatePairs = usePendingDuplicatePairs(trades);
+  const { startReview, setPairs } = useDuplicateReviewStore();
 
   const {
     filters,
@@ -473,6 +473,7 @@ export default function TradesScreen() {
           <Button
             mode="contained"
             onPress={() => {
+              setPairs(duplicatePairs);
               startReview();
               router.push('/duplicate-review');
             }}

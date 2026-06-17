@@ -1,14 +1,13 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
 
 import { Button } from '../components/button';
 import { DuplicateTradeCard } from '../components/duplicate-trade-card';
 import { useAppTheme } from '../hooks/use-app-theme';
-import { useDuplicateDetection } from '../hooks/use-duplicate-detection';
-import { useMergeTrades, useDeleteTrade } from '../hooks/use-trades';
-import { useTrades } from '../hooks/use-trades';
+import { useRecordDuplicateDecision } from '../hooks/use-duplicate-decisions';
+import { useDeleteTrade, useMergeTrades } from '../hooks/use-trades';
 import { useDuplicateReviewStore } from '../store/duplicate-review-store';
 
 export default function DuplicateReviewScreen() {
@@ -16,15 +15,17 @@ export default function DuplicateReviewScreen() {
   const styles = createStyles(theme);
 
   const router = useRouter();
-  const { trades } = useTrades();
-  const pairs = useDuplicateDetection(trades);
   const mergeTrades = useMergeTrades();
   const deleteTrade = useDeleteTrade();
+  const recordDecision = useRecordDuplicateDecision();
 
-  const { endReview, removePair } = useDuplicateReviewStore();
+  const { pairs, endReview, removePair, clearPairs } =
+    useDuplicateReviewStore();
+  const [keepingPairId, setKeepingPairId] = useState<string | null>(null);
 
   const handleBack = () => {
     endReview();
+    clearPairs();
     router.back();
   };
 
@@ -63,8 +64,17 @@ export default function DuplicateReviewScreen() {
     }
   };
 
-  const handleKeepBoth = (pair: (typeof pairs)[0]) => {
-    removePair(pair.existing.id, pair.imported.id);
+  const handleKeepBoth = async (pair: (typeof pairs)[0]) => {
+    const pairKey = `${pair.existing.id}-${pair.imported.id}`;
+    setKeepingPairId(pairKey);
+    try {
+      await recordDecision(pair.existing.id, pair.imported.id, 'keepBoth');
+      removePair(pair.existing.id, pair.imported.id);
+    } catch (error) {
+      console.error('Failed to record keep both decision:', error);
+    } finally {
+      setKeepingPairId(null);
+    }
   };
 
   const handleDeleteImported = async (pair: (typeof pairs)[0]) => {
@@ -157,6 +167,11 @@ export default function DuplicateReviewScreen() {
                   <Button
                     mode="outlined"
                     onPress={() => handleKeepBoth(pair)}
+                    loading={
+                      keepingPairId ===
+                      `${pair.existing.id}-${pair.imported.id}`
+                    }
+                    disabled={keepingPairId !== null}
                     style={styles.secondaryButton}
                   >
                     Keep Both

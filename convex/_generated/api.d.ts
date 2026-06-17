@@ -10,6 +10,7 @@
 
 import type * as attachments from "../attachments.js";
 import type * as auth from "../auth.js";
+import type * as duplicate_decisions from "../duplicate_decisions.js";
 import type * as http from "../http.js";
 import type * as settings from "../settings.js";
 import type * as tags from "../tags.js";
@@ -25,6 +26,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   attachments: typeof attachments;
   auth: typeof auth;
+  duplicate_decisions: typeof duplicate_decisions;
   http: typeof http;
   settings: typeof settings;
   tags: typeof tags;

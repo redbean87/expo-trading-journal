@@ -108,6 +108,18 @@ const schema = defineSchema({
   })
     .index('by_user', ['userId'])
     .index('by_user_and_time', ['userId', 'importedAt']),
+
+  // User decisions about duplicate trade pairs (cross-device)
+  duplicateDecisions: defineTable({
+    userId: v.string(),
+    tradeAId: v.id('trades'),
+    tradeBId: v.id('trades'),
+    pairKey: v.string(),
+    decision: v.string(), // 'keepBoth' | 'merge' | 'deleteImported' | 'deleteExisting'
+    decidedAt: v.number(),
+  })
+    .index('by_user', ['userId'])
+    .index('by_user_and_pairKey', ['userId', 'pairKey']),
 });
 
 export default schema;

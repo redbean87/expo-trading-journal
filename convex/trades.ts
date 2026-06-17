@@ -1,7 +1,12 @@
 import { getAuthUserId } from '@convex-dev/auth/server';
 import { v } from 'convex/values';
 
-import { internalMutation, mutation, query } from './_generated/server';
+import {
+  internalMutation,
+  mutation,
+  query,
+  type MutationCtx,
+} from './_generated/server';
 
 // Query to get all trades for the authenticated user
 export const getTrades = query({
@@ -356,6 +361,7 @@ export const deleteTrade = mutation({
     }
 
     await ctx.db.delete(args.id);
+    await removeDuplicateDecisionsForTrade(ctx, userId, args.id);
   },
 });
 
@@ -411,6 +417,7 @@ export const mergeTrades = mutation({
 
     // Delete the duplicate
     await ctx.db.delete(tradeToDelete._id);
+    await removeDuplicateDecisionsForTrade(ctx, userId, tradeToDelete._id);
 
     return { merged: true, keptId: tradeToKeep._id };
   },
@@ -432,6 +439,15 @@ export const clearAllTrades = mutation({
 
     for (const trade of trades) {
       await ctx.db.delete(trade._id);
+    }
+
+    const decisions = await ctx.db
+      .query('duplicateDecisions')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .collect();
+
+    for (const decision of decisions) {
+      await ctx.db.delete(decision._id);
     }
   },
 });
@@ -486,6 +502,23 @@ function buildEnrichmentUpdates(
   }
 
   return Object.keys(updates).length > 0 ? updates : null;
+}
+
+async function removeDuplicateDecisionsForTrade(
+  ctx: MutationCtx,
+  userId: string,
+  tradeId: string
+) {
+  const decisions = await ctx.db
+    .query('duplicateDecisions')
+    .withIndex('by_user', (q) => q.eq('userId', userId))
+    .collect();
+
+  for (const decision of decisions) {
+    if (decision.tradeAId === tradeId || decision.tradeBId === tradeId) {
+      await ctx.db.delete(decision._id);
+    }
+  }
 }
 
 // Mutation to import multiple trades

@@ -1,17 +1,19 @@
 import { useMemo } from 'react';
 
 import { Trade } from '../types';
+import { useDuplicateDecisions } from './use-duplicate-decisions';
+import { filterPendingPairs } from '../utils/duplicate-decisions';
 
 export type DuplicatePair = {
   existing: Trade;
   imported: Trade;
 };
 
-const FUZZY_MATCH_MS = 60 * 1000; // 60 seconds
+const FUZZY_MATCH_MS = 10 * 1000; // 10 seconds
 
 /**
  * Detects potential duplicate trades from TOS imports.
- * Matches: same symbol + same quantity + entryTime within 60s + at least one is TOS-imported
+ * Matches: same symbol + same quantity + entryTime within 10s + at least one is TOS-imported
  */
 export function findPotentialDuplicates(trades: Trade[]): DuplicatePair[] {
   const pairs: DuplicatePair[] = [];
@@ -68,4 +70,14 @@ export function findPotentialDuplicates(trades: Trade[]): DuplicatePair[] {
  */
 export function useDuplicateDetection(trades: Trade[]): DuplicatePair[] {
   return useMemo(() => findPotentialDuplicates(trades), [trades]);
+}
+
+export function usePendingDuplicatePairs(trades: Trade[]): DuplicatePair[] {
+  const pairs = useDuplicateDetection(trades);
+  const { decisions } = useDuplicateDecisions();
+
+  return useMemo(
+    () => filterPendingPairs(pairs, decisions),
+    [pairs, decisions]
+  );
 }

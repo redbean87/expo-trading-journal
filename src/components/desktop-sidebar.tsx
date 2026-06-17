@@ -4,7 +4,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '../hooks/use-app-theme';
-import { useDuplicateDetection } from '../hooks/use-duplicate-detection';
+import { usePendingDuplicatePairs } from '../hooks/use-duplicate-detection';
 import { useTrades } from '../hooks/use-trades';
 
 type SidebarItem = {
@@ -56,7 +56,7 @@ export function DesktopSidebar() {
   const router = useRouter();
   const styles = createStyles(theme);
   const { trades } = useTrades();
-  const duplicatePairs = useDuplicateDetection(trades);
+  const duplicatePairs = usePendingDuplicatePairs(trades);
 
   const isActive = (item: SidebarItem) =>
     item.matchPaths.some(

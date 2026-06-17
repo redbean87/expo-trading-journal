@@ -44,3 +44,18 @@ export type CustomColors = {
 };
 
 export type CustomThemePreset = 'default' | 'custom';
+
+export type DuplicateDecisionType =
+  | 'keepBoth'
+  | 'merge'
+  | 'deleteImported'
+  | 'deleteExisting';
+
+export type DuplicateDecision = {
+  id: string;
+  tradeAId: string;
+  tradeBId: string;
+  pairKey: string;
+  decision: DuplicateDecisionType;
+  decidedAt: number;
+};
