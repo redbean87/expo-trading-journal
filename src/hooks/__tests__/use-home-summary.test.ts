@@ -92,6 +92,97 @@ describe('useHomeSummary', () => {
     });
   });
 
+  describe('symbolSummary', () => {
+    it('groups trades by symbol and sums pnl and shares', () => {
+      const aapl1 = createTrade({
+        id: '1',
+        symbol: 'AAPL',
+        pnl: 100,
+        pnlPercent: 10,
+        quantity: 10,
+      });
+      const aapl2 = createTrade({
+        id: '2',
+        symbol: 'AAPL',
+        pnl: 50,
+        pnlPercent: 5,
+        quantity: 10,
+      });
+      const tsla = createTrade({
+        id: '3',
+        symbol: 'TSLA',
+        pnl: -30,
+        pnlPercent: -3,
+        quantity: 5,
+      });
+      const result = useHomeSummary([aapl1, aapl2, tsla], 'all');
+
+      expect(result.symbolSummary).toEqual([
+        { symbol: 'AAPL', pnl: 150, totalShares: 20, pnlPercent: 7.5 },
+        { symbol: 'TSLA', pnl: -30, totalShares: 5, pnlPercent: -3 },
+      ]);
+    });
+
+    it('sorts symbols by pnl descending', () => {
+      const nvda = createTrade({ id: '1', symbol: 'NVDA', pnl: 50 });
+      const aapl = createTrade({ id: '2', symbol: 'AAPL', pnl: 200 });
+      const msft = createTrade({ id: '3', symbol: 'MSFT', pnl: -20 });
+      const result = useHomeSummary([nvda, aapl, msft], 'all');
+
+      expect(result.symbolSummary.map((s) => s.symbol)).toEqual([
+        'AAPL',
+        'NVDA',
+        'MSFT',
+      ]);
+    });
+
+    it('calculates quantity-weighted percent return', () => {
+      const aapl1 = createTrade({
+        id: '1',
+        symbol: 'AAPL',
+        pnlPercent: 10,
+        quantity: 1,
+      });
+      const aapl2 = createTrade({
+        id: '2',
+        symbol: 'AAPL',
+        pnlPercent: 4,
+        quantity: 2,
+      });
+      const result = useHomeSummary([aapl1, aapl2], 'all');
+
+      expect(result.symbolSummary[0].pnlPercent).toBe(6);
+      expect(result.symbolSummary[0].totalShares).toBe(3);
+    });
+
+    it('respects period filtering', () => {
+      const aaplToday = createTrade({
+        id: '1',
+        symbol: 'AAPL',
+        pnl: 100,
+        quantity: 10,
+        exitTime: todayTrade.exitTime,
+      });
+      const aaplOld = createTrade({
+        id: '2',
+        symbol: 'AAPL',
+        pnl: 50,
+        quantity: 5,
+        exitTime: oldTrade.exitTime,
+      });
+      const result = useHomeSummary([aaplToday, aaplOld], 'today');
+
+      expect(result.symbolSummary).toEqual([
+        { symbol: 'AAPL', pnl: 100, totalShares: 10, pnlPercent: 10 },
+      ]);
+    });
+
+    it('returns empty array when no trades in period', () => {
+      const result = useHomeSummary([oldTrade], 'today');
+      expect(result.symbolSummary).toEqual([]);
+    });
+  });
+
   describe('custom range filtering', () => {
     it('filters trades within custom start and end', () => {
       const midTrade = createTrade({

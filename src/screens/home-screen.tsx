@@ -15,6 +15,7 @@ import { HomeHeader } from './home/home-header';
 import { HomeStreakBadge } from './home/home-streak-badge';
 import { PositionSizingCalculatorDialog } from './home/position-sizing-calculator-dialog';
 import { RecentTradesCard } from './home/recent-trades-card';
+import { SymbolSummaryCard } from './home/symbol-summary-card';
 
 export default function HomeScreen() {
   const { trades, isLoading } = useTrades();
@@ -39,6 +40,7 @@ export default function HomeScreen() {
     profitFactor,
     recentTrades,
     currentStreak,
+    symbolSummary,
   } = useHomeSummary(trades, selectedRange, customRangeStart, customRangeEnd);
 
   const styles = createStyles(theme);
@@ -81,6 +83,8 @@ export default function HomeScreen() {
               avgLoss={avgLoss}
               profitFactor={profitFactor}
             />
+
+            <SymbolSummaryCard summary={symbolSummary} />
 
             <RecentTradesCard trades={recentTrades} />
           </View>
