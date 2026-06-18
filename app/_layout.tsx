@@ -10,10 +10,11 @@ import { enGB, registerTranslation } from 'react-native-paper-dates';
 
 import AuthGate from '@/components/auth-gate';
 import { ErrorBoundary } from '@/components/error-boundary';
-import { PwaUpdatePrompt } from '@/components/pwa-update-prompt';
+import { OfflineBanner } from '@/components/offline-banner';
 import { SidebarLayout } from '@/components/sidebar-layout';
 import { TagLibraryInitializer } from '@/components/tag-library-initializer';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
+import { useServiceWorker } from '@/hooks/use-service-worker';
 import { ConvexProvider } from '@/providers/convex-provider';
 import { SettingsSyncProvider } from '@/providers/settings-sync-provider';
 import { useCustomThemeStore } from '@/store/custom-theme-store';
@@ -34,6 +35,11 @@ registerTranslation('en', enGB);
 
 function KeyboardShortcutsHandler() {
   useKeyboardShortcuts();
+  return null;
+}
+
+function ServiceWorkerRegistration() {
+  useServiceWorker();
   return null;
 }
 
@@ -76,7 +82,8 @@ export default function RootLayout() {
               <AuthGate>
                 <TagLibraryInitializer />
                 <KeyboardShortcutsHandler />
-                <PwaUpdatePrompt />
+                <ServiceWorkerRegistration />
+                <OfflineBanner />
                 <SidebarLayout>
                   <Stack>
                     <Stack.Screen

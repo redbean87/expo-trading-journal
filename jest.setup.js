@@ -32,3 +32,9 @@ jest.mock('expo-file-system', () => ({
     text: jest.fn().mockResolvedValue(''),
   })),
 }));
+
+// Mock NetInfo
+jest.mock('@react-native-community/netinfo', () => ({
+  addEventListener: jest.fn(() => jest.fn()),
+  fetch: jest.fn(() => Promise.resolve({ isConnected: true })),
+}));

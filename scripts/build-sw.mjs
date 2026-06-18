@@ -5,15 +5,10 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
+const SW_SRC = path.join(ROOT_DIR, 'scripts', 'sw-template.js');
 const SW_DEST = path.join(DIST_DIR, 'sw.js');
 
-const SKIP_WAITING_SNIPPET = `
-self.addEventListener('message', (event) => {
-  if (event.data === 'SKIP_WAITING' || event.data?.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
-`;
+const TEN_MB_BYTES = 10 * 1024 * 1024;
 
 async function buildSW() {
   if (!fs.existsSync(DIST_DIR)) {
@@ -23,45 +18,15 @@ async function buildSW() {
     process.exit(1);
   }
 
-  const { generateSW } = await import('workbox-build');
+  const { injectManifest } = await import('workbox-build');
 
-  const { count, size, warnings } = await generateSW({
+  const { count, size, warnings } = await injectManifest({
     globDirectory: 'dist',
-    globPatterns: ['offline.html', 'index.html'],
-    swDest: 'dist/sw.js',
-    skipWaiting: false,
-    clientsClaim: true,
-    cleanupOutdatedCaches: true,
-    sourcemap: false,
-    runtimeCaching: [
-      {
-        urlPattern: /\.(?:js|css)$/,
-        handler: 'StaleWhileRevalidate',
-        options: {
-          cacheName: 'assets',
-          expiration: {
-            maxEntries: 100,
-            maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
-          },
-        },
-      },
-      {
-        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|woff|woff2|ico)$/,
-        handler: 'CacheFirst',
-        options: {
-          cacheName: 'media',
-          expiration: {
-            maxEntries: 200,
-            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-          },
-        },
-      },
-    ],
+    globPatterns: ['offline.html'],
+    maximumFileSizeToCacheInBytes: TEN_MB_BYTES,
+    swSrc: SW_SRC,
+    swDest: SW_DEST,
   });
-
-  // Inject custom SKIP_WAITING message handler
-  const swContent = fs.readFileSync(SW_DEST, 'utf8');
-  fs.writeFileSync(SW_DEST, SKIP_WAITING_SNIPPET + swContent);
 
   if (warnings.length > 0) {
     console.warn('⚠️ Workbox warnings:');
