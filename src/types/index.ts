@@ -11,7 +11,8 @@ export type AnalyticsSegment =
   | 'strategy'
   | 'market-condition'
   | 'htf-context'
-  | 'ai-insights';
+  | 'ai-insights'
+  | 'symbols';
 
 export type HomePeriod = 'today' | 'week' | 'month' | 'year' | 'all';
 

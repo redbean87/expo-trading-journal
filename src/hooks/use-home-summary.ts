@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import { useSymbolPerformance } from './use-symbol-performance';
 import {
   CurrentStreak,
   calculateCurrentStreak,
@@ -7,13 +8,6 @@ import {
 } from './use-trade-analytics';
 import { Trade } from '../types';
 import { DateRangePreset, getDateRangeStart } from '../utils/date-range';
-
-export type SymbolSummaryItem = {
-  symbol: string;
-  pnl: number;
-  totalShares: number;
-  pnlPercent: number;
-};
 
 export type HomeSummary = {
   totalTrades: number;
@@ -26,7 +20,7 @@ export type HomeSummary = {
   profitFactor: number;
   recentTrades: Trade[];
   currentStreak: CurrentStreak;
-  symbolSummary: SymbolSummaryItem[];
+  symbolSummary: ReturnType<typeof useSymbolPerformance>;
 };
 
 function getPeriodCutoff(period: DateRangePreset): number | null {
@@ -44,7 +38,7 @@ export function useHomeSummary(
   customRangeStart?: number | null,
   customRangeEnd?: number | null
 ): HomeSummary {
-  return useMemo(() => {
+  const filteredTrades = useMemo(() => {
     let filtered = trades;
 
     if (period === 'custom' && customRangeStart != null) {
@@ -61,38 +55,22 @@ export function useHomeSummary(
       }
     }
 
-    const analytics = calculateTradeAnalytics(filtered);
-    const currentStreak = calculateCurrentStreak(filtered);
-    const recentTrades = trades.slice(0, 5);
+    return filtered;
+  }, [trades, period, customRangeStart, customRangeEnd]);
 
-    const symbolSummary: SymbolSummaryItem[] = Array.from(
-      filtered
-        .reduce((acc, trade) => {
-          const existing = acc.get(trade.symbol) ?? {
-            pnl: 0,
-            totalShares: 0,
-            weightedPercent: 0,
-          };
-          acc.set(trade.symbol, {
-            pnl: existing.pnl + trade.pnl,
-            totalShares: existing.totalShares + trade.quantity,
-            weightedPercent:
-              existing.weightedPercent + trade.pnlPercent * trade.quantity,
-          });
-          return acc;
-        }, new Map<string, { pnl: number; totalShares: number; weightedPercent: number }>())
-        .entries()
-    )
-      .map(([symbol, data]) => ({
-        symbol,
-        pnl: data.pnl,
-        totalShares: data.totalShares,
-        pnlPercent:
-          data.totalShares > 0 ? data.weightedPercent / data.totalShares : 0,
-      }))
-      .sort((a, b) => b.pnl - a.pnl);
+  const analytics = useMemo(
+    () => calculateTradeAnalytics(filteredTrades),
+    [filteredTrades]
+  );
+  const currentStreak = useMemo(
+    () => calculateCurrentStreak(filteredTrades),
+    [filteredTrades]
+  );
+  const symbolSummary = useSymbolPerformance(filteredTrades);
+  const recentTrades = useMemo(() => trades.slice(0, 5), [trades]);
 
-    return {
+  return useMemo(
+    () => ({
       totalTrades: analytics.totalTrades,
       totalPnl: analytics.totalPnl,
       winRate: analytics.winRate,
@@ -104,6 +82,7 @@ export function useHomeSummary(
       recentTrades,
       currentStreak,
       symbolSummary,
-    };
-  }, [trades, period, customRangeStart, customRangeEnd]);
+    }),
+    [analytics, currentStreak, recentTrades, symbolSummary]
+  );
 }

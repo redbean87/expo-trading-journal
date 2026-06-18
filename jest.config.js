@@ -23,6 +23,7 @@ module.exports = {
     '/node_modules/',
     'src/components/__tests__/',
     'src/screens/analytics/__tests__/',
+    'src/screens/home/__tests__/',
     'src/hooks/__tests__/use-confidence-analytics.test.ts',
   ],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts', '!src/types/**'],
