@@ -91,28 +91,31 @@ export function AnalyticsLayout({ children }: AnalyticsLayoutProps) {
     if (pathname.includes('/market-condition')) return 'market-condition';
     if (pathname.includes('/htf-context')) return 'htf-context';
     if (pathname.includes('/ai-insights')) return 'ai-insights';
+    if (pathname.includes('/symbols')) return 'symbols';
     return 'overview';
   };
 
   const segments: { value: AnalyticsSegment; label: string }[] = [
     { value: 'overview', label: 'Overview' },
-    { value: 'patterns', label: 'Patterns' },
     { value: 'charts', label: 'Charts' },
-    { value: 'psychology', label: 'Psych' },
+    { value: 'symbols', label: 'Symbols' },
     { value: 'strategy', label: 'Strategy' },
+    { value: 'patterns', label: 'Patterns' },
     { value: 'market-condition', label: 'Market' },
     { value: 'htf-context', label: 'HTF' },
+    { value: 'psychology', label: 'Psych' },
     { value: 'ai-insights', label: 'AI' },
   ];
 
   const routes: Record<AnalyticsSegment, string> = {
     overview: '/analytics',
-    patterns: '/analytics/patterns',
     charts: '/analytics/charts',
-    psychology: '/analytics/psychology',
+    symbols: '/analytics/symbols',
     strategy: '/analytics/strategy',
+    patterns: '/analytics/patterns',
     'market-condition': '/analytics/market-condition',
     'htf-context': '/analytics/htf-context',
+    psychology: '/analytics/psychology',
     'ai-insights': '/analytics/ai-insights',
   };
 
