@@ -20,22 +20,22 @@ Sharingan: #B63331 (Red) and #090909 (Black).
 Hokage Cloak: #9F3E3D (Dry Red) and #FCF9F3 (Casual White).
 
 1. Konoha Flak Jacket (The Iconic Vest)
-This is the most recognizable green in the show, worn by Chunin and Jonin (like Kakashi and Shikamaru). It is a desaturated, military olive.
-Deep Olive: #5A623C
-Shadow Olive: #3D432A
+   This is the most recognizable green in the show, worn by Chunin and Jonin (like Kakashi and Shikamaru). It is a desaturated, military olive.
+   Deep Olive: #5A623C
+   Shadow Olive: #3D432A
 
 2. The "Power of Youth" (Rock Lee & Might Guy)
-The jumpsuits worn by Lee and Guy are a much more vibrant, saturated forest green compared to the tactical vests.
-Leaf Green: #2E5A27
-Bright Highlight: #4B8337
+   The jumpsuits worn by Lee and Guy are a much more vibrant, saturated forest green compared to the tactical vests.
+   Leaf Green: #2E5A27
+   Bright Highlight: #4B8337
 
 3. Haruno Sakura (Inner Clothing)
-While Sakura is known for pink, her early design and some of her medical ninjutsu equipment use a specific light seafoam/mint green.
-Medical/Mint Green: #98FB98
+   While Sakura is known for pink, her early design and some of her medical ninjutsu equipment use a specific light seafoam/mint green.
+   Medical/Mint Green: #98FB98
 
 4. Tsunade’s Haori (Gambler's Coat)
-The legendary Sannin and Fifth Hokage wears a very specific shade of grass green.
-Tsunade Green: #4A703C
+   The legendary Sannin and Fifth Hokage wears a very specific shade of grass green.
+   Tsunade Green: #4A703C
 
 Quick Reference Table
 Element Hex Code Visual Description

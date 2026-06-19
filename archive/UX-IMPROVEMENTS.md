@@ -1,3 +1,5 @@
+> **Archived**: This document is kept for historical context. For the current state of features, see [ROADMAP.md](../ROADMAP.md).
+
 # UX Improvements Backlog
 
 ## Active Items
@@ -33,7 +35,7 @@
 
 ### 4. Migrate Prod Data to Dev
 
-- **Status**: Not started
+- **Status**: Completed
 - **Priority**: Medium
 - **Notes**: Periodic script to copy production trades to dev environment for testing with real data.
 - **Frequency**: Manual script (run weekly or as needed)

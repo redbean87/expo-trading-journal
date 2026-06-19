@@ -21,7 +21,7 @@ Quick-start and detailed setup instructions for the Trading Journal app.
    ```bash
    npx convex dev
    cp .env.example .env
-   # Add EXPO_PUBLIC_CONVEX_URL to .env
+   # Add EXPO_PUBLIC_CONVEX_URL and EXPO_PUBLIC_CONVEX_SITE_URL to .env
    ```
 
 3. **Start the app**:

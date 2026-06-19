@@ -46,13 +46,16 @@ https://your-project-name.convex.cloud
 cp .env.example .env
 ```
 
-Edit `.env` and add your Convex URL:
+Edit `.env` and add your Convex URLs:
 
 ```bash
 EXPO_PUBLIC_CONVEX_URL=https://your-project-name.convex.cloud
+EXPO_PUBLIC_CONVEX_SITE_URL=https://your-project-name.convex.site
 ```
 
 **Important**: `.env` is already in `.gitignore`
+
+> If your `.env.example` is missing these variables, add them manually as shown above.
 
 ## Step 5: Start Development
 
@@ -66,9 +69,15 @@ npm start
 
 ### Backend (`convex/`)
 
-- **schema.ts** - Database schema with trades and auth tables
-- **auth.config.ts** - Email/password authentication configuration
+- **schema.ts** - Database schema with trades, users, attachments, tags, import audits, and duplicate decisions
+- **auth.ts** - Authentication setup (email/password + Google) and account-linking logic
+- **auth.config.ts** - JWT provider configuration for Convex Auth
 - **trades.ts** - CRUD operations for trades with user authorization
+- **trades_analysis.ts** - Server-side trade analytics queries
+- **settings.ts** - User settings sync across devices
+- **tags.ts** - System and user-defined tag library
+- **attachments.ts** - Screenshot upload URLs and metadata
+- **duplicate_decisions.ts** - Cross-device duplicate decision persistence
 - **http.ts** - HTTP routes for authentication endpoints
 
 ### Frontend

@@ -2,6 +2,8 @@
 
 Reference guide for implementing Apple Sign-In. This is **not yet implemented** but required for App Store submission if any social login is offered.
 
+> **Status**: Planned. `expo-auth-session` is not currently installed; the existing Google Sign-In uses `expo-web-browser` via Convex Auth.
+
 ## Overview
 
 Apple Sign-In uses the same architecture as platform-specific OAuth:
@@ -105,19 +107,16 @@ npx convex env set APPLE_CLIENT_ID com.tradingjournal.app.service
 npx convex env set APPLE_CLIENT_SECRET <generated-jwt>
 ```
 
-Update `convex/auth.config.ts`:
+Update `convex/auth.ts`:
 
 ```typescript
 import { convexAuth } from '@convex-dev/auth/server';
-import Google from '@auth/core/providers/google';
+import { Password } from '@convex-dev/auth/providers/Password';
 import Apple from '@auth/core/providers/apple';
 
 export const { auth, signIn, signOut, store } = convexAuth({
   providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
+    Password,
     Apple({
       clientId: process.env.APPLE_CLIENT_ID,
       clientSecret: process.env.APPLE_CLIENT_SECRET,
@@ -136,20 +135,19 @@ npx expo install expo-auth-session expo-crypto expo-web-browser
 
 ### 3.2 Configure App Scheme
 
-Ensure `app.json` includes:
+Ensure `app.config.ts` includes:
 
-```json
-{
-  "expo": {
-    "scheme": "tradingjournal",
-    "ios": {
-      "bundleIdentifier": "com.tradingjournal.app"
-    },
-    "android": {
-      "package": "com.tradingjournal.app"
-    }
-  }
-}
+```typescript
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  scheme: 'trading-journal',
+  ios: {
+    bundleIdentifier: 'com.tradingjournal.app',
+  },
+  android: {
+    package: 'com.tradingjournal.app',
+  },
+});
 ```
 
 ### 3.3 Create Apple Sign-In Component

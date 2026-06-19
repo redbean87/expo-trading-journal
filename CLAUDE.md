@@ -19,12 +19,18 @@ A mobile trading journal app built with Expo/React Native for tracking and analy
 
 ```
 app/
-  _layout.tsx        # Root layout (ConvexProvider, PaperProvider)
+  _layout.tsx        # Root layout (ConvexProvider, PaperProvider, settings sync)
+  +html.tsx          # HTML wrapper (PWA manifest, service worker)
   add-trade.tsx      # Add trade modal route
+  daily-digest.tsx   # Daily trade summary exporter
+  duplicate-review.tsx # Resolve duplicate import candidates
   (tabs)/
     _layout.tsx      # Tab navigator configuration
     index.tsx        # Home screen route
-    trades.tsx       # Trades list screen route
+    trades/          # Trades list screen route
+      _layout.tsx    # Trades stack layout
+      index.tsx      # Trades list
+      [id].tsx       # Trade detail panel
     profile.tsx      # Profile/settings screen route
     analytics/       # Analytics with nested tab routes
       _layout.tsx    # Analytics tab navigator
@@ -32,12 +38,14 @@ app/
       charts.tsx     # Charts tab
       psychology.tsx # Psychology tab
       timing.tsx     # Timing tab
+      symbols.tsx    # Symbol performance tab
+      strategy.tsx   # Strategy performance tab
+      market-condition.tsx # Market condition tab
+      htf-context.tsx # HTF context tab
+      patterns.tsx   # Pattern analytics tab
+      ai-insights.tsx # AI insights tab
   auth/
     callback.tsx     # OAuth callback handler
-  edit-trade/
-    [id].tsx         # Edit trade modal (dynamic route)
-  trade/
-    [id].tsx         # Trade detail modal (dynamic route)
 src/
   components/        # Reusable components (used across multiple screens)
   config/            # App configuration
@@ -53,6 +61,18 @@ src/
   theme/             # Theme configuration
   types/             # TypeScript interfaces and types
   utils/             # Utility functions
+convex/              # Backend (Convex)
+  schema.ts          # Database schema
+  auth.ts            # Auth setup (Password + Google)
+  auth.config.ts     # JWT provider configuration
+  trades.ts          # Trade operations
+  trades_analysis.ts # Trade analytics queries
+  settings.ts        # User settings sync
+  tags.ts            # Tag library operations
+  attachments.ts     # Screenshot upload/download
+  duplicate_decisions.ts # Cross-device duplicate decisions
+  http.ts            # HTTP routes for authentication
+scripts/             # Utility scripts
 ```
 
 ## Code Style

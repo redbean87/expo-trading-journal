@@ -55,11 +55,11 @@ The app already has strong analytics coverage for a novice:
 
 **Deliverables:**
 
-- [ ] `use-symbol-analytics.ts` hook (group by symbol, compute count/win rate/total P&L/avg P&L/profit factor)
-- [ ] `SymbolSection` component (table + bar chart)
-- [ ] `app/(tabs)/analytics/symbols.tsx` route
-- [ ] Update analytics tab navigator to include new route
-- [ ] Update `use-ai-report.ts` to include symbol data
+- [x] `use-symbol-performance.ts` hook (group by symbol, compute count/win rate/total P&L/avg P&L/profit factor)
+- [x] `SymbolSection` component (table + bar chart)
+- [x] `app/(tabs)/analytics/symbols.tsx` route
+- [x] Update analytics tab navigator to include new route
+- [x] Update `use-ai-report.ts` to include symbol data
 
 ---
 
@@ -149,4 +149,4 @@ For each phase:
 
 ---
 
-_Last updated: [Today]_
+_Last updated: June 2026_

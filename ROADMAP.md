@@ -1,16 +1,20 @@
 # Trading Journal App - Roadmap
 
-## Current State (as of March 2026)
+## Current State (as of June 2026)
 
 The app has a solid foundation with:
 
-- **4 main screens**: Home (dashboard), Trades (list), Add Trade (form), Analytics
-- **Authentication**: Email/password via Convex Auth
+- **5 main screens**: Home (dashboard), Trades (list with master-detail), Add Trade (form), Analytics, Profile/Settings
+- **Authentication**: Email/password and Google Sign-In via Convex Auth
 - **Real-time sync**: Convex backend with live data updates
-- **CSV import/export**: With duplicate detection, including Thinkorswim account statement import
-- **Equity curve chart**: Visual P&L progression with max drawdown tracking
-- **Dark/light theme**: Persisted with Zustand
+- **CSV import/export**: With duplicate detection and enrichment, including Thinkorswim account statement import
+- **Duplicate review**: Resolve import candidates after CSV/TOS import
+- **Analytics suite**: Equity curve, drawdown, daily P&L, distribution, symbol/strategy/market-condition/HTF-context performance, psychology, patterns, AI insights
+- **Dark/light theme + custom colors**: Persisted with Zustand and synced across devices
 - **Fees & commissions**: Separate fields for fees and commissions on each trade
+- **Screenshot attachments**: Trade chart screenshots stored in Cloudflare R2
+- **PWA support**: Service worker for offline use and installable web app
+- **Daily Digest**: Export formatted trade summaries for external review
 
 ---
 
@@ -48,6 +52,13 @@ The app has a solid foundation with:
   - Consider migration tracking table for audit history
 
 ### Recently Completed
+
+- [x] **Symbol Performance Analytics** - Performance breakdown by symbol with home summary card
+- [x] **Daily Digest** - Export formatted trade summaries for journaling/review
+- [x] **Duplicate Review Flow** - Resolve import candidates after CSV/TOS import with cross-device persistence
+- [x] **PWA / Offline Support** - Service worker, offline banner, and installable web app
+- [x] **AI Insights Tab** - Composed analytics view for pattern discovery
+- [x] **Import Enrichment** - Re-import statements to update vendor-authoritative fields while preserving journal data
 
 - [x] **Setup Quality Rename** - Renamed confidence → setupQuality with migration (700+ trades migrated)
 - [x] **Structure Break Before Exit** - Enum field (yes/no/unsure) to distinguish emotional vs technical exits
@@ -198,3 +209,9 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] **Append/Update Imported Trades** - Re-import same statement to enrich existing trades with vendor data (fees, commissions, prices, timestamps) while preserving user journal fields
 - [x] **TOS Import Bug Fix** - Account Trade History parsed as primary source, Cash Balance fills merged for fees/commissions; no more missing trades when Cash Balance has early fills
 - [x] **Migrate Prod Data to Dev** - CLI script to copy production trades, tags, and settings to dev environment for testing with real data (attachments excluded — R2 objects are env-specific)
+- [x] **Symbol Performance Analytics** - Home summary card and dedicated analytics tab for per-ticker performance
+- [x] **Daily Digest** - Screen to copy formatted trade summaries for external review
+- [x] **Duplicate Review Flow** - Resolve import candidates with keep/merge/skip decisions persisted across devices
+- [x] **PWA / Offline Support** - Service worker, offline banner, and installable web experience
+- [x] **AI Insights Tab** - Composed analytics view aggregating multiple dimensions
+- [x] **Import Enrichment** - Re-import broker statements to update prices, fees, commissions, and timestamps while preserving user journal fields

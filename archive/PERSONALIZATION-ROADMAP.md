@@ -8,11 +8,11 @@
 
 ## Overview
 
-| Phase | Feature | Status | Effort | Files Changed |
-|-------|---------|--------|--------|---------------|
-| 1 | Display Name / Journal Title | 🚧 Ready | 4-6 hrs | 9 files (2 new, 7 modified) |
-| 2 | Custom Mistake Categories | ⏸️ Waiting | 12-16 hrs | 12 files (5 new, 7 modified) |
-| 3 | Custom Theming (Full Colors) | ⏸️ Waiting | 16-20 hrs | 14 files (6 new, 8 modified) |
+| Phase | Feature                      | Status     | Effort    | Files Changed                |
+| ----- | ---------------------------- | ---------- | --------- | ---------------------------- |
+| 1     | Display Name / Journal Title | 🚧 Ready   | 4-6 hrs   | 9 files (2 new, 7 modified)  |
+| 2     | Custom Mistake Categories    | ⏸️ Waiting | 12-16 hrs | 12 files (5 new, 7 modified) |
+| 3     | Custom Theming (Full Colors) | ⏸️ Waiting | 16-20 hrs | 14 files (6 new, 8 modified) |
 
 **Total Estimated Effort**: 32-42 hours
 
@@ -277,11 +277,11 @@ Ideas for additional personalization features:
 
 ## Timeline (Tentative)
 
-| Phase | Start | Duration | Complete |
-|-------|-------|----------|----------|
-| 1 | TBD | 4-6 hours | TBD |
-| 2 | After Phase 1 | 12-16 hours | TBD |
-| 3 | After Phase 2 | 16-20 hours | TBD |
+| Phase | Start         | Duration    | Complete |
+| ----- | ------------- | ----------- | -------- |
+| 1     | TBD           | 4-6 hours   | TBD      |
+| 2     | After Phase 1 | 12-16 hours | TBD      |
+| 3     | After Phase 2 | 16-20 hours | TBD      |
 
 **Total**: 32-42 hours of implementation + testing + review
 

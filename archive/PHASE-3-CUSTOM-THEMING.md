@@ -80,7 +80,7 @@ Currently, the app supports light/dark mode toggle with hardcoded colors. This p
     - If customColors is null, return baseTheme
     - Merge custom colors into MD3 theme structure
     - Return AppTheme with custom colors applied
-  - [ ] Export function for use in _layout
+  - [ ] Export function for use in \_layout
 
 ### Step 7: Update Root Layout
 
@@ -92,9 +92,10 @@ Currently, the app supports light/dark mode toggle with hardcoded colors. This p
 
     ```typescript
     const baseTheme = themeMode === 'dark' ? darkTheme : lightTheme;
-    const paperTheme = preset === 'custom'
-      ? createCustomTheme(baseTheme, customColors, themeMode)
-      : baseTheme;
+    const paperTheme =
+      preset === 'custom'
+        ? createCustomTheme(baseTheme, customColors, themeMode)
+        : baseTheme;
     ```
 
   - [ ] Pass to PaperProvider
@@ -265,7 +266,7 @@ export type CustomColors = {
   };
 
   profit: string; // Green (#4caf50 default)
-  loss: string;   // Red (#f44336 default)
+  loss: string; // Red (#f44336 default)
 };
 
 export type CustomThemePreset = 'default' | 'custom';
@@ -375,6 +376,7 @@ export function createCustomTheme(
 ### Implemented Changes (Simplified Version)
 
 ✅ **Phase 3 Complete** - Simplified to 4 colors based on user feedback:
+
 - Primary accent color
 - Single background (works for both light/dark modes)
 - Profit color
