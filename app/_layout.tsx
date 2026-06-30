@@ -13,6 +13,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { OfflineBanner } from '@/components/offline-banner';
 import { SidebarLayout } from '@/components/sidebar-layout';
 import { TagLibraryInitializer } from '@/components/tag-library-initializer';
+import { UpdateBanner } from '@/components/update-banner';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { useServiceWorker } from '@/hooks/use-service-worker';
 import { ConvexProvider } from '@/providers/convex-provider';
@@ -84,6 +85,7 @@ export default function RootLayout() {
                 <KeyboardShortcutsHandler />
                 <ServiceWorkerRegistration />
                 <OfflineBanner />
+                <UpdateBanner />
                 <SidebarLayout>
                   <Stack>
                     <Stack.Screen

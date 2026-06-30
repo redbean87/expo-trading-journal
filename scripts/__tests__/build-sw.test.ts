@@ -28,7 +28,7 @@ describe('build-sw', () => {
     }
   });
 
-  it('generates a service worker that precaches offline.html but not index.html', () => {
+  it('generates a bundled service worker that precaches offline.html', () => {
     execSync('node scripts/build-sw.mjs', {
       cwd: rootDir,
       stdio: 'pipe',
@@ -38,8 +38,8 @@ describe('build-sw', () => {
 
     expect(swContent).toContain('offline.html');
     expect(swContent).not.toContain('index.html');
-    expect(swContent).toContain('self.skipWaiting()');
-    expect(swContent).toContain('clientsClaim()');
+    expect(swContent).toContain('SKIP_WAITING');
+    expect(swContent).toContain('importScripts');
   });
 
   it('caches static assets with CacheFirst', () => {
@@ -53,5 +53,6 @@ describe('build-sw', () => {
     expect(swContent).toContain('CacheFirst');
     expect(swContent).toContain('expo-static-assets');
     expect(swContent).toContain('app-assets');
+    expect(swContent).toContain('pwa-assets');
   });
 });
