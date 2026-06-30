@@ -96,6 +96,18 @@ export type AIReportHoldTimeData = Array<{
   averagePnl: number;
 }>;
 
+export type AIReportTradeAgainData = {
+  yes: { count: number; winRate: number; totalPnl: number; averagePnl: number };
+  no: { count: number; winRate: number; totalPnl: number; averagePnl: number };
+  withAdjustment: {
+    count: number;
+    winRate: number;
+    totalPnl: number;
+    averagePnl: number;
+  };
+  insight: string;
+};
+
 export type AIReportData = {
   period: {
     startDate: Date;
@@ -109,6 +121,7 @@ export type AIReportData = {
   dayOfWeek: AIReportDayOfWeekData;
   strategies: AIReportStrategyData;
   holdTime: AIReportHoldTimeData;
+  tradeAgain: AIReportTradeAgainData;
   selectedTrades: AIReportTrade[];
   options: {
     tradeDateLimit: number | null;

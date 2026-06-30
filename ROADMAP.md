@@ -39,13 +39,6 @@ The app has a solid foundation with:
   - Vendor-authoritative fields overwrite existing data (prices, fees, commissions, timestamps)
   - Protected fields preserved (notes, psychology, setupQuality, journal entries)
 
-- [ ] **Stop Loss vs Risk Amount Comparison** - Show implied risk from stop loss vs planned risk
-  - Stop loss implies: `|entry - stop| × quantity` (technical/chart-based)
-  - Planned risk: user's intended dollar risk (account-based, e.g., 5%)
-  - Display gap/mismatch to identify sizing errors
-  - Could show in trade detail, analytics, or as a warning
-  - **Decision needed**: How to best surface this data without cluttering the form
-
 - [ ] **Automated Migration Runner** - Add data migrations to CI/CD pipeline
   - Add `npx convex run <migration> --prod` to GitHub Actions after deploy
   - Make migrations idempotent (check before running)
@@ -215,3 +208,5 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<android-client-id>
 - [x] **PWA / Offline Support** - Service worker, offline banner, and installable web experience
 - [x] **AI Insights Tab** - Composed analytics view aggregating multiple dimensions
 - [x] **Import Enrichment** - Re-import broker statements to update prices, fees, commissions, and timestamps while preserving user journal fields
+- [x] **Trade Again Analysis** - Psychology tab card analyzing performance by wouldTakeTradeAgain (yes/no/withAdjustment)
+- [x] **Stop Loss vs Risk Amount Comparison** - Real-time warning in Add Trade form when implied risk from stop loss diverges from entered risk amount

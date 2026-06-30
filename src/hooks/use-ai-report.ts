@@ -12,6 +12,7 @@ import {
   useTimeOfDayBreakdown,
   type TimeOfDaySummary,
 } from './use-time-of-day-breakdown';
+import { useTradeAgainAnalytics } from './use-trade-again-analytics';
 import { useTradeAnalytics } from './use-trade-analytics';
 
 import type { Trade } from '../types';
@@ -25,6 +26,7 @@ import type {
   AIReportDayOfWeekData,
   AIReportStrategyData,
   AIReportHoldTimeData,
+  AIReportTradeAgainData,
 } from '../types/ai-report';
 
 function selectTradesForReport(
@@ -62,6 +64,7 @@ export function useAIReport(
   const analytics = useTradeAnalytics(trades);
   const equity = useEquityCurve(trades);
   const mistakes = useMistakeAnalytics(trades);
+  const tradeAgain = useTradeAgainAnalytics(trades);
   const timeOfDay = useTimeOfDayBreakdown(trades);
   const dayOfWeek = useDayOfWeekBreakdown(trades);
   const strategies = useStrategyAnalytics(trades);
@@ -240,6 +243,29 @@ export function useAIReport(
       })
     );
 
+    // Build trade again data
+    const tradeAgainData: AIReportTradeAgainData = {
+      yes: {
+        count: tradeAgain.byOption.yes.count,
+        winRate: tradeAgain.byOption.yes.winRate / 100,
+        totalPnl: tradeAgain.byOption.yes.totalPnl,
+        averagePnl: tradeAgain.byOption.yes.avgPnl,
+      },
+      no: {
+        count: tradeAgain.byOption.no.count,
+        winRate: tradeAgain.byOption.no.winRate / 100,
+        totalPnl: tradeAgain.byOption.no.totalPnl,
+        averagePnl: tradeAgain.byOption.no.avgPnl,
+      },
+      withAdjustment: {
+        count: tradeAgain.byOption.withAdjustment.count,
+        winRate: tradeAgain.byOption.withAdjustment.winRate / 100,
+        totalPnl: tradeAgain.byOption.withAdjustment.totalPnl,
+        averagePnl: tradeAgain.byOption.withAdjustment.avgPnl,
+      },
+      insight: tradeAgain.insight,
+    };
+
     // Select trades for report
     const selectedTrades: AIReportTrade[] = selectTradesForReport(
       trades,
@@ -261,6 +287,7 @@ export function useAIReport(
       dayOfWeek: dayOfWeekData,
       strategies: strategyData,
       holdTime: holdTimeData,
+      tradeAgain: tradeAgainData,
       selectedTrades,
       options: {
         tradeDateLimit: options.tradeDateLimit,
@@ -272,6 +299,7 @@ export function useAIReport(
     analytics,
     equity,
     mistakes,
+    tradeAgain,
     timeOfDay,
     dayOfWeek,
     strategies,

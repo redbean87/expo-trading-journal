@@ -10,6 +10,7 @@ import type {
   AIReportDayOfWeekData,
   AIReportStrategyData,
   AIReportHoldTimeData,
+  AIReportTradeAgainData,
 } from '../types/ai-report';
 
 /**
@@ -100,6 +101,34 @@ function formatMistakeSection(mistakes: AIReportMistakeData): string {
     );
     lines.push('');
   }
+
+  return lines.join('\n');
+}
+
+/**
+ * Format trade again analysis section
+ */
+function formatTradeAgainSection(tradeAgain: AIReportTradeAgainData): string {
+  const totalWithResponse =
+    tradeAgain.yes.count +
+    tradeAgain.no.count +
+    tradeAgain.withAdjustment.count;
+
+  if (totalWithResponse === 0) {
+    return '';
+  }
+
+  const lines: string[] = [
+    '',
+    '## Trade Replay Decisions',
+    '',
+    `**Would You Take It Again?**`,
+    `- Yes: ${tradeAgain.yes.count} trades, ${(tradeAgain.yes.winRate * 100).toFixed(1)}% WR, ${formatCurrency(tradeAgain.yes.totalPnl)} total, ${formatCurrency(tradeAgain.yes.averagePnl)} avg`,
+    `- No: ${tradeAgain.no.count} trades, ${(tradeAgain.no.winRate * 100).toFixed(1)}% WR, ${formatCurrency(tradeAgain.no.totalPnl)} total, ${formatCurrency(tradeAgain.no.averagePnl)} avg`,
+    `- With Adjustment: ${tradeAgain.withAdjustment.count} trades, ${(tradeAgain.withAdjustment.winRate * 100).toFixed(1)}% WR, ${formatCurrency(tradeAgain.withAdjustment.totalPnl)} total, ${formatCurrency(tradeAgain.withAdjustment.averagePnl)} avg`,
+    '',
+    `**Insight:** ${tradeAgain.insight}`,
+  ];
 
   return lines.join('\n');
 }
@@ -278,6 +307,7 @@ export function generateAIReport(data: AIReportData): string {
     formatPerformanceSummary(data.statistics),
     formatEquitySection(data.equity),
     formatMistakeSection(data.mistakes),
+    formatTradeAgainSection(data.tradeAgain),
     formatTimingSection(data.timeOfDay, data.dayOfWeek),
     formatStrategySection(data.strategies),
     formatHoldTimeSection(data.holdTime),

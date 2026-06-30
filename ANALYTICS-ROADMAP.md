@@ -78,10 +78,10 @@ The app already has strong analytics coverage for a novice:
 
 **Deliverables:**
 
-- [ ] `use-trade-again-analytics.ts` hook (group by response, compute count/win rate/avg P&L)
-- [ ] `TradeAgainCard` component (simple stat rows + insight text)
-- [ ] Add to `PsychologySection`
-- [ ] Update `use-ai-report.ts` to include trade-again data
+- [x] `use-trade-again-analytics.ts` hook (group by response, compute count/win rate/avg P&L)
+- [x] `TradeAgainCard` component (simple stat rows + insight text)
+- [x] Add to `PsychologySection`
+- [x] Update `use-ai-report.ts` to include trade-again data
 
 ---
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { TextInput, Text, HelperText } from 'react-native-paper';
 
@@ -18,6 +18,7 @@ import { useAppTheme } from '../../hooks/use-app-theme';
 import { useFormNavigation } from '../../hooks/use-form-navigation';
 import { useProfileStore } from '../../store/profile-store';
 import { TradeFormData } from '../../types';
+import { calculateRiskDivergence } from '../../utils/risk-divergence';
 
 const FORM_FIELDS = [
   'symbol',
@@ -102,6 +103,20 @@ export function TradeForm({
       onUpdate({ riskAmount: '' });
     }
   };
+
+  const riskDivergence = useMemo(() => {
+    const entryPrice = parseFloat(formData.entryPrice || '');
+    const stopLoss = parseFloat(formData.stopLoss || '');
+    const quantity = parseFloat(formData.quantity || '');
+    const riskAmount = parseFloat(formData.riskAmount || '');
+
+    return calculateRiskDivergence(entryPrice, stopLoss, quantity, riskAmount);
+  }, [
+    formData.entryPrice,
+    formData.stopLoss,
+    formData.quantity,
+    formData.riskAmount,
+  ]);
 
   // Helper to get web-specific props for multiline fields
   const getMultilineWebProps = (field: FormField) => {
@@ -281,6 +296,12 @@ export function TradeForm({
             % of position value)
           </HelperText>
         ) : null}
+
+        {riskDivergence?.hasDivergence && (
+          <HelperText type="error" style={styles.riskHelper}>
+            {riskDivergence.message}
+          </HelperText>
+        )}
 
         <HelperText type="info" style={styles.riskHelper}>
           Optional — enables R-multiple analytics
