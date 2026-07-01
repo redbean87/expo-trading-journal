@@ -32,7 +32,7 @@ async function buildSW() {
     globPatterns: ['offline.html'],
     maximumFileSizeToCacheInBytes: TEN_MB_BYTES,
     swDest: SW_DEST,
-    skipWaiting: true,
+    skipWaiting: false,
     clientsClaim: true,
     cleanupOutdatedCaches: true,
     sourcemap: false,
