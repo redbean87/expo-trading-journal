@@ -1,5 +1,6 @@
 import Papa from 'papaparse';
 
+import { resolveSymbol } from '../config/cusip-to-ticker';
 import { calculatePnl } from '../schemas/trade';
 
 import type { Trade } from '../types';
@@ -146,7 +147,7 @@ function parseDescription(desc: string): {
 } | null {
   const normalized = desc.replace(/(\d),(\d)/g, '$1$2').trim();
   const match = normalized.match(
-    /^(BOT|SOLD)\s+[+-]?(\d+)\s+([A-Z]+)\s+@([\d.]+)/
+    /^(BOT|SOLD)\s+[+-]?(\d+)\s+([A-Z0-9]+)\s+@([\d.]+)/
   );
   if (!match) return null;
 
@@ -209,6 +210,7 @@ function parseCashBalanceFills(
           date: row.DATE?.trim() || '',
           time: row.TIME?.trim() || '',
           ...parsed,
+          symbol: resolveSymbol(parsed.symbol),
           miscFees: parseFee(row['Misc Fees']),
           commissions: parseFee(row['Commissions & Fees']),
           amount: parseAmount(row.AMOUNT || ''),
@@ -240,7 +242,7 @@ function parseTradeHistoryFills(
         const execTime = row['Exec Time']?.trim();
         const side = row['Side']?.trim();
         const qtyStr = row['Qty']?.trim();
-        const symbol = row['Symbol']?.trim();
+        const symbol = resolveSymbol(row['Symbol']?.trim() ?? '');
         const netPriceStr = row['Net Price']?.trim();
         const priceStr = row['Price']?.trim();
 

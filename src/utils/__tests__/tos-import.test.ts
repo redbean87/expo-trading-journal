@@ -179,6 +179,85 @@ describe('parseTosAccountStatement', () => {
     expect(result.errors[0]).toContain('Cash Balance');
   });
 
+  it('parses CUSIP symbols from Cash Balance descriptions', () => {
+    // 44984F807 starts with a digit — old regex [A-Z]+ would reject it
+    const content = makeSample(
+      `1/20/26,08:42:47,TRD,="1",BOT +160 44984F807 @3.5892,,,-574.27,"2,518.61"
+1/20/26,08:42:48,TRD,="1",BOT +160 44984F807 @3.5892,,,-574.27,"1,944.34"
+1/20/26,08:48:15,TRD,="2",SOLD -320 44984F807 @3.845,-0.06,,"1,230.40","3,174.74"`
+    );
+
+    const result = parseTosAccountStatement(content);
+    expect(result.errors).toHaveLength(0);
+    expect(result.imported).toHaveLength(1);
+    const trade = result.imported[0];
+    expect(trade.symbol).toBe('IVF'); // resolved from CUSIP 44984F807
+    expect(trade.quantity).toBe(320);
+    expect(trade.entryPrice).toBeCloseTo(3.5892, 4);
+    expect(trade.exitPrice).toBe(3.845);
+    expect(trade.importedFrom).toBe('cash-balance');
+  });
+
+  it('resolves CUSIP in Trade History to ticker', () => {
+    const content = `Account Statement for 54639299SCHW (Individual) since 1/20/26 through 1/20/26
+
+Cash Balance
+DATE,TIME,TYPE,REF #,DESCRIPTION,Misc Fees,Commissions & Fees,AMOUNT,BALANCE
+1/20/26,00:00:00,BAL,,Cash balance at the start of business day 20.01 CST,,,,"3,303.25"
+,,,,TOTAL,,,,"$3,303.25"
+
+Futures Statements
+
+Account Trade History
+,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,1/20/26 08:42:47,STOCK,BUY,+160,TO OPEN,44984F807,,,STOCK,3.5892,3.5892,LMT
+,1/20/26 08:42:48,STOCK,BUY,+160,TO OPEN,44984F807,,,STOCK,3.5892,3.5892,LMT
+,1/20/26 08:48:15,STOCK,SELL,-320,TO CLOSE,44984F807,,,STOCK,3.845,3.845,MKT
+
+Profits and Losses`;
+
+    const result = parseTosAccountStatement(content);
+    expect(result.errors).toHaveLength(0);
+    expect(result.imported).toHaveLength(1);
+    const trade = result.imported[0];
+    expect(trade.symbol).toBe('IVF'); // resolved from CUSIP
+    expect(trade.quantity).toBe(320);
+    expect(trade.importedFrom).toBe('trade-history');
+  });
+
+  it('merges Cash Balance and Trade History fills for CUSIP symbols', () => {
+    // Cash Balance has fees; Trade History has order types
+    // Both use CUSIP 44984F807 — resolveSymbol unifies them to IVF
+    const content = `Account Statement for 54639299SCHW (Individual) since 1/20/26 through 1/20/26
+
+Cash Balance
+DATE,TIME,TYPE,REF #,DESCRIPTION,Misc Fees,Commissions & Fees,AMOUNT,BALANCE
+1/20/26,08:42:47,TRD,="1",BOT +160 44984F807 @3.5892,,,-574.27,"2,518.61"
+1/20/26,08:42:48,TRD,="1",BOT +160 44984F807 @3.5892,,,-574.27,"1,944.34"
+1/20/26,08:48:15,TRD,="2",SOLD -320 44984F807 @3.845,-0.06,,"1,230.40","3,174.74"
+,,,,TOTAL,,,,"$3,174.74"
+
+Futures Statements
+
+Account Trade History
+,Exec Time,Spread,Side,Qty,Pos Effect,Symbol,Exp,Strike,Type,Price,Net Price,Order Type
+,1/20/26 08:42:47,STOCK,BUY,+160,TO OPEN,44984F807,,,STOCK,3.5892,3.5892,LMT
+,1/20/26 08:42:48,STOCK,BUY,+160,TO OPEN,44984F807,,,STOCK,3.5892,3.5892,LMT
+,1/20/26 08:48:15,STOCK,SELL,-320,TO CLOSE,44984F807,,,STOCK,3.845,3.845,MKT
+
+Profits and Losses`;
+
+    const result = parseTosAccountStatement(content);
+    expect(result.errors).toHaveLength(0);
+    expect(result.imported).toHaveLength(1);
+    const trade = result.imported[0];
+    expect(trade.symbol).toBe('IVF');
+    expect(trade.quantity).toBe(320);
+    expect(trade.fees).toBeCloseTo(0.06, 2); // from CB
+    expect(trade.orderType).toBe('LMT'); // from TH
+    expect(trade.importedFrom).toBe('tos-merged');
+  });
+
   it('splits Misc Fees and Commissions & Fees into separate fields', () => {
     const content = makeSample(
       `3/10/26,09:00:00,TRD,="1",BOT +100 AAPL @150.00,,,-15000.00,1000.00
