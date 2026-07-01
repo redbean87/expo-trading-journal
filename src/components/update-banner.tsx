@@ -32,20 +32,20 @@ export function UpdateBanner() {
         style={[
           styles.bar,
           {
-            backgroundColor: theme.colors.surface,
+            backgroundColor: theme.colors.inverseSurface,
             borderTopColor: theme.colors.border,
           },
         ]}
         theme={{
           colors: {
-            onSurface: theme.colors.onSurface,
-            surface: theme.colors.surface,
+            onSurface: theme.colors.inverseOnSurface,
+            surface: theme.colors.inverseSurface,
           },
         }}
         action={{
           label: 'Update',
           onPress: activateUpdate,
-          labelStyle: { color: theme.colors.primary },
+          labelStyle: { color: theme.colors.inversePrimary },
         }}
       >
         A new version is available
