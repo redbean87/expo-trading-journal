@@ -13,6 +13,7 @@ jest.mock('react-native', () => ({
 const mockPostMessage = jest.fn();
 const mockRegister = jest.fn();
 const mockUpdate = jest.fn();
+const mockFetch = jest.fn();
 const mockController = {} as ServiceWorker;
 
 function createServiceWorker(state: ServiceWorkerState = 'installing') {
@@ -38,6 +39,7 @@ function createServiceWorker(state: ServiceWorkerState = 'installing') {
 }
 
 function createRegistration() {
+  mockUpdate.mockResolvedValue(undefined);
   const listeners = new Map<string, EventListenerOrEventListenerObject>();
   const registration = {
     installing: createServiceWorker(),
@@ -75,6 +77,11 @@ describe('useServiceWorker (web)', () => {
     process.env.NODE_ENV = 'production';
 
     controllerListeners.clear();
+    Object.defineProperty(global, 'fetch', {
+      value: mockFetch,
+      writable: true,
+      configurable: true,
+    });
 
     Object.defineProperty(global, 'navigator', {
       value: {
@@ -196,5 +203,78 @@ describe('useServiceWorker (web)', () => {
     });
 
     expect(global.location.reload).toHaveBeenCalled();
+  });
+
+  it('establishes the running version from version.json on mount', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        version: 'abc123',
+        buildTime: '2026-07-01T00:00:00Z',
+      }),
+    });
+    const { registration } = createRegistration();
+    (registration as unknown as Record<string, unknown>).installing = null;
+    (registration as unknown as Record<string, unknown>).waiting = null;
+    mockRegister.mockResolvedValue(registration);
+
+    const { useServiceWorker } = await import('../use-service-worker');
+    renderHook(() => useServiceWorker());
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    const fetchCall = mockFetch.mock.calls[0] as [string];
+    expect(fetchCall[0]).toContain('/version.json?');
+    expect(usePwaUpdateStore.getState().updateAvailable).toBe(false);
+  });
+
+  it('sets updateAvailable when version.json returns a different version', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          version: 'abc123',
+          buildTime: '2026-07-01T00:00:00Z',
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          version: 'def456',
+          buildTime: '2026-07-01T00:01:00Z',
+        }),
+      });
+    const { registration } = createRegistration();
+    (registration as unknown as Record<string, unknown>).installing = null;
+    (registration as unknown as Record<string, unknown>).waiting = null;
+    mockRegister.mockResolvedValue(registration);
+
+    const { useServiceWorker } = await import('../use-service-worker');
+    const { unmount } = renderHook(() => useServiceWorker());
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    expect(usePwaUpdateStore.getState().updateAvailable).toBe(false);
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        version: 'def456',
+        buildTime: '2026-07-01T00:01:00Z',
+      }),
+    });
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+
+    await waitFor(() => {
+      expect(usePwaUpdateStore.getState().updateAvailable).toBe(true);
+    });
+
+    unmount();
   });
 });

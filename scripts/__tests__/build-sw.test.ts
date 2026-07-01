@@ -28,19 +28,27 @@ describe('build-sw', () => {
     }
   });
 
-  it('generates a bundled service worker that precaches offline.html', () => {
+  it('generates a bundled service worker that precaches offline.html and version.json', () => {
     execSync('node scripts/build-sw.mjs', {
       cwd: rootDir,
       stdio: 'pipe',
     });
 
     const swContent = fs.readFileSync(swPath, 'utf8');
+    const versionPath = path.join(distDir, 'version.json');
 
     expect(swContent).toContain('offline.html');
+    expect(swContent).toContain('version.json');
     expect(swContent).not.toContain('index.html');
     expect(swContent).toContain('SKIP_WAITING');
     expect(swContent).toContain('importScripts');
     expect(swContent).not.toContain('navigateFallback');
+    expect(fs.existsSync(versionPath)).toBe(true);
+
+    const versionData = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
+    expect(versionData).toHaveProperty('version');
+    expect(versionData).toHaveProperty('buildTime');
+    expect(typeof versionData.version).toBe('string');
   });
 
   it('caches static assets with CacheFirst', () => {

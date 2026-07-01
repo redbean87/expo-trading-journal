@@ -11,15 +11,22 @@ export function UpdateBanner() {
 
   const activateUpdate = () => {
     setUpdateAvailable(false);
-    if (!('serviceWorker' in navigator)) return;
+    if (!('serviceWorker' in navigator)) {
+      window.location.reload();
+      return;
+    }
 
     navigator.serviceWorker.ready
       .then((registration) => {
         if (registration.waiting) {
           registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        } else {
+          window.location.reload();
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        window.location.reload();
+      });
   };
 
   return (

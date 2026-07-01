@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,6 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const SW_DEST = path.join(DIST_DIR, 'sw.js');
+const VERSION_PATH = path.join(DIST_DIR, 'version.json');
 
 const TEN_MB_BYTES = 10 * 1024 * 1024;
 
@@ -17,6 +19,26 @@ self.addEventListener('message', (event) => {
 });
 `;
 
+function getGitHash() {
+  try {
+    return execSync('git rev-parse --short HEAD', {
+      cwd: ROOT_DIR,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).trim();
+  } catch {
+    return 'unknown';
+  }
+}
+
+function writeVersionFile() {
+  const version = {
+    version: getGitHash(),
+    buildTime: new Date().toISOString(),
+  };
+  fs.writeFileSync(VERSION_PATH, JSON.stringify(version, null, 2));
+}
+
 async function buildSW() {
   if (!fs.existsSync(DIST_DIR)) {
     console.error(
@@ -25,11 +47,13 @@ async function buildSW() {
     process.exit(1);
   }
 
+  writeVersionFile();
+
   const { generateSW } = await import('workbox-build');
 
   const { count, size, warnings } = await generateSW({
     globDirectory: 'dist',
-    globPatterns: ['offline.html'],
+    globPatterns: ['offline.html', 'version.json'],
     maximumFileSizeToCacheInBytes: TEN_MB_BYTES,
     swDest: SW_DEST,
     skipWaiting: false,
