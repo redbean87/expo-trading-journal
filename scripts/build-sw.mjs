@@ -32,20 +32,10 @@ async function buildSW() {
     globPatterns: ['offline.html'],
     maximumFileSizeToCacheInBytes: TEN_MB_BYTES,
     swDest: SW_DEST,
-    skipWaiting: false,
+    skipWaiting: true,
     clientsClaim: true,
     cleanupOutdatedCaches: true,
     sourcemap: false,
-    navigateFallback: '/offline.html',
-    navigateFallbackDenylist: [
-      /^\/_expo/,
-      /^\/assets/,
-      /^\/icons/,
-      /^\/manifest\.json$/,
-      /^\/favicon\.ico$/,
-      /^\/sw\.js$/,
-      /^\/workbox-.*\.js$/,
-    ],
     runtimeCaching: [
       {
         urlPattern: /^\/_expo\/static\/.*\.(?:js|css)$/,

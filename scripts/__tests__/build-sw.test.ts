@@ -40,6 +40,7 @@ describe('build-sw', () => {
     expect(swContent).not.toContain('index.html');
     expect(swContent).toContain('SKIP_WAITING');
     expect(swContent).toContain('importScripts');
+    expect(swContent).not.toContain('navigateFallback');
   });
 
   it('caches static assets with CacheFirst', () => {
