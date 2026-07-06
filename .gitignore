@@ -38,6 +38,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Compiled JS artifacts (TypeScript project - no .js source files)
+src/**/*.js
+
 # test coverage
 coverage/
 
