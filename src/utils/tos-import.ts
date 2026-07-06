@@ -1,7 +1,6 @@
 import Papa from 'papaparse';
 
 import { resolveSymbol } from '../config/cusip-to-ticker';
-import { calculatePnl } from '../schemas/trade';
 
 import type { Trade } from '../types';
 import type { ImportResult } from './csv-import';
@@ -312,15 +311,13 @@ function emitTrade(
     (accum.totalBuyCommissions + accum.totalSellCommissions).toFixed(2)
   );
 
-  // P&L: calculate from display prices so it is always consistent with entry/exit shown in UI
-  const { pnl, pnlPercent } = calculatePnl(
-    roundedEntry,
-    roundedExit,
-    qty,
-    'long',
-    fees,
-    commissions
-  );
+  // P&L: calculate from actual broker amounts for exact match with statement TOTAL line
+  const rawPnl = accum.totalSellAmount - accum.totalBuyAmount;
+  const pnl = parseFloat((rawPnl - fees - commissions).toFixed(2));
+  const pnlPercent =
+    accum.totalBuyAmount > 0
+      ? parseFloat(((pnl / accum.totalBuyAmount) * 100).toFixed(2))
+      : 0;
 
   const importId =
     (source === 'cash-balance' || source === 'tos-merged') && accum.firstBuyRef
