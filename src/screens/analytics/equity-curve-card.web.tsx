@@ -111,16 +111,20 @@ export default function EquityCurveCard({
                     color: theme.colors.textSecondary,
                     fontSize: 11,
                   }}
-                  formatter={(value: number) => [
-                    `$${value >= 0 ? '' : '-'}${Math.abs(value).toFixed(2)}`,
+                  formatter={(value: number | undefined) => [
+                    `$${value !== undefined && value >= 0 ? '' : '-'}${value !== undefined ? Math.abs(value).toFixed(2) : '0.00'}`,
                     'Cumulative PnL',
                   ]}
                   labelFormatter={(
-                    label: string,
-                    payload: { payload?: RechartsDataItem }[]
+                    label: React.ReactNode,
+                    payload: readonly unknown[]
                   ) => {
-                    const p = payload?.[0]?.payload;
-                    return p?.fullDate ?? label;
+                    const item = payload?.[0] as
+                      | { payload?: RechartsDataItem }
+                      | undefined;
+                    return typeof label === 'string'
+                      ? (item?.payload?.fullDate ?? label)
+                      : label;
                   }}
                 />
                 <Area

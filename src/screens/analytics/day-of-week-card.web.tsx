@@ -43,13 +43,15 @@ export default function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
 
   // Custom label formatter for win rate
   const renderWinRateLabel = (props: {
-    x: number;
-    y: number;
-    width: number;
-    value: number;
-    index: number;
+    x?: number | string;
+    y?: number | string;
+    width?: number | string;
+    index?: number;
   }) => {
-    const { x, y, width, index } = props;
+    const x = Number(props.x) || 0;
+    const y = Number(props.y) || 0;
+    const width = Number(props.width) || 0;
+    const index = props.index ?? 0;
     const day = chartData[index];
 
     if (!day.hasData) return null;
