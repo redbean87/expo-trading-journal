@@ -44,8 +44,12 @@ export default function RegisterScreen({
 
     try {
       await register(email, password);
-    } catch {
-      setError('Failed to create account. Email may already be in use.');
+    } catch (error) {
+      if (error instanceof Error && error.message === 'network') {
+        setError('No internet connection. Please check your network.');
+      } else {
+        setError('Failed to create account. Email may already be in use.');
+      }
     } finally {
       setLoading(false);
     }

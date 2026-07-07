@@ -36,6 +36,7 @@ type FormField = (typeof FORM_FIELDS)[number];
 
 type TradeFormProps = {
   formData: TradeFormData;
+  fieldErrors?: Record<string, string>;
   pnl: number;
   pnlPercent: number;
   onUpdate: (updates: Partial<TradeFormData>) => void;
@@ -45,6 +46,7 @@ type RiskMode = '$' | '%';
 
 export function TradeForm({
   formData,
+  fieldErrors,
   pnl,
   pnlPercent,
   onUpdate,
@@ -118,6 +120,13 @@ export function TradeForm({
     formData.riskAmount,
   ]);
 
+  const getError = (field: string) =>
+    fieldErrors?.[field] ? (
+      <HelperText type="error" visible style={styles.errorText}>
+        {fieldErrors[field]}
+      </HelperText>
+    ) : null;
+
   // Helper to get web-specific props for multiline fields
   const getMultilineWebProps = (field: FormField) => {
     if (Platform.OS !== 'web') return {};
@@ -139,6 +148,7 @@ export function TradeForm({
           blurOnSubmit={getBlurOnSubmit('symbol')}
           onSubmitEditing={() => handleSubmitEditing('symbol')}
         />
+        {getError('symbol')}
 
         <ToggleButtons
           value={formData.side}
@@ -152,30 +162,36 @@ export function TradeForm({
         />
 
         <View style={styles.row}>
-          <TextInput
-            ref={createRef('entryPrice')}
-            label="Entry Price"
-            value={formData.entryPrice}
-            onChangeText={(text) => onUpdate({ entryPrice: text })}
-            mode="outlined"
-            keyboardType="decimal-pad"
-            style={[styles.input, styles.halfInput]}
-            returnKeyType={getReturnKeyType('entryPrice')}
-            blurOnSubmit={getBlurOnSubmit('entryPrice')}
-            onSubmitEditing={() => handleSubmitEditing('entryPrice')}
-          />
-          <TextInput
-            ref={createRef('exitPrice')}
-            label="Exit Price"
-            value={formData.exitPrice}
-            onChangeText={(text) => onUpdate({ exitPrice: text })}
-            mode="outlined"
-            keyboardType="decimal-pad"
-            style={[styles.input, styles.halfInput]}
-            returnKeyType={getReturnKeyType('exitPrice')}
-            blurOnSubmit={getBlurOnSubmit('exitPrice')}
-            onSubmitEditing={() => handleSubmitEditing('exitPrice')}
-          />
+          <View style={styles.halfInput}>
+            <TextInput
+              ref={createRef('entryPrice')}
+              label="Entry Price"
+              value={formData.entryPrice}
+              onChangeText={(text) => onUpdate({ entryPrice: text })}
+              mode="outlined"
+              keyboardType="decimal-pad"
+              style={styles.input}
+              returnKeyType={getReturnKeyType('entryPrice')}
+              blurOnSubmit={getBlurOnSubmit('entryPrice')}
+              onSubmitEditing={() => handleSubmitEditing('entryPrice')}
+            />
+            {getError('entryPrice')}
+          </View>
+          <View style={styles.halfInput}>
+            <TextInput
+              ref={createRef('exitPrice')}
+              label="Exit Price"
+              value={formData.exitPrice}
+              onChangeText={(text) => onUpdate({ exitPrice: text })}
+              mode="outlined"
+              keyboardType="decimal-pad"
+              style={styles.input}
+              returnKeyType={getReturnKeyType('exitPrice')}
+              blurOnSubmit={getBlurOnSubmit('exitPrice')}
+              onSubmitEditing={() => handleSubmitEditing('exitPrice')}
+            />
+            {getError('exitPrice')}
+          </View>
         </View>
 
         <TextInput
@@ -190,32 +206,39 @@ export function TradeForm({
           blurOnSubmit={getBlurOnSubmit('quantity')}
           onSubmitEditing={() => handleSubmitEditing('quantity')}
         />
+        {getError('quantity')}
 
         <View style={styles.row}>
-          <TextInput
-            ref={createRef('fees')}
-            label="Fees (Optional)"
-            value={formData.fees}
-            onChangeText={(text) => onUpdate({ fees: text })}
-            mode="outlined"
-            keyboardType="decimal-pad"
-            style={[styles.input, styles.halfInput]}
-            returnKeyType={getReturnKeyType('fees')}
-            blurOnSubmit={getBlurOnSubmit('fees')}
-            onSubmitEditing={() => handleSubmitEditing('fees')}
-          />
-          <TextInput
-            ref={createRef('commissions')}
-            label="Commissions (Optional)"
-            value={formData.commissions}
-            onChangeText={(text) => onUpdate({ commissions: text })}
-            mode="outlined"
-            keyboardType="decimal-pad"
-            style={[styles.input, styles.halfInput]}
-            returnKeyType={getReturnKeyType('commissions')}
-            blurOnSubmit={getBlurOnSubmit('commissions')}
-            onSubmitEditing={() => handleSubmitEditing('commissions')}
-          />
+          <View style={styles.halfInput}>
+            <TextInput
+              ref={createRef('fees')}
+              label="Fees (Optional)"
+              value={formData.fees}
+              onChangeText={(text) => onUpdate({ fees: text })}
+              mode="outlined"
+              keyboardType="decimal-pad"
+              style={styles.input}
+              returnKeyType={getReturnKeyType('fees')}
+              blurOnSubmit={getBlurOnSubmit('fees')}
+              onSubmitEditing={() => handleSubmitEditing('fees')}
+            />
+            {getError('fees')}
+          </View>
+          <View style={styles.halfInput}>
+            <TextInput
+              ref={createRef('commissions')}
+              label="Commissions (Optional)"
+              value={formData.commissions}
+              onChangeText={(text) => onUpdate({ commissions: text })}
+              mode="outlined"
+              keyboardType="decimal-pad"
+              style={styles.input}
+              returnKeyType={getReturnKeyType('commissions')}
+              blurOnSubmit={getBlurOnSubmit('commissions')}
+              onSubmitEditing={() => handleSubmitEditing('commissions')}
+            />
+            {getError('commissions')}
+          </View>
         </View>
 
         <DateTimeInput
@@ -229,6 +252,7 @@ export function TradeForm({
           value={formData.exitTime}
           onChange={(date) => onUpdate({ exitTime: date })}
         />
+        {getError('exitTime')}
       </SectionCard>
 
       <SectionCard title="Risk">
@@ -244,6 +268,7 @@ export function TradeForm({
           blurOnSubmit={getBlurOnSubmit('stopLoss')}
           onSubmitEditing={() => handleSubmitEditing('stopLoss')}
         />
+        {getError('stopLoss')}
 
         {riskMode === '$' ? (
           <TextInput
@@ -268,6 +293,7 @@ export function TradeForm({
             style={[styles.input, styles.riskInput]}
           />
         )}
+        {getError('riskAmount')}
 
         <View style={styles.modeSwitchRow}>
           <Text variant="bodySmall" style={styles.modeSwitchText}>
@@ -482,6 +508,7 @@ export function TradeForm({
           onSubmitEditing={() => handleSubmitEditing('notes')}
           {...getMultilineWebProps('notes')}
         />
+        {getError('notes')}
       </SectionCard>
     </>
   );
@@ -503,6 +530,11 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
 
     riskInput: {
       marginBottom: theme.spacing.sm,
+    },
+    errorText: {
+      marginBottom: theme.spacing.sm,
+      paddingHorizontal: 0,
+      paddingVertical: 0,
     },
     riskHelper: {
       marginBottom: theme.spacing.sm,

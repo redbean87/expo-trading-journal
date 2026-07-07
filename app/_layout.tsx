@@ -10,6 +10,7 @@ import { enGB, registerTranslation } from 'react-native-paper-dates';
 
 import AuthGate from '@/components/auth-gate';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { GlobalSnackbar } from '@/components/global-snackbar';
 import { OfflineBanner } from '@/components/offline-banner';
 import { SidebarLayout } from '@/components/sidebar-layout';
 import { TagLibraryInitializer } from '@/components/tag-library-initializer';
@@ -86,6 +87,7 @@ export default function RootLayout() {
                 <ServiceWorkerRegistration />
                 <OfflineBanner />
                 <UpdateBanner />
+                <GlobalSnackbar />
                 <SidebarLayout>
                   <Stack>
                     <Stack.Screen

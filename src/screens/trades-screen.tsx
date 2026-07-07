@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import {
   FAB,
-  Snackbar,
   Portal,
   Text,
   IconButton,
@@ -40,6 +39,7 @@ import {
 import { useTrades, useImportTrades } from '../hooks/use-trades';
 import { useDuplicateReviewStore } from '../store/duplicate-review-store';
 import { useProfileStore } from '../store/profile-store';
+import { useSnackbarStore } from '../store/snackbar-store';
 import { useTimeFilterStore } from '../store/time-filter-store';
 import { Trade, TradeSide } from '../types';
 import { tradesToCsv, generateExportFilename } from '../utils/csv-export';
@@ -140,8 +140,7 @@ export default function TradesScreen() {
   const selectedTradeId = params.id || null;
   const isEditing = params.edit === 'true';
 
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const { show: showSnackbar } = useSnackbarStore();
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
@@ -267,8 +266,7 @@ export default function TradesScreen() {
 
   const handleExportCsv = async () => {
     if (filteredTrades.length === 0) {
-      setSnackbarMessage('No trades to export');
-      setSnackbarVisible(true);
+      showSnackbar('No trades to export');
       return;
     }
 
@@ -279,15 +277,13 @@ export default function TradesScreen() {
       const result = await downloadFile(csvContent, filename);
 
       if (result.success) {
-        setSnackbarMessage(`Exported ${filteredTrades.length} trades`);
+        showSnackbar(`Exported ${filteredTrades.length} trades`);
       } else {
-        setSnackbarMessage(result.error ?? 'Export failed');
+        showSnackbar(result.error ?? 'Export failed');
       }
-      setSnackbarVisible(true);
     } catch (error) {
       console.error('Error exporting CSV:', error);
-      setSnackbarMessage('Failed to export CSV');
-      setSnackbarVisible(true);
+      showSnackbar('Failed to export CSV');
     } finally {
       setIsExporting(false);
     }
@@ -327,17 +323,12 @@ export default function TradesScreen() {
         ? parseTosAccountStatement(csvContent)
         : await parseCsvFile(csvContent);
 
-      if (parseResult.errors.length > 0) {
-        console.error('CSV Import Errors:', parseResult.errors);
-      }
-
       setIsImporting(false);
       setApplyRiskOnImport(true);
       setPendingImport(parseResult);
     } catch (error) {
       console.error('Error importing CSV:', error);
-      setSnackbarMessage('Failed to import CSV');
-      setSnackbarVisible(true);
+      showSnackbar('Failed to import CSV');
       setIsImporting(false);
     }
   };
@@ -380,7 +371,12 @@ export default function TradesScreen() {
         );
       }
       if (pendingImport.errors.length > 0) {
-        parts.push('some rows had errors');
+        const firstErrors = pendingImport.errors.slice(0, 2).join('; ');
+        const remainder =
+          pendingImport.errors.length > 2
+            ? ` (+${pendingImport.errors.length - 2} more)`
+            : '';
+        parts.push(`errors: ${firstErrors}${remainder}`);
       }
 
       // Warning if some trades were silently dropped (not imported, updated, or skipped)
@@ -395,13 +391,11 @@ export default function TradesScreen() {
         parts.push(`All ${skipped} trades already exist`);
       }
 
-      setSnackbarMessage(parts.join(' · '));
-      setSnackbarVisible(true);
+      showSnackbar(parts.join(' · '));
       setIsImporting(false);
     } catch (error) {
       console.error('Error importing CSV:', error);
-      setSnackbarMessage('Failed to import CSV');
-      setSnackbarVisible(true);
+      showSnackbar('Failed to import CSV');
       setIsImporting(false);
     }
   };
@@ -670,19 +664,6 @@ export default function TradesScreen() {
             </View>
           </Portal>
         )}
-        <Portal>
-          <Snackbar
-            visible={snackbarVisible}
-            onDismiss={() => setSnackbarVisible(false)}
-            duration={4000}
-            action={{
-              label: 'OK',
-              onPress: () => setSnackbarVisible(false),
-            }}
-          >
-            {snackbarMessage}
-          </Snackbar>
-        </Portal>
         <TradeFilterModal
           visible={filterModalVisible}
           onDismiss={() => setFilterModalVisible(false)}

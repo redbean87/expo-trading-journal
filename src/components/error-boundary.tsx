@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 
 import { Button } from './button';
-import { logError } from '../utils/errors';
+import { getUserMessage, logError } from '../utils/errors';
 
 type Props = {
   children: ReactNode;
@@ -46,7 +46,9 @@ export class ErrorBoundary extends Component<Props, State> {
             Something went wrong
           </Text>
           <Text variant="bodyMedium" style={styles.message}>
-            The app encountered an unexpected error.
+            {this.state.error
+              ? getUserMessage(this.state.error)
+              : 'The app encountered an unexpected error.'}
           </Text>
           {__DEV__ && this.state.error && (
             <Text variant="bodySmall" style={styles.errorDetail}>

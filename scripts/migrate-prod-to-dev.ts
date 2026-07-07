@@ -9,7 +9,7 @@
  *     --dev-deployment uncommon-turtle-66 \
  *     [--dry-run]
  *
- * Calls internal Convex functions via npx convex run --internal.
+ * Calls internal Convex functions via npx convex run.
  */
 
 import { spawnSync } from 'child_process';
@@ -96,21 +96,15 @@ function convexRun<T>(
   args: Record<string, unknown>,
   deployment: string | null
 ): T {
-  const convexArgs = [
-    'convex',
-    'run',
-    '--internal',
-    functionPath,
-    '--args',
-    JSON.stringify(args),
-  ];
+  const jsonArgs = JSON.stringify(args);
+  const convexArgs = ['convex', 'run', functionPath, jsonArgs];
   if (deployment) {
     convexArgs.push('--deployment', deployment);
   }
 
   const result = spawnSync('npx', convexArgs, {
     encoding: 'utf-8',
-    shell: true,
+    shell: false,
     cwd: process.cwd(),
   });
 
@@ -246,15 +240,35 @@ function migrateUser(email: string, args: CliArgs): void {
       log('✓ Settings imported');
     }
 
-    // 8. Import trades
+    // 8. Import trades (batched to avoid Windows command-line length limits)
     if (trades && trades.length > 0) {
       log('Importing trades to development...');
-      const importResult = convexRun<{ imported: number } | null>(
-        'trades:importUserTrades',
-        { userId: devUser._id, trades },
-        devDeployment
-      );
-      log(`✓ Imported ${importResult?.imported ?? 0} trades`);
+      const MAX_ARGS_SIZE = 5000;
+      let totalImported = 0;
+      let batchIndex = 0;
+      for (let i = 0; i < trades.length; ) {
+        let batchEnd = i + 1;
+        while (batchEnd < trades.length) {
+          const testBatch = trades.slice(i, batchEnd + 1);
+          const argsSize = JSON.stringify({
+            userId: devUser._id,
+            trades: testBatch,
+          }).length;
+          if (argsSize > MAX_ARGS_SIZE) break;
+          batchEnd++;
+        }
+        const batch = trades.slice(i, batchEnd);
+        const importResult = convexRun<{ imported: number } | null>(
+          'trades:importUserTrades',
+          { userId: devUser._id, trades: batch },
+          devDeployment
+        );
+        totalImported += importResult?.imported ?? 0;
+        batchIndex++;
+        log(`  Batch ${batchIndex}: ${batch.length} trades`);
+        i = batchEnd;
+      }
+      log(`✓ Imported ${totalImported} trades`);
     }
 
     // 9. Import tags

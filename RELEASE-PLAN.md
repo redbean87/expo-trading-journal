@@ -14,7 +14,7 @@ Convert 11 unauthenticated Convex endpoints to internal functions. See
 - [x] **convex/tags.ts** — `exportUserTags`, `importUserTags`, `deleteUserTags`
 - [x] **Admin scripts** — update `delete-trades-by-date.ts`,
       `migrate-prod-to-dev.ts` to use `npx convex run --internal`
-- [ ] Run `npx convex deploy` to push changes
+- [x] Run `npx convex deploy` to push changes
 
 ## Phase 2 — Web & PWA Polish
 
@@ -34,20 +34,20 @@ Convert 11 unauthenticated Convex endpoints to internal functions. See
 
 ## Phase 3 — Error Handling & UX Polish
 
-- [ ] **Wire `getUserMessage()` into error boundary** — connect the dead-code
+- [x] **Wire `getUserMessage()` into error boundary** — connect the dead-code
       utility in `src/utils/errors.ts` to `src/components/error-boundary.tsx`
-- [ ] **Add error state to `useTrades` hook** — expose `{ error }` from
+- [x] **Add error state to `useTrades` hook** — expose `{ error }` from
       `src/hooks/use-trades.ts` so screens can show error UIs
-- [ ] **Improve auth error messages** — differentiate network vs auth errors
+- [x] **Improve auth error messages** — differentiate network vs auth errors
       in `src/screens/auth/login-screen.tsx`,
       `src/screens/auth/register-screen.tsx`
-- [ ] **Field-level form validation** — add inline `HelperText type="error"`
+- [x] **Field-level form validation** — add inline `HelperText type="error"`
       for each invalid field in `src/screens/add-trade/trade-form.tsx`
-- [ ] **Add "Back online!" snackbar** — show brief notification when
+- [x] **Add "Back online!" snackbar** — show brief notification when
       connectivity is restored (`src/components/offline-banner.tsx`)
-- [ ] **Global snackbar system** — extract per-screen snackbar boilerplate
+- [x] **Global snackbar system** — extract per-screen snackbar boilerplate
       into `src/store/snackbar-store.ts`
-- [ ] **Show CSV import errors to user** — surface import errors via snackbar
+- [x] **Show CSV import errors to user** — surface import errors via snackbar
       instead of `console.error` (`src/screens/trades-screen.tsx`)
 
 ## Phase 4 — Release Configuration

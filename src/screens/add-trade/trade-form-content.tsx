@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -12,7 +12,7 @@ import { TradeForm } from './trade-form';
 import { Button } from '../../components/button';
 import { ResponsiveContainer } from '../../components/responsive-container';
 import { useAppTheme } from '../../hooks/use-app-theme';
-import { calculatePnl } from '../../schemas/trade';
+import { calculatePnl, tradeFormSchema } from '../../schemas/trade';
 import { PendingImage, TradeFormData } from '../../types';
 
 type TradeFormContentProps = {
@@ -35,6 +35,8 @@ export function TradeFormContent({
 }: TradeFormContentProps) {
   const [formData, setFormData] = useState<TradeFormData>(initialData);
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const scrollRef = useRef<ScrollView>(null);
   const theme = useAppTheme();
 
   const { pnl, pnlPercent } = useMemo(() => {
@@ -66,15 +68,32 @@ export function TradeFormContent({
   ]);
 
   const handleSubmit = async () => {
-    const entryPrice = parseFloat(formData.entryPrice);
-    const exitPrice = parseFloat(formData.exitPrice);
-    const quantity = parseFloat(formData.quantity);
+    const result = tradeFormSchema.safeParse(formData);
 
-    if (!formData.symbol || !entryPrice || !exitPrice || !quantity) {
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        const key = issue.path[0] as string;
+        if (!errors[key]) {
+          errors[key] = issue.message;
+        }
+      }
+      setFieldErrors(errors);
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
       return;
     }
 
+    setFieldErrors({});
     await onSubmit(formData, pendingImages);
+  };
+
+  const handleFieldUpdate = (updates: Partial<TradeFormData>) => {
+    const cleared = { ...fieldErrors };
+    for (const key of Object.keys(updates)) {
+      delete cleared[key];
+    }
+    setFieldErrors(cleared);
+    setFormData({ ...formData, ...updates });
   };
 
   const styles = createStyles(theme);
@@ -84,14 +103,19 @@ export function TradeFormContent({
       style={styles.keyboardAvoidingView}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        ref={scrollRef}
+        style={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
         <ResponsiveContainer>
           <View style={styles.content}>
             <TradeForm
               formData={formData}
+              fieldErrors={fieldErrors}
               pnl={pnl}
               pnlPercent={pnlPercent}
-              onUpdate={(updates) => setFormData({ ...formData, ...updates })}
+              onUpdate={handleFieldUpdate}
             />
 
             <ScreenshotPicker
@@ -104,12 +128,6 @@ export function TradeFormContent({
               mode="contained"
               onPress={handleSubmit}
               style={styles.button}
-              disabled={
-                !formData.symbol ||
-                !formData.entryPrice ||
-                !formData.exitPrice ||
-                !formData.quantity
-              }
             >
               {isEditMode ? 'Update Trade' : 'Add Trade'}
             </Button>

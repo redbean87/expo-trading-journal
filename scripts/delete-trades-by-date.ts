@@ -109,21 +109,15 @@ function convexRun<T>(
   args: Record<string, unknown>,
   deployment: string | null
 ): T {
-  const convexArgs = [
-    'convex',
-    'run',
-    '--internal',
-    functionPath,
-    '--args',
-    JSON.stringify(args),
-  ];
+  const jsonArgs = JSON.stringify(args);
+  const convexArgs = ['convex', 'run', functionPath, jsonArgs];
   if (deployment) {
     convexArgs.push('--deployment', deployment);
   }
 
   const result = spawnSync('npx', convexArgs, {
     encoding: 'utf-8',
-    shell: true,
+    shell: false,
     cwd: process.cwd(),
   });
 

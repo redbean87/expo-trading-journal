@@ -1,12 +1,25 @@
+import { useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useNetworkStatus } from '@/hooks/use-network-status';
+import { useSnackbarStore } from '@/store/snackbar-store';
 
 export function OfflineBanner() {
   const theme = useAppTheme();
   const { isConnected } = useNetworkStatus();
+  const wasOffline = useRef(false);
+  const { show: showSnackbar } = useSnackbarStore();
+
+  useEffect(() => {
+    if (isConnected === false) {
+      wasOffline.current = true;
+    } else if (wasOffline.current) {
+      wasOffline.current = false;
+      showSnackbar('Back online!', { duration: 3000 });
+    }
+  }, [isConnected, showSnackbar]);
 
   return (
     <Snackbar

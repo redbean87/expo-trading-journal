@@ -6,14 +6,7 @@ import {
   Clipboard,
   TextInput,
 } from 'react-native';
-import {
-  Text,
-  Card,
-  IconButton,
-  Snackbar,
-  Portal,
-  Switch,
-} from 'react-native-paper';
+import { Text, Card, IconButton, Switch } from 'react-native-paper';
 
 import { Button } from '../components/button';
 import { Chip } from '../components/chip';
@@ -23,6 +16,7 @@ import { ResponsiveContainer } from '../components/responsive-container';
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useBreakpoint } from '../hooks/use-breakpoint';
 import { useTrades } from '../hooks/use-trades';
+import { useSnackbarStore } from '../store/snackbar-store';
 import { useTimezoneStore } from '../store/timezone-store';
 import { Trade } from '../types';
 import { withAlpha } from '../utils/color-intensity';
@@ -48,9 +42,8 @@ export default function DailyDigestScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [contexts, setContexts] = useState<TradeContext[]>([]);
   const [mode, setMode] = useState<'simple' | 'structured'>('structured');
+  const { show: showSnackbar } = useSnackbarStore();
   const [copied, setCopied] = useState(false);
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const dailyTrades = useMemo(() => {
     const dayTrades = getTradesForDate(trades, selectedDate);
@@ -103,14 +96,9 @@ export default function DailyDigestScreen() {
     );
     Clipboard.setString(markdown);
     setCopied(true);
-    setSnackbarMessage('Copied to clipboard!');
-    setSnackbarVisible(true);
+    showSnackbar('Copied to clipboard!', { duration: 3000 });
     setTimeout(() => setCopied(false), 3000);
-  }, [dailyTrades, selectedDate, contexts, mode, timezone]);
-
-  const handleCloseSnackbar = useCallback(() => {
-    setSnackbarVisible(false);
-  }, []);
+  }, [dailyTrades, selectedDate, contexts, mode, timezone, showSnackbar]);
 
   const dateLabel = formatDate(selectedDate, timezone);
 
@@ -185,20 +173,6 @@ export default function DailyDigestScreen() {
         onDismiss={() => setShowDatePicker(false)}
         label="Select date"
       />
-
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={handleCloseSnackbar}
-          duration={3000}
-          action={{
-            label: 'OK',
-            onPress: handleCloseSnackbar,
-          }}
-        >
-          {snackbarMessage}
-        </Snackbar>
-      </Portal>
     </View>
   );
 }

@@ -32,8 +32,12 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
 
     try {
       await login(email, password);
-    } catch {
-      setError('Invalid email or password');
+    } catch (error) {
+      if (error instanceof Error && error.message === 'network') {
+        setError('No internet connection. Please check your network.');
+      } else {
+        setError('Invalid email or password');
+      }
     } finally {
       setLoading(false);
     }

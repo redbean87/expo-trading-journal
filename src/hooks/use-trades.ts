@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation, useQueries, useQuery } from 'convex/react';
 import React from 'react';
 
 import { api } from '../../convex/_generated/api';
@@ -63,19 +63,39 @@ function mapFromTrade(trade: Trade | Omit<Trade, 'id'>) {
   return mapped as Omit<Trade, 'id'> & { entryTime: number; exitTime: number };
 }
 
+const TRADES_QUERY = {
+  trades: { query: api.trades.getTrades, args: {} },
+} as const;
+
 export function useTrades() {
-  const data = useQuery(api.trades.getTrades, {});
+  const results = useQueries(TRADES_QUERY);
+  const result = results.trades;
+  const error = result instanceof Error ? result : null;
+  const data = result instanceof Error ? undefined : result;
 
   return {
     trades: data?.map(mapToTrade) ?? [],
-    isLoading: data === undefined,
+    isLoading: data === undefined && !error,
+    error,
   };
 }
 
 export function useTradesInRange(startTime: number | null) {
-  const data = useQuery(api.trades.getTradesInRange, {
-    startTime: startTime ?? undefined,
-  });
+  const queries = React.useMemo(
+    () =>
+      ({
+        trades: {
+          query: api.trades.getTradesInRange,
+          args:
+            startTime != null ? { startTime } : ({} as Record<string, never>),
+        },
+      }) as const,
+    [startTime]
+  );
+  const results = useQueries(queries);
+  const result = results.trades;
+  const error = result instanceof Error ? result : null;
+  const data = result instanceof Error ? undefined : result;
 
   const [previousData, setPreviousData] =
     React.useState<typeof data>(undefined);
@@ -88,7 +108,8 @@ export function useTradesInRange(startTime: number | null) {
 
   return {
     trades: (data ?? previousData)?.map(mapToTrade) ?? [],
-    isLoading: data === undefined && previousData === undefined,
+    isLoading: data === undefined && previousData === undefined && !error,
+    error,
   };
 }
 

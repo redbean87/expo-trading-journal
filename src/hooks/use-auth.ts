@@ -3,6 +3,15 @@ import { useConvexAuth } from 'convex/react';
 import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
 
+function isNetworkError(error: unknown): boolean {
+  return (
+    error instanceof TypeError &&
+    (error.message === 'Network request failed' ||
+      error.message.includes('fetch') ||
+      error.message.includes('network'))
+  );
+}
+
 /**
  * Hook to access authentication state and actions
  */
@@ -19,6 +28,9 @@ export function useAuth() {
       });
     } catch (error) {
       console.error('Login error:', error);
+      if (isNetworkError(error)) {
+        throw new Error('network');
+      }
       throw error;
     }
   };
@@ -32,6 +44,9 @@ export function useAuth() {
       });
     } catch (error) {
       console.error('Registration error:', error);
+      if (isNetworkError(error)) {
+        throw new Error('network');
+      }
       throw error;
     }
   };
