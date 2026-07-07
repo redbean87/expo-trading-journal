@@ -7,6 +7,7 @@ Migrate user data (trades, tags, settings) from Convex production to development
 - Both prod and dev deployments must be accessible
 - Users must exist in dev (have logged in at least once)
 - Run from project root
+- `npx convex` CLI must be authenticated for both deployments (uses `npx convex run --internal`)
 
 ## Quick Setup (One-Time)
 
@@ -81,14 +82,15 @@ npx tsx scripts/migrate-prod-to-dev.ts \
 
 ## How It Works
 
-1. Find user in prod by email
-2. Find user in dev by email
+1. Find user in prod by email (calls `settings:findUserByEmail` — internal)
+2. Find user in dev by email (`settings:findUserByEmail`)
 3. If user not in dev:
    - Export data summary to `exports/{email}.json`
    - Skip (user must log into dev first)
 4. If user in dev:
    - Delete ALL existing dev data for that user (clean slate)
    - Import prod settings, trades, and tags
+   - All Convex operations use `npx convex run --internal` for security
 
 ## Scheduling
 

@@ -1,7 +1,12 @@
 import { getAuthUserId } from '@convex-dev/auth/server';
 import { v } from 'convex/values';
 
-import { mutation, query } from './_generated/server';
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+} from './_generated/server';
 
 // Query to get current user's settings
 export const getSettings = query({
@@ -143,8 +148,8 @@ export const updateSettings = mutation({
   },
 });
 
-// Query to find a user by email (public, no auth required)
-export const findUserByEmail = query({
+// Query to find a user by email (internal — admin scripts only)
+export const findUserByEmail = internalQuery({
   args: {
     email: v.string(),
   },
@@ -172,8 +177,8 @@ export const findUserByEmail = query({
   },
 });
 
-// Query to export user settings (public, no auth required)
-export const exportUserSettings = query({
+// Query to export user settings (internal — admin scripts only)
+export const exportUserSettings = internalQuery({
   args: {
     userId: v.id('users'),
   },
@@ -193,8 +198,8 @@ export const exportUserSettings = query({
   },
 });
 
-// Mutation to import (overwrite) user settings (public, no auth required)
-export const importUserSettings = mutation({
+// Mutation to import (overwrite) user settings (internal — admin scripts only)
+export const importUserSettings = internalMutation({
   args: {
     userId: v.id('users'),
     settings: v.object({

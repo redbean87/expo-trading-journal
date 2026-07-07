@@ -8,15 +8,16 @@
  *     --prod-deployment proficient-orca-351 \
  *     --dev-deployment uncommon-turtle-66 \
  *     [--dry-run]
+ *
+ * Calls internal Convex functions via npx convex run --internal.
  */
 
+import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import { ConvexClient } from 'convex/browser';
 import { config } from 'dotenv';
 
-// Load optional .env.migrate for default configuration
 const envPath = path.join(process.cwd(), '.env.migrate');
 if (fs.existsSync(envPath)) {
   config({ path: envPath });
@@ -46,7 +47,6 @@ function parseArgs(): CliArgs {
     }
   }
 
-  // Fall back to .env.migrate values when CLI args are missing
   if (!result.emails?.length && process.env.MIGRATE_EMAIL) {
     result.emails = process.env.MIGRATE_EMAIL.split(',').map((e) => e.trim());
   }
@@ -76,38 +76,72 @@ function parseArgs(): CliArgs {
   return result as CliArgs;
 }
 
-function getDeploymentUrl(deployment: string): string {
-  // If it's already a full URL, use it
+function getDeploymentName(deployment: string): string {
   if (deployment.startsWith('https://')) {
+    const match = deployment.match(/https:\/\/(.+)\.convex\.cloud/);
+    if (match) {
+      return match[1];
+    }
     return deployment;
   }
-  // Otherwise construct from deployment name
-  return `https://${deployment}.convex.cloud`;
+  return deployment;
 }
 
 function log(message: string): void {
   console.log(`[${new Date().toISOString()}] ${message}`);
 }
 
-async function migrateUser(email: string, args: CliArgs): Promise<void> {
+function convexRun<T>(
+  functionPath: string,
+  args: Record<string, unknown>,
+  deployment: string | null
+): T {
+  const convexArgs = [
+    'convex',
+    'run',
+    '--internal',
+    functionPath,
+    '--args',
+    JSON.stringify(args),
+  ];
+  if (deployment) {
+    convexArgs.push('--deployment', deployment);
+  }
+
+  const result = spawnSync('npx', convexArgs, {
+    encoding: 'utf-8',
+    shell: true,
+    cwd: process.cwd(),
+  });
+
+  if (result.status !== 0) {
+    console.error(result.stderr);
+    throw new Error(
+      `convex run failed: ${result.stderr?.trim() || 'unknown error'}`
+    );
+  }
+
+  const stdout = result.stdout?.trim();
+  if (!stdout) {
+    return null as T;
+  }
+
+  return JSON.parse(stdout) as T;
+}
+
+function migrateUser(email: string, args: CliArgs): void {
   log(`\n--- Processing: ${email} ---`);
 
-  const prodUrl = getDeploymentUrl(args.prodDeployment);
-  const devUrl = getDeploymentUrl(args.devDeployment);
-
-  const prodClient = new ConvexClient(prodUrl);
-  const devClient = new ConvexClient(devUrl);
+  const prodDeployment = getDeploymentName(args.prodDeployment);
+  const devDeployment = getDeploymentName(args.devDeployment);
 
   try {
     // 1. Find user in prod
     log('Finding user in production...');
-    const prodUser = (await prodClient.query(
-      'settings:findUserByEmail' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-      { email }
-    )) as {
+    const prodUser = convexRun<{
       _id: string;
       displayName: string | null;
-    } | null;
+    } | null>('settings:findUserByEmail', { email }, prodDeployment);
 
     if (!prodUser) {
       log(`⚠️  User ${email} not found in production. Skipping.`);
@@ -118,20 +152,14 @@ async function migrateUser(email: string, args: CliArgs): Promise<void> {
 
     // 2. Find user in dev
     log('Finding user in development...');
-    const devUser = (await devClient.query(
-      'settings:findUserByEmail' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-      {
-        email,
-      }
-    )) as {
+    const devUser = convexRun<{
       _id: string;
-    } | null;
+    } | null>('settings:findUserByEmail', { email }, devDeployment);
 
     if (!devUser) {
       log(`⚠️  User ${email} not found in development.`);
       log('   User must log into the dev app first to create their account.');
 
-      // Save export for later import
       const exportsDir = path.join(process.cwd(), 'exports');
       if (!fs.existsSync(exportsDir)) {
         fs.mkdirSync(exportsDir, { recursive: true });
@@ -152,32 +180,29 @@ async function migrateUser(email: string, args: CliArgs): Promise<void> {
 
     log(`✓ Found in development (ID: ${devUser._id})`);
 
-    // 3. Export settings from prod
+    // 3-5. Export data from prod
     log('Exporting settings from production...');
-    const settings = (await prodClient.query(
-      'settings:exportUserSettings' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-      { userId: prodUser._id }
-    )) as Record<string, unknown> | null;
+    const settings = convexRun<Record<string, unknown> | null>(
+      'settings:exportUserSettings',
+      { userId: prodUser._id },
+      prodDeployment
+    );
 
-    // 4. Export trades from prod
     log('Exporting trades from production...');
-    const trades = (await prodClient.query(
-      'trades:exportUserTrades' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-      {
-        userId: prodUser._id,
-      }
-    )) as Array<Record<string, unknown>> | null;
+    const trades = convexRun<Array<Record<string, unknown>> | null>(
+      'trades:exportUserTrades',
+      { userId: prodUser._id },
+      prodDeployment
+    );
     const tradeCount = trades?.length ?? 0;
     log(`✓ Found ${tradeCount} trades`);
 
-    // 5. Export tags from prod
     log('Exporting tags from production...');
-    const tags = (await prodClient.query(
-      'tags:exportUserTags' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-      {
-        userId: prodUser._id,
-      }
-    )) as Array<Record<string, unknown>> | null;
+    const tags = convexRun<Array<Record<string, unknown>> | null>(
+      'tags:exportUserTags',
+      { userId: prodUser._id },
+      prodDeployment
+    );
     const tagCount = tags?.length ?? 0;
     log(`✓ Found ${tagCount} user tags`);
 
@@ -192,28 +217,31 @@ async function migrateUser(email: string, args: CliArgs): Promise<void> {
 
     // 6. Delete existing dev data
     log('Deleting existing trades in development...');
-    const deleteTradesResult = (await devClient.mutation(
-      'trades:deleteUserTrades' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-      { userId: devUser._id }
-    )) as { deleted: number } | null;
+    const deleteTradesResult = convexRun<{ deleted: number } | null>(
+      'trades:deleteUserTrades',
+      { userId: devUser._id },
+      devDeployment
+    );
     log(`✓ Deleted ${deleteTradesResult?.deleted ?? 0} trades`);
 
     log('Deleting existing user tags in development...');
-    const deleteTagsResult = (await devClient.mutation(
-      'tags:deleteUserTags' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-      { userId: devUser._id }
-    )) as { deleted: number } | null;
+    const deleteTagsResult = convexRun<{ deleted: number } | null>(
+      'tags:deleteUserTags',
+      { userId: devUser._id },
+      devDeployment
+    );
     log(`✓ Deleted ${deleteTagsResult?.deleted ?? 0} tags`);
 
     // 7. Import settings
     if (settings) {
       log('Importing settings to development...');
-      await devClient.mutation(
-        'settings:importUserSettings' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      convexRun(
+        'settings:importUserSettings',
         {
           userId: devUser._id,
           settings,
-        }
+        },
+        devDeployment
       );
       log('✓ Settings imported');
     }
@@ -221,31 +249,32 @@ async function migrateUser(email: string, args: CliArgs): Promise<void> {
     // 8. Import trades
     if (trades && trades.length > 0) {
       log('Importing trades to development...');
-      const importResult = (await devClient.mutation(
-        'trades:importUserTrades' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-        { userId: devUser._id, trades }
-      )) as { imported: number } | null;
+      const importResult = convexRun<{ imported: number } | null>(
+        'trades:importUserTrades',
+        { userId: devUser._id, trades },
+        devDeployment
+      );
       log(`✓ Imported ${importResult?.imported ?? 0} trades`);
     }
 
     // 9. Import tags
     if (tags && tags.length > 0) {
       log('Importing tags to development...');
-      const importResult = (await devClient.mutation(
-        'tags:importUserTags' as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-        { userId: devUser._id, tags }
-      )) as { imported: number } | null;
+      const importResult = convexRun<{ imported: number } | null>(
+        'tags:importUserTags',
+        { userId: devUser._id, tags },
+        devDeployment
+      );
       log(`✓ Imported ${importResult?.imported ?? 0} tags`);
     }
 
     log(`✅ Migration complete for ${email}`);
-  } finally {
-    prodClient.close();
-    devClient.close();
+  } catch (error) {
+    log(`❌ Error migrating ${email}: ${(error as Error).message}`);
   }
 }
 
-async function main(): Promise<void> {
+function main(): void {
   let args: CliArgs;
   try {
     args = parseArgs();
@@ -268,11 +297,7 @@ async function main(): Promise<void> {
   log('');
 
   for (const email of args.emails) {
-    try {
-      await migrateUser(email, args);
-    } catch (error) {
-      log(`❌ Error migrating ${email}: ${(error as Error).message}`);
-    }
+    migrateUser(email, args);
   }
 
   log('\n✨ Migration complete!');

@@ -2,7 +2,12 @@ import { getAuthUserId } from '@convex-dev/auth/server';
 import { v } from 'convex/values';
 
 import { Id } from './_generated/dataModel';
-import { internalMutation, mutation, query } from './_generated/server';
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+} from './_generated/server';
 
 // System tag definitions — idempotent seed data
 export const SYSTEM_TAG_DEFINITIONS = {
@@ -449,8 +454,8 @@ export const deleteTag = mutation({
   },
 });
 
-// Query to export all user-created tags for a specific user (public, no auth required)
-export const exportUserTags = query({
+// Query to export all user-created tags for a specific user (internal — admin scripts only)
+export const exportUserTags = internalQuery({
   args: {
     userId: v.string(),
   },
@@ -473,8 +478,8 @@ export const exportUserTags = query({
   },
 });
 
-// Mutation to import user tags (public, no auth required)
-export const importUserTags = mutation({
+// Mutation to import user tags (internal — admin scripts only)
+export const importUserTags = internalMutation({
   args: {
     userId: v.string(),
     tags: v.array(
@@ -501,8 +506,8 @@ export const importUserTags = mutation({
   },
 });
 
-// Mutation to delete all user-created tags for a specific user (public, no auth required)
-export const deleteUserTags = mutation({
+// Mutation to delete all user-created tags for a specific user (internal — admin scripts only)
+export const deleteUserTags = internalMutation({
   args: {
     userId: v.string(),
   },

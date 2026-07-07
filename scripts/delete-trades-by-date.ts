@@ -8,15 +8,17 @@
  *     --start 2026-06-01 \
  *     --end 2026-06-30 \
  *     [--deployment uncommon-turtle-66]
+ *
+ * Requires: --deployment flag or EXPO_PUBLIC_CONVEX_URL in .env.local.
+ * Calls internal Convex functions via npx convex run --internal.
  */
 
+import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import { ConvexClient } from 'convex/browser';
 import { config } from 'dotenv';
 
-// Load .env.local for Convex URL
 const envPath = path.join(process.cwd(), '.env.local');
 if (fs.existsSync(envPath)) {
   config({ path: envPath });
@@ -62,23 +64,12 @@ function parseArgs(): CliArgs {
 
   if (!parsed.email || !parsed.startDate) {
     console.error(
-      'Usage: npx tsx scripts/delete-trades-by-date.ts --email <email> --start <YYYY-MM-DD> [--end <YYYY-MM-DD>]'
-    );
-    console.error('');
-    console.error('Options:');
-    console.error('  --email      User email address');
-    console.error('  --start      Start date (inclusive)');
-    console.error(
-      '  --end        End date (inclusive, optional - defaults to end of start date month)'
-    );
-    console.error(
-      '  --deployment Convex deployment URL (optional, defaults to EXPO_PUBLIC_CONVEX_URL)'
+      'Usage: npx tsx scripts/delete-trades-by-date.ts --email <email> --start <YYYY-MM-DD> [--end <YYYY-MM-DD>] [--deployment <name>]'
     );
     process.exit(1);
   }
 
   if (!parsed.endDate) {
-    // Default to end of the month for the start date
     const start = new Date(parsed.startDate + 'T00:00:00');
     const end = new Date(
       start.getFullYear(),
@@ -100,40 +91,75 @@ function parseArgs(): CliArgs {
   };
 }
 
-function getConvexUrl(deployment: string | null): string {
+function resolveDeployment(deployment: string | null): string | null {
   if (deployment) {
-    return `https://${deployment}.convex.cloud`;
+    return deployment;
   }
   if (CONVEX_URL) {
-    return CONVEX_URL;
+    const match = CONVEX_URL.match(/https:\/\/(.+)\.convex\.cloud/);
+    if (match) {
+      return match[1];
+    }
   }
-  console.error(
-    'Error: No Convex URL found. Set EXPO_PUBLIC_CONVEX_URL in .env.local or pass --deployment'
-  );
-  process.exit(1);
+  return null;
+}
+
+function convexRun<T>(
+  functionPath: string,
+  args: Record<string, unknown>,
+  deployment: string | null
+): T {
+  const convexArgs = [
+    'convex',
+    'run',
+    '--internal',
+    functionPath,
+    '--args',
+    JSON.stringify(args),
+  ];
+  if (deployment) {
+    convexArgs.push('--deployment', deployment);
+  }
+
+  const result = spawnSync('npx', convexArgs, {
+    encoding: 'utf-8',
+    shell: true,
+    cwd: process.cwd(),
+  });
+
+  if (result.status !== 0) {
+    console.error(result.stderr);
+    throw new Error(
+      `convex run failed: ${result.stderr?.trim() || 'unknown error'}`
+    );
+  }
+
+  const stdout = result.stdout?.trim();
+  if (!stdout) {
+    return null as T;
+  }
+
+  return JSON.parse(stdout) as T;
 }
 
 async function main() {
   const args = parseArgs();
-  const convexUrl = getConvexUrl(args.deployment);
+  const deployment = resolveDeployment(args.deployment);
 
-  console.log(`Connecting to Convex: ${convexUrl}`);
-  const client = new ConvexClient(convexUrl);
+  if (!deployment) {
+    console.error(
+      'Error: No Convex deployment specified. Set EXPO_PUBLIC_CONVEX_URL in .env.local or pass --deployment'
+    );
+    process.exit(1);
+  }
 
   try {
-    // Find user by email
     console.log(`Looking up user: ${args.email}...`);
-    const user = (await client.query(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      'trades:getUserByEmail' as any,
-      {
-        email: args.email,
-      }
-    )) as {
+    const user = convexRun<{
       id: string;
       email: string;
       name: string | null;
-    } | null;
+    } | null>('trades:getUserByEmail', { email: args.email }, deployment);
 
     if (!user) {
       console.error(`Error: User not found with email: ${args.email}`);
@@ -142,7 +168,6 @@ async function main() {
 
     console.log(`Found user: ${user.name || 'Unknown'} (${user.id})`);
 
-    // Convert dates to timestamps
     const startTime = new Date(args.startDate + 'T00:00:00').getTime();
     const endTime = new Date(args.endDate + 'T23:59:59.999').getTime();
 
@@ -153,7 +178,6 @@ async function main() {
     console.log(`End time: ${endTime} (${new Date(endTime).toISOString()})`);
     console.log(`\nDeleting trades for user ${user.id}...`);
 
-    // Confirm before deleting
     if (process.env.SKIP_CONFIRM !== 'true') {
       console.log(
         '\n⚠️  WARNING: This will permanently delete trades in the specified range.'
@@ -163,15 +187,11 @@ async function main() {
       await new Promise((resolve) => setTimeout(resolve, 5000));
     }
 
-    const result = (await client.mutation(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      'trades:deleteUserTradesInRange' as any,
-      {
-        userId: user.id,
-        startTime,
-        endTime,
-      }
-    )) as { deleted: number };
+    const result = convexRun<{ deleted: number }>(
+      'trades:deleteUserTradesInRange',
+      { userId: user.id, startTime, endTime },
+      deployment
+    );
 
     console.log(`\n✅ Deleted ${result.deleted} trades`);
 
@@ -181,8 +201,6 @@ async function main() {
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);
-  } finally {
-    client.close();
   }
 }
 

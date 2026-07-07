@@ -3,6 +3,7 @@ import { v } from 'convex/values';
 
 import {
   internalMutation,
+  internalQuery,
   mutation,
   query,
   type MutationCtx,
@@ -753,8 +754,8 @@ export const migrateStructureBreakToEnum = internalMutation({
   },
 });
 
-// Query to export all trades for a specific user (public, no auth required)
-export const exportUserTrades = query({
+// Query to export all trades for a specific user (internal — admin scripts only)
+export const exportUserTrades = internalQuery({
   args: {
     userId: v.string(),
   },
@@ -803,8 +804,8 @@ export const exportUserTrades = query({
   },
 });
 
-// Mutation to import trades directly (public, no auth required)
-export const importUserTrades = mutation({
+// Mutation to import trades directly (internal — admin scripts only)
+export const importUserTrades = internalMutation({
   args: {
     userId: v.string(),
     trades: v.array(
@@ -854,8 +855,8 @@ export const importUserTrades = mutation({
   },
 });
 
-// Query to find user by email (public, no auth required)
-export const getUserByEmail = query({
+// Query to find user by email (internal — admin scripts only)
+export const getUserByEmail = internalQuery({
   args: {
     email: v.string(),
   },
@@ -877,8 +878,8 @@ export const getUserByEmail = query({
   },
 });
 
-// Mutation to delete trades for a specific user within a date range (public, no auth required)
-export const deleteUserTradesInRange = mutation({
+// Mutation to delete trades for a specific user within a date range (internal — admin scripts only)
+export const deleteUserTradesInRange = internalMutation({
   args: {
     userId: v.string(),
     startTime: v.number(),
@@ -913,8 +914,8 @@ export const deleteUserTradesInRange = mutation({
   },
 });
 
-// Mutation to delete all trades for a specific user (public, no auth required)
-export const deleteUserTrades = mutation({
+// Mutation to delete all trades for a specific user (internal — admin scripts only)
+export const deleteUserTrades = internalMutation({
   args: {
     userId: v.string(),
   },
