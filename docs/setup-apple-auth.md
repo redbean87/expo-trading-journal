@@ -3,6 +3,10 @@
 Reference guide for implementing Apple Sign-In. This is **not yet implemented** but required for App Store submission if any social login is offered.
 
 > **Status**: Planned. `expo-auth-session` is not currently installed; the existing Google Sign-In uses `expo-web-browser` via Convex Auth.
+>
+> **SITE_URL note**: When implementing Apple Sign-In, set `SITE_URL` per-deployment
+> (same as Google auth). Apple's OAuth redirect will also use `SITE_URL` to
+> determine where to send the browser after authentication.
 
 ## Overview
 

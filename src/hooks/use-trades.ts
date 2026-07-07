@@ -80,7 +80,11 @@ export function useTrades() {
   };
 }
 
-export function useTradesInRange(startTime: number | null) {
+export function useTradesInRange(startTime: number | null): {
+  trades: Trade[];
+  isLoading: boolean;
+  error: Error | null;
+} {
   const queries = React.useMemo(
     () =>
       ({
@@ -107,7 +111,7 @@ export function useTradesInRange(startTime: number | null) {
   }, [data]);
 
   return {
-    trades: (data ?? previousData)?.map(mapToTrade) ?? [],
+    trades: ((data ?? previousData)?.map(mapToTrade) ?? []) as Trade[],
     isLoading: data === undefined && previousData === undefined && !error,
     error,
   };

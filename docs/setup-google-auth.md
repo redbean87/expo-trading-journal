@@ -1,104 +1,52 @@
 # Google OAuth Setup
 
-Current Google Sign-In implementation using `expo-web-browser` with Convex Auth.
-
 ## Overview
 
-Google Sign-In authentication with Convex Auth, plus a Profile tab with logout functionality.
+Google Sign-In via Convex Auth's built-in OAuth flow.
 
-## Files Created
-
-- `app/auth/callback.tsx` - OAuth callback handler that cleans URL params and redirects to home
-- `src/components/google-sign-in-button.tsx` - Reusable Google sign-in button
-- `src/components/auth-divider.tsx` - "OR" divider between auth methods
-- `src/screens/profile-screen.tsx` - Profile screen with logout and dark mode toggle
-- `app/(tabs)/profile.tsx` - Profile tab route
-
-## Files Modified
-
-- `convex/auth.ts` - Convex Auth is configured with the built-in Google OAuth provider (via environment variables)
-- `src/hooks/use-auth.ts` - Added `signInWithGoogle` method
-- `src/screens/auth/login-screen.tsx` - Added Google sign-in button
-- `src/screens/auth/register-screen.tsx` - Added Google sign-in button
-- `app/(tabs)/_layout.tsx` - Added Profile tab to navigation
-- `src/providers/convex-provider.tsx` - Configured localStorage for web OAuth
-
-## Convex Environment Variables
+## Env Vars (set per-deployment)
 
 ```bash
-npx convex env set AUTH_GOOGLE_ID <your-google-client-id>
-npx convex env set AUTH_GOOGLE_SECRET <your-google-client-secret>
-npx convex env set CONVEX_SITE_URL "https://your-project-name.convex.site"
+npx convex env set AUTH_GOOGLE_ID <client-id>
+npx convex env set AUTH_GOOGLE_SECRET <client-secret>
+
+# Controls where browser redirects after OAuth
+# Dev: deployed dev app URL
+# Prod: production app URL
+npx convex env set SITE_URL "https://expo-trading-journal--dev.expo.app"
 ```
 
-For local web development, also set:
+`auth.config.ts` uses `CONVEX_SITE_URL` (built-in) for the `domain` field — that controls where Convex Auth expects the browser origin during password auth. It's separate from `SITE_URL` which handles OAuth redirects.
 
-```bash
-npx convex env set CONVEX_SITE_URL "http://localhost:8081"
-```
+## Google Cloud Console
 
-> The app uses `CONVEX_SITE_URL`, not `SITE_URL`.
+OAuth 2.0 Client ID (Web application):
 
-## Google Cloud Console Configuration
+| Field                         | Dev Value                                                                                       | Prod Value                                                         |
+| ----------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Authorized JavaScript origins | `https://expo-trading-journal--dev.expo.app`, `http://localhost:8081`, `http://localhost:19006` | `https://expo-trading-journal.expo.app`                            |
+| Authorized redirect URIs      | `https://uncommon-turtle-66.convex.site/api/auth/callback/google`                               | `https://proficient-orca-351.convex.site/api/auth/callback/google` |
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/) > APIs & Services > Credentials
-2. Create OAuth 2.0 Client ID (Web application)
-3. Set **Authorized redirect URI**: `https://<your-project>.convex.site/api/auth/callback/google`
+## Local Development
+
+Google sign-in does not work on `localhost:8081` because OAuth requires a public HTTPS origin. Use email/password auth for local testing. Test Google sign-in on the deployed dev URL (`https://expo-trading-journal--dev.expo.app`).
 
 ## OAuth Flow
 
-1. User clicks "Sign in with Google"
-2. `useAuth` calls Convex Auth's `signIn('google')`, which returns a redirect URL
-3. Web: browser navigates to the Google OAuth flow and returns to `/auth/callback`
-4. Native: `expo-web-browser` opens the OAuth flow; the callback URL uses the app scheme (`trading-journal://auth/callback`)
-5. The `app/auth/callback.tsx` route waits for authentication, cleans the URL, and redirects to home
+1. User clicks "Sign in with Google" → `useAuth().signInWithGoogle()`
+2. Convex Auth returns a redirect URL pointing to Google
+3. Browser navigates to Google OAuth → user authenticates
+4. Google redirects to `convex.site/api/auth/callback/google`
+5. Convex processes the auth code, creates/links user account
+6. Convex redirects browser back to `SITE_URL` (your app URL)
+7. `app/auth/callback.tsx` cleans up OAuth params and redirects to home
 
-## Key Issue Solved
+## Files
 
-The OAuth `?code=` query parameter was persisting in the URL after authentication. On page refresh, Convex Auth would try to re-process the stale code, invalidating the session (OAuth codes are single-use).
-
-**Solution**: Created a dedicated `/auth/callback` route that:
-
-- Receives the OAuth callback with query params
-- Waits for Convex Auth to process the code
-- Cleans the URL using `history.replaceState`
-- Redirects to home with a clean URL
-
-## Production Deployment
-
-Update `CONVEX_SITE_URL` to your production site URL:
-
-```bash
-npx convex env set CONVEX_SITE_URL "https://your-project-name.convex.site"
-```
-
-Add your production web origin to the Google Cloud Console OAuth client.
-
-## Dependencies
-
-- `expo-web-browser` - For native OAuth flow (dynamically imported only on native)
-- `@auth/core` - Already installed, provides Google provider
-
-## Testing
-
-OAuth does NOT work in Expo Go on native. For mobile testing:
-
-```bash
-npx expo run:android
-# or
-npx expo run:ios
-```
-
-Web testing works with `npm run web`.
-
-## Alternative: Platform-Specific OAuth (Future)
-
-For a more native mobile experience, a future migration could use:
-
-- **Web**: `@react-oauth/google` (native Google button, popup flow)
-- **Mobile**: `expo-auth-session` (proper native OAuth with PKCE)
-- Requires a redirect service (see [setup-vercel-redirect.md](setup-vercel-redirect.md))
-
-> This is **not currently implemented**. `expo-auth-session` is not installed in the project, and the current Google Sign-In relies on `expo-web-browser` via Convex Auth's built-in OAuth flow.
->
-> This approach is documented in the Apple Sign-In guide since it's required for App Store compliance if Apple Sign-In is added later.
+- `convex/auth.ts` — `Google` provider registered alongside `Password`
+- `src/hooks/use-auth.ts` — `signInWithGoogle()` method with web redirect
+- `src/screens/auth/login-screen.tsx` — Google button + AuthDivider
+- `src/screens/auth/register-screen.tsx` — Google button + AuthDivider
+- `src/components/google-sign-in-button.tsx` — Reusable button component
+- `src/components/auth-divider.tsx` — "OR" divider component
+- `app/auth/callback.tsx` — OAuth callback route

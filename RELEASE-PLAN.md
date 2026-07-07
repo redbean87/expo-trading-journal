@@ -50,15 +50,47 @@ Convert 11 unauthenticated Convex endpoints to internal functions. See
 - [x] **Show CSV import errors to user** — surface import errors via snackbar
       instead of `console.error` (`src/screens/trades-screen.tsx`)
 
-## Phase 4 — Release Configuration
+## Phase 4 — Google Auth on Web + Code Quality
 
-- [ ] **Add iOS build number** — `ios.buildNumber` in `app.config.ts`
-- [ ] **Add Android version code** — `android.versionCode` in `app.config.ts`
-- [ ] **Add `expo-secure-store` plugin** — add to plugins array in
-      `app.config.ts`
-- [ ] **EAS production profile** — configure `ios` and `android` specifics in
-      `eas.json`
-- [ ] Run `npm run typecheck` — verify zero TypeScript errors
-- [ ] Run `npm run lint` — verify zero lint errors
-- [ ] Run `npm run format:check` — verify formatting consistency
-- [ ] Run `npm test -- --coverage` — verify all tests pass
+> Original Phase 4 items (iOS build number, Android version code,
+> `expo-secure-store` plugin, EAS profile) are **deferred** — they require
+> Apple Developer ($99/yr) and Google Play ($25) accounts. The app is web/PWA
+> first.
+
+### Completed Code Changes
+
+- [x] **convex/auth.ts** — register `Google` provider from
+      `@auth/core/providers/google` alongside existing `Password` provider
+- [x] **login-screen.tsx** — add `AuthDivider` + `GoogleSignInButton` below
+      password form
+- [x] **register-screen.tsx** — add `AuthDivider` + `GoogleSignInButton` below
+      password form
+
+### Needs Your Action (Google Cloud Console — free)
+
+To complete the setup, you need to:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) > APIs &
+   Services > Credentials
+2. Create an **OAuth 2.0 Client ID** (Web application type)
+3. Set **Authorized redirect URI** to:
+   `https://uncommon-turtle-66.convex.site/api/auth/callback/google`
+4. Copy the **Client ID** and **Client Secret**
+
+Then run these commands to set Convex server env vars:
+
+```bash
+npx convex env set AUTH_GOOGLE_ID <your-client-id>
+npx convex env set AUTH_GOOGLE_SECRET <your-client-secret>
+```
+
+After that, `npx convex deploy` to push the auth changes, then Google sign-in
+will work on web.
+
+### Code Quality Gate
+
+- [x] Run `npm run typecheck` — 0 errors (fixed pre-existing `any` in
+      `use-trades.ts` + `analytics-layout.tsx`)
+- [x] Run `npm run lint` — 0 errors, 30 warnings (pre-existing)
+- [x] Run `npm run format:check` — all files pass
+- [x] Run `npm test -- --coverage` — all 26 test suites pass

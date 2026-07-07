@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, View } from 'react-native';
 import { TextInput, Text, HelperText, Card } from 'react-native-paper';
 
+import { AuthDivider } from '../../components/auth-divider';
 import { Button } from '../../components/button';
+import { GoogleSignInButton } from '../../components/google-sign-in-button';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useAuth } from '../../hooks/use-auth';
 
@@ -19,7 +21,7 @@ export default function RegisterScreen({
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { register } = useAuth();
+  const { register, signInWithGoogle } = useAuth();
   const theme = useAppTheme();
   const styles = createStyles(theme);
 
@@ -118,6 +120,15 @@ export default function RegisterScreen({
             </Button>
           </Card.Content>
         </Card>
+
+        <AuthDivider />
+
+        <GoogleSignInButton
+          onPress={signInWithGoogle}
+          loading={loading}
+          disabled={loading}
+          mode="signUp"
+        />
 
         <Button
           mode="text"

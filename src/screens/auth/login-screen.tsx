@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, View } from 'react-native';
 import { TextInput, Text, HelperText, Card } from 'react-native-paper';
 
+import { AuthDivider } from '../../components/auth-divider';
 import { Button } from '../../components/button';
+import { GoogleSignInButton } from '../../components/google-sign-in-button';
 import { ResponsiveContainer } from '../../components/responsive-container';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useAuth } from '../../hooks/use-auth';
@@ -17,7 +19,7 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, signInWithGoogle } = useAuth();
   const theme = useAppTheme();
   const styles = createStyles(theme);
 
@@ -94,6 +96,14 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
               </Button>
             </Card.Content>
           </Card>
+
+          <AuthDivider />
+
+          <GoogleSignInButton
+            onPress={signInWithGoogle}
+            loading={loading}
+            disabled={loading}
+          />
 
           <Button
             mode="text"
