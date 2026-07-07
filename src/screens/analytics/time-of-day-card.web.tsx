@@ -1,6 +1,15 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Cell,
+  LabelList,
+  ResponsiveContainer,
+} from 'recharts';
 
 import { CardEmptyState } from '../../components/card-empty-state';
 import { SectionCard } from '../../components/section-card';
@@ -57,10 +66,6 @@ export default function TimeOfDayCard({ trades }: TimeOfDayCardProps) {
       </text>
     );
   };
-
-  const Recharts = require('recharts');
-  const { BarChart, Bar, XAxis, YAxis, Cell, LabelList, ResponsiveContainer } =
-    Recharts;
 
   return (
     <SectionCard title="P&L by Hour">

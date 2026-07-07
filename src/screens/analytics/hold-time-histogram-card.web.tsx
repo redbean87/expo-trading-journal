@@ -1,6 +1,14 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Cell,
+  ResponsiveContainer,
+} from 'recharts';
 
 import { CardEmptyState } from '../../components/card-empty-state';
 import { SectionCard } from '../../components/section-card';
@@ -31,9 +39,6 @@ export default function HoldTimeHistogramCard({
     value: bin.count,
     avgPnl: bin.avgPnl,
   }));
-
-  const Recharts = require('recharts');
-  const { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer } = Recharts;
 
   return (
     <SectionCard title="Hold Time Distribution">

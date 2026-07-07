@@ -1,5 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Cell,
+  ResponsiveContainer,
+} from 'recharts';
 
 import { CardEmptyState } from '../../components/card-empty-state';
 import { SectionCard } from '../../components/section-card';
@@ -29,9 +37,6 @@ export default function StrategyPnlBarCard({
     name: s.name.length > 6 ? s.name.slice(0, 5) + '…' : s.name,
     value: s.totalPnl,
   }));
-
-  const Recharts = require('recharts');
-  const { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer } = Recharts;
 
   return (
     <SectionCard title="P&L by Strategy">

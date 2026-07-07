@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import { Portal, Snackbar } from 'react-native-paper';
 
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -7,9 +7,11 @@ import { usePwaUpdateStore } from '@/store/pwa-update-store';
 
 export function UpdateBanner() {
   const theme = useAppTheme();
-  const { updateAvailable, setUpdateAvailable } = usePwaUpdateStore();
+  const { updateAvailable, isActivating, setUpdateAvailable, setActivating } =
+    usePwaUpdateStore();
 
   const activateUpdate = () => {
+    setActivating(true);
     setUpdateAvailable(false);
     if (!('serviceWorker' in navigator)) {
       window.location.reload();
@@ -25,6 +27,7 @@ export function UpdateBanner() {
         }
       })
       .catch(() => {
+        setActivating(false);
         window.location.reload();
       });
   };
@@ -32,7 +35,7 @@ export function UpdateBanner() {
   return (
     <Portal>
       <Snackbar
-        visible={updateAvailable}
+        visible={updateAvailable || isActivating}
         onDismiss={() => {}}
         duration={Number.POSITIVE_INFINITY}
         wrapperStyle={styles.wrapper}
@@ -50,12 +53,21 @@ export function UpdateBanner() {
           },
         }}
         action={{
-          label: 'Update',
-          onPress: activateUpdate,
+          label: isActivating ? 'Updating\u2026' : 'Update',
+          onPress: isActivating ? undefined : activateUpdate,
+          disabled: isActivating,
           labelStyle: { color: theme.colors.inversePrimary },
         }}
       >
-        A new version is available
+        {isActivating ? (
+          <ActivityIndicator
+            size={16}
+            color={theme.colors.inverseOnSurface}
+            style={styles.spinner}
+          />
+        ) : (
+          'A new version is available'
+        )}
       </Snackbar>
     </Portal>
   );
@@ -70,5 +82,8 @@ const styles = StyleSheet.create({
   },
   bar: {
     borderTopWidth: 1,
+  },
+  spinner: {
+    marginRight: 8,
   },
 });

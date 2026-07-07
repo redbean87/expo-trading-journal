@@ -1,6 +1,14 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 import { CardEmptyState } from '../../components/card-empty-state';
 import { SectionCard } from '../../components/section-card';
@@ -47,10 +55,6 @@ export default function EquityCurveCard({
 
   const isProfit = data.currentBalance >= 0;
   const lineColor = isProfit ? theme.colors.profit : theme.colors.loss;
-
-  const Recharts = require('recharts');
-  const { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } =
-    Recharts;
 
   const hasData = chartData.length > 0;
 

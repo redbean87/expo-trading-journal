@@ -18,18 +18,18 @@ Convert 11 unauthenticated Convex endpoints to internal functions. See
 
 ## Phase 2 — Web & PWA Polish
 
-- [ ] **Fix maskable PWA icon** — update `scripts/generate-pwa-icons.mjs` to
+- [x] **Fix maskable PWA icon** — update `scripts/generate-pwa-icons.mjs` to
       output `icon-512-maskable.png`
-- [ ] **Verify web build** — run `npm run build:web` end-to-end
-- [ ] **Web analytics type safety** — convert `require()` to static `import`
+- [x] **Verify web build** — run `npm run build:web` end-to-end
+- [x] **Web analytics type safety** — convert `require()` to static `import`
       for recharts in all `*.web.tsx` files under `src/screens/analytics/`
-- [ ] **Service worker update UX** — add loading state to update banner
+- [x] **Service worker update UX** — add loading state to update banner
       (`src/components/update-banner.tsx`)
-- [ ] **Verify offline.html** — confirm offline fallback loads correctly
+- [x] **Verify offline.html** — confirm offline fallback loads correctly
       (`public/offline.html`)
-- [ ] **PWA manifest completeness** — verify `manifest.json` has all required
+- [x] **PWA manifest completeness** — verify `manifest.json` has all required
       fields for installability (`id`, `categories`, `display`, etc.)
-- [ ] **Test SW failure recovery JS** — verify the inline script in
+- [x] **Test SW failure recovery JS** — verify the inline script in
       `app/+html.tsx` handles chunk load failures gracefully
 
 ## Phase 3 — Error Handling & UX Polish

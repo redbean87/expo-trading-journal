@@ -1,5 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Cell,
+  ResponsiveContainer,
+} from 'recharts';
 
 import { CardEmptyState } from '../../components/card-empty-state';
 import { SectionCard } from '../../components/section-card';
@@ -30,9 +38,6 @@ export default function RMultipleDistributionCard({
     value: bin.count,
     isProfit: bin.isProfit,
   }));
-
-  const Recharts = require('recharts');
-  const { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer } = Recharts;
 
   return (
     <SectionCard title="R-Multiple Distribution">
