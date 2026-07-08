@@ -1,3 +1,14 @@
-import DuplicateReviewScreen from '../src/screens/duplicate-review-screen';
+import { Redirect } from 'expo-router';
 
-export default DuplicateReviewScreen;
+import { useAuth } from '@/hooks/use-auth';
+import DuplicateReviewScreen from '@/screens/duplicate-review-screen';
+
+export default function DuplicateReviewRoute() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
+
+  return <DuplicateReviewScreen />;
+}

@@ -1,7 +1,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAuth } from '@/hooks/use-auth';
 import { usePendingDuplicatePairs } from '@/hooks/use-duplicate-detection';
 import { getTabBarStyle, useNavigationMode } from '@/hooks/use-navigation-mode';
 import { useTrades } from '@/hooks/use-trades';
@@ -10,8 +11,13 @@ export default function TabLayout() {
   const theme = useAppTheme();
   const mode = useNavigationMode();
   const isSidebar = mode === 'sidebar';
+  const { isAuthenticated } = useAuth();
   const { trades } = useTrades();
   const duplicatePairs = usePendingDuplicatePairs(trades);
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
 
   return (
     <Tabs

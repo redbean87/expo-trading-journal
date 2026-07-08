@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { DesktopSidebar } from './desktop-sidebar';
+import { useAuth } from '../hooks/use-auth';
 import { useNavigationMode } from '../hooks/use-navigation-mode';
 
 type SidebarLayoutProps = {
@@ -12,12 +13,14 @@ type SidebarLayoutProps = {
 export function SidebarLayout({ children }: SidebarLayoutProps) {
   const mode = useNavigationMode();
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
   const isSidebar = mode === 'sidebar';
 
   // Exclude auth routes from showing sidebar
-  const isExcluded = pathname.startsWith('/auth/');
+  const isExcluded =
+    pathname.startsWith('/auth/') || pathname.startsWith('/(auth)');
 
-  if (isSidebar && !isExcluded) {
+  if (isSidebar && !isExcluded && isAuthenticated) {
     return (
       <View style={styles.container}>
         <DesktopSidebar />

@@ -44,6 +44,12 @@ app/                                   # Expo Router app directory
       htf-context.tsx                  # HTF context tab
       patterns.tsx                     # Pattern analytics tab
       ai-insights.tsx                  # AI insights tab
+  (auth)/                              # Auth route group (unauthenticated routes)
+    _layout.tsx                        # Redirects to / if already authenticated
+    login.tsx                          # Login screen
+    register.tsx                       # Registration screen
+    forgot-password.tsx                # Password reset request
+    reset-password.tsx                 # Password reset with code
   auth/
     callback.tsx                       # OAuth callback handler
 
@@ -178,6 +184,39 @@ src/screens/
 - Abstract backend services behind generic hooks (e.g., `useTrades` not `useConvexTrades`)
 - Keep implementation details in dedicated files, expose clean interfaces to consumers
 
+## Auth Pattern (CRITICAL — DO NOT DEVIATE)
+
+Auth gating must use Expo Router's `Redirect` with route groups. Never conditionally render/unmount the `Stack` navigator to gate auth — this breaks Expo Router's URL management and causes flickering or stale URLs.
+
+**Correct pattern — Route-level guards with `Redirect`:**
+
+1. **Auth routes** go in `app/(auth)/` — no auth required, redirect to `/` if already signed in via `(auth)/_layout.tsx`
+2. **Protected routes** (tabs, modals) check `isAuthenticated` at the top of their component and return `<Redirect href="/(auth)/login" />` if not signed in
+3. **`src/components/auth-gate.tsx`** only handles the initial loading spinner — it always renders children and never gates access
+4. **The root Stack is always mounted** — never conditionally render the Stack based on auth state
+
+```tsx
+// ❌ NEVER: conditional rendering that unmounts the Stack
+<AuthGate>        // if !authenticated, renders LoginScreen instead of Stack
+  <Stack>...</Stack>
+</AuthGate>
+
+// ✅ CORRECT: route-level Redirect, Stack always mounted
+<AuthGate>        // only shows loading spinner
+  <TagLibraryInitializer />
+  <KeyboardShortcutsHandler />
+</AuthGate>
+<SidebarLayout>   // guards DesktopSidebar with isAuthenticated
+  <Stack>         // always mounted
+    <Stack.Screen name="(auth)" />     // redirects to / if authenticated
+    <Stack.Screen name="(tabs)" />     // redirects to (auth)/login if !authenticated
+    <Stack.Screen name="add-trade" />  // same pattern
+  </Stack>
+</SidebarLayout>
+```
+
+5. **Convex-auth-aware components** (e.g., `DesktopSidebar`, `useTrades`) must guard queries with `isAuthenticated` to prevent "Not authenticated" server errors when mounted briefly before Redirect fires.
+
 ## Don'ts
 
 - Don't use class components
@@ -187,6 +226,7 @@ src/screens/
 - Don't use `any` type unless absolutely necessary
 - Don't over-comment code — prefer self-documenting code with clear naming
 - **Never commit or push without explicit user approval.** Wait for the user to test changes and confirm "ready to commit" before running git commands.
+- **Never conditionally render the Expo Router Stack navigator based on auth state.** Use route-level `<Redirect>` guards with route groups instead.
 
 ## Testing
 

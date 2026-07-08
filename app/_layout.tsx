@@ -88,40 +88,44 @@ export default function RootLayout() {
                 <OfflineBanner />
                 <UpdateBanner />
                 <GlobalSnackbar />
-                <SidebarLayout>
-                  <Stack>
-                    <Stack.Screen
-                      name="(tabs)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="add-trade"
-                      options={{
-                        headerShown: false,
-                        presentation: 'modal',
-                      }}
-                    />
-                    <Stack.Screen
-                      name="auth/callback"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="duplicate-review"
-                      options={{
-                        headerShown: false,
-                        presentation: 'modal',
-                      }}
-                    />
-                    <Stack.Screen
-                      name="daily-digest"
-                      options={{
-                        headerShown: false,
-                        presentation: 'modal',
-                      }}
-                    />
-                  </Stack>
-                </SidebarLayout>
               </AuthGate>
+              <SidebarLayout>
+                <Stack>
+                  <Stack.Screen
+                    name="(auth)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="add-trade"
+                    options={{
+                      headerShown: false,
+                      presentation: 'modal',
+                    }}
+                  />
+                  <Stack.Screen
+                    name="auth/callback"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="duplicate-review"
+                    options={{
+                      headerShown: false,
+                      presentation: 'modal',
+                    }}
+                  />
+                  <Stack.Screen
+                    name="daily-digest"
+                    options={{
+                      headerShown: false,
+                      presentation: 'modal',
+                    }}
+                  />
+                </Stack>
+              </SidebarLayout>
               <StatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
             </ThemeProvider>
           </PaperProvider>
