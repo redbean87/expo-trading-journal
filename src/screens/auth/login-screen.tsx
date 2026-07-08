@@ -11,9 +11,13 @@ import { useAuth } from '../../hooks/use-auth';
 
 type LoginScreenProps = {
   onSwitchToRegister: () => void;
+  onForgotPassword: (email: string) => void;
 };
 
-export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
+export default function LoginScreen({
+  onSwitchToRegister,
+  onForgotPassword,
+}: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -86,6 +90,16 @@ export default function LoginScreen({ onSwitchToRegister }: LoginScreenProps) {
               ) : null}
 
               <Button
+                mode="text"
+                onPress={() => onForgotPassword(email)}
+                disabled={loading}
+                compact
+                style={styles.forgotButton}
+              >
+                Forgot Password?
+              </Button>
+
+              <Button
                 mode="contained"
                 onPress={handleLogin}
                 loading={loading}
@@ -148,6 +162,11 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     },
     button: {
       marginTop: 8,
+    },
+    forgotButton: {
+      alignSelf: 'flex-start',
+      marginBottom: 4,
+      marginTop: -4,
     },
     switchButton: {
       marginTop: 8,

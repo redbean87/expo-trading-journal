@@ -77,7 +77,7 @@ The app has a solid foundation with:
 
 ## Auth Enhancements
 
-- [ ] Password reset / forgot password flow
+- [x] Password reset / forgot password flow
 - [ ] **Platform-Specific Google Auth** - see details below
 - [ ] Social auth (Apple)
 - [ ] User profile management

@@ -4,8 +4,12 @@ import { ActivityIndicator } from 'react-native-paper';
 
 import { useAppTheme } from '../hooks/use-app-theme';
 import { useAuth } from '../hooks/use-auth';
+import ForgotPasswordScreen from '../screens/auth/forgot-password-screen';
 import LoginScreen from '../screens/auth/login-screen';
 import RegisterScreen from '../screens/auth/register-screen';
+import ResetPasswordScreen from '../screens/auth/reset-password-screen';
+
+type AuthView = 'login' | 'register' | 'forgotPassword' | 'resetPassword';
 
 type AuthGateProps = {
   children: React.ReactNode;
@@ -13,7 +17,8 @@ type AuthGateProps = {
 
 export default function AuthGate({ children }: AuthGateProps) {
   const { isLoading, isAuthenticated } = useAuth();
-  const [showRegister, setShowRegister] = useState(false);
+  const [view, setView] = useState<AuthView>('login');
+  const [resetEmail, setResetEmail] = useState('');
   const theme = useAppTheme();
 
   if (isLoading) {
@@ -30,11 +35,38 @@ export default function AuthGate({ children }: AuthGateProps) {
   }
 
   if (!isAuthenticated) {
-    return showRegister ? (
-      <RegisterScreen onSwitchToLogin={() => setShowRegister(false)} />
-    ) : (
-      <LoginScreen onSwitchToRegister={() => setShowRegister(true)} />
-    );
+    switch (view) {
+      case 'register':
+        return <RegisterScreen onSwitchToLogin={() => setView('login')} />;
+      case 'forgotPassword':
+        return (
+          <ForgotPasswordScreen
+            initialEmail={resetEmail}
+            onBackToLogin={() => setView('login')}
+            onCodeSent={(email) => {
+              setResetEmail(email);
+              setView('resetPassword');
+            }}
+          />
+        );
+      case 'resetPassword':
+        return (
+          <ResetPasswordScreen
+            email={resetEmail}
+            onBackToLogin={() => setView('login')}
+          />
+        );
+      default:
+        return (
+          <LoginScreen
+            onSwitchToRegister={() => setView('register')}
+            onForgotPassword={(email) => {
+              setResetEmail(email);
+              setView('forgotPassword');
+            }}
+          />
+        );
+    }
   }
 
   return <>{children}</>;

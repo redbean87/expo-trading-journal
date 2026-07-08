@@ -80,6 +80,39 @@ export function useAuth() {
     }
   };
 
+  const requestPasswordReset = async (email: string) => {
+    try {
+      await signIn('password', { email, flow: 'reset' });
+    } catch (error) {
+      console.error('Password reset request error:', error);
+      if (isNetworkError(error)) {
+        throw new Error('network');
+      }
+      throw error;
+    }
+  };
+
+  const resetPassword = async (
+    email: string,
+    code: string,
+    newPassword: string
+  ) => {
+    try {
+      await signIn('password', {
+        email,
+        code,
+        newPassword,
+        flow: 'reset-verification',
+      });
+    } catch (error) {
+      console.error('Password reset error:', error);
+      if (isNetworkError(error)) {
+        throw new Error('network');
+      }
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut();
@@ -95,6 +128,8 @@ export function useAuth() {
     login,
     register,
     signInWithGoogle,
+    requestPasswordReset,
+    resetPassword,
     logout,
   };
 }
