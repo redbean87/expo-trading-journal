@@ -1,17 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Cell,
-  LabelList,
-  ResponsiveContainer,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Cell, LabelList } from 'recharts';
 
 import { CardEmptyState } from '../../components/card-empty-state';
+import { ChartContainer } from '../../components/chart-container';
 import { SectionCard } from '../../components/section-card';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
@@ -79,38 +72,34 @@ export default function DayOfWeekCard({ trades }: DayOfWeekCardProps) {
         />
       ) : (
         <>
-          <View style={[styles.chartContainer, { height: chartHeight }]}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={chartData}
-                margin={{ top: 30, right: 20, left: 0, bottom: 5 }}
-              >
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
-                  stroke={theme.colors.border}
-                />
-                <YAxis
-                  tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
-                  stroke={theme.colors.border}
-                  tickFormatter={(value: number) => `$${value}`}
-                />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                  {chartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={
-                        entry.value >= 0
-                          ? theme.colors.profit
-                          : theme.colors.loss
-                      }
-                    />
-                  ))}
-                  <LabelList content={renderWinRateLabel} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </View>
+          <ChartContainer height={chartHeight} style={styles.chartContainer}>
+            <BarChart
+              data={chartData}
+              margin={{ top: 30, right: 20, left: 0, bottom: 5 }}
+            >
+              <XAxis
+                dataKey="name"
+                tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
+                stroke={theme.colors.border}
+              />
+              <YAxis
+                tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
+                stroke={theme.colors.border}
+                tickFormatter={(value: number) => `$${value}`}
+              />
+              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                {chartData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={
+                      entry.value >= 0 ? theme.colors.profit : theme.colors.loss
+                    }
+                  />
+                ))}
+                <LabelList content={renderWinRateLabel} />
+              </Bar>
+            </BarChart>
+          </ChartContainer>
           <View style={styles.legend}>
             <Text variant="bodySmall" style={styles.legendText}>
               Win rate shown above each bar

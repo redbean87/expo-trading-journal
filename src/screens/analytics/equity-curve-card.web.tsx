@@ -1,16 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
 import { CardEmptyState } from '../../components/card-empty-state';
+import { ChartContainer } from '../../components/chart-container';
 import { SectionCard } from '../../components/section-card';
 import { useAppTheme } from '../../hooks/use-app-theme';
 import { useBreakpoint } from '../../hooks/use-breakpoint';
@@ -68,75 +62,74 @@ export default function EquityCurveCard({
         />
       ) : (
         <>
-          <View
-            style={[styles.chartContainer, { height: chartHeight }]}
+          <ChartContainer
+            height={chartHeight}
+            style={styles.chartContainer}
             onTouchStart={onInteractionStart}
             onTouchEnd={onInteractionEnd}
             onTouchCancel={onInteractionEnd}
           >
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={chartData}
-                margin={{ top: 8, right: 8, left: 8, bottom: 8 }}
-              >
-                <defs>
-                  <linearGradient id="equityFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={lineColor} stopOpacity={0.3} />
-                    <stop
-                      offset="100%"
-                      stopColor={lineColor}
-                      stopOpacity={0.05}
-                    />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey="date"
-                  tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
-                  axisLine={{ stroke: theme.colors.border }}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
-                  axisLine={{ stroke: theme.colors.border }}
-                  tickLine={false}
-                  tickFormatter={(v: number) => `$${v.toFixed(0)}`}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: theme.colors.surface,
-                    border: `1px solid ${theme.colors.border}`,
-                    borderRadius: 8,
-                  }}
-                  labelStyle={{
-                    color: theme.colors.textSecondary,
-                    fontSize: 11,
-                  }}
-                  formatter={(value: number | undefined) => [
-                    `$${value !== undefined && value >= 0 ? '' : '-'}${value !== undefined ? Math.abs(value).toFixed(2) : '0.00'}`,
-                    'Cumulative PnL',
-                  ]}
-                  labelFormatter={(
-                    label: React.ReactNode,
-                    payload: readonly unknown[]
-                  ) => {
-                    const item = payload?.[0] as
-                      | { payload?: RechartsDataItem }
-                      | undefined;
-                    return typeof label === 'string'
-                      ? (item?.payload?.fullDate ?? label)
-                      : label;
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="cumulativePnl"
-                  stroke={lineColor}
-                  strokeWidth={2}
-                  fill="url(#equityFill)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </View>
+            <AreaChart
+              data={chartData}
+              margin={{ top: 8, right: 8, left: 8, bottom: 8 }}
+            >
+              <defs>
+                <linearGradient id="equityFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={lineColor} stopOpacity={0.3} />
+                  <stop
+                    offset="100%"
+                    stopColor={lineColor}
+                    stopOpacity={0.05}
+                  />
+                </linearGradient>
+              </defs>
+              <XAxis
+                dataKey="date"
+                tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
+                axisLine={{ stroke: theme.colors.border }}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fill: theme.colors.textSecondary, fontSize: 10 }}
+                axisLine={{ stroke: theme.colors.border }}
+                tickLine={false}
+                tickFormatter={(v: number) => `$${v.toFixed(0)}`}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: theme.colors.surface,
+                  border: `1px solid ${theme.colors.border}`,
+                  borderRadius: 8,
+                }}
+                labelStyle={{
+                  color: theme.colors.textSecondary,
+                  fontSize: 11,
+                }}
+                formatter={(value: number | undefined) => [
+                  `$${value !== undefined && value >= 0 ? '' : '-'}${value !== undefined ? Math.abs(value).toFixed(2) : '0.00'}`,
+                  'Cumulative PnL',
+                ]}
+                labelFormatter={(
+                  label: React.ReactNode,
+                  payload: readonly unknown[]
+                ) => {
+                  const item = payload?.[0] as
+                    | { payload?: RechartsDataItem }
+                    | undefined;
+                  return typeof label === 'string'
+                    ? (item?.payload?.fullDate ?? label)
+                    : label;
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="cumulativePnl"
+                stroke={lineColor}
+                strokeWidth={2}
+                fill="url(#equityFill)"
+              />
+            </AreaChart>
+          </ChartContainer>
           {data.dataPoints.length > 0 && (
             <View style={styles.stats}>
               <Text variant="bodySmall" style={styles.statLabel}>
